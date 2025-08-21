@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createExpense } from '../server/expenses'
 import { queryKeys } from '../lib/query-client'
-import { ExpenseCategory, Expense, Budget } from '../db/schema'
+import type { Budget, Expense, ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,7 +13,7 @@ interface AddExpenseFormProps {
   userId: string
 }
 
-const categoryOptions: { value: ExpenseCategory; label: string; icon: string }[] = [
+const categoryOptions: Array<{ value: ExpenseCategory; label: string; icon: string }> = [
   { value: 'food', label: 'Food', icon: '🍽️' },
   { value: 'transport', label: 'Transport', icon: '🚗' },
   { value: 'shopping', label: 'Shopping', icon: '🛍️' },
@@ -26,7 +26,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState<ExpenseCategory | ''>('')
-  
+
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -34,7 +34,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
     onMutate: async (variables) => {
       // Skip optimistic updates during SSR
       if (typeof window === 'undefined') return
-      
+
       await queryClient.cancelQueries({ queryKey: queryKeys.recentExpenses(budgetId) })
       await queryClient.cancelQueries({ queryKey: queryKeys.activeBudget(userId) })
       await queryClient.cancelQueries({ queryKey: queryKeys.allExpenses(budgetId) })
@@ -56,7 +56,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
 
       queryClient.setQueryData(
         queryKeys.recentExpenses(budgetId),
-        (old: Expense[] | undefined) => {
+        (old: Array<Expense> | undefined) => {
           if (!old) return [optimisticExpense]
           return [optimisticExpense, ...old.slice(0, 4)]
         }
@@ -64,7 +64,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
 
       queryClient.setQueryData(
         queryKeys.allExpenses(budgetId),
-        (old: Expense[] | undefined) => {
+        (old: Array<Expense> | undefined) => {
           if (!old) return [optimisticExpense]
           return [optimisticExpense, ...old]
         }
@@ -100,7 +100,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
       setDescription('')
       setAmount('')
       setCategory('')
-      
+
       queryClient.invalidateQueries({ queryKey: queryKeys.recentExpenses(budgetId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.activeBudget(userId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.allExpenses(budgetId) })
@@ -109,7 +109,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!description.trim() || !amount || !category) {
       return
     }
@@ -138,7 +138,6 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
           <Input
             type="text"
             placeholder="Expense name"
@@ -146,58 +145,52 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
             onChange={(e) => setDescription(e.target.value)}
             disabled={mutation.isPending}
           />
-        </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Input
-              type="number"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              step="0.01"
-              min="0"
-              disabled={mutation.isPending}
-            />
-          </div>
+          <Input
+            type="number"
+            placeholder="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            step="0.01"
+            min="0"
+            disabled={mutation.isPending}
+          />
 
-          <div>
-            <Select value={category} onValueChange={(value) => setCategory(value as ExpenseCategory)} disabled={mutation.isPending}>
-              <SelectTrigger>
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categoryOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.icon} {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+          <Select
+            value={category} onValueChange={(value) => setCategory(value as ExpenseCategory)} disabled={mutation.isPending}>
+            <SelectTrigger>
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categoryOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.icon} {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Button
-          type="submit"
-          disabled={isSubmitDisabled}
-          className="w-full"
-        >
-          {mutation.isPending ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-              Adding...
-            </>
-          ) : (
-            <>
-              ✓ Add Expense
-            </>
-          )}
-        </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitDisabled}
+            className="w-full"
+          >
+            {mutation.isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2"></div>
+                Adding...
+              </>
+            ) : (
+              <>
+                Add Expense
+              </>
+            )}
+          </Button>
         </form>
 
         {mutation.error && (
-          <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-            <p className="text-red-800 dark:text-red-400 text-sm">
+          <div className="mt-4 p-3 bg-destructive/5 border border-destructive/50 rounded-md">
+            <p className="text-destructive text-sm">
               Failed to add expense. Please try again.
             </p>
           </div>

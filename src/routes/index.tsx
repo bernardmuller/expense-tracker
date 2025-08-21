@@ -6,10 +6,10 @@ import RecentExpenses from '../components/RecentExpenses'
 import AddExpenseForm from '../components/AddExpenseForm'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
-import { authClient } from '@/lib/auth-client'
+import AppLayout from '../components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSession, useActiveBudget } from '@/lib/hooks'
+import { useActiveBudget, useSession } from '@/lib/hooks'
 
 export const Route = createFileRoute('/')({
   component: ExpenseTracker,
@@ -32,149 +32,105 @@ function ExpenseTracker() {
 
   if (sessionLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex items-center justify-center">
-        <div className="max-w-md w-full">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading...</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <AppLayout>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </CardContent>
+        </Card>
+      </AppLayout>
     )
   }
 
   if (!session?.data?.user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex items-center justify-center">
-        <AuthForm onSuccess={handleAuthSuccess} />
-      </div>
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <AuthForm onSuccess={handleAuthSuccess} />
+        </div>
+      </AppLayout>
     )
   }
 
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-end items-center mb-4">
-            <Button variant="ghost" size="sm" onClick={() => authClient.signOut()}>
-              Sign out
+      <AppLayout title="Error">
+        <Card className="border-destructive/50">
+          <CardContent className="p-8 text-center bg-destructive/5">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h1 className="text-2xl font-bold text-destructive mb-2">Error Loading Data</h1>
+            <p className="text-destructive/80 mb-4">Unable to load your budget information.</p>
+            <Button onClick={() => setIsNewBudgetModalOpen(true)}>
+              Create Budget
             </Button>
-          </div>
-          <Card className="border-red-200 dark:border-red-800">
-            <CardContent className="p-8 text-center bg-red-50 dark:bg-red-900/20">
-              <div className="text-6xl mb-4">⚠️</div>
-              <h1 className="text-2xl font-bold text-red-900 dark:text-red-400 mb-2">Error Loading Data</h1>
-              <p className="text-red-700 dark:text-red-300 mb-4">Unable to load your budget information.</p>
-              <Button onClick={() => setIsNewBudgetModalOpen(true)}>
-                Create Budget
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+          </CardContent>
+        </Card>
         <StartNewBudgetModal
           isOpen={isNewBudgetModalOpen}
           onClose={() => setIsNewBudgetModalOpen(false)}
           userId={userId!}
         />
-      </div>
+      </AppLayout>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-end items-center mb-4">
-            <Button variant="ghost" size="sm" onClick={() => authClient.signOut()}>
-              Sign out
-            </Button>
-          </div>
-          <div className="animate-pulse">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-            </div>
+      <AppLayout title="Loading...">
+        <div className="animate-pulse">
+          <div className="bg-card rounded-lg shadow-md p-6 mb-6">
+            <div className="h-4 bg-muted rounded w-1/3 mb-4"></div>
+            <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
+            <div className="h-3 bg-muted rounded w-1/4 mb-4"></div>
+            <div className="h-2 bg-muted rounded w-full"></div>
           </div>
         </div>
-      </div>
+      </AppLayout>
     )
   }
 
   if (!budget) {
     return (
-      <>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-          <div className="max-w-md mx-auto">
-            <div className="flex justify-end items-center mb-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={async () => {
-                  await authClient.signOut()
-                  queryClient.invalidateQueries({ queryKey: ['session'] })
-                }}
-              >
-                Sign out
-              </Button>
-            </div>
-            <Card>
-              <CardContent className="p-8 text-center">
-                <div className="text-6xl mb-4">💰</div>
-                <h1 className="text-2xl font-bold mb-2">Welcome{session.data.user.name ? `, ${session.data.user.name}` : ''}!</h1>
-                <p className="text-muted-foreground mb-6">Create your first budget to start tracking your expenses!</p>
-                <Button onClick={() => setIsNewBudgetModalOpen(true)}>
-                  Create Budget
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+      <AppLayout
+        title={`Welcome${session.data.user.name ? `, ${session.data.user.name}` : ''}!`}
+      >
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="text-6xl mb-4">💰</div>
+            <h1 className="text-2xl font-bold mb-2">Get Started</h1>
+            <p className="text-muted-foreground mb-6">Create your first budget to start tracking your expenses!</p>
+            <Button onClick={() => setIsNewBudgetModalOpen(true)}>
+              Create Budget
+            </Button>
+          </CardContent>
+        </Card>
         <StartNewBudgetModal
           isOpen={isNewBudgetModalOpen}
           onClose={() => setIsNewBudgetModalOpen(false)}
           userId={userId!}
         />
-      </>
+      </AppLayout>
     )
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Welcome back{session.data.user.name ? `, ${session.data.user.name}` : ''}!
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={async () => {
-                  await authClient.signOut()
-                  queryClient.invalidateQueries({ queryKey: ['session'] })
-                }}
-              >
-                Sign out
-              </Button>
-            </div>
-          </div>
-          <BudgetDisplay userId={userId!} />
-          <RecentExpenses budgetId={budget.id} />
-          <AddExpenseForm budgetId={budget.id} userId={userId!} />
-        </div>
+    <AppLayout
+      title="Expense Tracker"
+      subtitle={`Welcome back${session.data.user.name ? `, ${session.data.user.name}` : ''}!`}
+    >
+      <div className='flex flex-col gap-4'>
+        <BudgetDisplay userId={userId!} />
+        <AddExpenseForm budgetId={budget.id} userId={userId!} />
+        <RecentExpenses budgetId={budget.id} />
+        <StartNewBudgetModal
+          isOpen={isNewBudgetModalOpen}
+          onClose={() => setIsNewBudgetModalOpen(false)}
+          userId={userId!}
+          previousBudgetAmount={parseFloat(budget.startAmount)}
+        />
       </div>
-      <StartNewBudgetModal
-        isOpen={isNewBudgetModalOpen}
-        onClose={() => setIsNewBudgetModalOpen(false)}
-        userId={userId!}
-        previousBudgetAmount={parseFloat(budget.startAmount)}
-      />
-    </>
+    </AppLayout>
   )
 }

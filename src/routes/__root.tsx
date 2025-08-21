@@ -3,11 +3,6 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanstackDevtools } from '@tanstack/react-devtools'
-
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
@@ -18,15 +13,15 @@ interface MyRouterContext {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   notFoundComponent: () => (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-background p-4 flex items-center justify-center">
       <div className="max-w-md mx-auto text-center">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <div className="bg-card rounded-lg shadow-md p-8">
           <div className="text-6xl mb-4">🔍</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Page Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">The page you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Page Not Found</h1>
+          <p className="text-muted-foreground mb-6">The page you're looking for doesn't exist.</p>
           <a
             href="/"
-            className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors inline-block"
+            className="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors inline-block"
           >
             Go Home
           </a>
@@ -74,18 +69,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="dark">
         {children}
-        <TanstackDevtools
-          config={{
-            position: 'bottom-left',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
         <Scripts />
         <script dangerouslySetInnerHTML={{
           __html: `

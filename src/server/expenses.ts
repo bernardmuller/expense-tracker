@@ -1,8 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { eq, desc } from 'drizzle-orm'
+import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '../db'
-import { expenses, budgets } from '../db/schema'
+import { budgets, expenses } from '../db/schema'
 
 const createExpenseSchema = z.object({
   budgetId: z.string(),
@@ -10,6 +10,7 @@ const createExpenseSchema = z.object({
   amount: z.number().positive('Amount must be positive'),
   category: z.enum(['food', 'transport', 'shopping', 'entertainment', 'utilities', 'other']),
 })
+
 
 export const createExpense = createServerFn({ method: 'POST' })
   .validator(createExpenseSchema)
@@ -36,10 +37,10 @@ export const createExpense = createServerFn({ method: 'POST' })
       }
 
       const newCurrentAmount = parseFloat(currentBudget.currentAmount) - data.amount
-      
+
       await tx
         .update(budgets)
-        .set({ 
+        .set({
           currentAmount: newCurrentAmount.toString(),
           updatedAt: new Date()
         })
@@ -58,13 +59,16 @@ export const getRecentExpenses = createServerFn({ method: 'GET' })
     return await db
       .select()
       .from(expenses)
-      .where(eq(expenses.budgetId, data.budgetId))
+      .where(and(
+        isNull(expenses.deletedAt),
+        eq(expenses.budgetId, data.budgetId)
+      ))
       .orderBy(desc(expenses.createdAt))
       .limit(5)
   })
 
 export const getAllExpenses = createServerFn({ method: 'GET' })
-  .validator(z.object({ 
+  .validator(z.object({
     budgetId: z.string(),
     limit: z.number().optional(),
     offset: z.number().optional()
@@ -73,7 +77,10 @@ export const getAllExpenses = createServerFn({ method: 'GET' })
     let query = db
       .select()
       .from(expenses)
-      .where(eq(expenses.budgetId, data.budgetId))
+      .where(and(
+        isNull(expenses.deletedAt),
+        eq(expenses.budgetId, data.budgetId)
+      ))
       .orderBy(desc(expenses.createdAt))
 
     if (data.limit) {
@@ -93,13 +100,16 @@ export const getExpenseById = createServerFn({ method: 'GET' })
     const [expense] = await db
       .select()
       .from(expenses)
-      .where(eq(expenses.id, data.expenseId))
+      .where(and(
+        isNull(expenses.deletedAt),
+        eq(expenses.id, data.expenseId)
+      ))
       .limit(1)
 
     return expense || null
   })
 
-export const deleteExpense = createServerFn({ method: 'DELETE' })
+export const deleteExpense = createServerFn({ method: 'POST' })
   .validator(z.object({ expenseId: z.string() }))
   .handler(async ({ data }) => {
     return await db.transaction(async (tx) => {
@@ -109,13 +119,11 @@ export const deleteExpense = createServerFn({ method: 'DELETE' })
         .where(eq(expenses.id, data.expenseId))
         .limit(1)
 
-      if (!expense) {
-        throw new Error('Expense not found')
-      }
+      console.log("expense => ", expense)
 
       const [deletedExpense] = await tx
         .update(expenses)
-        .set({ 
+        .set({
           deletedAt: new Date(),
           updatedAt: new Date()
         })
@@ -128,17 +136,15 @@ export const deleteExpense = createServerFn({ method: 'DELETE' })
         .where(eq(budgets.id, expense.budgetId))
         .limit(1)
 
-      if (currentBudget) {
-        const newCurrentAmount = parseFloat(currentBudget.currentAmount) + parseFloat(expense.amount)
-        
-        await tx
-          .update(budgets)
-          .set({ 
-            currentAmount: newCurrentAmount.toString(),
-            updatedAt: new Date()
-          })
-          .where(eq(budgets.id, expense.budgetId))
-      }
+      const newCurrentAmount = parseFloat(currentBudget.currentAmount) + parseFloat(expense.amount)
+
+      await tx
+        .update(budgets)
+        .set({
+          currentAmount: newCurrentAmount.toString(),
+          updatedAt: new Date()
+        })
+        .where(eq(budgets.id, expense.budgetId))
 
       return deletedExpense
     })
@@ -150,7 +156,11 @@ export const getExpenseCount = createServerFn({ method: 'GET' })
     const result = await db
       .select({ count: expenses.id })
       .from(expenses)
-      .where(eq(expenses.budgetId, data.budgetId))
+      .where(and(
+        isNull(expenses.deletedAt),
+        eq(expenses.budgetId, data.budgetId)
+      ))
 
     return result.length
   })
+

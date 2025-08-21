@@ -1,9 +1,10 @@
 import { Link } from '@tanstack/react-router'
-import { ExpenseCategory } from '../db/schema'
+import type { ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRecentExpenses } from '@/lib/hooks'
+import { formatCurrency } from '@/lib/utils'
 
 interface RecentExpensesProps {
   budgetId: string
@@ -41,7 +42,7 @@ export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-3">
                   <Skeleton className="w-8 h-8 rounded-full" />
@@ -61,9 +62,9 @@ export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
 
   if (error) {
     return (
-      <Card className="mb-6 border-red-200 dark:border-red-800">
-        <CardContent className="p-6 bg-red-50 dark:bg-red-900/20">
-          <p className="text-red-800 dark:text-red-400">Error loading recent expenses</p>
+      <Card className="mb-6 border-destructive/50">
+        <CardContent className="p-6 bg-destructive/5">
+          <p className="text-destructive">Error loading recent expenses</p>
         </CardContent>
       </Card>
     )
@@ -90,26 +91,24 @@ export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
             <p className="text-sm text-muted-foreground">Add your first expense below!</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-1">
             {expenses.map((expense) => {
               const category = expense.category as ExpenseCategory
               const icon = categoryIcons[category] || categoryIcons.other
-              const label = categoryLabels[category] || 'Other'
               const amount = parseFloat(expense.amount)
-              
+
               return (
-                <div key={expense.id} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                <div key={expense.id} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full text-lg">
+                    <div className="flex items-center justify-center w-6 h-6 bg-muted rounded-full text-lg">
                       {icon}
                     </div>
                     <div>
                       <div className="font-medium">{expense.description}</div>
-                      <div className="text-xs text-muted-foreground capitalize">{label}</div>
                     </div>
                   </div>
-                  <div className="font-semibold text-red-600 dark:text-red-400">
-                    -${amount.toFixed(2)}
+                  <div className="font-semibold">
+                    R{formatCurrency(amount)}
                   </div>
                 </div>
               )
