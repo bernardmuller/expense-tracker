@@ -8,6 +8,13 @@
       "when": 1755701046316,
       "tag": "0000_calm_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1755703578322,
+      "tag": "0001_confused_exodus",
+      "breakpoints": true
     }
   ]
 }

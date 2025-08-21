@@ -6,8 +6,6 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanstackDevtools } from '@tanstack/react-devtools'
 
-import Header from '../components/Header'
-
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
@@ -46,13 +44,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Expense Tracker',
+      },
+      {
+        name: 'description',
+        content: 'Track your expenses and manage your budgets on the go',
       },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'manifest',
+        href: '/manifest.json',
       },
     ],
   }),
@@ -62,12 +68,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
-      <body>
-        <Header />
+      <body className="dark">
         {children}
         <TanstackDevtools
           config={{
@@ -82,6 +87,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           ]}
         />
         <Scripts />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                  .then((registration) => {
+                    console.log('SW registered: ', registration);
+                  })
+                  .catch((registrationError) => {
+                    console.log('SW registration failed: ', registrationError);
+                  });
+              });
+            }
+          `
+        }} />
       </body>
     </html>
   )

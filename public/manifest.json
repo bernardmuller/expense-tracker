@@ -1,6 +1,7 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "Expense Tracker",
+  "name": "Expense Tracker - Personal Finance Manager",
+  "description": "Track your expenses and manage your budgets on the go",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +19,10 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#282c34",
+  "background_color": "#282c34",
+  "scope": "/",
+  "orientation": "portrait-primary"
 }

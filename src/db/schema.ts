@@ -1,4 +1,5 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, decimal, varchar } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
@@ -59,3 +60,60 @@ export const verifications = pgTable("verifications", {
     () => /* @__PURE__ */ new Date(),
   ),
 });
+
+// Budgets table
+export const budgets = pgTable("budgets", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  startAmount: decimal("start_amount", { precision: 10, scale: 2 }).notNull(),
+  currentAmount: decimal("current_amount", { precision: 10, scale: 2 }).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  deletedAt: timestamp("deleted_at"),
+});
+
+// Expenses table
+export const expenses = pgTable("expenses", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  budgetId: text("budget_id")
+    .notNull()
+    .references(() => budgets.id, { onDelete: "cascade" }),
+  description: varchar("description", { length: 255 }).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  category: varchar("category", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  deletedAt: timestamp("deleted_at"),
+});
+
+// Relations
+export const userRelations = relations(users, ({ many }) => ({
+  budgets: many(budgets),
+}));
+
+export const budgetRelations = relations(budgets, ({ one, many }) => ({
+  user: one(users, {
+    fields: [budgets.userId],
+    references: [users.id],
+  }),
+  expenses: many(expenses),
+}));
+
+export const expenseRelations = relations(expenses, ({ one }) => ({
+  budget: one(budgets, {
+    fields: [expenses.budgetId],
+    references: [budgets.id],
+  }),
+}));
+
+// Types
+export type Budget = typeof budgets.$inferSelect;
+export type NewBudget = typeof budgets.$inferInsert;
+export type Expense = typeof expenses.$inferSelect;
+export type NewExpense = typeof expenses.$inferInsert;
+
+export type ExpenseCategory = 'food' | 'transport' | 'shopping' | 'entertainment' | 'utilities' | 'other';

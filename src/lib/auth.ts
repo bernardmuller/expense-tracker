@@ -5,10 +5,11 @@ import { db } from "@/db"; // your drizzle instance
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg", // or "mysql", "sqlite"
+    provider: "pg",
   }),
   emailAndPassword: {
-    enabled: true
+    enabled: true,
+    requireEmailVerification: false, // Disable for development
   },
   user: {
     modelName: "users"
@@ -21,12 +22,6 @@ export const auth = betterAuth({
   },
   account: {
     modelName: "accounts"
-  },
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
-    }
   },
   plugins: [reactStartCookies()]
 });
