@@ -63,15 +63,15 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
         <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
           R{currentAmount.toFixed(2)}
         </div>
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-sm text-muted-foreground">
           remaining of ${startAmount.toFixed(2)}
         </div>
       </div>
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Spent: R{spentAmount.toFixed(2)}</span>
-          <span className="text-gray-600 dark:text-gray-400">{spentPercentage.toFixed(1)}%</span>
+          <span className="text-muted-foreground">Spent: R{spentAmount.toFixed(2)}</span>
+          <span className="text-muted-foreground">{spentPercentage.toFixed(1)}%</span>
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
@@ -82,7 +82,7 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
             style={{ width: `${Math.min(spentPercentage, 100)}%` }}
           ></div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

@@ -2,6 +2,10 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createBudget } from '../server/budgets'
 import { queryKeys } from '../lib/query-client'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface StartNewBudgetModalProps {
   isOpen: boolean
@@ -54,46 +58,36 @@ export default function StartNewBudgetModal({
     })
   }
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Start New Budget</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-            disabled={mutation.isPending}
-          >
-            ✕
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Start New Budget</DialogTitle>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="budgetName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div className="space-y-2">
+            <Label htmlFor="budgetName">
               Budget Name
-            </label>
-            <input
+            </Label>
+            <Input
               type="text"
               id="budgetName"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., January 2024, Monthly Budget"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
               required
               disabled={mutation.isPending}
             />
           </div>
 
-          <div>
-            <label htmlFor="startAmount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div className="space-y-2">
+            <Label htmlFor="startAmount">
               Starting Amount
-            </label>
+            </Label>
             <div className="relative">
-              <span className="absolute left-3 top-2 text-gray-500 dark:text-gray-400">R</span>
-              <input
+              <span className="absolute left-3 top-2 text-muted-foreground">R</span>
+              <Input
                 type="number"
                 id="startAmount"
                 value={startAmount}
@@ -101,12 +95,12 @@ export default function StartNewBudgetModal({
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                className="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+                className="pl-8"
                 required
                 disabled={mutation.isPending}
               />
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground">
               This will be your total budget amount for the period
             </p>
           </div>
@@ -120,34 +114,32 @@ export default function StartNewBudgetModal({
           )}
 
           <div className="flex gap-3 pt-4">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={onClose}
-              className="flex-1 py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              className="flex-1"
               disabled={mutation.isPending}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={mutation.isPending || !name.trim() || !startAmount}
-              className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${mutation.isPending || !name.trim() || !startAmount
-                  ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                  : 'bg-green-600 dark:bg-green-500 text-white hover:bg-green-700 dark:hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
-                }`}
+              className="flex-1 bg-green-600 hover:bg-green-700"
             >
               {mutation.isPending ? (
-                <div className="flex items-center justify-center">
+                <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   Creating...
-                </div>
+                </>
               ) : (
                 'Create Budget'
               )}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

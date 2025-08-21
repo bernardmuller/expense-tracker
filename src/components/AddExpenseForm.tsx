@@ -3,6 +3,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createExpense } from '../server/expenses'
 import { queryKeys } from '../lib/query-client'
 import { ExpenseCategory, Expense, Budget } from '../db/schema'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface AddExpenseFormProps {
   budgetId: string
@@ -128,81 +132,77 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
   const isSubmitDisabled = !description.trim() || !amount || !category || mutation.isPending
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Add Expense</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <Card>
+      <CardHeader>
+        <CardTitle>Add Expense</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <input
+          <Input
             type="text"
             placeholder="Expense name"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
             disabled={mutation.isPending}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <input
+            <Input
               type="number"
               placeholder="Amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               step="0.01"
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
               disabled={mutation.isPending}
             />
           </div>
 
           <div>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
-              disabled={mutation.isPending}
-            >
-              <option value="">Category</option>
-              {categoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.icon} {option.label}
-                </option>
-              ))}
-            </select>
+            <Select value={category} onValueChange={(value) => setCategory(value as ExpenseCategory)} disabled={mutation.isPending}>
+              <SelectTrigger>
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.icon} {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <button
+        <Button
           type="submit"
           disabled={isSubmitDisabled}
-          className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
-            isSubmitDisabled
-              ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
-          }`}
+          className="w-full"
         >
           {mutation.isPending ? (
-            <div className="flex items-center justify-center">
+            <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
               Adding...
-            </div>
+            </>
           ) : (
             <>
               ✓ Add Expense
             </>
           )}
-        </button>
-      </form>
+        </Button>
+        </form>
 
-      {mutation.error && (
-        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-          <p className="text-red-800 dark:text-red-400 text-sm">
-            Failed to add expense. Please try again.
-          </p>
-        </div>
-      )}
-    </div>
+        {mutation.error && (
+          <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+            <p className="text-red-800 dark:text-red-400 text-sm">
+              Failed to add expense. Please try again.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

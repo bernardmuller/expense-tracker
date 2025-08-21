@@ -8,6 +8,8 @@ import { ExpenseCategory } from '../db/schema'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
 import { authClient } from '@/lib/auth-client'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
@@ -69,10 +71,12 @@ function ExpensesPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex items-center justify-center">
         <div className="max-w-md w-full">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
-          </div>
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading...</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
@@ -92,27 +96,29 @@ function ExpensesPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
         <div className="max-w-md mx-auto">
           <div className="flex justify-end items-center mb-4">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={async () => {
                 await authClient.signOut()
                 queryClient.invalidateQueries({ queryKey: ['session'] })
               }}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
             >
               Sign out
-            </button>
+            </Button>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-            <div className="text-6xl mb-4">📋</div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">No Budget Found</h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">Create a budget first to track your expenses!</p>
-            <Link
-              to="/"
-              className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-            >
-              Go Home
-            </Link>
-          </div>
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="text-6xl mb-4">📋</div>
+              <h1 className="text-2xl font-bold mb-2">No Budget Found</h1>
+              <p className="text-muted-foreground mb-6">Create a budget first to track your expenses!</p>
+              <Button asChild>
+                <Link to="/">
+                  Go Home
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
@@ -132,35 +138,38 @@ function ExpensesPage() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">All Expenses</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">{budget.name}</p>
           </div>
-          <button
+          <Button
             onClick={() => setIsNewBudgetModalOpen(true)}
-            className="bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors text-sm"
+            className="bg-green-600 hover:bg-green-700 text-sm"
           >
             Start New Budget
-          </button>
+          </Button>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Remaining</div>
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                R{parseFloat(budget.currentAmount).toFixed(2)}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-sm text-muted-foreground">Remaining</div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  R{parseFloat(budget.currentAmount).toFixed(2)}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-muted-foreground">Budget</div>
+                <div className="text-lg font-semibold">
+                  R{parseFloat(budget.startAmount).toFixed(2)}
+                </div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-600 dark:text-gray-400">Budget</div>
-              <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                R{parseFloat(budget.startAmount).toFixed(2)}
-              </div>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Expense History</h2>
-          </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Expense History</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
 
           {isLoading ? (
             <div className="p-4">
@@ -224,7 +233,8 @@ function ExpensesPage() {
               })}
             </div>
           )}
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       <StartNewBudgetModal

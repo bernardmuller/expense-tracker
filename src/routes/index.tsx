@@ -9,6 +9,8 @@ import AuthForm from '../components/AuthForm'
 import { getActiveBudget } from '../server/budgets'
 import { queryKeys } from '../lib/query-client'
 import { authClient } from '@/lib/auth-client'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 
 export const Route = createFileRoute('/')({
   component: ExpenseTracker,
@@ -47,10 +49,12 @@ function ExpenseTracker() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex items-center justify-center">
         <div className="max-w-md w-full">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
-          </div>
+          <Card>
+            <CardContent className="p-8 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading...</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
@@ -70,24 +74,20 @@ function ExpenseTracker() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
         <div className="max-w-md mx-auto">
           <div className="flex justify-end items-center mb-4">
-            <button
-              onClick={() => authClient.signOut()}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-            >
+            <Button variant="ghost" size="sm" onClick={() => authClient.signOut()}>
               Sign out
-            </button>
+            </Button>
           </div>
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-8 text-center">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-red-900 dark:text-red-400 mb-2">Error Loading Data</h1>
-            <p className="text-red-700 dark:text-red-300 mb-4">Unable to load your budget information.</p>
-            <button
-              onClick={() => setIsNewBudgetModalOpen(true)}
-              className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-            >
-              Create Budget
-            </button>
-          </div>
+          <Card className="border-red-200 dark:border-red-800">
+            <CardContent className="p-8 text-center bg-red-50 dark:bg-red-900/20">
+              <div className="text-6xl mb-4">⚠️</div>
+              <h1 className="text-2xl font-bold text-red-900 dark:text-red-400 mb-2">Error Loading Data</h1>
+              <p className="text-red-700 dark:text-red-300 mb-4">Unable to load your budget information.</p>
+              <Button onClick={() => setIsNewBudgetModalOpen(true)}>
+                Create Budget
+              </Button>
+            </CardContent>
+          </Card>
         </div>
         <StartNewBudgetModal
           isOpen={isNewBudgetModalOpen}
@@ -103,12 +103,9 @@ function ExpenseTracker() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
         <div className="max-w-md mx-auto">
           <div className="flex justify-end items-center mb-4">
-            <button
-              onClick={() => authClient.signOut()}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-            >
+            <Button variant="ghost" size="sm" onClick={() => authClient.signOut()}>
               Sign out
-            </button>
+            </Button>
           </div>
           <div className="animate-pulse">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
@@ -129,27 +126,27 @@ function ExpenseTracker() {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
           <div className="max-w-md mx-auto">
             <div className="flex justify-end items-center mb-4">
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={async () => {
                   await authClient.signOut()
                   queryClient.invalidateQueries({ queryKey: ['session'] })
                 }}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               >
                 Sign out
-              </button>
+              </Button>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-              <div className="text-6xl mb-4">💰</div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Welcome{session.data.user.name ? `, ${session.data.user.name}` : ''}!</h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">Create your first budget to start tracking your expenses!</p>
-              <button
-                onClick={() => setIsNewBudgetModalOpen(true)}
-                className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-              >
-                Create Budget
-              </button>
-            </div>
+            <Card>
+              <CardContent className="p-8 text-center">
+                <div className="text-6xl mb-4">💰</div>
+                <h1 className="text-2xl font-bold mb-2">Welcome{session.data.user.name ? `, ${session.data.user.name}` : ''}!</h1>
+                <p className="text-muted-foreground mb-6">Create your first budget to start tracking your expenses!</p>
+                <Button onClick={() => setIsNewBudgetModalOpen(true)}>
+                  Create Budget
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
         <StartNewBudgetModal
@@ -170,15 +167,16 @@ function ExpenseTracker() {
               Welcome back{session.data.user.name ? `, ${session.data.user.name}` : ''}!
             </div>
             <div className="flex items-center gap-2">
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={async () => {
                   await authClient.signOut()
                   queryClient.invalidateQueries({ queryKey: ['session'] })
                 }}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               >
                 Sign out
-              </button>
+              </Button>
             </div>
           </div>
           <BudgetDisplay userId={userId!} />
