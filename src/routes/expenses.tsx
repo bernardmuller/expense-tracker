@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { authClient } from '@/lib/auth-client'
 import { getAllExpenses } from '../server/expenses'
 import { getActiveBudget } from '../server/budgets'
 import { queryKeys } from '../lib/query-client'
 import { ExpenseCategory } from '../db/schema'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
+import { authClient } from '@/lib/auth-client'
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
@@ -56,7 +56,7 @@ function ExpensesPage() {
 
   const { data: budget } = useQuery({
     queryKey: queryKeys.activeBudget(userId!),
-    queryFn: () => getActiveBudget({ data: { userId } }),
+    queryFn: () => getActiveBudget({ data: { userId: userId! } }),
   })
 
   const { data: expenses, isLoading, error } = useQuery({
@@ -121,23 +121,14 @@ function ExpensesPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-md mx-auto">
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => authClient.signOut()}
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-          >
-            Sign out
-          </button>
-        </div>
-
-        <div className="flex items-center justify-between mb-6">
+        <Link
+          to="/"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium flex items-center"
+        >
+          ← Back
+        </Link>
+        <div className="flex items-center justify-between py-6">
           <div>
-            <Link
-              to="/"
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium flex items-center"
-            >
-              ← Back
-            </Link>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">All Expenses</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">{budget.name}</p>
           </div>
@@ -154,13 +145,13 @@ function ExpensesPage() {
             <div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Remaining</div>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                ${parseFloat(budget.currentAmount).toFixed(2)}
+                R{parseFloat(budget.currentAmount).toFixed(2)}
               </div>
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-600 dark:text-gray-400">Budget</div>
               <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                ${parseFloat(budget.startAmount).toFixed(2)}
+                R{parseFloat(budget.startAmount).toFixed(2)}
               </div>
             </div>
           </div>
@@ -195,13 +186,6 @@ function ExpensesPage() {
             <div className="p-8 text-center">
               <div className="text-4xl mb-2">📝</div>
               <p className="text-gray-600 dark:text-gray-400 mb-2">No expenses yet</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">Start tracking your spending!</p>
-              <Link
-                to="/"
-                className="inline-block mt-4 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
-              >
-                Add your first expense →
-              </Link>
             </div>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -241,22 +225,13 @@ function ExpensesPage() {
             </div>
           )}
         </div>
-
-        <div className="mt-6 text-center">
-          <Link
-            to="/"
-            className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors inline-flex items-center"
-          >
-            + Add New Expense
-          </Link>
-        </div>
       </div>
 
       <StartNewBudgetModal
         isOpen={isNewBudgetModalOpen}
         onClose={() => setIsNewBudgetModalOpen(false)}
-        userId={userId}
-        previousBudgetAmount={budget ? parseFloat(budget.startAmount) : 0}
+        userId={userId!}
+        previousBudgetAmount={parseFloat(budget.startAmount)}
       />
     </div>
   )

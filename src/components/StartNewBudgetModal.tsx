@@ -10,15 +10,15 @@ interface StartNewBudgetModalProps {
   previousBudgetAmount?: number
 }
 
-export default function StartNewBudgetModal({ 
-  isOpen, 
-  onClose, 
+export default function StartNewBudgetModal({
+  isOpen,
+  onClose,
   userId,
-  previousBudgetAmount = 0 
+  previousBudgetAmount = 0
 }: StartNewBudgetModalProps) {
   const [name, setName] = useState('')
   const [startAmount, setStartAmount] = useState(previousBudgetAmount.toString())
-  
+
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -26,7 +26,7 @@ export default function StartNewBudgetModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.budgets })
       queryClient.invalidateQueries({ queryKey: queryKeys.activeBudget(userId) })
-      
+
       setName('')
       setStartAmount(previousBudgetAmount.toString())
       onClose()
@@ -35,7 +35,7 @@ export default function StartNewBudgetModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!name.trim() || !startAmount) {
       return
     }
@@ -92,7 +92,7 @@ export default function StartNewBudgetModal({
               Starting Amount
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
+              <span className="absolute left-3 top-2 text-gray-500 dark:text-gray-400">R</span>
               <input
                 type="number"
                 id="startAmount"
@@ -131,11 +131,10 @@ export default function StartNewBudgetModal({
             <button
               type="submit"
               disabled={mutation.isPending || !name.trim() || !startAmount}
-              className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
-                mutation.isPending || !name.trim() || !startAmount
+              className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${mutation.isPending || !name.trim() || !startAmount
                   ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   : 'bg-green-600 dark:bg-green-500 text-white hover:bg-green-700 dark:hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
-              }`}
+                }`}
             >
               {mutation.isPending ? (
                 <div className="flex items-center justify-center">

@@ -58,10 +58,10 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Monthly Budget</h2>
         <p className="text-sm text-gray-600 dark:text-gray-400">{budget.name}</p>
       </div>
-      
+
       <div className="text-center mb-6">
         <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
-          ${currentAmount.toFixed(2)}
+          R{currentAmount.toFixed(2)}
         </div>
         <div className="text-sm text-gray-600 dark:text-gray-400">
           remaining of ${startAmount.toFixed(2)}
@@ -70,16 +70,15 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Spent: ${spentAmount.toFixed(2)}</span>
+          <span className="text-gray-600 dark:text-gray-400">Spent: R{spentAmount.toFixed(2)}</span>
           <span className="text-gray-600 dark:text-gray-400">{spentPercentage.toFixed(1)}%</span>
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div 
-            className={`h-2 rounded-full transition-all duration-300 ${
-              spentPercentage > 90 ? 'bg-red-500 dark:bg-red-400' : 
-              spentPercentage > 75 ? 'bg-yellow-500 dark:bg-yellow-400' : 
-              'bg-green-500 dark:bg-green-400'
-            }`}
+          <div
+            className={`h-2 rounded-full transition-all duration-300 ${spentPercentage > 90 ? 'bg-red-500 dark:bg-red-400' :
+              spentPercentage > 75 ? 'bg-yellow-500 dark:bg-yellow-400' :
+                'bg-green-500 dark:bg-green-400'
+              }`}
             style={{ width: `${Math.min(spentPercentage, 100)}%` }}
           ></div>
         </div>

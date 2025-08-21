@@ -36,15 +36,13 @@ function ExpenseTracker() {
     queryClient.invalidateQueries({ queryKey: ['session'] })
   }
 
-
   const userId = session?.data?.user.id
 
   const { data: budget, isLoading, error } = useQuery({
     queryKey: queryKeys.activeBudget(userId!),
-    queryFn: () => getActiveBudget({ data: { userId } }),
+    queryFn: () => getActiveBudget({ data: { userId: userId! } }),
   })
 
-  // Show loading state while checking session
   if (sessionLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex items-center justify-center">
