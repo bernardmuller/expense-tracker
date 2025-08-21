@@ -23,5 +23,6 @@ export const auth = betterAuth({
   account: {
     modelName: "accounts"
   },
-  plugins: [reactStartCookies()]
+  plugins: [reactStartCookies()],
+  trustedOrigins: ["http://192.168.111.73:3000"]
 });
