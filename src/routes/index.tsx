@@ -173,12 +173,6 @@ function ExpenseTracker() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsNewBudgetModalOpen(true)}
-                className="text-sm bg-green-600 dark:bg-green-500 text-white px-3 py-1 rounded-md font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
-              >
-                New Budget
-              </button>
-              <button
                 onClick={async () => {
                   await authClient.signOut()
                   queryClient.invalidateQueries({ queryKey: ['session'] })
