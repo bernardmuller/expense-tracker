@@ -1,15 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { getAllExpenses } from '../server/expenses'
-import { getActiveBudget } from '../server/budgets'
-import { queryKeys } from '../lib/query-client'
 import { ExpenseCategory } from '../db/schema'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useSession, useActiveBudget, useAllExpenses } from '@/lib/hooks'
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
@@ -37,16 +35,7 @@ function ExpensesPage() {
   const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false)
   const queryClient = useQueryClient()
 
-  const { data: session, isLoading: sessionLoading } = useQuery({
-    queryKey: ['session'],
-    queryFn: async () => {
-      // Return null during SSR
-      if (typeof window === 'undefined') {
-        return null
-      }
-      return await authClient.getSession()
-    },
-  })
+  const { data: session, isLoading: sessionLoading } = useSession()
 
   const handleAuthSuccess = () => {
     // Refresh session data after successful auth
@@ -56,16 +45,9 @@ function ExpensesPage() {
 
   const userId = session?.data?.user.id
 
-  const { data: budget } = useQuery({
-    queryKey: queryKeys.activeBudget(userId!),
-    queryFn: () => getActiveBudget({ data: { userId: userId! } }),
-  })
+  const { data: budget } = useActiveBudget({ userId })
 
-  const { data: expenses, isLoading, error } = useQuery({
-    queryKey: queryKeys.allExpenses(budget?.id || ''),
-    queryFn: () => getAllExpenses({ data: { budgetId: budget!.id } }),
-    enabled: !!budget?.id,
-  })
+  const { data: expenses, isLoading, error } = useAllExpenses({ budgetId: budget?.id })
 
   if (sessionLoading) {
     return (

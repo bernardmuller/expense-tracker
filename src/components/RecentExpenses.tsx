@@ -1,11 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { getRecentExpenses } from '../server/expenses'
-import { queryKeys } from '../lib/query-client'
 import { ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useRecentExpenses } from '@/lib/hooks'
 
 interface RecentExpensesProps {
   budgetId: string
@@ -30,11 +28,7 @@ const categoryLabels: Record<ExpenseCategory, string> = {
 }
 
 export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
-  const { data: expenses, isLoading, error } = useQuery({
-    queryKey: queryKeys.recentExpenses(budgetId),
-    queryFn: () => getRecentExpenses({ data: { budgetId } }),
-    enabled: !!budgetId,
-  })
+  const { data: expenses, isLoading, error } = useRecentExpenses({ budgetId })
 
   if (isLoading) {
     return (

@@ -1,16 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import BudgetDisplay from '../components/BudgetDisplay'
 import RecentExpenses from '../components/RecentExpenses'
 import AddExpenseForm from '../components/AddExpenseForm'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
-import { getActiveBudget } from '../server/budgets'
-import { queryKeys } from '../lib/query-client'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { useSession, useActiveBudget } from '@/lib/hooks'
 
 export const Route = createFileRoute('/')({
   component: ExpenseTracker,
@@ -20,18 +19,7 @@ function ExpenseTracker() {
   const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false)
   const queryClient = useQueryClient()
 
-  const { data: session, isLoading: sessionLoading } = useQuery({
-    queryKey: ['session'],
-    queryFn: async () => {
-      // Return null during SSR
-      if (typeof window === 'undefined') {
-        return null
-      }
-      return await authClient.getSession()
-    },
-    retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
+  const { data: session, isLoading: sessionLoading } = useSession()
 
   const handleAuthSuccess = () => {
     // Refresh session data after successful auth
@@ -40,10 +28,7 @@ function ExpenseTracker() {
 
   const userId = session?.data?.user.id
 
-  const { data: budget, isLoading, error } = useQuery({
-    queryKey: queryKeys.activeBudget(userId!),
-    queryFn: () => getActiveBudget({ data: { userId: userId! } }),
-  })
+  const { data: budget, isLoading, error } = useActiveBudget({ userId })
 
   if (sessionLoading) {
     return (
