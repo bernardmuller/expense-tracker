@@ -36,11 +36,19 @@
 // });
 
 
-import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
-import * as schema from './schema';
+// import 'dotenv/config';
+// import { drizzle } from 'drizzle-orm/neon-http';
+// import { neon } from '@neondatabase/serverless';
+// import * as schema from './schema';
+//
+// const sql = neon(process.env.DATABASE_URL!);
+//
+// export const db = drizzle(sql, { schema })
 
-const sql = neon(process.env.DATABASE_URL!);
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 
-export const db = drizzle(sql, { schema })
+// Use Supabase's direct Postgres connection
+const connectionString = process.env.DATABASE_URL! // Your Supabase connection string
+const client = postgres(connectionString, { prepare: false })
+export const db = drizzle(client)

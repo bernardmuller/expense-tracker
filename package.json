@@ -37,6 +37,7 @@
     "dotenv": "^17.2.1",
     "drizzle-orm": "^0.44.4",
     "lucide-react": "^0.476.0",
+    "postgres": "^3.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.2",
