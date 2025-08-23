@@ -15,12 +15,13 @@ const config = defineConfig({
       customViteReactPlugin: true,
     }),
     viteReact(),
+    tanstackStart({ target: 'cloudflare-module' })
   ],
   build: {
     rollupOptions: {
       external: ['pg-native']
     }
-  }
+  },
 })
 
 export default config
