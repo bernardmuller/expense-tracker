@@ -16,6 +16,11 @@ const config = defineConfig({
     }),
     viteReact(),
   ],
+  build: {
+    rollupOptions: {
+      external: ['pg-native']
+    }
+  }
 })
 
 export default config
