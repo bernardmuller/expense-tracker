@@ -4,6 +4,7 @@ import { reactStartCookies } from "better-auth/react-start"
 import { db } from "@/db"; // your drizzle instance
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
@@ -24,5 +25,5 @@ export const auth = betterAuth({
     modelName: "accounts"
   },
   plugins: [reactStartCookies()],
-  trustedOrigins: ["http://192.168.111.73:3000", "https://courageous-dodol-7d2308.netlify.app"]
+  trustedOrigins: ["http://192.168.111.73:3000"]
 });
