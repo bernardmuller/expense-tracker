@@ -27,5 +27,5 @@ export const auth = betterAuth({
     modelName: "accounts"
   },
   plugins: [reactStartCookies()],
-  trustedOrigins: ["http://192.168.111.73:3000"]
+  trustedOrigins: ["http://192.168.111.73:3000", "https://expense-tracker.bernardmuller.co.za"]
 });
