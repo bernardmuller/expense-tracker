@@ -1,13 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { ExpenseCategory, Expense } from '../db/schema'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
-
-import { authClient } from '@/lib/auth-client'
+import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSession, useActiveBudget, useAllExpenses, useAllCategories } from '@/lib/hooks'
@@ -20,6 +18,7 @@ const deleteExpense = async (data: { expenseId: number }) => {
 import { queryKeys } from '@/lib/query-client'
 import { formatCurrency } from '@/lib/utils'
 import { getCategoryInfo } from '@/lib/category-utils'
+import { CheckIcon, X } from 'lucide-react'
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
@@ -50,9 +49,9 @@ function ExpensesPage() {
     onMutate: async (variables) => {
       // Skip optimistic updates during SSR
       if (typeof window === 'undefined') return
-      
+
       const expenseId = variables.expenseId
-      
+
       await queryClient.cancelQueries({ queryKey: queryKeys.recentExpenses(budget?.id || '') })
       await queryClient.cancelQueries({ queryKey: queryKeys.activeBudget(userId || '') })
       await queryClient.cancelQueries({ queryKey: queryKeys.allExpenses(budget?.id || '') })
@@ -63,7 +62,7 @@ function ExpensesPage() {
 
       // Find the expense being deleted to get its amount
       const expenseToDelete = expenses?.find(e => e.id === expenseId)
-      
+
       if (expenseToDelete) {
         // Optimistically remove from recent expenses
         queryClient.setQueryData(
@@ -94,7 +93,7 @@ function ExpensesPage() {
 
       return { previousRecentExpenses, previousBudget, previousAllExpenses }
     },
-    onError: (err, variables, context) => {
+    onError: (err, _, context) => {
       // Revert optimistic updates on error
       if (context?.previousRecentExpenses) {
         queryClient.setQueryData(queryKeys.recentExpenses(budget?.id || ''), context.previousRecentExpenses)
@@ -125,13 +124,10 @@ function ExpensesPage() {
     deleteMutation.mutate({ expenseId })
   }
 
-  const handleCancelDelete = () => {
-    setDeletingExpenseId(null)
-  }
 
   // Add click-away listener
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (deletingExpenseId) {
         setDeletingExpenseId(null)
       }
@@ -198,33 +194,14 @@ function ExpensesPage() {
       <div className="flex justify-end mb-4">
         <Button
           onClick={() => setIsNewBudgetModalOpen(true)}
-          className="bg-chart-1 hover:bg-chart-1/90 text-sm"
+          variant="destructive"
         >
           Start New Budget
         </Button>
       </div>
 
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <div className="text-sm text-muted-foreground">Remaining</div>
-              <div className="text-2xl font-bold text-primary">
-                R{formatCurrency(parseFloat(budget.currentAmount))}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-muted-foreground">Budget</div>
-              <div className="text-lg font-semibold">
-                R{formatCurrency(parseFloat(budget.startAmount))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
+      <Card className='gap-1 pb-3'>
+        <CardHeader className='px-4'>
           <CardTitle>Expense History</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -268,7 +245,7 @@ function ExpensesPage() {
                         <div>
                           <div className="font-medium text-foreground">{expense.description}</div>
                           <div className="text-sm text-muted-foreground">
-                            {categoryInfo.icon} {categoryInfo.label} • {date.toLocaleDateString()}
+                            {categoryInfo.label}
                           </div>
                         </div>
                       </div>
@@ -278,7 +255,7 @@ function ExpensesPage() {
                             R{formatCurrency(amount)}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {format(date, "d LLL yyyy")}
                           </div>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>
@@ -297,19 +274,20 @@ function ExpensesPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleConfirmDelete(expense.id)}
-                              className="p-2 text-green-600 hover:text-green-700 hover:bg-green-100"
+                              className="p-2 text-green-600 hover:text-green-700 bg-green-100"
                               aria-label="Confirm delete"
                             >
-                              ✓
+                              <CheckIcon />
                             </Button>
                           ) : (
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeleteClick(expense.id)}
-                              className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100"
+                              className="p-2 text-red-600 hover:text-red-700 bg-red-50"
                               aria-label="Delete expense"
-                            >❌
+                            >
+                              <X />
                             </Button>
                           )}
                         </div>

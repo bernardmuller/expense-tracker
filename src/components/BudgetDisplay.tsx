@@ -58,8 +58,7 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly Budget</CardTitle>
-        <p className="text-sm text-muted-foreground">{budget.name}</p>
+        <CardTitle>{budget.name}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="text-center mb-6">

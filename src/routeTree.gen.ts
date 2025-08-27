@@ -14,8 +14,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ExpensesRouteImport } from './routes/expenses'
+import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsCategoriesRouteImport } from './routes/settings.categories'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -35,15 +35,15 @@ const ExpensesRoute = ExpensesRouteImport.update({
   path: '/expenses',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriesRoute = CategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsCategoriesRoute = SettingsCategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
-  getParentRoute: () => SettingsRoute,
 } as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
@@ -53,44 +53,39 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/categories': typeof CategoriesRoute
   '/expenses': typeof ExpensesRoute
-  '/settings': typeof SettingsRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
-  '/settings/categories': typeof SettingsCategoriesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/categories': typeof CategoriesRoute
   '/expenses': typeof ExpensesRoute
-  '/settings': typeof SettingsRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
-  '/settings/categories': typeof SettingsCategoriesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/categories': typeof CategoriesRoute
   '/expenses': typeof ExpensesRoute
-  '/settings': typeof SettingsRouteWithChildren
+  '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
-  '/settings/categories': typeof SettingsCategoriesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expenses' | '/settings' | '/test' | '/settings/categories'
+  fullPaths: '/' | '/categories' | '/expenses' | '/settings' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expenses' | '/settings' | '/test' | '/settings/categories'
-  id:
-    | '__root__'
-    | '/'
-    | '/expenses'
-    | '/settings'
-    | '/test'
-    | '/settings/categories'
+  to: '/' | '/categories' | '/expenses' | '/settings' | '/test'
+  id: '__root__' | '/' | '/categories' | '/expenses' | '/settings' | '/test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CategoriesRoute: typeof CategoriesRoute
   ExpensesRoute: typeof ExpensesRoute
-  SettingsRoute: typeof SettingsRouteWithChildren
+  SettingsRoute: typeof SettingsRoute
   TestRoute: typeof TestRoute
 }
 export interface FileServerRoutesByFullPath {
@@ -138,19 +133,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExpensesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categories': {
+      id: '/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof CategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/settings/categories': {
-      id: '/settings/categories'
-      path: '/categories'
-      fullPath: '/settings/categories'
-      preLoaderRoute: typeof SettingsCategoriesRouteImport
-      parentRoute: typeof SettingsRoute
     }
   }
 }
@@ -166,22 +161,11 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
-interface SettingsRouteChildren {
-  SettingsCategoriesRoute: typeof SettingsCategoriesRoute
-}
-
-const SettingsRouteChildren: SettingsRouteChildren = {
-  SettingsCategoriesRoute: SettingsCategoriesRoute,
-}
-
-const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
-  SettingsRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CategoriesRoute: CategoriesRoute,
   ExpensesRoute: ExpensesRoute,
-  SettingsRoute: SettingsRouteWithChildren,
+  SettingsRoute: SettingsRoute,
   TestRoute: TestRoute,
 }
 export const routeTree = rootRouteImport

@@ -11,11 +11,23 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useActiveBudget, useSession } from '@/lib/hooks'
 
+type Transaction = {
+  amount?: string,
+  name?: string
+}
+
 export const Route = createFileRoute('/')({
   component: ExpenseTracker,
+  validateSearch: (transaction: Record<string, unknown>): Transaction => {
+    return {
+      amount: transaction.amount ? transaction.amount.toString() : undefined,
+      name: transaction.name ? transaction.name.toString() : undefined
+    }
+  }
 })
 
 function ExpenseTracker() {
+  const { amount, name } = Route.useSearch();
   const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false)
   const queryClient = useQueryClient()
 
@@ -122,7 +134,12 @@ function ExpenseTracker() {
     >
       <div className='flex flex-col gap-4'>
         <BudgetDisplay userId={userId!} />
-        <AddExpenseForm budgetId={budget.id} userId={userId!} />
+        <AddExpenseForm
+          defaultAmount={amount ?? ''}
+          defaultName={name ?? ''}
+          budgetId={budget.id}
+          userId={userId!}
+        />
         <RecentExpenses budgetId={budget.id} />
         <StartNewBudgetModal
           isOpen={isNewBudgetModalOpen}
