@@ -29,6 +29,13 @@
       "when": 1755494709829,
       "tag": "0003_production_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1756334764268,
+      "tag": "0004_open_fenris",
+      "breakpoints": true
     }
   ]
 }
