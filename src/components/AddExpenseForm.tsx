@@ -78,7 +78,7 @@ const customStyles: StylesConfig<CategoryOption, false> = {
     ...provided,
     backgroundColor: 'rgb(255 255 255)', // --popover equivalent
     border: '1px solid rgb(228 228 231)', // --border equivalent
-    borderRadius: '6px',
+    borderRadius: '0px',
     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
     zIndex: 50,
   }),
@@ -98,7 +98,8 @@ const customStyles: StylesConfig<CategoryOption, false> = {
     borderRadius: '4px',
     padding: '6px 8px',
     margin: '0',
-    fontSize: '14px',
+    fontSize: '16px',
+    gap: '4px',
     cursor: 'pointer',
     '&:active': {
       backgroundColor: 'rgb(244 244 245)', // --accent equivalent

@@ -1,12 +1,14 @@
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { ArrowRight, LogOut } from 'lucide-react'
 import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useSession } from '@/lib/hooks'
 import { authClient } from '@/lib/auth-client'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 export const Route = createFileRoute('/settings')({
   component: SettingsPage,
@@ -15,10 +17,34 @@ export const Route = createFileRoute('/settings')({
 function SettingsPage() {
   const { data: session, isLoading: sessionLoading } = useSession()
   const queryClient = useQueryClient()
+  const [isExiting, setIsExiting] = useState<boolean>(false)
 
   const handleAuthSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['session'] })
   }
+
+  const handleSignOut = async () => {
+    await authClient.signOut()
+    queryClient.invalidateQueries({ queryKey: ['session'] })
+  }
+
+  const handleConfirmExit = () => {
+    setIsExiting(true)
+  }
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setIsExiting(false)
+    }
+
+    if (isExiting) {
+      document.addEventListener('click', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [isExiting])
 
   if (sessionLoading) {
     return (
@@ -43,21 +69,46 @@ function SettingsPage() {
     )
   }
 
-  const handleSignOut = async () => {
-    await authClient.signOut()
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
-
   return (
     <AppLayout
       title="Settings"
       showBackButton
     >
-      <div className="space-y-4">
+      <div className="space-y-2">
+        <div className='flex items-center justify-between'>
+          <h3 className="text-lg text-muted-foreground py-0">My Account</h3>
+          {isExiting ? (
+            <Tooltip open={isExiting}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleSignOut}
+                  className="text-red-600 hover:text-red-700 bg-red-200 hover:bg-red-100 transition-all duration-200 ease-in-out"
+                  aria-label="Confirm Exit"
+                >
+                  <LogOut />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="left"
+                className='p-2.5'
+              >
+                You sure?
+              </TooltipContent>
+            </Tooltip>
+
+          ) : (
+            <Button
+              variant="outline"
+              onClick={handleConfirmExit}
+              size="icon"
+            >
+              <LogOut />
+            </Button>
+          )}
+        </div>
         <Card>
-          <CardHeader>
-            <CardTitle>Account Settings</CardTitle>
-          </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div>
@@ -71,37 +122,21 @@ function SettingsPage() {
             </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Preferences</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/20 transition-colors">
-              <div>
-                <h3 className="font-medium">Expense Categories</h3>
-                <p className="text-sm text-muted-foreground">
-                  Manage which categories appear in your expense form
-                </p>
-              </div>
-              <Button asChild variant="outline">
-                <Link to="/categories">
-                  Configure
-                </Link>
-              </Button>
-            </div>
-            <div className='w-full flex justify-center'>
-              <Button
-                className='w-md'
-                variant="secondary"
-                onClick={handleSignOut}
-              >
-                Sign out
-              </Button>
-            </div>
+        <h3 className="text-lg text-muted-foreground pb-1 pt-3">Preferences</h3>
+        <Card className='py-4'>
+          <CardContent className="flex items-center justify-between">
+            <h3 className="font-lg">Expense Categories</h3>
+            <Button
+              size="icon"
+              variant="ghost"
+            >
+              <Link to="/categories">
+                <ArrowRight />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </AppLayout >
   )
 }
