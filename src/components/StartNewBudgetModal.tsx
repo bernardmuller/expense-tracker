@@ -129,7 +129,7 @@ export default function StartNewBudgetModal({
             <Button
               type="submit"
               disabled={mutation.isPending || !name.trim() || !startAmount}
-              className="flex-1 bg-chart-1 hover:bg-chart-1/90"
+              className="flex-1 "
             >
               {mutation.isPending ? (
                 <>

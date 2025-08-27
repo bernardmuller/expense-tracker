@@ -5,8 +5,9 @@ import type { Budget, Expense, ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import ReactSelect, { StylesConfig } from 'react-select'
 import { useUserActiveCategories } from '@/lib/hooks'
+import { ChevronDownIcon } from 'lucide-react'
 
 // Import server function with proper typing but without direct import
 const createExpense = async (data: { budgetId: number; description: string; amount: number; category: string }) => {
@@ -21,6 +22,101 @@ interface AddExpenseFormProps {
   userId: string
 }
 
+interface CategoryOption {
+  value: string
+  label: string
+}
+
+const customStyles: StylesConfig<CategoryOption, false> = {
+  control: (provided, state) => ({
+    ...provided,
+    minHeight: '40px',
+    border: '1px solid rgb(228 228 231)', // --border equivalent
+    borderRadius: '6px',
+    backgroundColor: 'rgba(246,246,246, 0.4)', // light background to match inputs
+    boxShadow: state.isFocused
+      ? '0 0 0 1px rgba(234, 179, 8, 0.5)' // yellowish ring color to match other inputs
+      : '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+    borderColor: state.isFocused ? 'rgb(234 179 8)' : 'rgb(246 246 246)', // yellow : --border
+    '&:hover': {
+      borderColor: state.isFocused ? 'rgb(234 179 8)' : 'rgb(228 228 231)',
+    },
+    transition: 'color, box-shadow',
+    outline: 'none',
+    cursor: 'pointer',
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '0 12px',
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: 'rgb(113 113 122)', // --muted-foreground equivalent
+    fontSize: '16px', // match input text size
+    '@media (min-width: 768px)': {
+      fontSize: '14px',
+    },
+    opacity: 1,
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'rgb(9 9 11)', // --foreground equivalent
+    fontSize: '16px', // match input text size
+    '@media (min-width: 768px)': {
+      fontSize: '14px',
+    },
+  }),
+  input: (provided) => ({
+    ...provided,
+    color: 'rgb(9 9 11)', // --foreground equivalent
+    fontSize: '16px', // match input text size
+    '@media (min-width: 768px)': {
+      fontSize: '14px',
+    },
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: 'rgb(255 255 255)', // --popover equivalent
+    border: '1px solid rgb(228 228 231)', // --border equivalent
+    borderRadius: '6px',
+    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+    zIndex: 50,
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    padding: '4px',
+    backgroundColor: 'rgb(255 255 255)', // --popover equivalent
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused
+      ? 'rgb(244 244 245)' // --accent equivalent
+      : 'rgb(255 255 255)', // --popover equivalent
+    color: state.isFocused
+      ? 'rgb(9 9 11)' // --accent-foreground equivalent
+      : 'rgb(9 9 11)', // --popover-foreground equivalent
+    borderRadius: '4px',
+    padding: '6px 8px',
+    margin: '0',
+    fontSize: '14px',
+    cursor: 'pointer',
+    '&:active': {
+      backgroundColor: 'rgb(244 244 245)', // --accent equivalent
+    },
+  }),
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    color: 'rgb(113 113 122)', // --muted-foreground equivalent
+    padding: '8px',
+    '&:hover': {
+      color: 'rgb(113 113 122)',
+    },
+  }),
+  indicatorSeparator: () => ({
+    display: 'none',
+  }),
+}
+
 export default function AddExpenseForm({ budgetId, userId, defaultName, defaultAmount }: AddExpenseFormProps) {
   const [description, setDescription] = useState(defaultName)
   const [amount, setAmount] = useState(defaultAmount)
@@ -28,6 +124,13 @@ export default function AddExpenseForm({ budgetId, userId, defaultName, defaultA
 
   const queryClient = useQueryClient()
   const { data: userCategories, isLoading: categoriesLoading } = useUserActiveCategories(userId)
+
+  const categoryOptions: CategoryOption[] = userCategories?.map(cat => ({
+    value: cat.key,
+    label: `${cat.icon} ${cat.label}`
+  })) || []
+
+  const selectedOption = categoryOptions.find(option => option.value === category) || null
 
   const mutation = useMutation({
     mutationFn: createExpense,
@@ -154,22 +257,24 @@ export default function AddExpenseForm({ budgetId, userId, defaultName, defaultA
             disabled={mutation.isPending}
           />
 
-          <Select
-            value={category}
-            onValueChange={(value) => setCategory(value)}
-            disabled={mutation.isPending || categoriesLoading}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Category"} />
-            </SelectTrigger>
-            <SelectContent>
-              {userCategories?.map((category) => (
-                <SelectItem key={category.id} value={category.key}>
-                  {category.icon} {category.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <ReactSelect<CategoryOption>
+            options={categoryOptions}
+            value={selectedOption}
+            onChange={(option) => setCategory(option ? option.value as ExpenseCategory : '')}
+            placeholder={categoriesLoading ? "Loading categories..." : "Category"}
+            isLoading={categoriesLoading}
+            isDisabled={mutation.isPending || categoriesLoading}
+            styles={customStyles}
+            components={{
+              DropdownIndicator: ({ ...props }) => (
+                <div {...props.innerProps} style={props.getStyles('dropdownIndicator', props)}>
+                  <ChevronDownIcon className="size-4 opacity-50" />
+                </div>
+              ),
+            }}
+            isClearable={false}
+            isSearchable={true}
+          />
 
           <Button
             type="submit"
