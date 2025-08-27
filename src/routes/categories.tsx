@@ -13,7 +13,7 @@ import {
   useUserCategories,
 } from '@/lib/hooks'
 
-export const Route = createFileRoute('/settings/categories')({
+export const Route = createFileRoute('/categories')({
   component: CategorySettingsPage,
 })
 

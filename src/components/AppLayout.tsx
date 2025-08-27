@@ -2,8 +2,7 @@ import { ReactNode } from 'react'
 import { Link, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { useSession } from '@/lib/hooks'
-import { authClient } from '@/lib/auth-client'
-import { useQueryClient } from '@tanstack/react-query'
+import { ArrowLeft, Settings } from 'lucide-react'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -20,29 +19,22 @@ export default function AppLayout({
   showBackButton = false,
 }: AppLayoutProps) {
   const { data: session } = useSession()
-  const queryClient = useQueryClient()
   const router = useRouter()
 
-  const handleSignOut = async () => {
-    await authClient.signOut()
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
-
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative">
       {/* Fixed Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
               {showBackButton && (
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => router.history.back()}
-                  className="p-2"
                 >
-                  ←
+                  <ArrowLeft />
                 </Button>
               )}
               {title && (
@@ -60,21 +52,12 @@ export default function AppLayout({
                 <>
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     asChild
-                    className="text-sm"
                   >
                     <Link to="/settings">
-                      ⚙️
+                      <Settings />
                     </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleSignOut}
-                    className="text-sm"
-                  >
-                    Sign out
                   </Button>
                 </>
               )}
@@ -85,7 +68,7 @@ export default function AppLayout({
 
       {/* Scrollable Content */}
       <main className="flex-1 overflow-y-auto">
-        <div className="max-w-md mx-auto px-4 py-4">
+        <div className="max-w-md px-4 py-4 mx-auto">
           {children}
         </div>
       </main>

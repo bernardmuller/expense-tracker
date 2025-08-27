@@ -15,13 +15,15 @@ const createExpense = async (data: { budgetId: number; description: string; amou
 }
 
 interface AddExpenseFormProps {
+  defaultName: string
+  defaultAmount: string
   budgetId: number
   userId: string
 }
 
-export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps) {
-  const [description, setDescription] = useState('')
-  const [amount, setAmount] = useState('')
+export default function AddExpenseForm({ budgetId, userId, defaultName, defaultAmount }: AddExpenseFormProps) {
+  const [description, setDescription] = useState(defaultName)
+  const [amount, setAmount] = useState(defaultAmount)
   const [category, setCategory] = useState<ExpenseCategory | ''>('')
 
   const queryClient = useQueryClient()
@@ -153,8 +155,8 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
           />
 
           <Select
-            value={category} 
-            onValueChange={(value) => setCategory(value as ExpenseCategory)} 
+            value={category}
+            onValueChange={(value) => setCategory(value)}
             disabled={mutation.isPending || categoriesLoading}
           >
             <SelectTrigger>

@@ -1,11 +1,12 @@
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useSession } from '@/lib/hooks'
-import { useQueryClient } from '@tanstack/react-query'
+import { authClient } from '@/lib/auth-client'
 
 export const Route = createFileRoute('/settings')({
   component: SettingsPage,
@@ -42,18 +43,23 @@ function SettingsPage() {
     )
   }
 
+  const handleSignOut = async () => {
+    await authClient.signOut()
+    queryClient.invalidateQueries({ queryKey: ['session'] })
+  }
+
   return (
     <AppLayout
       title="Settings"
       showBackButton
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Account Settings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Name</label>
                 <p className="text-foreground">{session.data.user.name}</p>
@@ -79,15 +85,23 @@ function SettingsPage() {
                 </p>
               </div>
               <Button asChild variant="outline">
-                <Link to="/settings/categories">
+                <Link to="/categories">
                   Configure
                 </Link>
+              </Button>
+            </div>
+            <div className='w-full flex justify-center'>
+              <Button
+                className='w-md'
+                variant="secondary"
+                onClick={handleSignOut}
+              >
+                Sign out
               </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-      <Outlet />
     </AppLayout>
   )
 }
