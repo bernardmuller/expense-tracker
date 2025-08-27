@@ -18,7 +18,8 @@ const deleteExpense = async (data: { expenseId: number }) => {
 import { queryKeys } from '@/lib/query-client'
 import { formatCurrency } from '@/lib/utils'
 import { getCategoryInfo } from '@/lib/category-utils'
-import { CheckIcon, X } from 'lucide-react'
+import { CheckIcon, Trash, Trash2, X } from 'lucide-react'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
@@ -27,6 +28,7 @@ export const Route = createFileRoute('/expenses')({
 function ExpensesPage() {
   const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false)
   const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null)
+  const [tooltipExpenseId, setTooltipExpenseId] = useState<number | null>(null)
   const queryClient = useQueryClient()
 
   const { data: session, isLoading: sessionLoading } = useSession()
@@ -117,10 +119,13 @@ function ExpensesPage() {
 
   const handleDeleteClick = (expenseId: number) => {
     setDeletingExpenseId(expenseId)
+    setTooltipExpenseId(expenseId)
   }
 
   const handleConfirmDelete = (expenseId: number) => {
     console.log('Attempting to delete expense:', expenseId)
+    setDeletingExpenseId(expenseId)
+    setTooltipExpenseId(null)
     deleteMutation.mutate({ expenseId })
   }
 
@@ -131,16 +136,19 @@ function ExpensesPage() {
       if (deletingExpenseId) {
         setDeletingExpenseId(null)
       }
+      if (tooltipExpenseId) {
+        setTooltipExpenseId(null)
+      }
     }
 
-    if (deletingExpenseId) {
+    if (deletingExpenseId || tooltipExpenseId) {
       document.addEventListener('click', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('click', handleClickOutside)
     }
-  }, [deletingExpenseId])
+  }, [deletingExpenseId, tooltipExpenseId])
 
   if (sessionLoading) {
     return (
@@ -194,7 +202,7 @@ function ExpensesPage() {
       <div className="flex justify-end mb-4">
         <Button
           onClick={() => setIsNewBudgetModalOpen(true)}
-          variant="destructive"
+        // className='bg-primary/20 border border-primary/30 text-primary'
         >
           Start New Budget
         </Button>
@@ -249,9 +257,9 @@ function ExpensesPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5">
                         <div className="text-right">
-                          <div className="font-semibold text-destructive">
+                          <div className="font-semibold text-primary">
                             R{formatCurrency(amount)}
                           </div>
                           <div className="text-xs text-muted-foreground">
@@ -270,24 +278,34 @@ function ExpensesPage() {
                               ⏳
                             </Button>
                           ) : deletingExpenseId === expense.id ? (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleConfirmDelete(expense.id)}
-                              className="p-2 text-green-600 hover:text-green-700 bg-green-100"
-                              aria-label="Confirm delete"
-                            >
-                              <CheckIcon />
-                            </Button>
+                            <Tooltip open={tooltipExpenseId === expense.id}>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleConfirmDelete(expense.id)}
+                                  className="p-2 text-green-600 hover:text-green-700 bg-green-200 transition-all duration-200 ease-in-out"
+                                  aria-label="Confirm delete"
+                                >
+                                  <Trash2 />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="left"
+                                className='p-2.5'
+                              >
+                                You sure?
+                              </TooltipContent>
+                            </Tooltip>
                           ) : (
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeleteClick(expense.id)}
-                              className="p-2 text-red-600 hover:text-red-700 bg-red-50"
+                              className="p-0 text-red-600 hover:text-red-700 hover:bg-red-100 transition-all duration-200 ease-in-out"
                               aria-label="Delete expense"
                             >
-                              <X />
+                              <Trash />
                             </Button>
                           )}
                         </div>

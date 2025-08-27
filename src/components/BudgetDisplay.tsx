@@ -58,11 +58,12 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{budget.name}</CardTitle>
+        <CardTitle>Current Budget</CardTitle>
+        <p className="text-muted-foreground text-sm">{budget.name}</p>
       </CardHeader>
       <CardContent>
-        <div className="text-center mb-6">
-          <div className="text-3xl font-bold text-primary mb-1">
+        <div className="text-center py-3 pb-6">
+          <div className="text-4xl font-bold text-primary">
             R{formatCurrency(currentAmount)}
           </div>
           <div className="text-sm text-muted-foreground">
