@@ -3,45 +3,35 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState, useRef, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { ExpenseCategory, Expense } from '../db/schema'
-import { deleteExpense } from '../server/expenses'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
+
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSession, useActiveBudget, useAllExpenses } from '@/lib/hooks'
+import { useSession, useActiveBudget, useAllExpenses, useAllCategories } from '@/lib/hooks'
+
+// Dynamic import to avoid bundling server code
+const deleteExpense = async (data: { expenseId: number }) => {
+  const { deleteExpense } = await import('../server/expenses')
+  return deleteExpense({ data })
+}
 import { queryKeys } from '@/lib/query-client'
 import { formatCurrency } from '@/lib/utils'
+import { getCategoryInfo } from '@/lib/category-utils'
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
 })
 
-const categoryIcons: Record<ExpenseCategory, string> = {
-  food: '🍽️',
-  transport: '🚗',
-  shopping: '🛍️',
-  entertainment: '🎮',
-  utilities: '🏠',
-  other: '💰',
-}
-
-const categoryLabels: Record<ExpenseCategory, string> = {
-  food: 'Food',
-  transport: 'Transport',
-  shopping: 'Shopping',
-  entertainment: 'Entertainment',
-  utilities: 'Utilities',
-  other: 'Other',
-}
-
 function ExpensesPage() {
   const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false)
-  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null)
+  const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null)
   const queryClient = useQueryClient()
 
   const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: allCategories } = useAllCategories()
 
   const handleAuthSuccess = () => {
     // Refresh session data after successful auth
@@ -61,7 +51,7 @@ function ExpensesPage() {
       // Skip optimistic updates during SSR
       if (typeof window === 'undefined') return
       
-      const expenseId = variables.data.expenseId
+      const expenseId = variables.expenseId
       
       await queryClient.cancelQueries({ queryKey: queryKeys.recentExpenses(budget?.id || '') })
       await queryClient.cancelQueries({ queryKey: queryKeys.activeBudget(userId || '') })
@@ -126,13 +116,13 @@ function ExpensesPage() {
     }
   })
 
-  const handleDeleteClick = (expenseId: string) => {
+  const handleDeleteClick = (expenseId: number) => {
     setDeletingExpenseId(expenseId)
   }
 
-  const handleConfirmDelete = (expenseId: string) => {
+  const handleConfirmDelete = (expenseId: number) => {
     console.log('Attempting to delete expense:', expenseId)
-    deleteMutation.mutate({ data: { expenseId } })
+    deleteMutation.mutate({ expenseId })
   }
 
   const handleCancelDelete = () => {
@@ -267,9 +257,7 @@ function ExpensesPage() {
           ) : (
             <div className="divide-y divide-border">
               {expenses.map((expense) => {
-                const category = expense.category as ExpenseCategory
-                const icon = categoryIcons[category] || categoryIcons.other
-                const label = categoryLabels[category] || 'Other'
+                const categoryInfo = getCategoryInfo(expense.category, allCategories)
                 const amount = parseFloat(expense.amount)
                 const date = new Date(expense.createdAt)
 
@@ -280,7 +268,7 @@ function ExpensesPage() {
                         <div>
                           <div className="font-medium text-foreground">{expense.description}</div>
                           <div className="text-sm text-muted-foreground">
-                            {label} • {date.toLocaleDateString()}
+                            {categoryInfo.icon} {categoryInfo.label} • {date.toLocaleDateString()}
                           </div>
                         </div>
                       </div>

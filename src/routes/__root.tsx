@@ -12,6 +12,36 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  errorComponent: ({ error }: { error: Error }) => {
+    console.error('Root route error:', error)
+    
+    return (
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <div className="bg-card rounded-lg shadow-md p-8">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Something went wrong</h1>
+            <p className="text-muted-foreground mb-4">An error occurred while loading the page.</p>
+            <details className="text-left mb-6">
+              <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
+                Error details
+              </summary>
+              <pre className="text-xs mt-2 p-3 bg-muted rounded-md overflow-auto max-h-32">
+                {error.message}
+                {error.stack && '\n\n' + error.stack}
+              </pre>
+            </details>
+            <a
+              href="/"
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors inline-block"
+            >
+              Go Home
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  },
   notFoundComponent: () => (
     <div className="min-h-screen bg-background p-4 flex items-center justify-center">
       <div className="max-w-md mx-auto text-center">

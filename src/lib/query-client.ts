@@ -27,12 +27,12 @@ export const queryKeys = {
   user: (id: string) => ['users', id] as const,
   
   budgets: ['budgets'] as const,
-  budget: (id: string) => ['budgets', id] as const,
+  budget: (id: string | number) => ['budgets', id] as const,
   activeBudget: (userId: string) => ['budgets', 'active', userId] as const,
   
   expenses: ['expenses'] as const,
-  expense: (id: string) => ['expenses', id] as const,
-  expensesByBudget: (budgetId: string) => ['expenses', 'budget', budgetId] as const,
-  recentExpenses: (budgetId: string) => ['expenses', 'recent', budgetId] as const,
-  allExpenses: (budgetId: string) => ['expenses', 'all', budgetId] as const,
+  expense: (id: string | number) => ['expenses', id] as const,
+  expensesByBudget: (budgetId: string | number) => ['expenses', 'budget', budgetId] as const,
+  recentExpenses: (budgetId: string | number) => ['expenses', 'recent', budgetId] as const,
+  allExpenses: (budgetId: string | number) => ['expenses', 'all', budgetId] as const,
 }

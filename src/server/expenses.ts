@@ -5,10 +5,10 @@ import { db } from '../db'
 import { budgets, expenses } from '../db/schema'
 
 const createExpenseSchema = z.object({
-  budgetId: z.string(),
+  budgetId: z.number(),
   description: z.string().min(1, 'Description is required'),
   amount: z.number().positive('Amount must be positive'),
-  category: z.enum(['food', 'transport', 'shopping', 'entertainment', 'utilities', 'other']),
+  category: z.string().min(1, 'Category is required'),
 })
 
 
@@ -54,7 +54,7 @@ export const createExpense = createServerFn({ method: 'POST' })
   })
 
 export const getRecentExpenses = createServerFn({ method: 'GET' })
-  .validator(z.object({ budgetId: z.string() }))
+  .validator(z.object({ budgetId: z.number() }))
   .handler(async ({ data }) => {
     return await db
       .select()
@@ -69,7 +69,7 @@ export const getRecentExpenses = createServerFn({ method: 'GET' })
 
 export const getAllExpenses = createServerFn({ method: 'GET' })
   .validator(z.object({
-    budgetId: z.string(),
+    budgetId: z.number(),
     limit: z.number().optional(),
     offset: z.number().optional()
   }))
@@ -95,7 +95,7 @@ export const getAllExpenses = createServerFn({ method: 'GET' })
   })
 
 export const getExpenseById = createServerFn({ method: 'GET' })
-  .validator(z.object({ expenseId: z.string() }))
+  .validator(z.object({ expenseId: z.number() }))
   .handler(async ({ data }) => {
     const [expense] = await db
       .select()
@@ -110,7 +110,7 @@ export const getExpenseById = createServerFn({ method: 'GET' })
   })
 
 export const deleteExpense = createServerFn({ method: 'POST' })
-  .validator(z.object({ expenseId: z.string() }))
+  .validator(z.object({ expenseId: z.number() }))
   .handler(async ({ data }) => {
     return await db.transaction(async (tx) => {
       const [expense] = await tx
@@ -151,7 +151,7 @@ export const deleteExpense = createServerFn({ method: 'POST' })
   })
 
 export const getExpenseCount = createServerFn({ method: 'GET' })
-  .validator(z.object({ budgetId: z.string() }))
+  .validator(z.object({ budgetId: z.number() }))
   .handler(async ({ data }) => {
     const result = await db
       .select({ count: expenses.id })

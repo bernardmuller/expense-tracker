@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import LoginForm from './LoginForm'
 import SignupForm from './SignupForm'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 interface AuthFormProps {
   onSuccess?: () => void
@@ -9,9 +9,10 @@ interface AuthFormProps {
 
 export default function AuthForm({ onSuccess }: AuthFormProps) {
   const [isSignUp, setIsSignUp] = useState(false)
-  
-  // Check for signup feature flag from environment variables
-  const isSignupEnabled = process.env.ENABLE_SIGN_UP === 'true'
+
+  // Check for signup feature flag - defaulting to true for now
+  // In production, this should be controlled via server-side config
+  const isSignupEnabled = true
 
   return (
     <Card className="w-full max-w-md">
@@ -26,12 +27,12 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
       </CardHeader>
       <CardContent>
         {isSignUp ? (
-          <SignupForm 
+          <SignupForm
             onSuccess={onSuccess}
             onSwitchToLogin={() => setIsSignUp(false)}
           />
         ) : (
-          <LoginForm 
+          <LoginForm
             onSuccess={onSuccess}
             onSwitchToSignup={isSignupEnabled ? () => setIsSignUp(true) : undefined}
             showSignupLink={isSignupEnabled}
