@@ -1,7 +1,10 @@
+import { Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { useActiveBudget } from '@/lib/hooks'
-import { formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 
 interface BudgetDisplayProps {
   userId: string
@@ -9,6 +12,7 @@ interface BudgetDisplayProps {
 
 export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
   const { data: budget, isLoading, error } = useActiveBudget({ userId })
+  const [isAmountVisible, setIsAmountVisible] = useState(false)
 
   if (isLoading) {
     return (
@@ -62,18 +66,40 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
         <p className="text-muted-foreground text-sm">{budget.name}</p>
       </CardHeader>
       <CardContent>
-        <div className="text-center py-3 pb-6">
-          <div className="text-4xl font-bold text-primary">
-            R{formatCurrency(currentAmount)}
+        <div className="relative text-center py-3 pb-6">
+          <div className=" flex justify-center">
+            <div className="text-4xl w-full font-bold text-primary">
+              {isAmountVisible ? `R${formatCurrency(currentAmount)}` : 'R********'}
+
+            </div>
           </div>
           <div className="text-sm text-muted-foreground">
-            remaining of R{formatCurrency(startAmount)}
+            remaining of {isAmountVisible ? `R${formatCurrency(startAmount)}` : 'R********'}
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsAmountVisible(!isAmountVisible)}
+            className={cn('absolute top-1/2 -translate-y-1/2 h-10 w-10 p-0 bg-muted hover:bg-muted/50',
+              {
+                '-right-4': currentAmount > 99999.99,
+                'right-0': currentAmount > 9999.99,
+                'right-8': currentAmount > 999.99,
+                'right-12': currentAmount < 1000
+              }
+            )}
+          >
+            {isAmountVisible ? (
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-muted-foreground" />
+            )}
+          </Button>
         </div>
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Spent: R{formatCurrency(spentAmount)}</span>
+            <span className="text-muted-foreground">Spent: R{isAmountVisible ? formatCurrency(spentAmount) : "*******"}</span>
             <span className="text-muted-foreground">{spentPercentage.toFixed(1)}%</span>
           </div>
           <div className="w-full bg-muted rounded-full h-2">
@@ -84,6 +110,7 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
                 }`}
               style={{ width: `${Math.min(spentPercentage, 100)}%` }}
             ></div>
+
           </div>
         </div>
       </CardContent>

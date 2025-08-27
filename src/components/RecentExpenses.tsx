@@ -3,7 +3,7 @@ import type { ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useRecentExpenses, useAllCategories } from '@/lib/hooks'
+import { useAllCategories, useRecentExpenses } from '@/lib/hooks'
 import { formatCurrency } from '@/lib/utils'
 import { getCategoryInfo } from '@/lib/category-utils'
 
@@ -72,7 +72,6 @@ export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
           <div className="text-center py-8">
             <div className="text-4xl mb-2">📝</div>
             <p className="text-muted-foreground">No expenses yet</p>
-            <p className="text-sm text-muted-foreground">Add your first expense below!</p>
           </div>
         ) : (
           <div className="space-y-1">
