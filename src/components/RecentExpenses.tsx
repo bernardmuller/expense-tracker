@@ -82,7 +82,7 @@ export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
               return (
                 <div key={expense.id} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-6 h-6 bg-muted rounded-full text-lg">
+                    <div className="flex items-center justify-center w-6 h-6 bg-slate-200 rounded-full text-lg">
                       {categoryInfo.icon}
                     </div>
                     <div>

@@ -20,6 +20,7 @@ export default function AppLayout({
 }: AppLayoutProps) {
   const { data: session } = useSession()
   const router = useRouter()
+  const isIndexPage = router.state.location.pathname === '/'
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
@@ -27,24 +28,29 @@ export default function AppLayout({
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              {showBackButton && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => router.history.back()}
-                >
-                  <ArrowLeft />
-                </Button>
+            <div className="flex items-center gap-2 min-h-[48px]">
+              {isIndexPage && (
+                <img src="/android-chrome-512x512.png" alt="App Icon" className="w-12 h-12" />
               )}
-              {title && (
-                <div>
-                  <h1 className="text-lg font-semibold text-foreground">{title}</h1>
-                  {subtitle && (
-                    <p className="text-sm text-muted-foreground">{subtitle}</p>
-                  )}
-                </div>
-              )}
+              <div className="flex items-center gap-1">
+                {showBackButton && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => router.history.back()}
+                  >
+                    <ArrowLeft />
+                  </Button>
+                )}
+                {title && (
+                  <div>
+                    <h1 className="text-lg font-semibold text-foreground">{title}</h1>
+                    {subtitle && (
+                      <p className="text-sm text-muted-foreground">{subtitle}</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
