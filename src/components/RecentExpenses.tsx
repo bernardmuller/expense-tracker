@@ -3,33 +3,17 @@ import type { ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useRecentExpenses } from '@/lib/hooks'
+import { useRecentExpenses, useAllCategories } from '@/lib/hooks'
 import { formatCurrency } from '@/lib/utils'
+import { getCategoryInfo } from '@/lib/category-utils'
 
 interface RecentExpensesProps {
-  budgetId: string
-}
-
-const categoryIcons: Record<ExpenseCategory, string> = {
-  food: '🍽️',
-  transport: '🚗',
-  shopping: '🛍️',
-  entertainment: '🎮',
-  utilities: '🏠',
-  other: '💰',
-}
-
-const categoryLabels: Record<ExpenseCategory, string> = {
-  food: 'Food',
-  transport: 'Transport',
-  shopping: 'Shopping',
-  entertainment: 'Entertainment',
-  utilities: 'Utilities',
-  other: 'Other',
+  budgetId: number
 }
 
 export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
   const { data: expenses, isLoading, error } = useRecentExpenses({ budgetId })
+  const { data: allCategories } = useAllCategories()
 
   if (isLoading) {
     return (
@@ -93,15 +77,14 @@ export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
         ) : (
           <div className="space-y-1">
             {expenses.map((expense) => {
-              const category = expense.category as ExpenseCategory
-              const icon = categoryIcons[category] || categoryIcons.other
+              const categoryInfo = getCategoryInfo(expense.category, allCategories)
               const amount = parseFloat(expense.amount)
 
               return (
                 <div key={expense.id} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center w-6 h-6 bg-muted rounded-full text-lg">
-                      {icon}
+                      {categoryInfo.icon}
                     </div>
                     <div>
                       <div className="font-medium">{expense.description}</div>

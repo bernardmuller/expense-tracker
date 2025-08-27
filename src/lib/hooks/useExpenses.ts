@@ -1,19 +1,24 @@
 import { useQuery } from '@tanstack/react-query'
-import { getRecentExpenses, getAllExpenses } from '../../server/expenses'
 import { queryKeys } from '../query-client'
 
-export function useRecentExpenses({ budgetId }: { budgetId?: string }) {
+export function useRecentExpenses({ budgetId }: { budgetId?: number }) {
   return useQuery({
     queryKey: queryKeys.recentExpenses(budgetId!),
-    queryFn: () => getRecentExpenses({ data: { budgetId: budgetId! } }),
+    queryFn: async () => {
+      const { getRecentExpenses } = await import('../../server/expenses')
+      return getRecentExpenses({ data: { budgetId: budgetId! } })
+    },
     enabled: !!budgetId,
   })
 }
 
-export function useAllExpenses({ budgetId }: { budgetId?: string }) {
+export function useAllExpenses({ budgetId }: { budgetId?: number }) {
   return useQuery({
     queryKey: queryKeys.allExpenses(budgetId!),
-    queryFn: () => getAllExpenses({ data: { budgetId: budgetId! } }),
+    queryFn: async () => {
+      const { getAllExpenses } = await import('../../server/expenses')
+      return getAllExpenses({ data: { budgetId: budgetId! } })
+    },
     enabled: !!budgetId,
   })
 }

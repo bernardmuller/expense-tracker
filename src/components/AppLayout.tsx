@@ -57,14 +57,26 @@ export default function AppLayout({
 
             <div className="flex items-center gap-2">
               {session?.data?.user && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSignOut}
-                  className="text-sm"
-                >
-                  Sign out
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="text-sm"
+                  >
+                    <Link to="/settings">
+                      ⚙️
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="text-sm"
+                  >
+                    Sign out
+                  </Button>
+                </>
               )}
             </div>
           </div>

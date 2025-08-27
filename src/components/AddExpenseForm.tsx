@@ -1,26 +1,23 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createExpense } from '../server/expenses'
 import { queryKeys } from '../lib/query-client'
 import type { Budget, Expense, ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useUserActiveCategories } from '@/lib/hooks'
 
-interface AddExpenseFormProps {
-  budgetId: string
-  userId: string
+// Import server function with proper typing but without direct import
+const createExpense = async (data: { budgetId: number; description: string; amount: number; category: string }) => {
+  const { createExpense } = await import('../server/expenses')
+  return createExpense({ data })
 }
 
-const categoryOptions: Array<{ value: ExpenseCategory; label: string; icon: string }> = [
-  { value: 'food', label: 'Food', icon: '🍽️' },
-  { value: 'transport', label: 'Transport', icon: '🚗' },
-  { value: 'shopping', label: 'Shopping', icon: '🛍️' },
-  { value: 'entertainment', label: 'Entertainment', icon: '🎮' },
-  { value: 'utilities', label: 'Utilities', icon: '🏠' },
-  { value: 'other', label: 'Other', icon: '💰' },
-]
+interface AddExpenseFormProps {
+  budgetId: number
+  userId: string
+}
 
 export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps) {
   const [description, setDescription] = useState('')
@@ -28,6 +25,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
   const [category, setCategory] = useState<ExpenseCategory | ''>('')
 
   const queryClient = useQueryClient()
+  const { data: userCategories, isLoading: categoriesLoading } = useUserActiveCategories(userId)
 
   const mutation = useMutation({
     mutationFn: createExpense,
@@ -44,11 +42,11 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
       const previousAllExpenses = queryClient.getQueryData(queryKeys.allExpenses(budgetId))
 
       const optimisticExpense: Expense = {
-        id: `temp-${Date.now()}`,
-        budgetId: variables.data.budgetId,
-        description: variables.data.description,
-        amount: variables.data.amount.toString(),
-        category: variables.data.category,
+        id: -Date.now(), // Use negative number for temp ID to avoid conflicts
+        budgetId: variables.budgetId,
+        description: variables.description,
+        amount: variables.amount.toString(),
+        category: variables.category,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -74,7 +72,7 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
         queryKeys.activeBudget(userId),
         (old: Budget | undefined | null) => {
           if (!old) return old
-          const newCurrentAmount = parseFloat(old.currentAmount) - variables.data.amount
+          const newCurrentAmount = parseFloat(old.currentAmount) - variables.amount
           return {
             ...old,
             currentAmount: newCurrentAmount.toString(),
@@ -120,16 +118,14 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
     }
 
     mutation.mutate({
-      data: {
-        budgetId,
-        description: description.trim(),
-        amount: amountNum,
-        category,
-      }
+      budgetId,
+      description: description.trim(),
+      amount: amountNum,
+      category,
     })
   }
 
-  const isSubmitDisabled = !description.trim() || !amount || !category || mutation.isPending
+  const isSubmitDisabled = !description.trim() || !amount || !category || mutation.isPending || categoriesLoading
 
   return (
     <Card>
@@ -157,14 +153,17 @@ export default function AddExpenseForm({ budgetId, userId }: AddExpenseFormProps
           />
 
           <Select
-            value={category} onValueChange={(value) => setCategory(value as ExpenseCategory)} disabled={mutation.isPending}>
+            value={category} 
+            onValueChange={(value) => setCategory(value as ExpenseCategory)} 
+            disabled={mutation.isPending || categoriesLoading}
+          >
             <SelectTrigger>
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Category"} />
             </SelectTrigger>
             <SelectContent>
-              {categoryOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.icon} {option.label}
+              {userCategories?.map((category) => (
+                <SelectItem key={category.id} value={category.key}>
+                  {category.icon} {category.label}
                 </SelectItem>
               ))}
             </SelectContent>

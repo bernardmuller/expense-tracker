@@ -11,12 +11,25 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestRouteImport } from './routes/test'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsCategoriesRouteImport } from './routes/settings.categories'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExpensesRoute = ExpensesRouteImport.update({
   id: '/expenses',
   path: '/expenses',
@@ -27,6 +40,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsCategoriesRoute = SettingsCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -36,27 +54,44 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/expenses': typeof ExpensesRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/test': typeof TestRoute
+  '/settings/categories': typeof SettingsCategoriesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/expenses': typeof ExpensesRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/test': typeof TestRoute
+  '/settings/categories': typeof SettingsCategoriesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/expenses': typeof ExpensesRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/test': typeof TestRoute
+  '/settings/categories': typeof SettingsCategoriesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expenses'
+  fullPaths: '/' | '/expenses' | '/settings' | '/test' | '/settings/categories'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expenses'
-  id: '__root__' | '/' | '/expenses'
+  to: '/' | '/expenses' | '/settings' | '/test' | '/settings/categories'
+  id:
+    | '__root__'
+    | '/'
+    | '/expenses'
+    | '/settings'
+    | '/test'
+    | '/settings/categories'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExpensesRoute: typeof ExpensesRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
+  TestRoute: typeof TestRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -82,6 +117,20 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/expenses': {
       id: '/expenses'
       path: '/expenses'
@@ -95,6 +144,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/settings/categories': {
+      id: '/settings/categories'
+      path: '/categories'
+      fullPath: '/settings/categories'
+      preLoaderRoute: typeof SettingsCategoriesRouteImport
+      parentRoute: typeof SettingsRoute
     }
   }
 }
@@ -110,9 +166,23 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface SettingsRouteChildren {
+  SettingsCategoriesRoute: typeof SettingsCategoriesRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsCategoriesRoute: SettingsCategoriesRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExpensesRoute: ExpensesRoute,
+  SettingsRoute: SettingsRouteWithChildren,
+  TestRoute: TestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

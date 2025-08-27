@@ -1,11 +1,16 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createBudget } from '../server/budgets'
 import { queryKeys } from '../lib/query-client'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+
+// Dynamic import to avoid bundling server code
+const createBudget = async (data: { userId: string; name: string; startAmount: number }) => {
+  const { createBudget } = await import('../server/budgets')
+  return createBudget({ data })
+}
 
 interface StartNewBudgetModalProps {
   isOpen: boolean
@@ -50,11 +55,9 @@ export default function StartNewBudgetModal({
     }
 
     mutation.mutate({
-      data: {
-        userId: userId,
-        name: name.trim(),
-        startAmount: amountNum,
-      }
+      userId: userId,
+      name: name.trim(),
+      startAmount: amountNum,
     })
   }
 

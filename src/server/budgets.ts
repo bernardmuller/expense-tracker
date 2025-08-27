@@ -11,7 +11,7 @@ const createBudgetSchema = z.object({
 })
 
 const updateBudgetAmountSchema = z.object({
-  budgetId: z.string(),
+  budgetId: z.number(),
   amount: z.number(),
 })
 
@@ -74,7 +74,7 @@ export const updateBudgetAmount = createServerFn({ method: 'POST' })
   })
 
 export const getBudgetById = createServerFn({ method: 'GET' })
-  .validator(z.object({ budgetId: z.string() }))
+  .validator(z.object({ budgetId: z.number() }))
   .handler(async ({ data }) => {
     const [budget] = await db
       .select()
