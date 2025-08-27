@@ -12,7 +12,7 @@ export default function AuthForm({ onSuccess }: AuthFormProps) {
 
   // Check for signup feature flag - defaulting to true for now
   // In production, this should be controlled via server-side config
-  const isSignupEnabled = false;
+  const isSignupEnabled = true;
 
   return (
     <Card className="w-full max-w-md">
