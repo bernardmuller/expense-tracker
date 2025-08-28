@@ -67,34 +67,23 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
       </CardHeader>
       <CardContent>
         <div className="relative text-center py-3 pb-6">
-          <div className=" flex justify-center">
-            <div className="text-4xl w-full font-bold text-primary">
-              {isAmountVisible ? `R${formatCurrency(currentAmount)}` : 'R********'}
-
-            </div>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            remaining of {isAmountVisible ? `R${formatCurrency(startAmount)}` : 'R********'}
-          </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsAmountVisible(!isAmountVisible)}
-            className={cn('absolute top-1/2 -translate-y-1/2 h-10 w-10 p-0 bg-muted hover:bg-muted/50',
-              {
-                '-right-4': currentAmount > 99999.99,
-                'right-0': currentAmount > 9999.99,
-                'right-8': currentAmount > 999.99,
-                'right-12': currentAmount < 1000
-              }
-            )}
           >
-            {isAmountVisible ? (
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <EyeOff className="h-4 w-4 text-muted-foreground" />
-            )}
+            <div className=" flex justify-center">
+              <div className="text-4xl w-full font-bold text-primary">
+                {isAmountVisible ? `R${formatCurrency(currentAmount)}` : 'R********'}
+
+              </div>
+            </div>
           </Button>
+          <div className="text-sm text-muted-foreground">
+            remaining of {isAmountVisible ? `R${formatCurrency(startAmount)}` : 'R********'}
+          </div>
+
+
         </div>
 
         <div className="space-y-2">
