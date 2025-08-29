@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
@@ -16,10 +16,13 @@ const deleteExpense = async (data: { expenseId: number }) => {
   return deleteExpense({ data })
 }
 import { queryKeys } from '@/lib/query-client'
-import { formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { getCategoryInfo } from '@/lib/category-utils'
 import { CheckIcon, Trash, Trash2, X } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { defaultCategories } from '@/lib/constants/default-categories'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { keyof } from 'zod'
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
@@ -30,9 +33,20 @@ function ExpensesPage() {
   const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null)
   const [tooltipExpenseId, setTooltipExpenseId] = useState<number | null>(null)
   const queryClient = useQueryClient()
+  const [filteredCategogry, setFilteredCategory] = useState<string | null>(null)
 
   const { data: session, isLoading: sessionLoading } = useSession()
+  const userId = session?.data?.user.id
   const { data: allCategories } = useAllCategories()
+  const { data: budget } = useActiveBudget({ userId })
+  const { data: expenses, isLoading, error } = useAllExpenses({ budgetId: budget?.id })
+
+  const filteredExpenses = useMemo(() => {
+    if (filteredCategogry === "all" || !filteredCategogry) return expenses;
+    if (expenses) {
+      return expenses.filter(e => e.category === filteredCategogry)
+    }
+  }, [filteredCategogry, expenses])
 
   const handleAuthSuccess = () => {
     // Refresh session data after successful auth
@@ -40,11 +54,7 @@ function ExpensesPage() {
   }
 
 
-  const userId = session?.data?.user.id
 
-  const { data: budget } = useActiveBudget({ userId })
-
-  const { data: expenses, isLoading, error } = useAllExpenses({ budgetId: budget?.id })
 
   const deleteMutation = useMutation({
     mutationFn: deleteExpense,
@@ -199,7 +209,7 @@ function ExpensesPage() {
       subtitle={budget.name}
       showBackButton
     >
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end">
         <Button
           onClick={() => setIsNewBudgetModalOpen(true)}
         // className='bg-primary/20 border border-primary/30 text-primary'
@@ -207,13 +217,25 @@ function ExpensesPage() {
           Start New Budget
         </Button>
       </div>
-
-      <Card className='gap-1 pb-3'>
-        <CardHeader className='px-4'>
-          <CardTitle>Expense History</CardTitle>
-        </CardHeader>
+      <div className="py-3 flex justify-between items-center">
+        <h3 className="text-lg text-muted-foreground">
+          Expense History
+        </h3>
+        <div>
+          <Select onValueChange={(value) => setFilteredCategory(value)}>
+            <SelectTrigger className={cn({ 'w-[90px]': filteredCategogry === null })}>
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              {[{ key: 'all', label: "All", icon: "" }, ...defaultCategories].map(c =>
+                <SelectItem value={c.key}>{c.label}</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <Card className='gap-1 pb-3 pt-0 pb-0'>
         <CardContent className="p-0">
-
           {isLoading ? (
             <div className="p-4">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -241,7 +263,7 @@ function ExpensesPage() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {expenses.map((expense) => {
+              {filteredExpenses?.length !== 0 ? (<>{filteredExpenses.map((expense) => {
                 const categoryInfo = getCategoryInfo(expense.category, allCategories)
                 const amount = parseFloat(expense.amount)
                 const date = new Date(expense.createdAt)
@@ -313,7 +335,13 @@ function ExpensesPage() {
                     </div>
                   </div>
                 )
-              })}
+              })}</>
+              ) : (
+                <div className="p-8 text-center">
+                  <div className="text-4xl mb-2">📝</div>
+                  <p className="text-muted-foreground mb-2">No expenses found</p>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

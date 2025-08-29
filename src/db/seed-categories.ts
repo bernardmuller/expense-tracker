@@ -2,37 +2,36 @@ import 'dotenv/config';
 import { db } from './index';
 import { categories, userCategories, NewCategory } from './schema';
 import { eq } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
 
-export const defaultCategories: Omit<NewCategory, 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
-  { id: nanoid(), key: 'rent', label: 'Rent', icon: '🏠' },
-  { id: nanoid(), key: 'groceries', label: 'Groceries', icon: '🛒' },
-  { id: nanoid(), key: 'eat-out-takeaways', label: 'Eat Out & Takeaways', icon: '🍽️' },
-  { id: nanoid(), key: 'transport-fuel', label: 'Transport & Fuel', icon: '🚗' },
-  { id: nanoid(), key: 'medical', label: 'Medical', icon: '⚕️' },
-  { id: nanoid(), key: 'personal-care', label: 'Personal Care', icon: '🧴' },
-  { id: nanoid(), key: 'utilities', label: 'Utilities', icon: '💡' },
-  { id: nanoid(), key: 'entertainment', label: 'Entertainment', icon: '🎮' },
-  { id: nanoid(), key: 'home-garden', label: 'Home & Garden', icon: '🏡' },
-  { id: nanoid(), key: 'software-and-services', label: 'Software & Services', icon: '💻' },
-  { id: nanoid(), key: 'pets', label: 'Pets', icon: '🐕' },
-  { id: nanoid(), key: 'phone-internet', label: 'Phone & Internet', icon: '📱' },
-  { id: nanoid(), key: 'savings', label: 'Savings', icon: '💰' },
-  { id: nanoid(), key: 'investments', label: 'Investments', icon: '📈' },
-  { id: nanoid(), key: 'housekeeping', label: 'Housekeeping', icon: '🧹' },
-  { id: nanoid(), key: 'coffee', label: 'Coffee', icon: '☕' },
-  { id: nanoid(), key: 'insurance', label: 'Insurance', icon: '🛡️' },
-  { id: nanoid(), key: 'clothing', label: 'Clothing', icon: '👕' },
-  { id: nanoid(), key: 'business', label: 'Business', icon: '💼' },
-  { id: nanoid(), key: 'cash', label: 'Cash', icon: '💵' },
-  { id: nanoid(), key: 'general-purchases', label: 'General Purchases', icon: '🛍️' },
-  { id: nanoid(), key: 'parking', label: 'Parking', icon: '🅿️' },
-  { id: nanoid(), key: 'books-stationary', label: 'Books & Stationary', icon: '📚' },
-  { id: nanoid(), key: 'alcohol', label: 'Alcohol', icon: '🍺' },
-  { id: nanoid(), key: 'bank-fees', label: 'Bank Fees', icon: '🏦' },
-  { id: nanoid(), key: 'exception', label: 'Exception', icon: '⚠️' },
-  { id: nanoid(), key: 'christmas-savings', label: 'Christmas Savings', icon: '🎄' },
-  { id: nanoid(), key: 'travel-savings', label: 'Travel Savings', icon: '✈️' },
+export const defaultCategories: Omit<NewCategory, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+  { key: 'rent', label: 'Rent', icon: '🏠' },
+  { key: 'groceries', label: 'Groceries', icon: '🛒' },
+  { key: 'eat-out-takeaways', label: 'Eat Out & Takeaways', icon: '🍽️' },
+  { key: 'transport-fuel', label: 'Transport & Fuel', icon: '🚗' },
+  { key: 'medical', label: 'Medical', icon: '⚕️' },
+  { key: 'personal-care', label: 'Personal Care', icon: '🧴' },
+  { key: 'utilities', label: 'Utilities', icon: '💡' },
+  { key: 'entertainment', label: 'Entertainment', icon: '🎮' },
+  { key: 'home-garden', label: 'Home & Garden', icon: '🏡' },
+  { key: 'software-and-services', label: 'Software & Services', icon: '💻' },
+  { key: 'pets', label: 'Pets', icon: '🐕' },
+  { key: 'phone-internet', label: 'Phone & Internet', icon: '📱' },
+  { key: 'savings', label: 'Savings', icon: '💰' },
+  { key: 'investments', label: 'Investments', icon: '📈' },
+  { key: 'housekeeping', label: 'Housekeeping', icon: '🧹' },
+  { key: 'coffee', label: 'Coffee', icon: '☕' },
+  { key: 'insurance', label: 'Insurance', icon: '🛡️' },
+  { key: 'clothing', label: 'Clothing', icon: '👕' },
+  { key: 'business', label: 'Business', icon: '💼' },
+  { key: 'cash', label: 'Cash', icon: '💵' },
+  { key: 'general-purchases', label: 'General Purchases', icon: '🛍️' },
+  { key: 'parking', label: 'Parking', icon: '🅿️' },
+  { key: 'books-stationary', label: 'Books & Stationary', icon: '📚' },
+  { key: 'alcohol', label: 'Alcohol', icon: '🍺' },
+  { key: 'bank-fees', label: 'Bank Fees', icon: '🏦' },
+  { key: 'exception', label: 'Exception', icon: '⚠️' },
+  { key: 'christmas-savings', label: 'Christmas Savings', icon: '🎄' },
+  { key: 'travel-savings', label: 'Travel Savings', icon: '✈️' },
 ];
 
 export const defaultUserCategories = [
@@ -75,7 +74,6 @@ export async function seedUserCategories(userId: string) {
       
       if (category) {
         await db.insert(userCategories).values({
-          id: nanoid(),
           userId,
           categoryId: category.id,
           createdAt: now,
