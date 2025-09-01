@@ -16,6 +16,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BudgetBudgetIdSummaryRouteImport } from './routes/budget.$budgetId.summary'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -45,6 +46,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BudgetBudgetIdSummaryRoute = BudgetBudgetIdSummaryRouteImport.update({
+  id: '/budget/$budgetId/summary',
+  path: '/budget/$budgetId/summary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
+  '/budget/$budgetId/summary': typeof BudgetBudgetIdSummaryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByTo {
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
+  '/budget/$budgetId/summary': typeof BudgetBudgetIdSummaryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -72,13 +80,33 @@ export interface FileRoutesById {
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
+  '/budget/$budgetId/summary': typeof BudgetBudgetIdSummaryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories' | '/expenses' | '/settings' | '/test'
+  fullPaths:
+    | '/'
+    | '/categories'
+    | '/expenses'
+    | '/settings'
+    | '/test'
+    | '/budget/$budgetId/summary'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories' | '/expenses' | '/settings' | '/test'
-  id: '__root__' | '/' | '/categories' | '/expenses' | '/settings' | '/test'
+  to:
+    | '/'
+    | '/categories'
+    | '/expenses'
+    | '/settings'
+    | '/test'
+    | '/budget/$budgetId/summary'
+  id:
+    | '__root__'
+    | '/'
+    | '/categories'
+    | '/expenses'
+    | '/settings'
+    | '/test'
+    | '/budget/$budgetId/summary'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -87,6 +115,7 @@ export interface RootRouteChildren {
   ExpensesRoute: typeof ExpensesRoute
   SettingsRoute: typeof SettingsRoute
   TestRoute: typeof TestRoute
+  BudgetBudgetIdSummaryRoute: typeof BudgetBudgetIdSummaryRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -147,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/budget/$budgetId/summary': {
+      id: '/budget/$budgetId/summary'
+      path: '/budget/$budgetId/summary'
+      fullPath: '/budget/$budgetId/summary'
+      preLoaderRoute: typeof BudgetBudgetIdSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -167,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExpensesRoute: ExpensesRoute,
   SettingsRoute: SettingsRoute,
   TestRoute: TestRoute,
+  BudgetBudgetIdSummaryRoute: BudgetBudgetIdSummaryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
