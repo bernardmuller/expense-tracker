@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect, useMemo } from 'react'
 import { useMutation } from '@tanstack/react-query'
@@ -33,6 +33,7 @@ function ExpensesPage() {
   const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null)
   const [tooltipExpenseId, setTooltipExpenseId] = useState<number | null>(null)
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [filteredCategogry, setFilteredCategory] = useState<string | null>(null)
 
   const { data: session, isLoading: sessionLoading } = useSession()
@@ -211,8 +212,11 @@ function ExpensesPage() {
     >
       <div className="flex justify-end">
         <Button
-          onClick={() => setIsNewBudgetModalOpen(true)}
-        // className='bg-primary/20 border border-primary/30 text-primary'
+          onClick={() => navigate({ 
+            to: '/budget/$budgetId/summary', 
+            params: { budgetId: budget.id.toString() },
+            search: { mode: 'new', previousBudgetAmount: parseFloat(budget.startAmount) }
+          })}
         >
           Start New Budget
         </Button>

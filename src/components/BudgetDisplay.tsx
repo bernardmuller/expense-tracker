@@ -1,5 +1,6 @@
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, ChartPie } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -62,8 +63,17 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Current Budget</CardTitle>
-        <p className="text-muted-foreground text-sm">{budget.name}</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <CardTitle>Current Budget</CardTitle>
+            <p className="text-muted-foreground text-sm">{budget.name}</p>
+          </div>
+          <Button variant="link" asChild className="text-sm p-0 h-auto">
+            <Link to="/budget/$budgetId/summary" params={{ budgetId: budget.id.toString() }}>
+              View
+            </Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="relative text-center py-3 pb-6">
