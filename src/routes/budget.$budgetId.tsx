@@ -12,6 +12,7 @@ import { queryKeys } from '@/lib/query-client'
 import { formatCurrency } from '@/lib/utils'
 import { getCategoryInfo } from '@/lib/category-utils'
 import { z } from 'zod'
+import StartNewBudgetModal from '@/components/StartNewBudgetModal'
 
 const createBudget = async (data: { userId: string; name: string; startAmount: number }) => {
   const { createBudget } = await import('../server/budgets')
@@ -36,7 +37,7 @@ const searchSchema = z.object({
   previousBudgetAmount: z.number().optional(),
 })
 
-export const Route = createFileRoute('/budget/$budgetId/summary')({
+export const Route = createFileRoute('/budget/$budgetId')({
   component: BudgetSummaryPage,
   validateSearch: searchSchema,
 })
@@ -70,6 +71,7 @@ function BudgetSummaryPage() {
   const queryClient = useQueryClient()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isCreatingBudget, setIsCreatingBudget] = useState(false)
+  const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false);
 
   const { data: session, isLoading: sessionLoading } = useSession()
   const { data: allCategories } = useAllCategories()
@@ -224,26 +226,52 @@ function BudgetSummaryPage() {
 
   return (
     <AppLayout
-      title="Budget Summary"
+      title="Current Budget"
       subtitle={budget.name}
       showBackButton
     >
+      <StartNewBudgetModal
+        isOpen={isNewBudgetModalOpen}
+        onClose={() => {
+          setIsNewBudgetModalOpen(false)
+          navigate({ to: "/" });
+        }}
+        userId={userId!}
+        previousBudgetAmount={parseFloat(budget.startAmount)}
+      />
+
       <div className="max-w-2xl mx-auto space-y-4">
+
         <div className="grid grid-cols-2 gap-4">
+
+          {mode === 'new' ? (
+            <Card className='p-4 col-span-2 border-primary/50 bg-primary/5'>
+              <CardContent className='p-0 flex flex-col gap-2 text-center'>
+                <h3 className='text-primary'>You're about to close this budget</h3>
+                <p className="text-xs text-white mb-2">Once closed, no further changes can be made and a new budget period will begin.</p>
+                <Button
+                  onClick={() => setIsNewBudgetModalOpen(true)}
+                  className="flex-1 text-black"
+                >
+                  Close Budget
+                </Button>
+              </CardContent>
+            </Card>) : null}
+          <Card className='p-0'>
+            <CardContent className='p-4'>
+              <p className="text-muted-foreground text-xs">Total amount spent</p>
+              <p className="text-lg font-bold">R{formatCurrency(totalAmount)}</p>
+            </CardContent>
+          </Card>
           <Card className='p-4 h-20'>
             <CardContent className='p-0'>
               <p className="text-muted-foreground text-xs">Amount Left</p>
               <p className={`text-lg font-bold ${amountLeft >= 0 ? "text-green-600" : "text-red-600"}`}>
-                R{formatCurrency(Math.abs(amountLeft))}
+                R{formatCurrency(amountLeft)}
               </p>
             </CardContent>
           </Card>
-          <Card className='p-0'>
-            <CardContent className='p-4'>
-              <p className="text-muted-foreground text-xs">Active Categories</p>
-              <p className="text-lg font-bold">{categoryData.length}</p>
-            </CardContent>
-          </Card>
+
           <Card className='p-0'>
             <CardContent className='p-4'>
               <p className="text-muted-foreground text-xs">Highest Spending</p>
@@ -253,8 +281,18 @@ function BudgetSummaryPage() {
           </Card>
           <Card className='p-0'>
             <CardContent className='p-4'>
-              <p className="text-muted-foreground text-xs">Total Expenses</p>
-              <p className="text-lg font-bold">{totalExpenses}</p>
+              <div className='flex gap-1'>
+                <p className="text-md font-bold">{totalExpenses}</p>
+                <p className="text-muted-foreground text-md">total expenses</p>
+              </div>
+              <p className="text-xs text-muted-foreground">Over {pieData.length} categories</p>
+              <Button
+                variant="link"
+                onClick={() => navigate({ to: "/expenses" })}
+                className='p-0 m-0 h-0 text-xs'
+              >
+                View All
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -264,8 +302,9 @@ function BudgetSummaryPage() {
           <Card className='p-0 space-y-0 gap-0'>
             <CardHeader className='p-4 pb-0'>
               <CardTitle>Expense Breakdown</CardTitle>
+              <p className="text-muted-foreground text-sm">Click to highlight in chart</p>
             </CardHeader>
-            <CardContent className="">
+            <CardContent className="p-3">
               <div className="h-48 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -301,18 +340,7 @@ function BudgetSummaryPage() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </CardContent>
-          </Card>
-        )}
 
-        {/* Category List */}
-        {categoryData.length > 0 && (
-          <Card className='p-4'>
-            <CardHeader className='p-0'>
-              <CardTitle>Categories</CardTitle>
-              <p className="text-muted-foreground text-sm">Click to highlight in chart</p>
-            </CardHeader>
-            <CardContent className='p-0'>
               <div className="space-y-3">
                 {pieData.map((item, index) => {
                   const categoryInfo = getCategoryInfo(item.name, allCategories)
@@ -349,36 +377,25 @@ function BudgetSummaryPage() {
         {/* Empty State */}
         {categoryData.length === 0 && (
           <Card>
-            <CardContent className="p-8 text-center">
-              <div className="text-6xl mb-4">📊</div>
-              <h2 className="text-xl font-bold mb-2">No Expenses Yet</h2>
+            <CardContent className="p-4 text-center">
+              <div className="text-4xl mb-4">📊</div>
+              <h2 className="text-lg font-bold mb-2">No Expenses Yet</h2>
               <p className="text-muted-foreground mb-6">Start adding expenses to see your budget breakdown.</p>
             </CardContent>
           </Card>
         )}
 
-        {/* Action Button */}
-        {mode === 'new' ? (
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={handleBack} className="flex-1">
-              Back to Expenses
-            </Button>
+        {mode === 'view' && (
+          <div className='w-full flex justify-center'>
             <Button
-              onClick={handleStartNewBudget}
-              className="flex-1"
-              disabled={createBudgetMutation.isPending || isCreatingBudget}
+              onClick={() => setIsNewBudgetModalOpen(true)}
+              className="text-black flex-1"
+              variant="destructive"
             >
-              {createBudgetMutation.isPending || isCreatingBudget ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Creating Budget...
-                </>
-              ) : (
-                'Start New Budget'
-              )}
+              Close Budget
             </Button>
           </div>
-        ) : null}
+        )}
       </div>
     </AppLayout>
   )

@@ -1,11 +1,10 @@
-import { Eye, EyeOff, ChartPie } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useActiveBudget } from '@/lib/hooks'
-import { cn, formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 
 interface BudgetDisplayProps {
   userId: string
@@ -69,7 +68,7 @@ export default function BudgetDisplay({ userId }: BudgetDisplayProps) {
             <p className="text-muted-foreground text-sm">{budget.name}</p>
           </div>
           <Button variant="link" asChild className="text-sm p-0 h-auto">
-            <Link to="/budget/$budgetId/summary" params={{ budgetId: budget.id.toString() }}>
+            <Link to="/budget/$budgetId" params={{ budgetId: budget.id.toString() }}>
               View
             </Link>
           </Button>

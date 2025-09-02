@@ -137,7 +137,7 @@ export default function StartNewBudgetModal({
                   Creating...
                 </>
               ) : (
-                'Create Budget'
+                'Start new budget'
               )}
             </Button>
           </div>

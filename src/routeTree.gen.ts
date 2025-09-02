@@ -16,7 +16,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BudgetBudgetIdSummaryRouteImport } from './routes/budget.$budgetId.summary'
+import { Route as BudgetBudgetIdRouteImport } from './routes/budget.$budgetId'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -46,9 +46,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BudgetBudgetIdSummaryRoute = BudgetBudgetIdSummaryRouteImport.update({
-  id: '/budget/$budgetId/summary',
-  path: '/budget/$budgetId/summary',
+const BudgetBudgetIdRoute = BudgetBudgetIdRouteImport.update({
+  id: '/budget/$budgetId',
+  path: '/budget/$budgetId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
@@ -63,7 +63,7 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
-  '/budget/$budgetId/summary': typeof BudgetBudgetIdSummaryRoute
+  '/budget/$budgetId': typeof BudgetBudgetIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -71,7 +71,7 @@ export interface FileRoutesByTo {
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
-  '/budget/$budgetId/summary': typeof BudgetBudgetIdSummaryRoute
+  '/budget/$budgetId': typeof BudgetBudgetIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,7 +80,7 @@ export interface FileRoutesById {
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
-  '/budget/$budgetId/summary': typeof BudgetBudgetIdSummaryRoute
+  '/budget/$budgetId': typeof BudgetBudgetIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,7 +90,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/settings'
     | '/test'
-    | '/budget/$budgetId/summary'
+    | '/budget/$budgetId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,7 +98,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/settings'
     | '/test'
-    | '/budget/$budgetId/summary'
+    | '/budget/$budgetId'
   id:
     | '__root__'
     | '/'
@@ -106,7 +106,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/settings'
     | '/test'
-    | '/budget/$budgetId/summary'
+    | '/budget/$budgetId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -115,7 +115,7 @@ export interface RootRouteChildren {
   ExpensesRoute: typeof ExpensesRoute
   SettingsRoute: typeof SettingsRoute
   TestRoute: typeof TestRoute
-  BudgetBudgetIdSummaryRoute: typeof BudgetBudgetIdSummaryRoute
+  BudgetBudgetIdRoute: typeof BudgetBudgetIdRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -176,11 +176,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/budget/$budgetId/summary': {
-      id: '/budget/$budgetId/summary'
-      path: '/budget/$budgetId/summary'
-      fullPath: '/budget/$budgetId/summary'
-      preLoaderRoute: typeof BudgetBudgetIdSummaryRouteImport
+    '/budget/$budgetId': {
+      id: '/budget/$budgetId'
+      path: '/budget/$budgetId'
+      fullPath: '/budget/$budgetId'
+      preLoaderRoute: typeof BudgetBudgetIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -203,7 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExpensesRoute: ExpensesRoute,
   SettingsRoute: SettingsRoute,
   TestRoute: TestRoute,
-  BudgetBudgetIdSummaryRoute: BudgetBudgetIdSummaryRoute,
+  BudgetBudgetIdRoute: BudgetBudgetIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
