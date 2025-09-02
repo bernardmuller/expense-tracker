@@ -210,18 +210,7 @@ function ExpensesPage() {
       subtitle={budget.name}
       showBackButton
     >
-      <div className="flex justify-end">
-        <Button
-          onClick={() => navigate({ 
-            to: '/budget/$budgetId/summary', 
-            params: { budgetId: budget.id.toString() },
-            search: { mode: 'new', previousBudgetAmount: parseFloat(budget.startAmount) }
-          })}
-        >
-          Start New Budget
-        </Button>
-      </div>
-      <div className="py-3 flex justify-between items-center">
+      <div className="pb-3 flex justify-between items-center">
         <h3 className="text-lg text-muted-foreground">
           Expense History
         </h3>

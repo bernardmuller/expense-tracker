@@ -97,13 +97,21 @@ function CategorySettingsPage() {
               </Button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {allCategories.map((category) => {
                 const isSelected = userCategoryIds.has(category.id)
                 const isUpdating = addUserCategory.isPending || removeUserCategory.isPending
 
                 return (
                   <div key={category.id} className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors">
+
+                    <label
+                      htmlFor={category.id.toString()}
+                      className="flex-1 flex items-center gap-3 text-sm cursor-pointer"
+                    >
+                      <span className="text-lg">{category.icon}</span>
+                      <span className="font-medium">{category.label}</span>
+                    </label>
                     <Checkbox
                       id={category.id.toString()}
                       checked={isSelected}
@@ -112,13 +120,6 @@ function CategorySettingsPage() {
                         handleCategoryToggle(category.id, checked as boolean)
                       }
                     />
-                    <label
-                      htmlFor={category.id.toString()}
-                      className="flex-1 flex items-center gap-3 text-sm cursor-pointer"
-                    >
-                      <span className="text-lg">{category.icon}</span>
-                      <span className="font-medium">{category.label}</span>
-                    </label>
                   </div>
                 )
               })}

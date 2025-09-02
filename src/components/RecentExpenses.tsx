@@ -61,7 +61,7 @@ export default function RecentExpenses({ budgetId }: RecentExpensesProps) {
           <CardTitle>Recent Expenses</CardTitle>
           <Button variant="link" asChild className="text-sm p-0 h-auto">
             <Link to="/expenses">
-              Show All
+              View All
             </Link>
           </Button>
         </div>
