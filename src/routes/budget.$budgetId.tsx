@@ -283,7 +283,7 @@ function BudgetSummaryPage() {
             <CardContent className='p-4'>
               <div className='flex gap-1'>
                 <p className="text-md font-bold">{totalExpenses}</p>
-                <p className="text-muted-foreground text-md">total expenses</p>
+                <p className="text-muted-foreground text-md">expenses</p>
               </div>
               <p className="text-xs text-muted-foreground">Over {pieData.length} categories</p>
               <Button
@@ -342,7 +342,7 @@ function BudgetSummaryPage() {
               </div>
 
               <div className="space-y-3">
-                {pieData.map((item, index) => {
+                {pieData.map(item => {
                   const categoryInfo = getCategoryInfo(item.name, allCategories)
                   return (
                     <div
@@ -389,7 +389,7 @@ function BudgetSummaryPage() {
           <div className='w-full flex justify-center'>
             <Button
               onClick={() => setIsNewBudgetModalOpen(true)}
-              className="text-black flex-1"
+              className="flex-1"
               variant="destructive"
             >
               Close Budget
