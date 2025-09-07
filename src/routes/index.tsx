@@ -72,7 +72,7 @@ function ExpenseTracker() {
         <Card className="border-destructive/50">
           <CardContent className="p-8 text-center bg-destructive/5">
             <div className="text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-destructive mb-2">Error Loading Data</h1>
+            <h1 className="text-2xl font-bold text-destructive mb-2">Error Loading Data..</h1>
             <p className="text-destructive/80 mb-4">Unable to load your budget information.</p>
             <Button onClick={() => setIsNewBudgetModalOpen(true)}>
               Create Budget
