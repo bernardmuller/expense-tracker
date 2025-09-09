@@ -215,9 +215,14 @@ export default function AddExpenseForm({ budgetId, userId, defaultName, defaultA
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    let desc;
 
-    if (!description.trim() || !amount || !category) {
+    if (!amount || !category) {
       return
+    }
+
+    if (!description.trim()) {
+      desc = category.at(0)?.toUpperCase().concat(category.slice(1))
     }
 
     const amountNum = parseFloat(amount)
@@ -227,13 +232,13 @@ export default function AddExpenseForm({ budgetId, userId, defaultName, defaultA
 
     mutation.mutate({
       budgetId,
-      description: description.trim(),
+      description: desc ?? description.trim(),
       amount: amountNum,
       category,
     })
   }
 
-  const isSubmitDisabled = !description.trim() || !amount || !category || mutation.isPending || categoriesLoading
+  const isSubmitDisabled = !amount || !category || mutation.isPending || categoriesLoading
 
   return (
     <Card>
