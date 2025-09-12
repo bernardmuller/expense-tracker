@@ -101,6 +101,21 @@ export const userCategories = pgTable("user_categories", {
   deletedAt: timestamp("deleted_at"),
 });
 
+// Category budgets junction table
+export const categoryBudgets = pgTable("category_budgets", {
+  id: serial("id").primaryKey(),
+  budgetId: integer("budget_id")
+    .notNull()
+    .references(() => budgets.id, { onDelete: "cascade" }),
+  categoryId: integer("category_id")
+    .notNull()
+    .references(() => categories.id, { onDelete: "cascade" }),
+  allocatedAmount: decimal("allocated_amount", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  deletedAt: timestamp("deleted_at"),
+});
+
 // Expenses table
 export const expenses = pgTable("expenses", {
   id: serial("id").primaryKey(),
@@ -127,6 +142,7 @@ export const budgetRelations = relations(budgets, ({ one, many }) => ({
     references: [users.id],
   }),
   expenses: many(expenses),
+  categoryBudgets: many(categoryBudgets),
 }));
 
 export const expenseRelations = relations(expenses, ({ one }) => ({
@@ -138,6 +154,7 @@ export const expenseRelations = relations(expenses, ({ one }) => ({
 
 export const categoryRelations = relations(categories, ({ many }) => ({
   userCategories: many(userCategories),
+  categoryBudgets: many(categoryBudgets),
 }));
 
 export const userCategoryRelations = relations(userCategories, ({ one }) => ({
@@ -151,6 +168,17 @@ export const userCategoryRelations = relations(userCategories, ({ one }) => ({
   }),
 }));
 
+export const categoryBudgetRelations = relations(categoryBudgets, ({ one }) => ({
+  budget: one(budgets, {
+    fields: [categoryBudgets.budgetId],
+    references: [budgets.id],
+  }),
+  category: one(categories, {
+    fields: [categoryBudgets.categoryId],
+    references: [categories.id],
+  }),
+}));
+
 // Types
 export type Budget = typeof budgets.$inferSelect;
 export type NewBudget = typeof budgets.$inferInsert;
@@ -160,5 +188,7 @@ export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 export type UserCategory = typeof userCategories.$inferSelect;
 export type NewUserCategory = typeof userCategories.$inferInsert;
+export type CategoryBudget = typeof categoryBudgets.$inferSelect;
+export type NewCategoryBudget = typeof categoryBudgets.$inferInsert;
 
 export type ExpenseCategory = string;
