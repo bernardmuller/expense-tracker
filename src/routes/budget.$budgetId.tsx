@@ -263,7 +263,7 @@ function BudgetSummaryPage() {
               icon: categoryInfo.icon,
               color: item.color,
               spent: item.value,
-              planned: allocated || item.value
+              planned: allocated || null
             }
           })} />
         )}
