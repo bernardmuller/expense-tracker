@@ -36,6 +36,13 @@
       "when": 1756334764268,
       "tag": "0004_open_fenris",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1757708150738,
+      "tag": "0005_glorious_joseph",
+      "breakpoints": true
     }
   ]
 }

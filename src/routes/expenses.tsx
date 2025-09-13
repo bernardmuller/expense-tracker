@@ -1,31 +1,36 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
+import z from 'zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect, useMemo } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { format } from 'date-fns'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
-import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { useSession, useActiveBudget, useAllExpenses, useAllCategories } from '@/lib/hooks'
 
-// Dynamic import to avoid bundling server code
+import { queryKeys } from '@/lib/query-client'
+import { cn, formatCurrency } from '@/lib/utils'
+import { getCategoryInfo } from '@/lib/category-utils'
+import { Trash, Trash2 } from 'lucide-react'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { defaultCategories } from '@/lib/constants/default-categories'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
 const deleteExpense = async (data: { expenseId: number }) => {
   const { deleteExpense } = await import('../server/expenses')
   return deleteExpense({ data })
 }
-import { queryKeys } from '@/lib/query-client'
-import { cn, formatCurrency } from '@/lib/utils'
-import { getCategoryInfo } from '@/lib/category-utils'
-import { CheckIcon, Trash, Trash2, X } from 'lucide-react'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { defaultCategories } from '@/lib/constants/default-categories'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { keyof } from 'zod'
+
+const routeSearchSchema = z.object({
+  filter: z.string().optional()
+})
 
 export const Route = createFileRoute('/expenses')({
   component: ExpensesPage,
+  validateSearch: routeSearchSchema
 })
 
 function ExpensesPage() {
@@ -33,8 +38,8 @@ function ExpensesPage() {
   const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null)
   const [tooltipExpenseId, setTooltipExpenseId] = useState<number | null>(null)
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
-  const [filteredCategogry, setFilteredCategory] = useState<string | null>(null)
+  const { filter } = Route.useSearch()
+  const [filteredCategogry, setFilteredCategory] = useState<string | null>(filter ?? null)
 
   const { data: session, isLoading: sessionLoading } = useSession()
   const userId = session?.data?.user.id
@@ -53,9 +58,6 @@ function ExpensesPage() {
     // Refresh session data after successful auth
     queryClient.invalidateQueries({ queryKey: ['session'] })
   }
-
-
-
 
   const deleteMutation = useMutation({
     mutationFn: deleteExpense,
@@ -215,7 +217,7 @@ function ExpensesPage() {
           Expense History
         </h3>
         <div>
-          <Select onValueChange={(value) => setFilteredCategory(value)}>
+          <Select value={filteredCategogry ?? "all"} onValueChange={(value) => setFilteredCategory(value)}>
             <SelectTrigger className={cn({ 'w-[90px]': filteredCategogry === null })}>
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
@@ -256,7 +258,7 @@ function ExpensesPage() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {filteredExpenses?.length !== 0 ? (<>{filteredExpenses.map((expense) => {
+              {filteredExpenses?.length !== 0 ? (<>{filteredExpenses?.map((expense) => {
                 const categoryInfo = getCategoryInfo(expense.category, allCategories)
                 const amount = parseFloat(expense.amount)
                 const date = new Date(expense.createdAt)
@@ -332,7 +334,7 @@ function ExpensesPage() {
               ) : (
                 <div className="p-8 text-center">
                   <div className="text-4xl mb-2">📝</div>
-                  <p className="text-muted-foreground mb-2">No expenses found</p>
+                  <p className="text-muted-foreground mb-2">No expenses found {filteredCategogry ? ' in this category' : ''}</p>
                 </div>
               )}
             </div>

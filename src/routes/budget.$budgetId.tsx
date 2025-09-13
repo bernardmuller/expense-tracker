@@ -1,35 +1,25 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
-import { useState, useMemo } from 'react'
+import { useQuery, useQueryClient, } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft } from 'lucide-react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { Card, CardContent } from '@/components/ui/card'
 import AppLayout from '@/components/AppLayout'
 import AuthForm from '@/components/AuthForm'
-import { useSession, useAllExpenses, useAllCategories } from '@/lib/hooks'
-import { queryKeys } from '@/lib/query-client'
+import { useAllCategories, useAllExpenses, useSession, useUserCategories } from '@/lib/hooks'
 import { formatCurrency } from '@/lib/utils'
 import { getCategoryInfo } from '@/lib/category-utils'
-import { z } from 'zod'
 import StartNewBudgetModal from '@/components/StartNewBudgetModal'
-
-const createBudget = async (data: { userId: string; name: string; startAmount: number }) => {
-  const { createBudget } = await import('../server/budgets')
-  return createBudget({ data })
-}
+import { ProgressBreakdown } from '@/components/budget-breakdowns/progress-breakdown'
 
 const getBudgetById = async (data: { budgetId: number }) => {
   const { getBudgetById } = await import('../server/budgets')
   return getBudgetById({ data })
 }
 
-interface Expense {
-  id: number
-  description: string
-  category: string
-  amount: string
-  createdAt: string
+const getCategoryBudgets = async (budgetId: number) => {
+  const { getCategoryBudgets } = await import('../server/budgets')
+  return getCategoryBudgets({ data: { budgetId } })
 }
 
 const searchSchema = z.object({
@@ -42,60 +32,45 @@ export const Route = createFileRoute('/budget/$budgetId')({
   validateSearch: searchSchema,
 })
 
-// Generate unlimited distinct colors for categories
-const generateColors = (count: number): string[] => {
+const generateColors = (count: number): Array<string> => {
   const colors = []
-
-  // Use golden ratio for optimal hue distribution
   const goldenRatio = 0.618033988749
   let hue = 0
-
   for (let i = 0; i < count; i++) {
-    // Generate well-distributed hues using golden ratio
     hue = (hue + goldenRatio * 360) % 360
-
-    // Vary saturation and lightness for better distinction
     const saturation = 65 + (i % 3) * 10 // 65%, 75%, 85%
     const lightness = 45 + (i % 4) * 10   // 45%, 55%, 65%, 75%
-
     colors.push(`hsl(${Math.round(hue)}, ${saturation}%, ${lightness}%)`)
   }
-
   return colors
 }
 
 function BudgetSummaryPage() {
   const { budgetId } = Route.useParams()
-  const { mode, previousBudgetAmount } = Route.useSearch()
+  const { mode } = Route.useSearch()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [isCreatingBudget, setIsCreatingBudget] = useState(false)
   const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false);
 
   const { data: session, isLoading: sessionLoading } = useSession()
   const { data: allCategories } = useAllCategories()
   const userId = session?.data?.user.id
+  const { data: userCategories, isLoading: userCategoriesLoading } = useUserCategories(userId)
 
-  // Get budget data
   const { data: budget, isLoading: budgetLoading } = useQuery({
     queryKey: ['budget', budgetId],
     queryFn: async () => getBudgetById({ budgetId: parseInt(budgetId) }),
     enabled: !!budgetId,
   })
 
-  // Get expenses for this budget
   const { data: expenses, isLoading: expensesLoading } = useAllExpenses({
     budgetId: parseInt(budgetId)
   })
 
-  const createBudgetMutation = useMutation({
-    mutationFn: createBudget,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.budgets })
-      queryClient.invalidateQueries({ queryKey: queryKeys.activeBudget(userId!) })
-      navigate({ to: '/' })
-    },
+  const { data: categoryBudgets, isLoading: categoryBudgetsLoading } = useQuery({
+    queryKey: ['categoryBudgets', budgetId],
+    queryFn: () => getCategoryBudgets(parseInt(budgetId)),
+    enabled: !!budgetId,
   })
 
   const handleAuthSuccess = () => {
@@ -110,21 +85,8 @@ function BudgetSummaryPage() {
     }
   }
 
-  const handleStartNewBudget = () => {
-    if (!budget) return
-
-    setIsCreatingBudget(true)
-    createBudgetMutation.mutate({
-      userId: userId!,
-      name: `Budget - ${new Date().toLocaleDateString()}`,
-      startAmount: previousBudgetAmount || parseFloat(budget.startAmount),
-    })
-  }
-
-  // Process expenses data for charts
   const categoryData = useMemo(() => {
-    if (!expenses) return []
-
+    if (!expenses || !Array.isArray(expenses)) return []
     return expenses.reduce(
       (acc, expense) => {
         const existing = acc.find((item) => item.category === expense.category)
@@ -141,50 +103,39 @@ function BudgetSummaryPage() {
         }
         return acc
       },
-      [] as { category: string; amount: number; count: number }[],
+      [] as Array<{ category: string; amount: number; count: number }>,
     )
   }, [expenses])
 
-  const totalAmount = categoryData.reduce((sum, item) => sum + item.amount, 0)
+  const totalAmount = categoryData.length > 0 ? categoryData.reduce((sum, item) => sum + item.amount, 0) : 0
   const budgetTotal = budget ? parseFloat(budget.startAmount) : 0
   const amountLeft = budgetTotal - totalAmount
   const totalExpenses = expenses?.length || 0
-  const highestCategory = categoryData.reduce((max, item) =>
-    (item.amount > max.amount ? item : max),
-    { category: "", amount: 0 }
-  )
+  const highestCategory = categoryData.length > 0
+    ? categoryData.reduce((max, item) =>
+      (item.amount > max.amount ? item : max),
+      { category: "", amount: 0 }
+    )
+    : { category: "", amount: 0 }
   const highestCategoryInfo = highestCategory.category ?
     getCategoryInfo(highestCategory.category, allCategories) :
     { label: 'None' }
 
   const colors = generateColors(categoryData.length)
 
-  const pieData = categoryData.map((item, index) => ({
-    name: item.category,
-    value: item.amount,
-    percentage: totalAmount > 0 ? ((item.amount / totalAmount) * 100).toFixed(1) : '0',
-    color: colors[index],
-  }))
-
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(selectedCategory === category ? null : category)
-  }
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload
-      return (
-        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
-          <p className="text-popover-foreground font-medium">{data.name}</p>
-          <p className="text-primary">R{formatCurrency(data.value)}</p>
-          <p className="text-muted-foreground text-sm">{data.percentage}% of total</p>
-        </div>
-      )
+  const pieData = userCategories?.map((item, index) => {
+    const categoryExpense = categoryData.find(c => item.category.key === c.category)
+    return {
+      name: item.category.key,
+      key: item.category.key,
+      value: categoryExpense ? categoryExpense.amount : 0,
+      percentage: totalAmount > 0 && categoryExpense ?
+        ((categoryExpense.amount / totalAmount) * 100).toFixed(1) : '0',
+      color: colors[index],
     }
-    return null
-  }
+  })
 
-  if (sessionLoading || budgetLoading || expensesLoading) {
+  if (sessionLoading || budgetLoading || expensesLoading || categoryBudgetsLoading || userCategoriesLoading) {
     return (
       <AppLayout>
         <Card>
@@ -223,7 +174,6 @@ function BudgetSummaryPage() {
       </AppLayout>
     )
   }
-
   return (
     <AppLayout
       title="Current Budget"
@@ -250,7 +200,10 @@ function BudgetSummaryPage() {
                 <h3 className='text-primary'>You're about to close this budget</h3>
                 <p className="text-xs text-white mb-2">Once closed, no further changes can be made and a new budget period will begin.</p>
                 <Button
-                  onClick={() => setIsNewBudgetModalOpen(true)}
+                  onClick={() => navigate({
+                    to: '/budget/create/info',
+                    search: { previousBudgetAmount: parseFloat(budget.startAmount) }
+                  })}
                   className="flex-1 text-black"
                 >
                   Close Budget
@@ -285,7 +238,7 @@ function BudgetSummaryPage() {
                 <p className="text-md font-bold">{totalExpenses}</p>
                 <p className="text-muted-foreground text-md">expenses</p>
               </div>
-              <p className="text-xs text-muted-foreground">Over {pieData.length} categories</p>
+              <p className="text-xs text-muted-foreground">Over {pieData?.length ?? 0} categories</p>
               <Button
                 variant="link"
                 onClick={() => navigate({ to: "/expenses" })}
@@ -297,84 +250,24 @@ function BudgetSummaryPage() {
           </Card>
         </div>
 
-        {/* Pie Chart */}
-        {categoryData.length > 0 && (
-          <Card className='p-0 space-y-0 gap-0'>
-            <CardHeader className='p-4 pb-0'>
-              <CardTitle>Expense Breakdown</CardTitle>
-              <p className="text-muted-foreground text-sm">Click to highlight in chart</p>
-            </CardHeader>
-            <CardContent className="p-3">
-              <div className="h-48 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={40}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {pieData.map((entry, index) => {
-                        const isSelected = selectedCategory === entry.name
-                        const isOtherSelected = selectedCategory && selectedCategory !== entry.name
+        {pieData && categoryData.length > 0 && pieData.length > 0 && expenses && (
+          <ProgressBreakdown categories={pieData.map(item => {
+            const categoryInfo = getCategoryInfo(item.name, allCategories)
+            const categoryBudget = categoryBudgets?.find(cb => cb.category?.key === item.name)
+            const allocated = categoryBudget ? parseFloat(categoryBudget.allocatedAmount) : 0
 
-                        return (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={entry.color}
-                            stroke={isSelected ? "#ffffff" : "transparent"}
-                            strokeWidth={isSelected ? 3 : 0}
-                            fillOpacity={isOtherSelected ? 0.3 : 1}
-                            style={{
-                              cursor: 'pointer',
-                            }}
-                            onClick={() => handleCategoryClick(entry.name)}
-                          />
-                        )
-                      })}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="space-y-3">
-                {pieData.map(item => {
-                  const categoryInfo = getCategoryInfo(item.name, allCategories)
-                  return (
-                    <div
-                      key={item.name}
-                      onClick={() => handleCategoryClick(item.name)}
-                      className={`m-0 flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all ${selectedCategory === item.name
-                        ? "bg-muted border border-border"
-                        : "bg-card hover:bg-muted/50"
-                        }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }} />
-                        <div>
-                          <p className="font-medium">{categoryInfo.label}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {categoryData.find((cat) => cat.category === item.name)?.count} expense(s)
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-primary font-medium">R{formatCurrency(item.value)}</p>
-                        <p className="text-muted-foreground text-sm">{item.percentage}%</p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
+            return {
+              id: item.name,
+              key: item.key,
+              name: categoryInfo.label,
+              icon: categoryInfo.icon,
+              color: item.color,
+              spent: item.value,
+              planned: allocated || item.value
+            }
+          })} />
         )}
 
-        {/* Empty State */}
         {categoryData.length === 0 && (
           <Card>
             <CardContent className="p-4 text-center">
@@ -388,7 +281,10 @@ function BudgetSummaryPage() {
         {mode === 'view' && (
           <div className='w-full flex justify-center'>
             <Button
-              onClick={() => setIsNewBudgetModalOpen(true)}
+              onClick={() => navigate({
+                to: '/budget/create/info',
+                search: { previousBudgetAmount: parseFloat(budget.startAmount) }
+              })}
               className="flex-1"
               variant="destructive"
             >

@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import BudgetDisplay from '../components/BudgetDisplay'
@@ -30,6 +30,7 @@ function ExpenseTracker() {
   const { amount, name } = Route.useSearch();
   const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false)
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const { data: session, isLoading: sessionLoading } = useSession()
 
@@ -113,7 +114,7 @@ function ExpenseTracker() {
             <div className="text-6xl mb-4">💰</div>
             <h1 className="text-2xl font-bold mb-2">Get Started</h1>
             <p className="text-muted-foreground mb-6">Create your first budget to start tracking your expenses!</p>
-            <Button onClick={() => setIsNewBudgetModalOpen(true)}>
+            <Button onClick={() => navigate({ to: '/budget/create/info' })}>
               Create Budget
             </Button>
           </CardContent>
