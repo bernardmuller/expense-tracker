@@ -35,4 +35,6 @@ export const queryKeys = {
   expensesByBudget: (budgetId: string | number) => ['expenses', 'budget', budgetId] as const,
   recentExpenses: (budgetId: string | number) => ['expenses', 'recent', budgetId] as const,
   allExpenses: (budgetId: string | number) => ['expenses', 'all', budgetId] as const,
+  
+  categoryBudgets: (budgetId: string | number) => ['categoryBudgets', budgetId] as const,
 }

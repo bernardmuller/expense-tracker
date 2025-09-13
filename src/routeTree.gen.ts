@@ -17,6 +17,8 @@ import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BudgetBudgetIdRouteImport } from './routes/budget.$budgetId'
+import { Route as BudgetCreateInfoRouteImport } from './routes/budget.create.info'
+import { Route as BudgetCreateCategoriesRouteImport } from './routes/budget.create.categories'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -51,6 +53,16 @@ const BudgetBudgetIdRoute = BudgetBudgetIdRouteImport.update({
   path: '/budget/$budgetId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BudgetCreateInfoRoute = BudgetCreateInfoRouteImport.update({
+  id: '/budget/create/info',
+  path: '/budget/create/info',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BudgetCreateCategoriesRoute = BudgetCreateCategoriesRouteImport.update({
+  id: '/budget/create/categories',
+  path: '/budget/create/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -64,6 +76,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/budget/$budgetId': typeof BudgetBudgetIdRoute
+  '/budget/create/categories': typeof BudgetCreateCategoriesRoute
+  '/budget/create/info': typeof BudgetCreateInfoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -72,6 +86,8 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/budget/$budgetId': typeof BudgetBudgetIdRoute
+  '/budget/create/categories': typeof BudgetCreateCategoriesRoute
+  '/budget/create/info': typeof BudgetCreateInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -81,6 +97,8 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/test': typeof TestRoute
   '/budget/$budgetId': typeof BudgetBudgetIdRoute
+  '/budget/create/categories': typeof BudgetCreateCategoriesRoute
+  '/budget/create/info': typeof BudgetCreateInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +109,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/test'
     | '/budget/$budgetId'
+    | '/budget/create/categories'
+    | '/budget/create/info'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,6 +119,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/test'
     | '/budget/$budgetId'
+    | '/budget/create/categories'
+    | '/budget/create/info'
   id:
     | '__root__'
     | '/'
@@ -107,6 +129,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/test'
     | '/budget/$budgetId'
+    | '/budget/create/categories'
+    | '/budget/create/info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,6 +140,8 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   TestRoute: typeof TestRoute
   BudgetBudgetIdRoute: typeof BudgetBudgetIdRoute
+  BudgetCreateCategoriesRoute: typeof BudgetCreateCategoriesRoute
+  BudgetCreateInfoRoute: typeof BudgetCreateInfoRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -183,6 +209,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BudgetBudgetIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/budget/create/info': {
+      id: '/budget/create/info'
+      path: '/budget/create/info'
+      fullPath: '/budget/create/info'
+      preLoaderRoute: typeof BudgetCreateInfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/budget/create/categories': {
+      id: '/budget/create/categories'
+      path: '/budget/create/categories'
+      fullPath: '/budget/create/categories'
+      preLoaderRoute: typeof BudgetCreateCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -204,6 +244,8 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   TestRoute: TestRoute,
   BudgetBudgetIdRoute: BudgetBudgetIdRoute,
+  BudgetCreateCategoriesRoute: BudgetCreateCategoriesRoute,
+  BudgetCreateInfoRoute: BudgetCreateInfoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
