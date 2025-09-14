@@ -10,7 +10,7 @@ import AppLayout from '@/components/AppLayout'
 import AuthForm from '@/components/AuthForm'
 import { useActiveBudget, useSession } from '@/lib/hooks'
 import { Input } from '@/components/ui/input'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/formatCurrency'
 
 const searchSchema = z.object({
   previousBudgetAmount: z.number().optional(),

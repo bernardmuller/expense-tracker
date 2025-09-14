@@ -3,7 +3,6 @@ import { useState, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { ArrowLeft } from 'lucide-react'
 import { z } from 'zod'
 import AppLayout from '@/components/AppLayout'
 import AuthForm from '@/components/AuthForm'
@@ -11,7 +10,7 @@ import { useSession, useUserActiveCategories, useCategoryBudgets } from '@/lib/h
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { getCategoryInfo } from '@/lib/category-utils'
 import { Input } from '@/components/ui/input'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/formatCurrency'
 
 const createBudgetWithCategories = async (data: {
   userId: string;

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/formatCurrency'
 
 const getCategoryBudgets = async (budgetId: number) => {
   const { getCategoryBudgets } = await import('../server/budgets')
@@ -114,8 +114,8 @@ export default function BudgetCategoriesDisplay({ budgetId }: BudgetCategoriesDi
                     R{formatCurrency(spent)} of R{formatCurrency(allocated)}
                   </span>
                   <span className={`font-medium ${percentage >= 100 ? 'text-red-500' :
-                      percentage >= 80 ? 'text-yellow-500' :
-                        'text-green-500'
+                    percentage >= 80 ? 'text-yellow-500' :
+                      'text-green-500'
                     }`}>
                     {percentage.toFixed(1)}%
                   </span>

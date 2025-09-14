@@ -1,10 +1,9 @@
 import { Link } from '@tanstack/react-router'
-import type { ExpenseCategory } from '../db/schema'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAllCategories, useRecentExpenses } from '@/lib/hooks'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/formatCurrency'
 import { getCategoryInfo } from '@/lib/category-utils'
 
 interface RecentExpensesProps {

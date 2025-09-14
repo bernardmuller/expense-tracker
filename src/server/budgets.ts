@@ -1,8 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { and, desc, eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { db } from '../db'
 import { budgets, categories, categoryBudgets } from '../db/schema'
+import { getActiveBudgetByUserId } from './queries/budgets'
 
 const createBudgetSchema = z.object({
   userId: z.string(),
@@ -22,22 +23,11 @@ const updateBudgetAmountSchema = z.object({
   amount: z.number(),
 })
 
+
 export const getActiveBudget = createServerFn({ method: 'GET' })
   .validator(z.object({ userId: z.string() }))
   .handler(async ({ data }) => {
-    const activeBudget = await db
-      .select()
-      .from(budgets)
-      .where(
-        and(
-          eq(budgets.userId, data.userId),
-          eq(budgets.isActive, true)
-        )
-      )
-      .orderBy(desc(budgets.createdAt))
-      .limit(1)
-
-    return activeBudget[0] || null
+    return getActiveBudgetByUserId(data.userId)
   })
 
 export const createBudget = createServerFn({ method: 'POST' })
