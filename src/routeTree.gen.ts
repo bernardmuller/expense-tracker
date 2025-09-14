@@ -11,7 +11,6 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as CategoriesRouteImport } from './routes/categories'
@@ -23,11 +22,6 @@ import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/
 
 const rootServerRouteImport = createServerRootRoute()
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -74,7 +68,6 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/budget/$budgetId': typeof BudgetBudgetIdRoute
   '/budget/create/categories': typeof BudgetCreateCategoriesRoute
   '/budget/create/info': typeof BudgetCreateInfoRoute
@@ -84,7 +77,6 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/budget/$budgetId': typeof BudgetBudgetIdRoute
   '/budget/create/categories': typeof BudgetCreateCategoriesRoute
   '/budget/create/info': typeof BudgetCreateInfoRoute
@@ -95,7 +87,6 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/expenses': typeof ExpensesRoute
   '/settings': typeof SettingsRoute
-  '/test': typeof TestRoute
   '/budget/$budgetId': typeof BudgetBudgetIdRoute
   '/budget/create/categories': typeof BudgetCreateCategoriesRoute
   '/budget/create/info': typeof BudgetCreateInfoRoute
@@ -107,7 +98,6 @@ export interface FileRouteTypes {
     | '/categories'
     | '/expenses'
     | '/settings'
-    | '/test'
     | '/budget/$budgetId'
     | '/budget/create/categories'
     | '/budget/create/info'
@@ -117,7 +107,6 @@ export interface FileRouteTypes {
     | '/categories'
     | '/expenses'
     | '/settings'
-    | '/test'
     | '/budget/$budgetId'
     | '/budget/create/categories'
     | '/budget/create/info'
@@ -127,7 +116,6 @@ export interface FileRouteTypes {
     | '/categories'
     | '/expenses'
     | '/settings'
-    | '/test'
     | '/budget/$budgetId'
     | '/budget/create/categories'
     | '/budget/create/info'
@@ -138,7 +126,6 @@ export interface RootRouteChildren {
   CategoriesRoute: typeof CategoriesRoute
   ExpensesRoute: typeof ExpensesRoute
   SettingsRoute: typeof SettingsRoute
-  TestRoute: typeof TestRoute
   BudgetBudgetIdRoute: typeof BudgetBudgetIdRoute
   BudgetCreateCategoriesRoute: typeof BudgetCreateCategoriesRoute
   BudgetCreateInfoRoute: typeof BudgetCreateInfoRoute
@@ -167,13 +154,6 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -242,7 +222,6 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriesRoute: CategoriesRoute,
   ExpensesRoute: ExpensesRoute,
   SettingsRoute: SettingsRoute,
-  TestRoute: TestRoute,
   BudgetBudgetIdRoute: BudgetBudgetIdRoute,
   BudgetCreateCategoriesRoute: BudgetCreateCategoriesRoute,
   BudgetCreateInfoRoute: BudgetCreateInfoRoute,
