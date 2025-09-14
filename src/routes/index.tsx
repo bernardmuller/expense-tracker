@@ -1,15 +1,14 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import BudgetDisplay from '../components/BudgetDisplay'
 import RecentExpenses from '../components/RecentExpenses'
 import AddExpenseForm from '../components/AddExpenseForm'
-import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useActiveBudget, useSession } from '@/lib/hooks'
+import CurrentBudget from '@/components/budgets/CurrentBudget'
 
 type Transaction = {
   amount?: string,
@@ -28,20 +27,21 @@ export const Route = createFileRoute('/')({
 
 function ExpenseTracker() {
   const { amount, name } = Route.useSearch();
-  const [isNewBudgetModalOpen, setIsNewBudgetModalOpen] = useState(false)
+  const [isAmountVisible, setIsAmountVisible] = useState(false)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
   const { data: session, isLoading: sessionLoading } = useSession()
+  const {
+    data: budget,
+    isLoading: isActiveBudgetLoading,
+    error: activeBudgetError
+  } = useActiveBudget({ userId: session?.data?.user.id })
 
   const handleAuthSuccess = () => {
     // Refresh session data after successful auth
     queryClient.invalidateQueries({ queryKey: ['session'] })
   }
-
-  const userId = session?.data?.user.id
-
-  const { data: budget, isLoading, error } = useActiveBudget({ userId })
 
   if (sessionLoading) {
     return (
@@ -56,7 +56,7 @@ function ExpenseTracker() {
     )
   }
 
-  if (!session?.data?.user) {
+  if (!session?.data?.user && !session?.data?.user.id) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -66,8 +66,7 @@ function ExpenseTracker() {
     )
   }
 
-
-  if (error) {
+  if (activeBudgetError) {
     return (
       <AppLayout title="Error">
         <Card className="border-destructive/50">
@@ -75,21 +74,13 @@ function ExpenseTracker() {
             <div className="text-6xl mb-4">⚠️</div>
             <h1 className="text-2xl font-bold text-destructive mb-2">Error Loading Data..</h1>
             <p className="text-destructive/80 mb-4">Unable to load your budget information.</p>
-            <Button onClick={() => setIsNewBudgetModalOpen(true)}>
-              Create Budget
-            </Button>
           </CardContent>
         </Card>
-        <StartNewBudgetModal
-          isOpen={isNewBudgetModalOpen}
-          onClose={() => setIsNewBudgetModalOpen(false)}
-          userId={userId!}
-        />
       </AppLayout>
     )
   }
 
-  if (isLoading) {
+  if (isActiveBudgetLoading) {
     return (
       <AppLayout title="Loading...">
         <div className="animate-pulse">
@@ -106,25 +97,16 @@ function ExpenseTracker() {
 
   if (!budget) {
     return (
-      <AppLayout
-        title={`Welcome${session.data.user.name ? `, ${session.data.user.name}` : ''}!`}
-      >
-        <Card>
-          <CardContent className="p-8 text-center">
-            <div className="text-6xl mb-4">💰</div>
-            <h1 className="text-2xl font-bold mb-2">Get Started</h1>
-            <p className="text-muted-foreground mb-6">Create your first budget to start tracking your expenses!</p>
-            <Button onClick={() => navigate({ to: '/budget/create/info' })}>
-              Create Budget
-            </Button>
-          </CardContent>
-        </Card>
-        <StartNewBudgetModal
-          isOpen={isNewBudgetModalOpen}
-          onClose={() => setIsNewBudgetModalOpen(false)}
-          userId={userId!}
-        />
-      </AppLayout>
+      <Card>
+        <CardContent className="p-8 text-center">
+          <div className="text-6xl mb-4">💰</div>
+          <h1 className="text-2xl font-bold mb-2">Get Started</h1>
+          <p className="text-muted-foreground mb-6">Create your first budget to start tracking your expenses!</p>
+          <Button onClick={() => navigate({ to: "/budget/create/info" })}>
+            Create Budget
+          </Button>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -134,20 +116,21 @@ function ExpenseTracker() {
       subtitle={`Welcome back${session.data.user.name ? `, ${session.data.user.name}` : ''}!`}
     >
       <div className='flex flex-col gap-4'>
-        <BudgetDisplay userId={userId!} />
+        <CurrentBudget
+          budget={budget}
+          currencySymbol='R'
+          isAmountVisible={isAmountVisible}
+          onAmountVisible={() => setIsAmountVisible(prev => !prev)}
+        />
         <AddExpenseForm
           defaultAmount={amount ?? ''}
           defaultName={name ?? ''}
           budgetId={budget.id}
-          userId={userId!}
+          userId={
+            session.data.user.id
+          }
         />
         <RecentExpenses budgetId={budget.id} />
-        <StartNewBudgetModal
-          isOpen={isNewBudgetModalOpen}
-          onClose={() => setIsNewBudgetModalOpen(false)}
-          userId={userId!}
-          previousBudgetAmount={parseFloat(budget.startAmount)}
-        />
       </div>
     </AppLayout>
   )

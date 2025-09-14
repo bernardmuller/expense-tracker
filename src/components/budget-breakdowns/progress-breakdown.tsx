@@ -4,7 +4,7 @@ import { Badge } from "../ui/badge"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/cn"
 
 interface CategoryData {
   id: string
