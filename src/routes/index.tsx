@@ -7,7 +7,7 @@ import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useActiveBudget, useSession } from '@/lib/hooks'
+import { useActiveBudget, useRecentExpenses, useSession, useUserCategories } from '@/lib/hooks'
 import CurrentBudget from '@/components/budgets/CurrentBudget'
 
 type Transaction = {
@@ -37,6 +37,13 @@ function ExpenseTracker() {
     isLoading: isActiveBudgetLoading,
     error: activeBudgetError
   } = useActiveBudget({ userId: session?.data?.user.id })
+  const {
+    data: recentExpenses,
+    isLoading: isRecentExpensesLoading,
+  } = useRecentExpenses({ budgetId: budget?.id })
+  const {
+    data: userCategories
+  } = useUserCategories(session?.data?.user.id)
 
   const handleAuthSuccess = () => {
     // Refresh session data after successful auth
@@ -80,7 +87,7 @@ function ExpenseTracker() {
     )
   }
 
-  if (isActiveBudgetLoading) {
+  if (isActiveBudgetLoading || isRecentExpensesLoading) {
     return (
       <AppLayout title="Loading...">
         <div className="animate-pulse">
@@ -110,6 +117,11 @@ function ExpenseTracker() {
     )
   }
 
+  console.log({
+    recentExpenses,
+    userCategories
+  })
+
   return (
     <AppLayout
       title="Expense Tracker"
@@ -130,7 +142,11 @@ function ExpenseTracker() {
             session.data.user.id
           }
         />
-        <RecentExpenses budgetId={budget.id} />
+        <RecentExpenses
+          currencySymbol="R"
+          expenses={recentExpenses}
+          categories={userCategories}
+        />
       </div>
     </AppLayout>
   )

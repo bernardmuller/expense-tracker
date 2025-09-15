@@ -58,11 +58,10 @@ export default function CurrentBudget({
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="relative text-center py-3 pb-6">
+      <CardContent className='flex flex-col gap-8 pt-4'>
+        <div className="relative text-center">
           <Button
             variant="ghost"
-            size="sm"
             onClick={() => onAmountVisible()}
           >
             <div className=" flex justify-center">

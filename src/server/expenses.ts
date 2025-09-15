@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '../db'
 import { budgets, expenses } from '../db/schema'
+import { getRecentExpensesByBudgetId } from './queries/expenses/getRecentExpensesByBudgetId'
 
 const createExpenseSchema = z.object({
   budgetId: z.number(),
@@ -32,10 +33,6 @@ export const createExpense = createServerFn({ method: 'POST' })
         .where(eq(budgets.id, data.budgetId))
         .limit(1)
 
-      if (!currentBudget) {
-        throw new Error('Budget not found')
-      }
-
       const newCurrentAmount = parseFloat(currentBudget.currentAmount) - data.amount
 
       await tx
@@ -56,15 +53,7 @@ export const createExpense = createServerFn({ method: 'POST' })
 export const getRecentExpenses = createServerFn({ method: 'GET' })
   .validator(z.object({ budgetId: z.number() }))
   .handler(async ({ data }) => {
-    return await db
-      .select()
-      .from(expenses)
-      .where(and(
-        isNull(expenses.deletedAt),
-        eq(expenses.budgetId, data.budgetId)
-      ))
-      .orderBy(desc(expenses.createdAt))
-      .limit(5)
+    return await getRecentExpensesByBudgetId(data.budgetId)
   })
 
 export const getAllExpenses = createServerFn({ method: 'GET' })
