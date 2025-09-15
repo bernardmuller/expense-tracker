@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils/cn'
 
 interface RecentExpensesProps {
   currencySymbol: string
-  expenses: RecentExpensesByBudgetId
-  categories: CategoriesByUserId
+  expenses?: RecentExpensesByBudgetId
+  categories?: CategoriesByUserId
 }
 
 function NoExpensesFound() {
@@ -27,7 +27,7 @@ function RecentExpensesList({
   expenses,
   categories
 }: RecentExpensesProps) {
-  if (expenses.length === 0)
+  if (!expenses || expenses.length === 0)
     return (
       <NoExpensesFound />
     )
@@ -35,7 +35,7 @@ function RecentExpensesList({
     <>
       {
         expenses.map((expense) => {
-          const categoryInfo = getCategoryInfo(expense.category, categories)
+          const categoryInfo = getCategoryInfo(expense.category, categories ?? [])
           const amount = parseFloat(expense.amount)
 
           return (
