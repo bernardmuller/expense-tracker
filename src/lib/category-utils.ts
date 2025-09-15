@@ -1,42 +1,42 @@
-import type { Category } from '../db/schema'
+import type { CategoriesByUserId } from '@/server/queries/categories'
 
 export interface CategoryInfo {
   key: string
   label: string
-  icon: string
+  icon: string | null
 }
 
 export function getCategoryInfo(
-  categoryKey: string,
-  allCategories: Category[] | undefined
+  key: string,
+  categories: CategoriesByUserId
 ): CategoryInfo {
-  const category = allCategories?.find(cat => cat.key === categoryKey)
-  
+  const category = categories.find((cat: CategoriesByUserId[0]) => cat.key === key)
+
   if (category) {
     return {
       key: category.key,
       label: category.label,
-      icon: category.icon || '💰',
+      icon: category.icon || null,
     }
   }
 
   return {
-    key: categoryKey,
-    label: categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1).replace(/-/g, ' '),
-    icon: '💰',
+    key: key,
+    label: key.charAt(0).toUpperCase() + key.slice(1).replace(/-/g, ' '),
+    icon: null,
   }
 }
 
 export function getCategoryLabel(
-  categoryKey: string,
-  allCategories: Category[] | undefined
+  key: string,
+  categories: CategoriesByUserId
 ): string {
-  return getCategoryInfo(categoryKey, allCategories).label
+  return getCategoryInfo(key, categories).label
 }
 
 export function getCategoryIcon(
-  categoryKey: string,
-  allCategories: Category[] | undefined
-): string {
-  return getCategoryInfo(categoryKey, allCategories).icon
+  key: string,
+  categories: CategoriesByUserId
+): string | null {
+  return getCategoryInfo(key, categories).icon
 }

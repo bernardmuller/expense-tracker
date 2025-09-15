@@ -4,6 +4,7 @@ import z from 'zod';
 import { db } from '../db/index';
 import { categories, userCategories } from '../db/schema';
 import { defaultUserCategories } from '../db/seed-categories';
+import { getAllCategoriesByUserId } from './queries/categories';
 
 const createCategoryDataSchema = z.object({
   key: z.string(),
@@ -38,28 +39,7 @@ export const getAllCategories = createServerFn({ method: 'GET' })
 export const getUserCategories = createServerFn({ method: 'GET' })
   .validator(z.object({ userId: z.string() }))
   .handler(async ({ data }) => {
-    const result = await db
-      .select({
-        id: userCategories.id,
-        userId: userCategories.userId,
-        categoryId: userCategories.categoryId,
-        createdAt: userCategories.createdAt,
-        updatedAt: userCategories.updatedAt,
-        deletedAt: userCategories.deletedAt,
-        category: categories
-      })
-      .from(userCategories)
-      .innerJoin(categories, eq(userCategories.categoryId, categories.id))
-      .where(
-        and(
-          eq(userCategories.userId, data.userId),
-          isNull(userCategories.deletedAt),
-          isNull(categories.deletedAt)
-        )
-      )
-      .orderBy(categories.label);
-
-    return result;
+    return getAllCategoriesByUserId(data.userId)
   })
 
 export const getUserActiveCategories = createServerFn({ method: 'GET' })
