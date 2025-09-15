@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import RecentExpenses from '../components/RecentExpenses'
+import RecentExpenses from '../components/expenses/RecentExpenses'
 import AddExpenseForm from '../components/AddExpenseForm'
 import AuthForm from '../components/AuthForm'
 import AppLayout from '../components/AppLayout'
@@ -116,11 +116,6 @@ function ExpenseTracker() {
       </Card>
     )
   }
-
-  console.log({
-    recentExpenses,
-    userCategories
-  })
 
   return (
     <AppLayout
