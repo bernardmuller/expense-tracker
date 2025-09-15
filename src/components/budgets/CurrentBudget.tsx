@@ -67,12 +67,16 @@ export default function CurrentBudget({
           >
             <div className=" flex justify-center">
               <div className="text-4xl w-full font-bold text-primary">
-                {displayCurrentAmount}
+                <span>
+                  {displayCurrentAmount}
+                </span>
               </div>
             </div>
           </Button>
           <div className="text-sm text-muted-foreground">
-            remaining of {displayStartAmount}
+            <span>
+              remaining of {displayStartAmount}
+            </span>
           </div>
         </div>
         <div className="space-y-2">

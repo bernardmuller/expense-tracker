@@ -1,8 +1,8 @@
 import React from 'react'
-import { render, RenderOptions } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { vi } from 'vitest'
+import type { RenderOptions } from '@testing-library/react';
 
-// Mock the Link component from TanStack Router
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children, ...props }: any) => <a {...props}>{children}</a>
 }))
