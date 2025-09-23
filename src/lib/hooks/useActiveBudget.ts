@@ -5,8 +5,8 @@ export function useActiveBudget({ userId }: { userId?: string }) {
   return useQuery({
     queryKey: queryKeys.activeBudget(userId!),
     queryFn: async () => {
-      const { getActiveBudget } = await import('../../server/budgets')
-      return getActiveBudget({ data: { userId: userId! } })
+      const { getActiveBudgetRoute } = await import('../../server/routes/budgets/getActiveBudgetRoute')
+      return getActiveBudgetRoute({ data: { userId: userId! } })
     },
     enabled: !!userId,
   })

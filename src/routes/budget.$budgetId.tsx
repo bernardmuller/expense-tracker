@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import AppLayout from '@/components/AppLayout'
 import AuthForm from '@/components/AuthForm'
-import { useAllCategories, useAllExpenses, useSession, useUserCategories } from '@/lib/hooks'
+import { useActiveBudget, useAllCategories, useAllExpenses, useSession, useUserCategories } from '@/lib/hooks'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
 import { getCategoryInfo } from '@/lib/category-utils'
 import StartNewBudgetModal from '@/components/StartNewBudgetModal'
@@ -55,6 +55,11 @@ function BudgetSummaryPage() {
   const { data: session, isLoading: sessionLoading } = useSession()
   const { data: allCategories } = useAllCategories()
   const userId = session?.data?.user.id
+
+  const { data: activeBudget, isLoading: isActiveBudgetLoading } = useActiveBudget({ userId })
+
+  console.log("active budget: ", activeBudget)
+
   const { data: userCategories, isLoading: userCategoriesLoading } = useUserCategories(userId)
 
   const { data: budget, isLoading: budgetLoading } = useQuery({
@@ -251,47 +256,20 @@ function BudgetSummaryPage() {
         </div>
 
         {pieData && categoryData.length > 0 && pieData.length > 0 && expenses && (
-          <ProgressBreakdown categories={pieData.map(item => {
-            const categoryInfo = getCategoryInfo(item.name, allCategories)
-            const categoryBudget = categoryBudgets?.find(cb => cb.category?.key === item.name)
-            const allocated = categoryBudget ? parseFloat(categoryBudget.allocatedAmount) : 0
+          <ProgressBreakdown categories={[]} />)}
 
-            return {
-              id: item.name,
-              key: item.key,
-              name: categoryInfo.label,
-              icon: categoryInfo.icon,
-              color: item.color,
-              spent: item.value,
-              planned: allocated || null
-            }
-          })} />
-        )}
-
-        {categoryData.length === 0 && (
-          <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-4xl mb-4">📊</div>
-              <h2 className="text-lg font-bold mb-2">No Expenses Yet</h2>
-              <p className="text-muted-foreground mb-6">Start adding expenses to see your budget breakdown.</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {mode === 'view' && (
-          <div className='w-full flex justify-center'>
-            <Button
-              onClick={() => navigate({
-                to: '/budget/create/info',
-                search: { previousBudgetAmount: parseFloat(budget.startAmount) }
-              })}
-              className="flex-1"
-              variant="destructive"
-            >
-              Close Budget
-            </Button>
-          </div>
-        )}
+        <div className='w-full flex justify-center'>
+          <Button
+            onClick={() => navigate({
+              to: '/budget/create/info',
+              search: { previousBudgetAmount: parseFloat(budget.startAmount) }
+            })}
+            className="flex-1"
+            variant="destructive"
+          >
+            Close Budget
+          </Button>
+        </div>
       </div>
     </AppLayout>
   )

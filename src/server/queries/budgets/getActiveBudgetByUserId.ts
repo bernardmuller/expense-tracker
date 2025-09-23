@@ -16,3 +16,5 @@ export async function getActiveBudgetByUserId(userId: string) {
     .limit(1)
   return activeBudget[0] || null
 }
+
+export type ActiveBudgetByUserId = Awaited<ReturnType<typeof getActiveBudgetByUserId>>
