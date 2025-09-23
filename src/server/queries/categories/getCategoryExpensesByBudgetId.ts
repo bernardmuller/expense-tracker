@@ -20,7 +20,7 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 			key: categories.key,
 			name: categories.label,
 			icon: categories.icon,
-			spent: sql`coalesce(${subquery.spent}, 0)`.as('spent'), // Using sql template
+			spent: subquery.spent,
 			planned: categoryBudgets.allocatedAmount
 		})
 		.from(userCategories)
@@ -29,7 +29,11 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		.leftJoin(subquery, eq(subquery.key, categories.key)) // Changed to leftJoin
 		.groupBy(categories.key, categoryBudgets.allocatedAmount, categories.label, categories.icon, categories.id, subquery.spent)
 
-	return result;
+	// Handle null spent values in JavaScript
+	return result.map(item => ({
+		...item,
+		spent: item.spent ? parseFloat(item.spent.toString()) : 0
+	}));
 }
 
 export type CategoryExpensesByBudgetId = Awaited<ReturnType<typeof getCategoryExpensesByBudgetId>>

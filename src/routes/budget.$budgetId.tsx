@@ -11,6 +11,7 @@ import { formatCurrency } from '@/lib/utils/formatCurrency'
 import { getCategoryInfo } from '@/lib/category-utils'
 import StartNewBudgetModal from '@/components/StartNewBudgetModal'
 import { ProgressBreakdown } from '@/components/budget-breakdowns/progress-breakdown'
+import { useBudgetDetails } from '@/lib/hooks/useBudgetDetails'
 
 const getBudgetById = async (data: { budgetId: number }) => {
   const { getBudgetById } = await import('../server/budgets')
@@ -56,7 +57,7 @@ function BudgetSummaryPage() {
   const { data: allCategories } = useAllCategories()
   const userId = session?.data?.user.id
 
-  const { data: activeBudget, isLoading: isActiveBudgetLoading } = useActiveBudget({ userId })
+  const { data: activeBudget, isLoading: isActiveBudgetLoading } = useBudgetDetails({ userId })
 
   console.log("active budget: ", activeBudget)
 
@@ -122,6 +123,7 @@ function BudgetSummaryPage() {
       { category: "", amount: 0 }
     )
     : { category: "", amount: 0 }
+
   const highestCategoryInfo = highestCategory.category ?
     getCategoryInfo(highestCategory.category, allCategories) :
     { label: 'None' }
@@ -140,7 +142,7 @@ function BudgetSummaryPage() {
     }
   })
 
-  if (sessionLoading || budgetLoading || expensesLoading || categoryBudgetsLoading || userCategoriesLoading) {
+  if (sessionLoading || isActiveBudgetLoading) {
     return (
       <AppLayout>
         <Card>
@@ -185,36 +187,8 @@ function BudgetSummaryPage() {
       subtitle={budget.name}
       showBackButton
     >
-      <StartNewBudgetModal
-        isOpen={isNewBudgetModalOpen}
-        onClose={() => {
-          setIsNewBudgetModalOpen(false)
-          navigate({ to: "/" });
-        }}
-        userId={userId!}
-        previousBudgetAmount={parseFloat(budget.startAmount)}
-      />
-
       <div className="max-w-2xl mx-auto space-y-4">
-
         <div className="grid grid-cols-2 gap-4">
-
-          {mode === 'new' ? (
-            <Card className='p-4 col-span-2 border-primary/50 bg-primary/5'>
-              <CardContent className='p-0 flex flex-col gap-2 text-center'>
-                <h3 className='text-primary'>You're about to close this budget</h3>
-                <p className="text-xs text-white mb-2">Once closed, no further changes can be made and a new budget period will begin.</p>
-                <Button
-                  onClick={() => navigate({
-                    to: '/budget/create/info',
-                    search: { previousBudgetAmount: parseFloat(budget.startAmount) }
-                  })}
-                  className="flex-1 text-black"
-                >
-                  Close Budget
-                </Button>
-              </CardContent>
-            </Card>) : null}
           <Card className='p-0'>
             <CardContent className='p-4'>
               <p className="text-muted-foreground text-xs">Total amount spent</p>
@@ -255,8 +229,8 @@ function BudgetSummaryPage() {
           </Card>
         </div>
 
-        {pieData && categoryData.length > 0 && pieData.length > 0 && expenses && (
-          <ProgressBreakdown categories={[]} />)}
+        {activeBudget?.categories && (
+          <ProgressBreakdown categories={activeBudget.categories} />)}
 
         <div className='w-full flex justify-center'>
           <Button

@@ -7,13 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils/cn"
 
 interface CategoryData {
-  id: string
+  id: number
   key: string
   name: string
   spent: number
-  planned: number | null
+  planned: string | null
   icon: string
-  color: string
 }
 
 interface MinimalistListProps {
@@ -26,7 +25,7 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
 
   const filteredCategories = useMemo(() => {
     if (filteredCategory === "all" || !filteredCategory) return categories
-    return categories.filter(cat => cat.id === filteredCategory)
+    return categories.filter(cat => cat.id.toString() === filteredCategory)
   }, [filteredCategory, categories])
 
   if (categories.length === 0) {
@@ -90,8 +89,8 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
               />
 
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground font-medium">Spent: R{category.spent.toLocaleString()}</span>
                 <span className="text-muted-foreground">Planned: R{category.planned?.toLocaleString() ?? "0"}</span>
+                <span className="text-muted-foreground font-sm">Spent: <span className="text-primary font-semibold">R{category.spent.toLocaleString()}</span></span>
               </div>
             </div>
           </Card>
