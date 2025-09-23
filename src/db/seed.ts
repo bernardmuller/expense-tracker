@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { db } from './index';
-import { categories, users, accounts, userCategories, NewCategory } from './schema';
+import { categories, users, accounts, userCategories, budgets, categoryBudgets, expenses, NewCategory, NewBudget, NewCategoryBudget, NewExpense } from './schema';
 
 const categoriesData: Omit<NewCategory, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
   { key: 'rent', label: 'Rent', icon: '🏠' },
@@ -32,6 +32,95 @@ const categoriesData: Omit<NewCategory, 'id' | 'createdAt' | 'updatedAt' | 'dele
   { key: 'christmas-savings', label: 'Christmas Savings', icon: '🎄' },
   { key: 'travel-savings', label: 'Travel Savings', icon: '✈️' },
   { key: 'gifts', label: 'Gifts', icon: '🎁' },
+];
+
+const budgetsData: Omit<NewBudget, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+  {
+    userId: 'h6yJqmzqgaZOLKJqC7R1gJrWGIq54gq5',
+    name: 'Budget - 23 Sep 2025',
+    startAmount: '20000.00',
+    currentAmount: '3700.00',
+    isActive: true,
+  },
+];
+
+const categoryBudgetsData: Omit<NewCategoryBudget, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+  {
+    budgetId: 1,
+    categoryId: 1,
+    allocatedAmount: '10000.00',
+  },
+  {
+    budgetId: 1,
+    categoryId: 2,
+    allocatedAmount: '4000.00',
+  },
+  {
+    budgetId: 1,
+    categoryId: 3,
+    allocatedAmount: '1000.00',
+  },
+  {
+    budgetId: 1,
+    categoryId: 8,
+    allocatedAmount: '1000.00',
+  },
+  {
+    budgetId: 1,
+    categoryId: 13,
+    allocatedAmount: '4000.00',
+  },
+];
+
+const expensesData: Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+  {
+    budgetId: 1,
+    description: 'Rent',
+    amount: '10000.00',
+    category: 'rent',
+  },
+  {
+    budgetId: 1,
+    description: 'Entertainment',
+    amount: '200.00',
+    category: 'entertainment',
+  },
+  {
+    budgetId: 1,
+    description: 'Eat-out-takeaways',
+    amount: '250.00',
+    category: 'eat-out-takeaways',
+  },
+  {
+    budgetId: 1,
+    description: 'Groceries',
+    amount: '1250.00',
+    category: 'groceries',
+  },
+  {
+    budgetId: 1,
+    description: 'Entertainment',
+    amount: '600.00',
+    category: 'entertainment',
+  },
+  {
+    budgetId: 1,
+    description: 'Savings',
+    amount: '1000.00',
+    category: 'savings',
+  },
+  {
+    budgetId: 1,
+    description: 'Investments',
+    amount: '2000.00',
+    category: 'savings',
+  },
+  {
+    budgetId: 1,
+    description: 'Vacation',
+    amount: '1000.00',
+    category: 'savings',
+  },
 ];
 
 const userData = {
@@ -110,11 +199,52 @@ export async function seedDatabase() {
       await db.insert(userCategories).values(userCategory).onConflictDoNothing();
     }
 
+    for (const budget of budgetsData) {
+      await db.insert(budgets).values({
+        ...budget,
+        createdAt: new Date('2025-09-23 21:42:47.023'),
+        updatedAt: new Date('2025-09-23 21:44:45.153'),
+      }).onConflictDoNothing();
+    }
+
+    for (const categoryBudget of categoryBudgetsData) {
+      await db.insert(categoryBudgets).values({
+        ...categoryBudget,
+        createdAt: new Date('2025-09-23 21:42:47.024'),
+        updatedAt: new Date('2025-09-23 21:42:47.024'),
+      }).onConflictDoNothing();
+    }
+
+    for (const expense of expensesData) {
+      await db.insert(expenses).values({
+        ...expense,
+        createdAt: new Date(expense.description === 'Rent' ? '2025-09-23 21:43:32.306' :
+                          expense.description === 'Entertainment' && expense.amount === '200.00' ? '2025-09-23 21:43:40.633' :
+                          expense.description === 'Eat-out-takeaways' ? '2025-09-23 21:43:45.649' :
+                          expense.description === 'Groceries' ? '2025-09-23 21:43:52.687' :
+                          expense.description === 'Entertainment' && expense.amount === '600.00' ? '2025-09-23 21:44:01.429' :
+                          expense.description === 'Savings' ? '2025-09-23 21:44:24.679' :
+                          expense.description === 'Investments' ? '2025-09-23 21:44:35.256' :
+                          '2025-09-23 21:44:45.152'),
+        updatedAt: new Date(expense.description === 'Rent' ? '2025-09-23 21:43:32.306' :
+                          expense.description === 'Entertainment' && expense.amount === '200.00' ? '2025-09-23 21:43:40.633' :
+                          expense.description === 'Eat-out-takeaways' ? '2025-09-23 21:43:45.649' :
+                          expense.description === 'Groceries' ? '2025-09-23 21:43:52.687' :
+                          expense.description === 'Entertainment' && expense.amount === '600.00' ? '2025-09-23 21:44:01.429' :
+                          expense.description === 'Savings' ? '2025-09-23 21:44:24.679' :
+                          expense.description === 'Investments' ? '2025-09-23 21:44:35.256' :
+                          '2025-09-23 21:44:45.152'),
+      }).onConflictDoNothing();
+    }
+
     console.table([
       { Entity: 'Categories', Count: categoriesData.length, Status: '✓ Seeded' },
       { Entity: 'Users', Count: 1, Status: '✓ Seeded' },
       { Entity: 'Accounts', Count: 1, Status: '✓ Seeded' },
       { Entity: 'User Categories', Count: userCategoriesData.length, Status: '✓ Seeded' },
+      { Entity: 'Budgets', Count: budgetsData.length, Status: '✓ Seeded' },
+      { Entity: 'Category Budgets', Count: categoryBudgetsData.length, Status: '✓ Seeded' },
+      { Entity: 'Expenses', Count: expensesData.length, Status: '✓ Seeded' },
     ]);
 
   } catch (error) {

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { Badge } from "../ui/badge"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils/cn"
@@ -28,6 +28,18 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
     if (filteredCategory === "all" || !filteredCategory) return categories
     return categories.filter(cat => cat.id === filteredCategory)
   }, [filteredCategory, categories])
+
+  if (categories.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-4 text-center">
+          <div className="text-4xl mb-4">📊</div>
+          <h2 className="text-md font-bold mb-2">No Expenses Yet</h2>
+          <p className="text-sm text-muted-foreground max-w-60 mx-auto">Start adding expenses to see your budget breakdown.</p>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <div className="space-y-3">
