@@ -1,12 +1,19 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import getActiveBudgetHandler from '@/server/handlers/budgets/getActiveBudget'
+import { getActiveBudgetByUserId } from '@/server/queries/budgets/getActiveBudgetByUserId'
+import getCategoryExpensesByBudgetId from '@/server/queries/categories/getCategoryExpensesByBudgetId'
 
 
 export const getActiveBudgetRoute = createServerFn({ method: 'GET' })
 	.validator(z.object({ userId: z.string() }))
 	.handler(async ({ data }) => {
-		return await getActiveBudgetHandler(data.userId)
+		const budget = await getActiveBudgetByUserId(data.userId)
+		const categories = await getCategoryExpensesByBudgetId(budget.id)
+
+		return {
+			budget,
+			categories
+		}
 	})
 
 
