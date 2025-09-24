@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '../../test/test-utils'
 import type { RecentExpensesByBudgetId } from '@/server/queries/expenses'
 import type { CategoriesByUserId } from '@/server/queries/categories'
-import RecentExpenses from '@/components/RecentExpenses'
+import RecentExpenses from '@/components/expenses/RecentExpenses'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
 import { getCategoryInfo } from '@/lib/category-utils'
 
