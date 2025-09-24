@@ -6,7 +6,7 @@ import AppLayout from '@/components/AppLayout'
 import AuthForm from '@/components/AuthForm'
 import { useSession } from '@/lib/hooks'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
-import { ProgressBreakdown } from '@/components/budget-breakdowns/progress-breakdown'
+import { BudgetBreakdownList } from '@/components/budget-breakdowns/budget-breakdown-list'
 import { useBudgetDetails } from '@/lib/hooks/useBudgetDetails'
 
 export const Route = createFileRoute('/budget/$budgetId')({
@@ -113,7 +113,7 @@ function BudgetDetailsPage() {
             </CardContent>
           </Card>
         </div>
-        <ProgressBreakdown categories={activeBudget.categories} />
+        <BudgetBreakdownList categories={activeBudget.categories} />
         <div className='w-full flex justify-center'>
           <Button
             onClick={() => navigate({
