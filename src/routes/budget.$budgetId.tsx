@@ -10,10 +10,10 @@ import { ProgressBreakdown } from '@/components/budget-breakdowns/progress-break
 import { useBudgetDetails } from '@/lib/hooks/useBudgetDetails'
 
 export const Route = createFileRoute('/budget/$budgetId')({
-  component: BudgetSummaryPage,
+  component: BudgetDetailsPage,
 })
 
-function BudgetSummaryPage() {
+function BudgetDetailsPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { data: session, isLoading: sessionLoading } = useSession()
@@ -48,7 +48,7 @@ function BudgetSummaryPage() {
     )
   }
 
-  if (!activeBudget) {
+  if (!activeBudget?.budget) {
     return (
       <AppLayout title="Budget Not Found" showBackButton>
         <Card>
