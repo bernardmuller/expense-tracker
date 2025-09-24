@@ -11,7 +11,7 @@ interface CategoryData {
   key: string
   name: string
   spent: number
-  planned: string | null
+  planned: number | null
   icon: string
 }
 
@@ -51,16 +51,14 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
           <SelectContent>
             <SelectItem key="all" value="all">All</SelectItem>
             {categories.map(category =>
-              <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
-            )})
+              <SelectItem key={category.id} value={category.id.toString()}>{category.name}</SelectItem>
+            )}
           </SelectContent>
         </Select>
       </div>
-
       {filteredCategories.map((category) => {
         const percentage = category.planned ? Math.min((category.spent / category.planned) * 100, 100) : 0;
         const isOverBudget = category.planned ? category.spent > category.planned : false
-
         return (
           <Card
             key={category.id}
@@ -87,7 +85,6 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
                 className="h-1"
                 isError={isOverBudget}
               />
-
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Planned: R{category.planned?.toLocaleString() ?? "0"}</span>
                 <span className="text-muted-foreground font-sm">Spent: <span className="text-primary font-semibold">R{category.spent.toLocaleString()}</span></span>

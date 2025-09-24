@@ -1,4 +1,4 @@
-import { eq, sql, sum } from "drizzle-orm"
+import { eq, sum } from "drizzle-orm"
 import { db } from "@/db"
 import { categories, categoryBudgets, expenses, userCategories } from "@/db/schema"
 
@@ -7,7 +7,7 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		.select({
 			key: expenses.category,
 			spent: sum(expenses.amount).as('spent'),
-			budgetId: expenses.budgetId
+			budgetId: expenses.budgetId,
 		})
 		.from(expenses)
 		.where(eq(expenses.budgetId, id))
@@ -21,18 +21,19 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 			name: categories.label,
 			icon: categories.icon,
 			spent: subquery.spent,
-			planned: categoryBudgets.allocatedAmount
+			planned: categoryBudgets.allocatedAmount,
+			// number: subquery.number
 		})
 		.from(userCategories)
 		.innerJoin(categories, eq(userCategories.categoryId, categories.id))
 		.innerJoin(categoryBudgets, eq(categories.id, categoryBudgets.categoryId))
-		.leftJoin(subquery, eq(subquery.key, categories.key)) // Changed to leftJoin
+		.leftJoin(subquery, eq(subquery.key, categories.key))
 		.groupBy(categories.key, categoryBudgets.allocatedAmount, categories.label, categories.icon, categories.id, subquery.spent)
 
-	// Handle null spent values in JavaScript
 	return result.map(item => ({
 		...item,
-		spent: item.spent ? parseFloat(item.spent.toString()) : 0
+		spent: item.spent ? parseFloat(item.spent.toString()) : 0,
+		planned: item.planned ? parseFloat(item.planned.toString()) : 0
 	}));
 }
 
