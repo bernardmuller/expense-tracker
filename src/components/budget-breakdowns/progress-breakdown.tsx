@@ -59,10 +59,11 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
       {filteredCategories.map((category) => {
         const percentage = category.planned ? Math.min((category.spent / category.planned) * 100, 100) : 0;
         const isOverBudget = category.planned ? category.spent > category.planned : false
+        const isUnplanned = !category.planned && category.spent > 0;
         return (
           <Card
             key={category.id}
-            className="p-4 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 cursor-pointer border-border/50"
+            className="p-4 cursor-pointer border-border/50"
             onClick={() => navigate({
               to: "/expenses",
               search: {
@@ -77,6 +78,9 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
               </div>
               {isOverBudget && (
                 <Badge variant="destructive">Over budget</Badge>
+              )}
+              {isUnplanned && (
+                <Badge variant="outline">Unplanned</Badge>
               )}
             </div>
             <div className="space-y-2">

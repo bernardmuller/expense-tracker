@@ -14,7 +14,6 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		.from(userCategories)
 		.innerJoin(categories, eq(userCategories.categoryId, categories.id))
 		.leftJoin(categoryBudgets, eq(categories.id, categoryBudgets.categoryId))
-		.where(gt(categoryBudgets.allocatedAmount, "0"))
 
 	const expensesByCategory = await db
 		.select({
