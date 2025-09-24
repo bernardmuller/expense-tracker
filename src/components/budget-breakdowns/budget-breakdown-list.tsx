@@ -1,11 +1,10 @@
 import { useMemo, useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
 import BudgetBreakdownItem from "./budget-breakdown-item"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils/cn"
 
-interface CategoryData {
+export interface CategoryData {
   id: number
   key: string
   name: string
@@ -16,10 +15,10 @@ interface CategoryData {
 
 interface MinimalistListProps {
   categories: Array<CategoryData>
+  onCategoryClick: (key: string) => void;
 }
 
-export function BudgetBreakdownList({ categories }: MinimalistListProps) {
-  const navigate = useNavigate();
+export function BudgetBreakdownList({ categories, onCategoryClick }: MinimalistListProps) {
   const [filteredCategory, setFilteredCategory] = useState<string | null>(null)
 
   const filteredCategories = useMemo(() => {
@@ -69,12 +68,7 @@ export function BudgetBreakdownList({ categories }: MinimalistListProps) {
             percentage={percentage}
             isOverBudget={isOverBudget}
             isUnplanned={isUnplanned}
-            onClick={() => navigate({
-              to: "/expenses",
-              search: {
-                filter: category.key
-              }
-            })}
+            onClick={() => onCategoryClick(category.key)}
           />
         )
       })}

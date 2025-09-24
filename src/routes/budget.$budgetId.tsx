@@ -113,7 +113,15 @@ function BudgetDetailsPage() {
             </CardContent>
           </Card>
         </div>
-        <BudgetBreakdownList categories={activeBudget.categories} />
+        <BudgetBreakdownList
+          categories={activeBudget.categories}
+          onCategoryClick={(key) => navigate({
+            to: "/expenses",
+            search: {
+              filter: key
+            }
+          })}
+        />
         <div className='w-full flex justify-center'>
           <Button
             onClick={() => navigate({

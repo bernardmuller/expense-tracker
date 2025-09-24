@@ -15,7 +15,6 @@ type BudgetBreakdownItemProps = {
 }
 
 export default function BudgetBreakdownItem({
-  key,
   name,
   icon,
   planned,
@@ -27,7 +26,6 @@ export default function BudgetBreakdownItem({
 }: BudgetBreakdownItemProps) {
   return (
     <Card
-      key={key}
       className="p-4 cursor-pointer border-border/50"
       onClick={() => onClick()}
     >
