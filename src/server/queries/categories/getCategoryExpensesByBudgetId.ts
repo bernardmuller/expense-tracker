@@ -1,38 +1,40 @@
-import { eq, sum } from "drizzle-orm"
+import { eq, gt, sum } from "drizzle-orm"
 import { db } from "@/db"
 import { categories, categoryBudgets, expenses, userCategories } from "@/db/schema"
 
 export default async function getCategoryExpensesByBudgetId(id: number) {
-	const subquery = db
-		.select({
-			key: expenses.category,
-			spent: sum(expenses.amount).as('spent'),
-			budgetId: expenses.budgetId,
-		})
-		.from(expenses)
-		.where(eq(expenses.budgetId, id))
-		.groupBy(expenses.category, expenses.budgetId)
-		.as('spent')
-
 	const result = await db
 		.select({
 			id: categories.id,
 			key: categories.key,
 			name: categories.label,
 			icon: categories.icon,
-			spent: subquery.spent,
 			planned: categoryBudgets.allocatedAmount,
-			// number: subquery.number
 		})
 		.from(userCategories)
 		.innerJoin(categories, eq(userCategories.categoryId, categories.id))
-		.innerJoin(categoryBudgets, eq(categories.id, categoryBudgets.categoryId))
-		.leftJoin(subquery, eq(subquery.key, categories.key))
-		.groupBy(categories.key, categoryBudgets.allocatedAmount, categories.label, categories.icon, categories.id, subquery.spent)
+		.leftJoin(categoryBudgets, eq(categories.id, categoryBudgets.categoryId))
+		.where(gt(categoryBudgets.allocatedAmount, "0"))
+
+	const expensesByCategory = await db
+		.select({
+			category: expenses.category,
+			spent: sum(expenses.amount).as('spent'),
+		})
+		.from(expenses)
+		.where(eq(expenses.budgetId, id))
+		.groupBy(expenses.category)
+
+	const expensesMap = new Map(
+		expensesByCategory.map(item => [
+			item.category,
+			parseFloat(item.spent?.toString() || '0')
+		])
+	)
 
 	return result.map(item => ({
 		...item,
-		spent: item.spent ? parseFloat(item.spent.toString()) : 0,
+		spent: expensesMap.get(item.key) || 0,
 		planned: item.planned ? parseFloat(item.planned.toString()) : 0
 	}));
 }
