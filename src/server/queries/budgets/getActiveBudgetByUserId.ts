@@ -1,9 +1,9 @@
-import { and, desc, eq } from 'drizzle-orm'
+import { and, count, desc, eq } from 'drizzle-orm'
 import { db } from "@/db"
-import { budgets } from "@/db/schema"
+import { budgets, expenses } from "@/db/schema"
 
 export async function getActiveBudgetByUserId(userId: string) {
-  const activeBudget = await db
+  const [activeBudget] = await db
     .select()
     .from(budgets)
     .where(
@@ -14,7 +14,18 @@ export async function getActiveBudgetByUserId(userId: string) {
     )
     .orderBy(desc(budgets.createdAt))
     .limit(1)
-  return activeBudget[0] || null
+
+  const [expenseCount] = await db
+    .select({ count: count() })
+    .from(expenses)
+    .where(
+      eq(expenses.budgetId, activeBudget.id)
+    )
+
+  return {
+    ...activeBudget,
+    expenseCount: expenseCount.count
+  }
 }
 
 export type ActiveBudgetByUserId = Awaited<ReturnType<typeof getActiveBudgetByUserId>>
