@@ -86,7 +86,7 @@ function BudgetDetailsPage() {
             <CardContent className='p-0'>
               <p className="text-muted-foreground text-xs">Amount Left</p>
               <p className={`text-lg font-bold ${Number(activeBudget.budget.currentAmount) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                R{Number(activeBudget.budget.currentAmount)}
+                R{formatCurrency(Number(activeBudget.budget.currentAmount))}
               </p>
             </CardContent>
           </Card>
