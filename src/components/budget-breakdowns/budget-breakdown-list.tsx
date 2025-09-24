@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
-import { Badge } from "../ui/badge"
+import BudgetBreakdownItem from "./budget-breakdown-item"
 import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils/cn"
 
@@ -19,7 +18,7 @@ interface MinimalistListProps {
   categories: Array<CategoryData>
 }
 
-export function ProgressBreakdown({ categories }: MinimalistListProps) {
+export function BudgetBreakdownList({ categories }: MinimalistListProps) {
   const navigate = useNavigate();
   const [filteredCategory, setFilteredCategory] = useState<string | null>(null)
 
@@ -61,40 +60,22 @@ export function ProgressBreakdown({ categories }: MinimalistListProps) {
         const isOverBudget = category.planned ? category.spent > category.planned : false
         const isUnplanned = !category.planned && category.spent > 0;
         return (
-          <Card
-            key={category.id}
-            className="p-4 cursor-pointer border-border/50"
+          <BudgetBreakdownItem
+            key={category.id.toString()}
+            name={category.name}
+            icon={category.icon}
+            planned={category.planned ?? 0}
+            spent={category.spent}
+            percentage={percentage}
+            isOverBudget={isOverBudget}
+            isUnplanned={isUnplanned}
             onClick={() => navigate({
               to: "/expenses",
               search: {
                 filter: category.key
               }
             })}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-lg">{category.icon}</span>
-                <h3 className="font-semibold text-foreground text-lg">{category.name}</h3>
-              </div>
-              {isOverBudget && (
-                <Badge variant="destructive">Over budget</Badge>
-              )}
-              {isUnplanned && (
-                <Badge variant="outline">Unplanned</Badge>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Progress
-                value={percentage}
-                className="h-1"
-                isError={isOverBudget}
-              />
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Planned: R{category.planned?.toLocaleString() ?? "0"}</span>
-                <span className="text-muted-foreground font-sm">Spent: <span className="text-primary font-semibold">R{category.spent.toLocaleString()}</span></span>
-              </div>
-            </div>
-          </Card>
+          />
         )
       })}
     </div>
