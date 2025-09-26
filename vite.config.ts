@@ -12,7 +12,7 @@ const config = defineConfig({
     }),
     tailwindcss(),
     tanstackStart({
-      // customViteReactPlugin: true,
+      customViteReactPlugin: true,
       // target: 'netlify'
     }),
     viteReact(),
