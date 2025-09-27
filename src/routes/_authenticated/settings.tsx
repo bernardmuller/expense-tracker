@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { ArrowRight, LogOut } from 'lucide-react'
@@ -17,7 +17,7 @@ function SettingsPage() {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
   const [isExiting, setIsExiting] = useState<boolean>(false)
-
+  const router = useRouter()
 
   const handleSignOut = async () => {
     await authClient.signOut()
@@ -47,6 +47,9 @@ function SettingsPage() {
     <AppLayout
       title="Settings"
       showBackButton
+      onBackClick={() => {
+        router.navigate({ to: "/" })
+      }}
     >
       <div className="space-y-2">
         <div className='flex items-center justify-between'>
@@ -87,11 +90,11 @@ function SettingsPage() {
             <div className="space-y-2">
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Name</label>
-                <p className="text-foreground">{session.data.user.name}</p>
+                <p className="text-foreground">{session?.data?.user.name}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Email</label>
-                <p className="text-foreground">{session.data.user.email}</p>
+                <p className="text-foreground">{session?.data?.user.email}</p>
               </div>
             </div>
           </CardContent>

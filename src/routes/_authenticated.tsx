@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
+import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import AppLayout from '../components/AppLayout'
 import { useSession } from '@/lib/hooks'
@@ -13,7 +13,6 @@ function AuthenticatedLayout() {
 
   useEffect(() => {
     if (!sessionLoading && !session?.data?.user) {
-      // Redirect to auth page with current location as redirect parameter
       const currentPath = window.location.pathname + window.location.search
       navigate({
         to: '/auth',
@@ -37,7 +36,6 @@ function AuthenticatedLayout() {
   }
 
   if (!session?.data?.user) {
-    // Show loading while redirecting
     return (
       <AppLayout>
         <div className="flex-1 flex flex h-[70vh] justify-center items-center">
@@ -50,6 +48,5 @@ function AuthenticatedLayout() {
     )
   }
 
-  // If authenticated, render the child routes
   return <Outlet />
 }

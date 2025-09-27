@@ -4,7 +4,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect, useMemo } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import StartNewBudgetModal from '../components/StartNewBudgetModal'
 import AppLayout from '../../components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -52,16 +51,14 @@ function ExpensesPage() {
   }, [filteredCategogry, expenses])
 
 
-  const deleteMutation = useDeleteExpense()
+  // const deleteMutation = useDeleteExpense()
 
-  // Override the mutation with custom optimistic update logic
   const deleteMutationWithOptimistic = useMutation({
     mutationFn: async (data: { expenseId: number }) => {
-      const { deleteExpenseRoute } = await import('../server/routes/expenses/deleteExpenseRoute')
+      const { deleteExpenseRoute } = await import('../../server/routes/expenses/deleteExpenseRoute')
       return deleteExpenseRoute({ data })
     },
     onMutate: async (variables) => {
-      // Skip optimistic updates during SSR
       if (typeof window === 'undefined') return
 
       const expenseId = variables.expenseId
@@ -78,19 +75,16 @@ function ExpensesPage() {
       const expenseToDelete = expenses?.find(e => e.id === expenseId)
 
       if (expenseToDelete) {
-        // Optimistically remove from recent expenses
         queryClient.setQueryData(
           queryKeys.recentExpenses(budget?.id || ''),
           (old: any) => old?.filter((expense: any) => expense.id !== expenseId) || []
         )
 
-        // Optimistically remove from all expenses
         queryClient.setQueryData(
           queryKeys.allExpenses(budget?.id || ''),
           (old: any) => old?.filter((expense: any) => expense.id !== expenseId) || []
         )
 
-        // Optimistically update budget amount (add back the deleted expense amount)
         queryClient.setQueryData(
           queryKeys.activeBudget(userId || ''),
           (old: any) => {
@@ -108,7 +102,6 @@ function ExpensesPage() {
       return { previousRecentExpenses, previousBudget, previousAllExpenses }
     },
     onError: (err, _, context) => {
-      // Revert optimistic updates on error
       if (context?.previousRecentExpenses) {
         queryClient.setQueryData(queryKeys.recentExpenses(budget?.id || ''), context.previousRecentExpenses)
       }
