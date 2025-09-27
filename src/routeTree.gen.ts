@@ -15,9 +15,9 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BudgetBudgetIdRouteImport } from './routes/budget.$budgetId'
-import { Route as BudgetCreateInfoRouteImport } from './routes/budget.create.info'
-import { Route as BudgetCreateCategoriesRouteImport } from './routes/budget.create.categories'
+import { Route as BudgetBudgetIdRouteImport } from './routes/budget/$budgetId'
+import { Route as BudgetCreateInfoRouteImport } from './routes/budget/create/info'
+import { Route as BudgetCreateCategoriesRouteImport } from './routes/budget/create/categories'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
