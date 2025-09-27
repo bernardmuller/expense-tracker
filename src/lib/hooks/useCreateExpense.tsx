@@ -4,8 +4,8 @@ import type { Budget, Expense } from '@/db/schema'
 import { queryKeys } from '@/lib/query-client'
 
 const createExpense = async (data: { budgetId: number; description: string; amount: number; category: string }) => {
-  const { createExpense } = await import('../../server/expenses')
-  return createExpense({ data })
+  const { createExpenseRoute } = await import('../../server/routes/expenses/createExpenseRoute')
+  return createExpenseRoute({ data })
 }
 
 type CreateExpenseMutationParams = {

@@ -152,7 +152,6 @@ function BudgetCreateInfo() {
             </CardContent>
           </Card>
 
-          {/* Continue Button */}
           <Button
             onClick={handleContinueToCategories}
             disabled={!budgetName || !startingAmount}

@@ -20,10 +20,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip
 import { defaultCategories } from '@/lib/constants/default-categories'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-const deleteExpense = async (data: { expenseId: number }) => {
-  const { deleteExpense } = await import('../server/expenses')
-  return deleteExpense({ data })
-}
+import { useDeleteExpense } from '@/lib/hooks/useDeleteExpense'
 
 const routeSearchSchema = z.object({
   filter: z.string().optional()
@@ -60,8 +57,14 @@ function ExpensesPage() {
     queryClient.invalidateQueries({ queryKey: ['session'] })
   }
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteExpense,
+  const deleteMutation = useDeleteExpense()
+
+  // Override the mutation with custom optimistic update logic
+  const deleteMutationWithOptimistic = useMutation({
+    mutationFn: async (data: { expenseId: number }) => {
+      const { deleteExpenseRoute } = await import('../server/routes/expenses/deleteExpenseRoute')
+      return deleteExpenseRoute({ data })
+    },
     onMutate: async (variables) => {
       // Skip optimistic updates during SSR
       if (typeof window === 'undefined') return
@@ -140,7 +143,7 @@ function ExpensesPage() {
     console.log('Attempting to delete expense:', expenseId)
     setDeletingExpenseId(expenseId)
     setTooltipExpenseId(null)
-    deleteMutation.mutate({ expenseId })
+    deleteMutationWithOptimistic.mutate({ expenseId })
   }
 
 
@@ -285,7 +288,7 @@ function ExpensesPage() {
                           </div>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>
-                          {deleteMutation.isPending && deletingExpenseId === expense.id ? (
+                          {deleteMutationWithOptimistic.isPending && deletingExpenseId === expense.id ? (
                             <Button
                               variant="ghost"
                               size="sm"

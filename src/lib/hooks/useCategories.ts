@@ -11,8 +11,8 @@ export function useAllCategories() {
   return useQuery({
     queryKey: categoryQueryKeys.allCategories(),
     queryFn: async () => {
-      const { getAllCategories } = await import('../../server/categories')
-      return getAllCategories()
+      const { getAllCategoriesRoute } = await import('../../server/routes/categories/getAllCategoriesRoute')
+      return getAllCategoriesRoute()
     },
   });
 }
@@ -21,8 +21,8 @@ export function useUserCategories(userId: string | undefined) {
   return useQuery({
     queryKey: categoryQueryKeys.userCategories(userId || ''),
     queryFn: async () => {
-      const { getUserCategories } = await import('../../server/categories')
-      return getUserCategories({ data: { userId: userId! } })
+      const { getUserCategoriesRoute } = await import('../../server/routes/categories/getUserCategoriesRoute')
+      return getUserCategoriesRoute({ data: { userId: userId! } })
     },
     enabled: !!userId,
   });
@@ -32,8 +32,8 @@ export function useUserActiveCategories(userId: string | undefined) {
   return useQuery({
     queryKey: categoryQueryKeys.userActiveCategories(userId!),
     queryFn: async () => {
-      const { getUserActiveCategories } = await import('../../server/categories')
-      return getUserActiveCategories({ data: { userId: userId! } })
+      const { getUserActiveCategoriesRoute } = await import('../../server/routes/categories/getUserActiveCategoriesRoute')
+      return getUserActiveCategoriesRoute({ data: { userId: userId! } })
     },
     enabled: !!userId,
   });
@@ -44,8 +44,8 @@ export function useAddUserCategory() {
 
   return useMutation({
     mutationFn: async ({ userId, categoryId }: { userId: string, categoryId: number }) => {
-      const { addUserCategory } = await import('../../server/categories')
-      return addUserCategory({ data: { userId, categoryId } })
+      const { addUserCategoryRoute } = await import('../../server/routes/categories/addUserCategoryRoute')
+      return addUserCategoryRoute({ data: { userId, categoryId } })
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -63,8 +63,8 @@ export function useRemoveUserCategory() {
 
   return useMutation({
     mutationFn: async ({ userId, categoryId }: { userId: string, categoryId: number }) => {
-      const { removeUserCategory } = await import('../../server/categories')
-      return removeUserCategory({ data: { userId, categoryId } })
+      const { removeUserCategoryRoute } = await import('../../server/routes/categories/removeUserCategoryRoute')
+      return removeUserCategoryRoute({ data: { userId, categoryId } })
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -82,8 +82,8 @@ export function useSetupDefaultUserCategories() {
 
   return useMutation({
     mutationFn: async (userId: string) => {
-      const { setupDefaultUserCategories } = await import('../../server/categories')
-      return setupDefaultUserCategories({ data: { userId } })
+      const { setupDefaultUserCategoriesRoute } = await import('../../server/routes/categories/setupDefaultUserCategoriesRoute')
+      return setupDefaultUserCategoriesRoute({ data: { userId } })
     },
     onSuccess: (_, userId) => {
       queryClient.invalidateQueries({
