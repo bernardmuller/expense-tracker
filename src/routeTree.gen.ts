@@ -18,6 +18,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedCategoriesRouteImport } from './routes/_authenticated/categories'
 import { Route as AuthenticatedOnboardingIndexRouteImport } from './routes/_authenticated/onboarding/index'
+import { Route as AuthenticatedSettingsPasswordResetRouteImport } from './routes/_authenticated/settings/password-reset'
 import { Route as AuthenticatedOnboardingCategoriesRouteImport } from './routes/_authenticated/onboarding/categories'
 import { Route as AuthenticatedBudgetBudgetIdRouteImport } from './routes/_authenticated/budget/$budgetId'
 import { Route as AuthenticatedOnboardingBudgetInfoRouteImport } from './routes/_authenticated/onboarding/budget/info'
@@ -62,6 +63,12 @@ const AuthenticatedOnboardingIndexRoute =
     id: '/onboarding/',
     path: '/onboarding/',
     getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSettingsPasswordResetRoute =
+  AuthenticatedSettingsPasswordResetRouteImport.update({
+    id: '/password-reset',
+    path: '/password-reset',
+    getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
 const AuthenticatedOnboardingCategoriesRoute =
   AuthenticatedOnboardingCategoriesRouteImport.update({
@@ -109,10 +116,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/categories': typeof AuthenticatedCategoriesRoute
   '/expenses': typeof AuthenticatedExpensesRoute
-  '/settings': typeof AuthenticatedSettingsRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
   '/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
+  '/settings/password-reset': typeof AuthenticatedSettingsPasswordResetRoute
   '/onboarding': typeof AuthenticatedOnboardingIndexRoute
   '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
@@ -123,10 +131,11 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/categories': typeof AuthenticatedCategoriesRoute
   '/expenses': typeof AuthenticatedExpensesRoute
-  '/settings': typeof AuthenticatedSettingsRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
   '/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
+  '/settings/password-reset': typeof AuthenticatedSettingsPasswordResetRoute
   '/onboarding': typeof AuthenticatedOnboardingIndexRoute
   '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
@@ -139,10 +148,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/categories': typeof AuthenticatedCategoriesRoute
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
   '/_authenticated/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
+  '/_authenticated/settings/password-reset': typeof AuthenticatedSettingsPasswordResetRoute
   '/_authenticated/onboarding/': typeof AuthenticatedOnboardingIndexRoute
   '/_authenticated/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/_authenticated/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/'
     | '/budget/$budgetId'
     | '/onboarding/categories'
+    | '/settings/password-reset'
     | '/onboarding'
     | '/budget/create/categories'
     | '/budget/create/info'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/'
     | '/budget/$budgetId'
     | '/onboarding/categories'
+    | '/settings/password-reset'
     | '/onboarding'
     | '/budget/create/categories'
     | '/budget/create/info'
@@ -188,6 +200,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/budget/$budgetId'
     | '/_authenticated/onboarding/categories'
+    | '/_authenticated/settings/password-reset'
     | '/_authenticated/onboarding/'
     | '/_authenticated/budget/create/categories'
     | '/_authenticated/budget/create/info'
@@ -272,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/settings/password-reset': {
+      id: '/_authenticated/settings/password-reset'
+      path: '/password-reset'
+      fullPath: '/settings/password-reset'
+      preLoaderRoute: typeof AuthenticatedSettingsPasswordResetRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/_authenticated/onboarding/categories': {
       id: '/_authenticated/onboarding/categories'
       path: '/onboarding/categories'
@@ -328,10 +348,24 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsPasswordResetRoute: typeof AuthenticatedSettingsPasswordResetRoute
+}
+
+const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsPasswordResetRoute:
+    AuthenticatedSettingsPasswordResetRoute,
+}
+
+const AuthenticatedSettingsRouteWithChildren =
+  AuthenticatedSettingsRoute._addFileChildren(
+    AuthenticatedSettingsRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedCategoriesRoute: typeof AuthenticatedCategoriesRoute
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedBudgetBudgetIdRoute: typeof AuthenticatedBudgetBudgetIdRoute
   AuthenticatedOnboardingCategoriesRoute: typeof AuthenticatedOnboardingCategoriesRoute
@@ -345,7 +379,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCategoriesRoute: AuthenticatedCategoriesRoute,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedBudgetBudgetIdRoute: AuthenticatedBudgetBudgetIdRoute,
   AuthenticatedOnboardingCategoriesRoute:
