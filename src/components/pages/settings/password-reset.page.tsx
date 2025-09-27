@@ -63,7 +63,6 @@ export default function PasswordResetPage() {
 
   const handleInputChange = (field: keyof PasswordResetForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }
@@ -74,9 +73,9 @@ export default function PasswordResetPage() {
 
     if (!result.success) {
       const newErrors: FormErrors = {}
-      result.error.errors.forEach(error => {
-        const path = error.path[0] as keyof FormErrors
-        newErrors[path] = error.message
+      result.error.issues.forEach((issue) => {
+        const path = issue.path[0] as keyof FormErrors
+        newErrors[path] = issue.message
       })
       setErrors(newErrors)
       return false
