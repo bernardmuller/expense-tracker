@@ -7,20 +7,11 @@ import { z } from 'zod'
 import AppLayout from '@/components/AppLayout'
 import AuthForm from '@/components/AuthForm'
 import { useSession, useUserActiveCategories, useCategoryBudgets } from '@/lib/hooks'
-import { useQueryClient, useMutation } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { getCategoryInfo } from '@/lib/category-utils'
 import { Input } from '@/components/ui/input'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
-
-const createBudgetWithCategories = async (data: {
-  userId: string;
-  name: string;
-  startAmount: number;
-  categoryAllocations: Record<number, number>;
-}) => {
-  const { createBudgetWithCategories } = await import('../server/budgets')
-  return createBudgetWithCategories({ data })
-}
+import { useCreateBudgetWithCategories } from '@/lib/hooks/useCreateBudgetWithCategories'
 
 const searchSchema = z.object({
   budgetName: z.string(),
@@ -66,14 +57,13 @@ function BudgetCreateCategories() {
     }
   }, [previousCategoryBudgets])
 
-  const createBudgetMutation = useMutation({
-    mutationFn: createBudgetWithCategories,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['budgets'] })
-      queryClient.invalidateQueries({ queryKey: ['activeBudget'] })
-      navigate({ to: '/' })
-    },
-  })
+  const createBudgetMutation = useCreateBudgetWithCategories()
+
+  const handleCreateSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['budgets'] })
+    queryClient.invalidateQueries({ queryKey: ['activeBudget'] })
+    navigate({ to: '/' })
+  }
 
   const totalAllocated = useMemo(() => {
     return Object.values(categoryAllocations).reduce((sum, value) => {
@@ -101,6 +91,8 @@ function BudgetCreateCategories() {
       name: budgetName,
       startAmount: startingAmount,
       categoryAllocations: allocations,
+    }, {
+      onSuccess: handleCreateSuccess
     })
   }
 

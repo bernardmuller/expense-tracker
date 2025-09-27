@@ -8,8 +8,8 @@ export function useCategoryBudgets({ userId }: { userId?: string }) {
   return useQuery({
     queryKey: queryKeys.categoryBudgets(activeBudget?.id || 0),
     queryFn: async () => {
-      const { getCategoryBudgets } = await import('../../server/budgets')
-      return getCategoryBudgets({ data: { budgetId: activeBudget!.id } })
+      const { getCategoryBudgetsRoute } = await import('../../server/routes/budgets/getCategoryBudgetsRoute')
+      return getCategoryBudgetsRoute({ data: { budgetId: activeBudget!.id } })
     },
     enabled: !!activeBudget?.id,
   })

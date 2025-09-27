@@ -2,15 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
+import { useAllExpenses } from '@/lib/hooks/useExpenses'
 
 const getCategoryBudgets = async (budgetId: number) => {
-  const { getCategoryBudgets } = await import('../server/budgets')
-  return getCategoryBudgets({ data: { budgetId } })
-}
-
-const getExpensesByBudgetAndCategory = async (budgetId: number) => {
-  const { getAllExpenses } = await import('../server/expenses')
-  return getAllExpenses({ data: { budgetId } })
+  const { getCategoryBudgetsRoute } = await import('../server/routes/budgets/getCategoryBudgetsRoute')
+  return getCategoryBudgetsRoute({ data: { budgetId } })
 }
 
 interface BudgetCategoriesDisplayProps {
@@ -23,10 +19,7 @@ export default function BudgetCategoriesDisplay({ budgetId }: BudgetCategoriesDi
     queryFn: () => getCategoryBudgets(budgetId),
   })
 
-  const { data: expenses, isLoading: expensesLoading } = useQuery({
-    queryKey: ['expenses', budgetId],
-    queryFn: () => getExpensesByBudgetAndCategory(budgetId),
-  })
+  const { data: expenses, isLoading: expensesLoading } = useAllExpenses({ budgetId })
 
   if (budgetsLoading || expensesLoading) {
     return (
