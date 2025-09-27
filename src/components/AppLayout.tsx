@@ -10,6 +10,7 @@ interface AppLayoutProps {
   subtitle?: string
   showBackButton?: boolean
   actions?: ReactNode
+  onBackClick?: () => void
 }
 
 export default function AppLayout({
@@ -17,6 +18,7 @@ export default function AppLayout({
   title,
   subtitle,
   showBackButton = false,
+    onBackClick
 }: AppLayoutProps) {
   const { data: session } = useSession()
   const router = useRouter()
@@ -24,7 +26,6 @@ export default function AppLayout({
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
-      {/* Fixed Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-md mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
@@ -37,7 +38,13 @@ export default function AppLayout({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => router.history.back()}
+                    onClick={() => {
+                      if(onBackClick) {
+                        onBackClick();
+                        return
+                      }
+                      router.history.back()
+                    }}
                   >
                     <ArrowLeft />
                   </Button>
