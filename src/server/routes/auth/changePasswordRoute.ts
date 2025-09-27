@@ -10,28 +10,25 @@ const changePasswordSchema = z.object({
 
 export const changePasswordRoute = createServerFn({ method: 'POST' })
   .validator(changePasswordSchema)
-  .handler(async ({ data, request }) => {
+  .handler(async (ctx) => {
+    const { data } = ctx
     try {
       const session = await auth.api.getSession({
-        headers: request.headers
+        headers: ctx.request?.headers || {}
       })
 
       if (!session) {
         throw new Error('You must be logged in to change your password')
       }
 
-      const result = await auth.api.changePassword({
+      await auth.api.changePassword({
         body: {
           newPassword: data.newPassword,
           currentPassword: data.currentPassword,
           revokeOtherSessions: data.revokeOtherSessions
         },
-        headers: request.headers
+        headers: ctx.request?.headers || {}
       })
-
-      if (!result) {
-        throw new Error('Failed to change password')
-      }
 
       return {
         success: true,
