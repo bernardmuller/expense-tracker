@@ -19,6 +19,14 @@ function AuthenticatedLayout() {
         search: { redirect: currentPath },
         replace: true,
       })
+    } else if (!sessionLoading && session?.data?.user && !session.data.user.onboarded) {
+      const currentPath = window.location.pathname
+      if (!currentPath.startsWith('/onboarding')) {
+        navigate({
+          to: '/onboarding',
+          replace: true,
+        })
+      }
     }
   }, [session, sessionLoading, navigate])
 

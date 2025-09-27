@@ -4,7 +4,7 @@ import { categories, userCategories } from '@/db/schema'
 
 export async function getUserActiveCategoriesQuery(userId: string) {
   const result = await db
-    .select({
+    .selectDistinct({
       id: categories.id,
       key: categories.key,
       label: categories.label,

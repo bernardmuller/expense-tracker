@@ -17,7 +17,11 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedCategoriesRouteImport } from './routes/_authenticated/categories'
+import { Route as AuthenticatedOnboardingIndexRouteImport } from './routes/_authenticated/onboarding/index'
+import { Route as AuthenticatedOnboardingCategoriesRouteImport } from './routes/_authenticated/onboarding/categories'
 import { Route as AuthenticatedBudgetBudgetIdRouteImport } from './routes/_authenticated/budget/$budgetId'
+import { Route as AuthenticatedOnboardingBudgetInfoRouteImport } from './routes/_authenticated/onboarding/budget/info'
+import { Route as AuthenticatedOnboardingBudgetAllocateRouteImport } from './routes/_authenticated/onboarding/budget/allocate'
 import { Route as AuthenticatedBudgetCreateInfoRouteImport } from './routes/_authenticated/budget/create/info'
 import { Route as AuthenticatedBudgetCreateCategoriesRouteImport } from './routes/_authenticated/budget/create/categories'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -53,10 +57,34 @@ const AuthenticatedCategoriesRoute = AuthenticatedCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedOnboardingIndexRoute =
+  AuthenticatedOnboardingIndexRouteImport.update({
+    id: '/onboarding/',
+    path: '/onboarding/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedOnboardingCategoriesRoute =
+  AuthenticatedOnboardingCategoriesRouteImport.update({
+    id: '/onboarding/categories',
+    path: '/onboarding/categories',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedBudgetBudgetIdRoute =
   AuthenticatedBudgetBudgetIdRouteImport.update({
     id: '/budget/$budgetId',
     path: '/budget/$budgetId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedOnboardingBudgetInfoRoute =
+  AuthenticatedOnboardingBudgetInfoRouteImport.update({
+    id: '/onboarding/budget/info',
+    path: '/onboarding/budget/info',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedOnboardingBudgetAllocateRoute =
+  AuthenticatedOnboardingBudgetAllocateRouteImport.update({
+    id: '/onboarding/budget/allocate',
+    path: '/onboarding/budget/allocate',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedBudgetCreateInfoRoute =
@@ -84,8 +112,12 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/': typeof AuthenticatedIndexRoute
   '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
+  '/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
+  '/onboarding': typeof AuthenticatedOnboardingIndexRoute
   '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
+  '/onboarding/budget/allocate': typeof AuthenticatedOnboardingBudgetAllocateRoute
+  '/onboarding/budget/info': typeof AuthenticatedOnboardingBudgetInfoRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -94,8 +126,12 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/': typeof AuthenticatedIndexRoute
   '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
+  '/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
+  '/onboarding': typeof AuthenticatedOnboardingIndexRoute
   '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
+  '/onboarding/budget/allocate': typeof AuthenticatedOnboardingBudgetAllocateRoute
+  '/onboarding/budget/info': typeof AuthenticatedOnboardingBudgetInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,8 +142,12 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
+  '/_authenticated/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
+  '/_authenticated/onboarding/': typeof AuthenticatedOnboardingIndexRoute
   '/_authenticated/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/_authenticated/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
+  '/_authenticated/onboarding/budget/allocate': typeof AuthenticatedOnboardingBudgetAllocateRoute
+  '/_authenticated/onboarding/budget/info': typeof AuthenticatedOnboardingBudgetInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,8 +158,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/'
     | '/budget/$budgetId'
+    | '/onboarding/categories'
+    | '/onboarding'
     | '/budget/create/categories'
     | '/budget/create/info'
+    | '/onboarding/budget/allocate'
+    | '/onboarding/budget/info'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -128,8 +172,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/'
     | '/budget/$budgetId'
+    | '/onboarding/categories'
+    | '/onboarding'
     | '/budget/create/categories'
     | '/budget/create/info'
+    | '/onboarding/budget/allocate'
+    | '/onboarding/budget/info'
   id:
     | '__root__'
     | '/_authenticated'
@@ -139,8 +187,12 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/'
     | '/_authenticated/budget/$budgetId'
+    | '/_authenticated/onboarding/categories'
+    | '/_authenticated/onboarding/'
     | '/_authenticated/budget/create/categories'
     | '/_authenticated/budget/create/info'
+    | '/_authenticated/onboarding/budget/allocate'
+    | '/_authenticated/onboarding/budget/info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -213,11 +265,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCategoriesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/onboarding/': {
+      id: '/_authenticated/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding/categories': {
+      id: '/_authenticated/onboarding/categories'
+      path: '/onboarding/categories'
+      fullPath: '/onboarding/categories'
+      preLoaderRoute: typeof AuthenticatedOnboardingCategoriesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/budget/$budgetId': {
       id: '/_authenticated/budget/$budgetId'
       path: '/budget/$budgetId'
       fullPath: '/budget/$budgetId'
       preLoaderRoute: typeof AuthenticatedBudgetBudgetIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding/budget/info': {
+      id: '/_authenticated/onboarding/budget/info'
+      path: '/onboarding/budget/info'
+      fullPath: '/onboarding/budget/info'
+      preLoaderRoute: typeof AuthenticatedOnboardingBudgetInfoRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding/budget/allocate': {
+      id: '/_authenticated/onboarding/budget/allocate'
+      path: '/onboarding/budget/allocate'
+      fullPath: '/onboarding/budget/allocate'
+      preLoaderRoute: typeof AuthenticatedOnboardingBudgetAllocateRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/budget/create/info': {
@@ -254,8 +334,12 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedBudgetBudgetIdRoute: typeof AuthenticatedBudgetBudgetIdRoute
+  AuthenticatedOnboardingCategoriesRoute: typeof AuthenticatedOnboardingCategoriesRoute
+  AuthenticatedOnboardingIndexRoute: typeof AuthenticatedOnboardingIndexRoute
   AuthenticatedBudgetCreateCategoriesRoute: typeof AuthenticatedBudgetCreateCategoriesRoute
   AuthenticatedBudgetCreateInfoRoute: typeof AuthenticatedBudgetCreateInfoRoute
+  AuthenticatedOnboardingBudgetAllocateRoute: typeof AuthenticatedOnboardingBudgetAllocateRoute
+  AuthenticatedOnboardingBudgetInfoRoute: typeof AuthenticatedOnboardingBudgetInfoRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -264,9 +348,16 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedBudgetBudgetIdRoute: AuthenticatedBudgetBudgetIdRoute,
+  AuthenticatedOnboardingCategoriesRoute:
+    AuthenticatedOnboardingCategoriesRoute,
+  AuthenticatedOnboardingIndexRoute: AuthenticatedOnboardingIndexRoute,
   AuthenticatedBudgetCreateCategoriesRoute:
     AuthenticatedBudgetCreateCategoriesRoute,
   AuthenticatedBudgetCreateInfoRoute: AuthenticatedBudgetCreateInfoRoute,
+  AuthenticatedOnboardingBudgetAllocateRoute:
+    AuthenticatedOnboardingBudgetAllocateRoute,
+  AuthenticatedOnboardingBudgetInfoRoute:
+    AuthenticatedOnboardingBudgetInfoRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
