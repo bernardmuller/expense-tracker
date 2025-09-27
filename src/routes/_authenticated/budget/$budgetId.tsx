@@ -3,29 +3,25 @@ import { useQueryClient, } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import AppLayout from '@/components/AppLayout'
-import AuthForm from '@/components/AuthForm'
 import { useSession } from '@/lib/hooks'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
 import { BudgetBreakdownList } from '@/components/budget-breakdowns/budget-breakdown-list'
 import { useBudgetDetails } from '@/lib/hooks/useBudgetDetails'
 
-export const Route = createFileRoute('/budget/$budgetId')({
+export const Route = createFileRoute('/_authenticated/budget/$budgetId')({
   component: BudgetDetailsPage,
 })
 
 function BudgetDetailsPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: session } = useSession()
   const userId = session?.data?.user.id
 
   const { data: activeBudget, isLoading: isActiveBudgetLoading } = useBudgetDetails({ userId })
 
-  const handleAuthSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
 
-  if (sessionLoading || isActiveBudgetLoading) {
+  if (isActiveBudgetLoading) {
     return (
       <AppLayout>
         <Card>
@@ -34,16 +30,6 @@ function BudgetDetailsPage() {
             <p className="text-muted-foreground">Loading...</p>
           </CardContent>
         </Card>
-      </AppLayout>
-    )
-  }
-
-  if (!session?.data?.user) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <AuthForm onSuccess={handleAuthSuccess} />
-        </div>
       </AppLayout>
     )
   }

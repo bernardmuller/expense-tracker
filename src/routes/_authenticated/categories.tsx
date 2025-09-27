@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import AuthForm from '../components/AuthForm'
-import AppLayout from '../components/AppLayout'
+import AppLayout from '../../components/AppLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -13,12 +12,12 @@ import {
   useUserCategories,
 } from '@/lib/hooks'
 
-export const Route = createFileRoute('/categories')({
+export const Route = createFileRoute('/_authenticated/categories')({
   component: CategorySettingsPage,
 })
 
 function CategorySettingsPage() {
-  const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: session } = useSession()
   const { data: allCategories, isLoading: allCategoriesLoading } = useAllCategories()
   const { data: userCategories, isLoading: userCategoriesLoading } = useUserCategories(session?.data?.user?.id)
   const addUserCategory = useAddUserCategory()
@@ -27,32 +26,7 @@ function CategorySettingsPage() {
 
   console.log(allCategories)
 
-  const handleAuthSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
 
-  if (sessionLoading) {
-    return (
-      <AppLayout>
-        <Card>
-          <CardContent className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading...</p>
-          </CardContent>
-        </Card>
-      </AppLayout>
-    )
-  }
-
-  if (!session?.data?.user) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <AuthForm onSuccess={handleAuthSuccess} />
-        </div>
-      </AppLayout>
-    )
-  }
 
   const userId = session.data.user.id
   const userCategoryIds = new Set(userCategories?.map(uc => uc.categoryId) || [])

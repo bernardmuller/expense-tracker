@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { z } from 'zod'
 import AppLayout from '@/components/AppLayout'
-import AuthForm from '@/components/AuthForm'
 import { useSession, useUserActiveCategories, useCategoryBudgets } from '@/lib/hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { getCategoryInfo } from '@/lib/category-utils'
@@ -19,7 +18,7 @@ const searchSchema = z.object({
   previousBudgetAmount: z.number().optional(),
 })
 
-export const Route = createFileRoute('/budget/create/categories')({
+export const Route = createFileRoute('/_authenticated/budget/create/categories')({
   component: BudgetCreateCategories,
   validateSearch: searchSchema,
 })
@@ -31,7 +30,7 @@ function BudgetCreateCategories() {
 
   const [categoryAllocations, setCategoryAllocations] = useState<Record<number, string>>({})
 
-  const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: session } = useSession()
   const userId = session?.data?.user.id
 
   const { data: userCategories, isLoading: categoriesLoading } = useUserActiveCategories(userId)
@@ -71,9 +70,6 @@ function BudgetCreateCategories() {
     }, 0)
   }, [categoryAllocations])
 
-  const handleAuthSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
 
   const handleFinalizeBudget = () => {
     if (!userId) return
@@ -96,7 +92,7 @@ function BudgetCreateCategories() {
     })
   }
 
-  if (sessionLoading || categoriesLoading || categoryBudgetsLoading) {
+  if (categoriesLoading || categoryBudgetsLoading) {
     return (
       <AppLayout>
         <div className="flex-1 flex flex h-[70vh] justify-center items-center">
@@ -104,16 +100,6 @@ function BudgetCreateCategories() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading...</p>
           </div>
-        </div>
-      </AppLayout>
-    )
-  }
-
-  if (!session?.data?.user) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <AuthForm onSuccess={handleAuthSuccess} />
         </div>
       </AppLayout>
     )
