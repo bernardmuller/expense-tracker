@@ -5,8 +5,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import StartNewBudgetModal from '../components/StartNewBudgetModal'
-import AuthForm from '../components/AuthForm'
-import AppLayout from '../components/AppLayout'
+import AppLayout from '../../components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useSession, useActiveBudget, useAllExpenses, useAllCategories } from '@/lib/hooks'
@@ -26,7 +25,7 @@ const routeSearchSchema = z.object({
   filter: z.string().optional()
 })
 
-export const Route = createFileRoute('/expenses')({
+export const Route = createFileRoute('/_authenticated/expenses')({
   component: ExpensesPage,
   validateSearch: routeSearchSchema
 })
@@ -39,7 +38,7 @@ function ExpensesPage() {
   const { filter } = Route.useSearch()
   const [filteredCategogry, setFilteredCategory] = useState<string | null>(filter ?? null)
 
-  const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: session } = useSession()
   const userId = session?.data?.user.id
   const { data: allCategories } = useAllCategories()
   const { data: budget } = useActiveBudget({ userId })
@@ -52,10 +51,6 @@ function ExpensesPage() {
     }
   }, [filteredCategogry, expenses])
 
-  const handleAuthSuccess = () => {
-    // Refresh session data after successful auth
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
 
   const deleteMutation = useDeleteExpense()
 
@@ -167,28 +162,6 @@ function ExpensesPage() {
     }
   }, [deletingExpenseId, tooltipExpenseId])
 
-  if (sessionLoading) {
-    return (
-      <AppLayout>
-        <Card>
-          <CardContent className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading...</p>
-          </CardContent>
-        </Card>
-      </AppLayout>
-    )
-  }
-
-  if (!session?.data?.user) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <AuthForm onSuccess={handleAuthSuccess} />
-        </div>
-      </AppLayout>
-    )
-  }
 
 
   if (!budget) {

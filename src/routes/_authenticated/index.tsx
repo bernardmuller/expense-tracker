@@ -1,10 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import RecentExpenses from '../components/expenses/RecentExpenses'
-import AddExpenseForm from '../components/expenses/AddExpenseForm'
-import AuthForm from '../components/AuthForm'
-import AppLayout from '../components/AppLayout'
+import RecentExpenses from '../../components/expenses/RecentExpenses'
+import AddExpenseForm from '../../components/expenses/AddExpenseForm'
+import AppLayout from '../../components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useActiveBudget, useRecentExpenses, useSession, useUserCategories } from '@/lib/hooks'
@@ -15,7 +13,7 @@ type Transaction = {
   name?: string
 }
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_authenticated/')({
   component: ExpenseTracker,
   validateSearch: (transaction: Record<string, unknown>): Transaction => {
     return {
@@ -28,10 +26,9 @@ export const Route = createFileRoute('/')({
 function ExpenseTracker() {
   const { amount, name } = Route.useSearch();
   const [isAmountVisible, setIsAmountVisible] = useState(false)
-  const queryClient = useQueryClient()
   const navigate = useNavigate()
 
-  const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: session } = useSession()
   const {
     data: budget,
     isLoading: isActiveBudgetLoading,
@@ -44,34 +41,6 @@ function ExpenseTracker() {
   const {
     data: userCategories
   } = useUserCategories(session?.data?.user.id)
-
-  const handleAuthSuccess = () => {
-    // Refresh session data after successful auth
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
-
-  if (sessionLoading) {
-    return (
-      <AppLayout>
-        <div className="flex-1 flex flex h-[70vh] justify-center items-center">
-          <div className='flex flex-col gap-1'>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading...</p>
-          </div>
-        </div>
-      </AppLayout>
-    )
-  }
-
-  if (!session?.data?.user && !session?.data?.user.id) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <AuthForm onSuccess={handleAuthSuccess} />
-        </div>
-      </AppLayout>
-    )
-  }
 
   if (activeBudgetError) {
     return (

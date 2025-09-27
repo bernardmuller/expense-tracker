@@ -7,7 +7,6 @@ import { InfoIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import AppLayout from '@/components/AppLayout'
-import AuthForm from '@/components/AuthForm'
 import { useActiveBudget, useSession } from '@/lib/hooks'
 import { Input } from '@/components/ui/input'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
@@ -16,7 +15,7 @@ const searchSchema = z.object({
   previousBudgetAmount: z.number().optional(),
 })
 
-export const Route = createFileRoute('/budget/create/info')({
+export const Route = createFileRoute('/_authenticated/budget/create/info')({
   component: BudgetCreateInfo,
   validateSearch: searchSchema,
 })
@@ -29,15 +28,12 @@ function BudgetCreateInfo() {
   const [budgetName, setBudgetName] = useState(`Budget - ${format(new Date(), "dd MMM yyyy")}`)
   const [startingAmount, setStartingAmount] = useState(previousBudgetAmount?.toString() || '')
 
-  const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: session } = useSession()
 
   const userId = session?.data?.user.id
   const { data: budget, isLoading, error } = useActiveBudget({ userId })
 
 
-  const handleAuthSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
 
   const handleContinueToCategories = () => {
     if (!budgetName.trim() || !startingAmount) {
@@ -59,7 +55,7 @@ function BudgetCreateInfo() {
     })
   }
 
-  if (sessionLoading || isLoading) {
+  if (isLoading) {
     return (
       <AppLayout>
         <div className="flex-1 flex flex h-[70vh] justify-center items-center">
@@ -67,16 +63,6 @@ function BudgetCreateInfo() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading...</p>
           </div>
-        </div>
-      </AppLayout>
-    )
-  }
-
-  if (!session?.data?.user) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <AuthForm onSuccess={handleAuthSuccess} />
         </div>
       </AppLayout>
     )

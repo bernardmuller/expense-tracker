@@ -2,26 +2,22 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { ArrowRight, LogOut } from 'lucide-react'
-import AuthForm from '../components/AuthForm'
-import AppLayout from '../components/AppLayout'
+import AppLayout from '../../components/AppLayout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useSession } from '@/lib/hooks'
 import { authClient } from '@/lib/auth-client'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-export const Route = createFileRoute('/settings')({
+export const Route = createFileRoute('/_authenticated/settings')({
   component: SettingsPage,
 })
 
 function SettingsPage() {
-  const { data: session, isLoading: sessionLoading } = useSession()
+  const { data: session } = useSession()
   const queryClient = useQueryClient()
   const [isExiting, setIsExiting] = useState<boolean>(false)
 
-  const handleAuthSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['session'] })
-  }
 
   const handleSignOut = async () => {
     await authClient.signOut()
@@ -46,28 +42,6 @@ function SettingsPage() {
     }
   }, [isExiting])
 
-  if (sessionLoading) {
-    return (
-      <AppLayout>
-        <Card>
-          <CardContent className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading...</p>
-          </CardContent>
-        </Card>
-      </AppLayout>
-    )
-  }
-
-  if (!session?.data?.user) {
-    return (
-      <AppLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <AuthForm onSuccess={handleAuthSuccess} />
-        </div>
-      </AppLayout>
-    )
-  }
 
   return (
     <AppLayout

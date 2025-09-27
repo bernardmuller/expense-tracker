@@ -11,52 +11,66 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as ExpensesRouteImport } from './routes/expenses'
-import { Route as CategoriesRouteImport } from './routes/categories'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as BudgetBudgetIdRouteImport } from './routes/budget/$budgetId'
-import { Route as BudgetCreateInfoRouteImport } from './routes/budget/create/info'
-import { Route as BudgetCreateCategoriesRouteImport } from './routes/budget/create/categories'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
+import { Route as AuthenticatedCategoriesRouteImport } from './routes/_authenticated/categories'
+import { Route as AuthenticatedBudgetBudgetIdRouteImport } from './routes/_authenticated/budget/$budgetId'
+import { Route as AuthenticatedBudgetCreateInfoRouteImport } from './routes/_authenticated/budget/create/info'
+import { Route as AuthenticatedBudgetCreateCategoriesRouteImport } from './routes/_authenticated/budget/create/categories'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ExpensesRoute = ExpensesRouteImport.update({
-  id: '/expenses',
-  path: '/expenses',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriesRoute = CategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const BudgetBudgetIdRoute = BudgetBudgetIdRouteImport.update({
-  id: '/budget/$budgetId',
-  path: '/budget/$budgetId',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const BudgetCreateInfoRoute = BudgetCreateInfoRouteImport.update({
-  id: '/budget/create/info',
-  path: '/budget/create/info',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const BudgetCreateCategoriesRoute = BudgetCreateCategoriesRouteImport.update({
-  id: '/budget/create/categories',
-  path: '/budget/create/categories',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedCategoriesRoute = AuthenticatedCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedBudgetBudgetIdRoute =
+  AuthenticatedBudgetBudgetIdRouteImport.update({
+    id: '/budget/$budgetId',
+    path: '/budget/$budgetId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedBudgetCreateInfoRoute =
+  AuthenticatedBudgetCreateInfoRouteImport.update({
+    id: '/budget/create/info',
+    path: '/budget/create/info',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedBudgetCreateCategoriesRoute =
+  AuthenticatedBudgetCreateCategoriesRouteImport.update({
+    id: '/budget/create/categories',
+    path: '/budget/create/categories',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -64,71 +78,74 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/categories': typeof CategoriesRoute
-  '/expenses': typeof ExpensesRoute
-  '/settings': typeof SettingsRoute
-  '/budget/$budgetId': typeof BudgetBudgetIdRoute
-  '/budget/create/categories': typeof BudgetCreateCategoriesRoute
-  '/budget/create/info': typeof BudgetCreateInfoRoute
+  '/auth': typeof AuthRoute
+  '/categories': typeof AuthenticatedCategoriesRoute
+  '/expenses': typeof AuthenticatedExpensesRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
+  '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
+  '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/categories': typeof CategoriesRoute
-  '/expenses': typeof ExpensesRoute
-  '/settings': typeof SettingsRoute
-  '/budget/$budgetId': typeof BudgetBudgetIdRoute
-  '/budget/create/categories': typeof BudgetCreateCategoriesRoute
-  '/budget/create/info': typeof BudgetCreateInfoRoute
+  '/auth': typeof AuthRoute
+  '/categories': typeof AuthenticatedCategoriesRoute
+  '/expenses': typeof AuthenticatedExpensesRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
+  '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
+  '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/categories': typeof CategoriesRoute
-  '/expenses': typeof ExpensesRoute
-  '/settings': typeof SettingsRoute
-  '/budget/$budgetId': typeof BudgetBudgetIdRoute
-  '/budget/create/categories': typeof BudgetCreateCategoriesRoute
-  '/budget/create/info': typeof BudgetCreateInfoRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/categories': typeof AuthenticatedCategoriesRoute
+  '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
+  '/_authenticated/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
+  '/_authenticated/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
+    | '/auth'
     | '/categories'
     | '/expenses'
     | '/settings'
+    | '/'
     | '/budget/$budgetId'
     | '/budget/create/categories'
     | '/budget/create/info'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/auth'
     | '/categories'
     | '/expenses'
     | '/settings'
+    | '/'
     | '/budget/$budgetId'
     | '/budget/create/categories'
     | '/budget/create/info'
   id:
     | '__root__'
-    | '/'
-    | '/categories'
-    | '/expenses'
-    | '/settings'
-    | '/budget/$budgetId'
-    | '/budget/create/categories'
-    | '/budget/create/info'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/categories'
+    | '/_authenticated/expenses'
+    | '/_authenticated/settings'
+    | '/_authenticated/'
+    | '/_authenticated/budget/$budgetId'
+    | '/_authenticated/budget/create/categories'
+    | '/_authenticated/budget/create/info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CategoriesRoute: typeof CategoriesRoute
-  ExpensesRoute: typeof ExpensesRoute
-  SettingsRoute: typeof SettingsRoute
-  BudgetBudgetIdRoute: typeof BudgetBudgetIdRoute
-  BudgetCreateCategoriesRoute: typeof BudgetCreateCategoriesRoute
-  BudgetCreateInfoRoute: typeof BudgetCreateInfoRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatServerRoute
@@ -154,54 +171,68 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/expenses': {
-      id: '/expenses'
-      path: '/expenses'
-      fullPath: '/expenses'
-      preLoaderRoute: typeof ExpensesRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/categories': {
-      id: '/categories'
-      path: '/categories'
-      fullPath: '/categories'
-      preLoaderRoute: typeof CategoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/budget/$budgetId': {
-      id: '/budget/$budgetId'
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/expenses': {
+      id: '/_authenticated/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof AuthenticatedExpensesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/categories': {
+      id: '/_authenticated/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof AuthenticatedCategoriesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/budget/$budgetId': {
+      id: '/_authenticated/budget/$budgetId'
       path: '/budget/$budgetId'
       fullPath: '/budget/$budgetId'
-      preLoaderRoute: typeof BudgetBudgetIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedBudgetBudgetIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/budget/create/info': {
-      id: '/budget/create/info'
+    '/_authenticated/budget/create/info': {
+      id: '/_authenticated/budget/create/info'
       path: '/budget/create/info'
       fullPath: '/budget/create/info'
-      preLoaderRoute: typeof BudgetCreateInfoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedBudgetCreateInfoRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/budget/create/categories': {
-      id: '/budget/create/categories'
+    '/_authenticated/budget/create/categories': {
+      id: '/_authenticated/budget/create/categories'
       path: '/budget/create/categories'
       fullPath: '/budget/create/categories'
-      preLoaderRoute: typeof BudgetCreateCategoriesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedBudgetCreateCategoriesRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
@@ -217,14 +248,34 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedCategoriesRoute: typeof AuthenticatedCategoriesRoute
+  AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedBudgetBudgetIdRoute: typeof AuthenticatedBudgetBudgetIdRoute
+  AuthenticatedBudgetCreateCategoriesRoute: typeof AuthenticatedBudgetCreateCategoriesRoute
+  AuthenticatedBudgetCreateInfoRoute: typeof AuthenticatedBudgetCreateInfoRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCategoriesRoute: AuthenticatedCategoriesRoute,
+  AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedBudgetBudgetIdRoute: AuthenticatedBudgetBudgetIdRoute,
+  AuthenticatedBudgetCreateCategoriesRoute:
+    AuthenticatedBudgetCreateCategoriesRoute,
+  AuthenticatedBudgetCreateInfoRoute: AuthenticatedBudgetCreateInfoRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  CategoriesRoute: CategoriesRoute,
-  ExpensesRoute: ExpensesRoute,
-  SettingsRoute: SettingsRoute,
-  BudgetBudgetIdRoute: BudgetBudgetIdRoute,
-  BudgetCreateCategoriesRoute: BudgetCreateCategoriesRoute,
-  BudgetCreateInfoRoute: BudgetCreateInfoRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
