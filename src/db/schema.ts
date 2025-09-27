@@ -1,4 +1,4 @@
-import { boolean, decimal, pgTable, text, timestamp, varchar, serial, integer } from "drizzle-orm/pg-core";
+import { boolean, decimal, pgTable, text, timestamp, varchar, serial, integer, unique } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
@@ -9,6 +9,9 @@ export const users = pgTable("users", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  onboarded: boolean("onboarded")
+    .$defaultFn(() => false)
+    .notNull(),
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -99,7 +102,9 @@ export const userCategories = pgTable("user_categories", {
   createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
   updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
   deletedAt: timestamp("deleted_at"),
-});
+}, (table) => ({
+  uniqueUserCategory: unique().on(table.userId, table.categoryId),
+}));
 
 // Category budgets junction table
 export const categoryBudgets = pgTable("category_budgets", {

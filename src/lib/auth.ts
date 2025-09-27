@@ -12,10 +12,17 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, // Disable for development
+    requireEmailVerification: false,
   },
   user: {
-    modelName: "users"
+    modelName: "users",
+    additionalFields: {
+      onboarded: {
+        type: "boolean",
+        defaultValue: false,
+        required: false,
+      }
+    }
   },
   session: {
     modelName: "sessions"

@@ -3,7 +3,6 @@ import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useSetupDefaultUserCategories } from '@/lib/hooks'
 
 interface SignupFormProps {
   onSuccess?: () => void
@@ -16,8 +15,6 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
   const [name, setName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
-  const setupDefaultCategories = useSetupDefaultUserCategories()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,19 +22,11 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
     setError(null)
 
     try {
-      const result = await authClient.signUp.email({
+      await authClient.signUp.email({
         email,
         password,
         name,
       })
-
-      if (result.data?.user?.id) {
-        try {
-          await setupDefaultCategories.mutateAsync(result.data.user.id)
-        } catch (categoryError) {
-          console.error('Failed to setup default categories:', categoryError)
-        }
-      }
 
       onSuccess?.()
     } catch (err) {

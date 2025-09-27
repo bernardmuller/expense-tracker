@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import AppLayout from '../../AppLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,25 +13,20 @@ import {
 export default function CategoriesPage() {
   const { data: session } = useSession()
   const { data: allCategories, isLoading: allCategoriesLoading } = useAllCategories()
-  const { data: userCategories, isLoading: userCategoriesLoading } = useUserCategories(session?.data?.user?.id)
+  const { data: userCategories, isLoading: userCategoriesLoading } = useUserCategories(session?.data?.user.id)
   const addUserCategory = useAddUserCategory()
   const removeUserCategory = useRemoveUserCategory()
-  const queryClient = useQueryClient()
-
-  console.log(allCategories)
 
   const userId = session?.data?.user.id
   const userCategoryIds = new Set(userCategories?.map(uc => uc.categoryId) || [])
 
   const handleCategoryToggle = async (categoryId: number, isChecked: boolean) => {
-    try {
+    if (userId) {
       if (isChecked) {
         await addUserCategory.mutateAsync({ userId, categoryId })
       } else {
         await removeUserCategory.mutateAsync({ userId, categoryId })
       }
-    } catch (error) {
-      console.error('Failed to update category:', error)
     }
   }
 
