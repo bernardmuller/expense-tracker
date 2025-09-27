@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../query-client';
 
 export const categoryQueryKeys = {
   all: ['categories'] as const,
@@ -54,6 +55,9 @@ export function useAddUserCategory() {
       queryClient.invalidateQueries({
         queryKey: categoryQueryKeys.userActiveCategories(variables.userId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.budgetDetailsByUserId(variables.userId),
+      });
     },
   });
 }
@@ -73,6 +77,9 @@ export function useRemoveUserCategory() {
       queryClient.invalidateQueries({
         queryKey: categoryQueryKeys.userActiveCategories(variables.userId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.budgetDetailsByUserId(variables.userId),
+      });
     },
   });
 }
@@ -91,6 +98,9 @@ export function useSetupDefaultUserCategories() {
       });
       queryClient.invalidateQueries({
         queryKey: categoryQueryKeys.userActiveCategories(userId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.budgetDetailsByUserId(userId),
       });
     },
   });
