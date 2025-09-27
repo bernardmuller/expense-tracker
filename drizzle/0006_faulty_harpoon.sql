@@ -1,0 +1,2 @@
+ALTER TABLE "users" ADD COLUMN "onboarded" boolean NOT NULL DEFAULT false;--> statement-breakpoint
+ALTER TABLE "user_categories" ADD CONSTRAINT "user_categories_user_id_category_id_unique" UNIQUE("user_id","category_id");
