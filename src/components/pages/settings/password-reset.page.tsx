@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CheckCircle, Eye, EyeOff } from 'lucide-react'
 import AppLayout from '../../AppLayout'
@@ -20,43 +18,85 @@ const passwordResetSchema = z.object({
 
 type PasswordResetForm = z.infer<typeof passwordResetSchema>
 
+interface FormErrors {
+  currentPassword?: string
+  newPassword?: string
+  confirmPassword?: string
+}
+
 export default function PasswordResetPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setError
-  } = useForm<PasswordResetForm>({
-    resolver: zodResolver(passwordResetSchema)
+  const [formData, setFormData] = useState<PasswordResetForm>({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   })
+  const [errors, setErrors] = useState<FormErrors>({})
+
+  const resetForm = () => {
+    setFormData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    })
+    setErrors({})
+  }
 
   const changePasswordMutation = useChangePassword({
     onSuccess: () => {
       setSuccessMessage('Password changed successfully!')
-      reset()
+      resetForm()
       setTimeout(() => setSuccessMessage(''), 5000)
     },
     onError: (error: any) => {
       if (error?.message?.includes('current password')) {
-        setError('currentPassword', {
-          type: 'manual',
-          message: 'Current password is incorrect'
-        })
+        setErrors(prev => ({
+          ...prev,
+          currentPassword: 'Current password is incorrect'
+        }))
       }
     }
   })
 
-  const onSubmit = (data: PasswordResetForm) => {
+  const handleInputChange = (field: keyof PasswordResetForm, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }))
+    }
+  }
+
+  const validateForm = (): boolean => {
+    const result = passwordResetSchema.safeParse(formData)
+
+    if (!result.success) {
+      const newErrors: FormErrors = {}
+      result.error.errors.forEach(error => {
+        const path = error.path[0] as keyof FormErrors
+        newErrors[path] = error.message
+      })
+      setErrors(newErrors)
+      return false
+    }
+
+    setErrors({})
+    return true
+  }
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
     setSuccessMessage('')
+
+    if (!validateForm()) {
+      return
+    }
+
     changePasswordMutation.mutate({
-      currentPassword: data.currentPassword,
-      newPassword: data.newPassword,
+      currentPassword: formData.currentPassword,
+      newPassword: formData.newPassword,
       revokeOtherSessions: true
     })
   }
@@ -82,7 +122,7 @@ export default function PasswordResetPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={onSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Current Password
@@ -90,7 +130,8 @@ export default function PasswordResetPage() {
                 <div className="relative">
                   <Input
                     type={showCurrentPassword ? "text" : "password"}
-                    {...register('currentPassword')}
+                    value={formData.currentPassword}
+                    onChange={(e) => handleInputChange('currentPassword', e.target.value)}
                     className={errors.currentPassword ? 'border-red-500' : ''}
                     disabled={changePasswordMutation.isPending}
                   />
@@ -103,7 +144,7 @@ export default function PasswordResetPage() {
                   </button>
                 </div>
                 {errors.currentPassword && (
-                  <p className="text-red-500 text-sm mt-1">{errors.currentPassword.message}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.currentPassword}</p>
                 )}
               </div>
 
@@ -114,7 +155,8 @@ export default function PasswordResetPage() {
                 <div className="relative">
                   <Input
                     type={showNewPassword ? "text" : "password"}
-                    {...register('newPassword')}
+                    value={formData.newPassword}
+                    onChange={(e) => handleInputChange('newPassword', e.target.value)}
                     className={errors.newPassword ? 'border-red-500' : ''}
                     disabled={changePasswordMutation.isPending}
                   />
@@ -127,7 +169,7 @@ export default function PasswordResetPage() {
                   </button>
                 </div>
                 {errors.newPassword && (
-                  <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>
                 )}
               </div>
 
@@ -138,7 +180,8 @@ export default function PasswordResetPage() {
                 <div className="relative">
                   <Input
                     type={showConfirmPassword ? "text" : "password"}
-                    {...register('confirmPassword')}
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     className={errors.confirmPassword ? 'border-red-500' : ''}
                     disabled={changePasswordMutation.isPending}
                   />
@@ -151,7 +194,7 @@ export default function PasswordResetPage() {
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
                 )}
               </div>
 
