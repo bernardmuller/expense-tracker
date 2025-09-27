@@ -89,6 +89,7 @@ export default function useCreateExpense({ budgetId, onSuccess }: CreateExpenseM
       queryClient.invalidateQueries({ queryKey: queryKeys.recentExpenses(budgetId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.activeBudget(userId!) })
       queryClient.invalidateQueries({ queryKey: queryKeys.allExpenses(budgetId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.budgetDetailsByUserId(userId!) })
 
       if (onSuccess) {
         onSuccess()

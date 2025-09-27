@@ -1,6 +1,6 @@
-import { eq, sum } from "drizzle-orm"
+import { eq, sum, and } from "drizzle-orm"
 import { db } from "@/db"
-import { categories, categoryBudgets, expenses } from "@/db/schema"
+import { categories, categoryBudgets, expenses, budgets, userCategories } from "@/db/schema"
 
 export default async function getCategoryExpensesByBudgetId(id: number) {
 	const result = await db
@@ -11,9 +11,11 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 			icon: categories.icon,
 			planned: categoryBudgets.allocatedAmount,
 		})
-		.from(categoryBudgets)
-		.innerJoin(categories, eq(categoryBudgets.categoryId, categories.id))
-		.where(eq(categoryBudgets.budgetId, id))
+		.from(budgets)
+		.innerJoin(userCategories, eq(budgets.userId, userCategories.userId))
+		.innerJoin(categories, eq(userCategories.categoryId, categories.id))
+		.leftJoin(categoryBudgets, and(eq(categoryBudgets.categoryId, categories.id), eq(categoryBudgets.budgetId, id)))
+		.where(eq(budgets.id, id))
 		.groupBy(categories.id, categories.key, categories.label, categories.icon, categoryBudgets.allocatedAmount)
 
 	const expensesByCategory = await db

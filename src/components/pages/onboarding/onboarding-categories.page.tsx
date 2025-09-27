@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { defaultCategories } from '@/lib/constants/default-categories'
 import { useSession } from '@/lib/hooks'
+import { categoryQueryKeys } from '@/lib/hooks/useCategories'
 
 export default function OnboardingCategoriesPage() {
   const navigate = useNavigate()
@@ -21,7 +22,8 @@ export default function OnboardingCategoriesPage() {
       return createUserCategoriesRoute({ data })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userCategories'] })
+      queryClient.invalidateQueries({ queryKey: categoryQueryKeys.userCategories(userId!) })
+      queryClient.invalidateQueries({ queryKey: categoryQueryKeys.userActiveCategories(userId!) })
       navigate({ to: '/onboarding/budget/info' })
     }
   })
