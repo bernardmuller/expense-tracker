@@ -17,11 +17,20 @@ const config = defineConfig({
     }),
     viteReact(),
   ],
+  define: {
+    global: 'globalThis',
+  },
   build: {
     rollupOptions: {
       external: ['pg-native']
     }
   },
+  optimizeDeps: {
+    exclude: ['fs', 'path', 'crypto', 'buffer']
+  },
+  ssr: {
+    noExternal: []
+  }
 })
 
 export default config

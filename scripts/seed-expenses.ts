@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { db } from './index';
-import { expenses } from './schema';
+import { db } from '../src/db/index';
+import { expenses } from '../src/db/schema';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
