@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { createUserCategoriesQuery } from '@/server/queries/onboarding/createUserCategoriesQuery'
+import { createUserCategoriesQuery } from '@/server/queries/onboarding'
 
 const createUserCategoriesSchema = z.object({
   userId: z.string(),

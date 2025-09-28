@@ -46,4 +46,3 @@ export async function createBudgetWithCategoriesQuery(data: {
   return result
 }
 
-export type CreateBudgetWithCategoriesResult = Awaited<ReturnType<typeof createBudgetWithCategoriesQuery>>

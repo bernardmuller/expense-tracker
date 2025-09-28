@@ -12,4 +12,3 @@ export async function deleteCategoryQuery(categoryId: number) {
     .where(eq(categories.id, categoryId))
 }
 
-export type DeleteCategoryResult = Awaited<ReturnType<typeof deleteCategoryQuery>>

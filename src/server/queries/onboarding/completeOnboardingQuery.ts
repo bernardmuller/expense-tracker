@@ -1,6 +1,6 @@
+import { eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { users } from '@/db/schema'
-import { eq } from 'drizzle-orm'
 
 export async function completeOnboardingQuery(userId: string) {
   return await db
@@ -13,4 +13,3 @@ export async function completeOnboardingQuery(userId: string) {
     .returning()
 }
 
-export type CompleteOnboardingResult = Awaited<ReturnType<typeof completeOnboardingQuery>>

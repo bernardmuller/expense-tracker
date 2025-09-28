@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { completeOnboardingQuery } from '@/server/queries/onboarding/completeOnboardingQuery'
+import { completeOnboardingQuery } from '@/server/queries/onboarding'
 
 const completeOnboardingSchema = z.object({
   userId: z.string(),

@@ -22,4 +22,3 @@ export async function setupDefaultUserCategoriesQuery(userId: string) {
   return Promise.all(userCategoryPromises)
 }
 
-export type SetupDefaultUserCategoriesResult = Awaited<ReturnType<typeof setupDefaultUserCategoriesQuery>>

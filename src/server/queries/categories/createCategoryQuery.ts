@@ -18,4 +18,3 @@ export async function createCategoryQuery(data: {
   return category
 }
 
-export type CreateCategoryResult = Awaited<ReturnType<typeof createCategoryQuery>>

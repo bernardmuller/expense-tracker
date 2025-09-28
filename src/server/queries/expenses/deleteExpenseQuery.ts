@@ -39,4 +39,3 @@ export async function deleteExpenseQuery(expenseId: number) {
   })
 }
 
-export type DeleteExpenseResult = Awaited<ReturnType<typeof deleteExpenseQuery>>

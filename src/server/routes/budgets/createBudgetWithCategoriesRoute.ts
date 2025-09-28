@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { createBudgetWithCategoriesQuery } from '@/server/queries/budgets/createBudgetWithCategoriesQuery'
+import { createBudgetWithCategoriesQuery } from '@/server/queries/budgets'
 
 const createBudgetWithCategoriesSchema = z.object({
   userId: z.string(),

@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getAllExpensesByBudgetIdQuery } from '@/server/queries/expenses/getAllExpensesByBudgetIdQuery'
+import { getAllExpensesByBudgetIdQuery } from '@/server/queries/expenses'
 
 export const getAllExpensesRoute = createServerFn({ method: 'GET' })
   .validator(z.object({

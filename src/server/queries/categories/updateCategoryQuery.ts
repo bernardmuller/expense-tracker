@@ -20,4 +20,3 @@ export async function updateCategoryQuery(data: {
   return category
 }
 
-export type UpdateCategoryResult = Awaited<ReturnType<typeof updateCategoryQuery>>

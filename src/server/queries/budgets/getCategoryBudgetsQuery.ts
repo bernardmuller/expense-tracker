@@ -21,4 +21,3 @@ export async function getCategoryBudgetsQuery(budgetId: number) {
     .where(eq(categoryBudgets.budgetId, budgetId))
 }
 
-export type CategoryBudgets = Awaited<ReturnType<typeof getCategoryBudgetsQuery>>

@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCategoryByKeyQuery } from '@/server/queries/categories/getCategoryByKeyQuery'
+import { getCategoryByKeyQuery } from '@/server/queries/categories'
 
 export const getCategoryByKeyRoute = createServerFn({ method: 'GET' })
   .validator(z.object({ key: z.string() }))
