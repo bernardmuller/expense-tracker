@@ -18,4 +18,3 @@ export async function updateBudgetAmountQuery(data: {
   return updatedBudget
 }
 
-export type UpdateBudgetAmountResult = Awaited<ReturnType<typeof updateBudgetAmountQuery>>

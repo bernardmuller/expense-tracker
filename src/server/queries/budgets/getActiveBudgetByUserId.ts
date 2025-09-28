@@ -27,5 +27,3 @@ export async function getActiveBudgetByUserId(userId: string) {
     expenseCount: expenseCount.count
   }
 }
-
-export type ActiveBudgetByUserId = Awaited<ReturnType<typeof getActiveBudgetByUserId>>

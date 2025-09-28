@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { removeUserCategoryQuery } from '@/server/queries/categories/removeUserCategoryQuery'
+import { removeUserCategoryQuery } from '@/server/queries/categories'
 
 const userCategoryDataSchema = z.object({
   userId: z.string(),

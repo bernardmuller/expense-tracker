@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -18,6 +16,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedCategoriesRouteImport } from './routes/_authenticated/categories'
 import { Route as AuthenticatedOnboardingIndexRouteImport } from './routes/_authenticated/onboarding/index'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthenticatedSettingsPasswordResetRouteImport } from './routes/_authenticated/settings/password-reset'
 import { Route as AuthenticatedOnboardingCategoriesRouteImport } from './routes/_authenticated/onboarding/categories'
 import { Route as AuthenticatedBudgetBudgetIdRouteImport } from './routes/_authenticated/budget/$budgetId'
@@ -25,9 +24,6 @@ import { Route as AuthenticatedOnboardingBudgetInfoRouteImport } from './routes/
 import { Route as AuthenticatedOnboardingBudgetAllocateRouteImport } from './routes/_authenticated/onboarding/budget/allocate'
 import { Route as AuthenticatedBudgetCreateInfoRouteImport } from './routes/_authenticated/budget/create/info'
 import { Route as AuthenticatedBudgetCreateCategoriesRouteImport } from './routes/_authenticated/budget/create/categories'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
-
-const rootServerRouteImport = createServerRootRoute()
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -64,6 +60,11 @@ const AuthenticatedOnboardingIndexRoute =
     path: '/onboarding/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSettingsPasswordResetRoute =
   AuthenticatedSettingsPasswordResetRouteImport.update({
     id: '/password-reset',
@@ -106,11 +107,6 @@ const AuthenticatedBudgetCreateCategoriesRoute =
     path: '/budget/create/categories',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
@@ -121,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
   '/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
   '/settings/password-reset': typeof AuthenticatedSettingsPasswordResetRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/onboarding': typeof AuthenticatedOnboardingIndexRoute
   '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
@@ -136,6 +133,7 @@ export interface FileRoutesByTo {
   '/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
   '/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
   '/settings/password-reset': typeof AuthenticatedSettingsPasswordResetRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/onboarding': typeof AuthenticatedOnboardingIndexRoute
   '/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
@@ -153,6 +151,7 @@ export interface FileRoutesById {
   '/_authenticated/budget/$budgetId': typeof AuthenticatedBudgetBudgetIdRoute
   '/_authenticated/onboarding/categories': typeof AuthenticatedOnboardingCategoriesRoute
   '/_authenticated/settings/password-reset': typeof AuthenticatedSettingsPasswordResetRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authenticated/onboarding/': typeof AuthenticatedOnboardingIndexRoute
   '/_authenticated/budget/create/categories': typeof AuthenticatedBudgetCreateCategoriesRoute
   '/_authenticated/budget/create/info': typeof AuthenticatedBudgetCreateInfoRoute
@@ -170,6 +169,7 @@ export interface FileRouteTypes {
     | '/budget/$budgetId'
     | '/onboarding/categories'
     | '/settings/password-reset'
+    | '/api/auth/$'
     | '/onboarding'
     | '/budget/create/categories'
     | '/budget/create/info'
@@ -185,6 +185,7 @@ export interface FileRouteTypes {
     | '/budget/$budgetId'
     | '/onboarding/categories'
     | '/settings/password-reset'
+    | '/api/auth/$'
     | '/onboarding'
     | '/budget/create/categories'
     | '/budget/create/info'
@@ -201,6 +202,7 @@ export interface FileRouteTypes {
     | '/_authenticated/budget/$budgetId'
     | '/_authenticated/onboarding/categories'
     | '/_authenticated/settings/password-reset'
+    | '/api/auth/$'
     | '/_authenticated/onboarding/'
     | '/_authenticated/budget/create/categories'
     | '/_authenticated/budget/create/info'
@@ -211,27 +213,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
-}
-export interface FileServerRoutesByFullPath {
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/auth/$'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/auth/$'
-  id: '__root__' | '/api/auth/$'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -285,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/settings/password-reset': {
       id: '/_authenticated/settings/password-reset'
       path: '/password-reset'
@@ -333,17 +322,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/budget/create/categories'
       preLoaderRoute: typeof AuthenticatedBudgetCreateCategoriesRouteImport
       parentRoute: typeof AuthenticatedRoute
-    }
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
     }
   }
 }
@@ -401,13 +379,8 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
-}
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

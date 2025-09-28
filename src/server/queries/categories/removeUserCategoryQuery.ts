@@ -20,4 +20,3 @@ export async function removeUserCategoryQuery(data: {
     )
 }
 
-export type RemoveUserCategoryResult = Awaited<ReturnType<typeof removeUserCategoryQuery>>

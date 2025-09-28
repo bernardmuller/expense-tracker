@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { createExpenseQuery } from '@/server/queries/expenses/createExpenseQuery'
+import { createExpenseQuery } from '@/server/queries/expenses'
 
 const createExpenseSchema = z.object({
   budgetId: z.number(),

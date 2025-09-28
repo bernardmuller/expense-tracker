@@ -17,4 +17,3 @@ export async function getCategoryByKeyQuery(key: string) {
   return result[0] || null
 }
 
-export type CategoryByKey = Awaited<ReturnType<typeof getCategoryByKeyQuery>>

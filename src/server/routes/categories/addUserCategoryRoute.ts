@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { addUserCategoryQuery } from '@/server/queries/categories/addUserCategoryQuery'
+import { addUserCategoryQuery } from '@/server/queries/categories'
 
 const userCategoryDataSchema = z.object({
   userId: z.string(),

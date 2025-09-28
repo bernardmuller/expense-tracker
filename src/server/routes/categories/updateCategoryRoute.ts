@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { updateCategoryQuery } from '@/server/queries/categories/updateCategoryQuery'
+import { updateCategoryQuery } from '@/server/queries/categories'
 
 const updateCategoryDataSchema = z.object({
   categoryId: z.number(),

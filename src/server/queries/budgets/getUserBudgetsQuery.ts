@@ -10,4 +10,3 @@ export async function getUserBudgetsQuery(userId: string) {
     .orderBy(desc(budgets.createdAt))
 }
 
-export type UserBudgets = Awaited<ReturnType<typeof getUserBudgetsQuery>>

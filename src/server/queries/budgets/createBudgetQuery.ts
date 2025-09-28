@@ -29,4 +29,3 @@ export async function createBudgetQuery(data: {
   return newBudget
 }
 
-export type CreateBudgetResult = Awaited<ReturnType<typeof createBudgetQuery>>

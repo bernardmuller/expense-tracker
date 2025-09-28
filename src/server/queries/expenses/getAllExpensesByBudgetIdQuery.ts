@@ -27,4 +27,3 @@ export async function getAllExpensesByBudgetIdQuery(data: {
   return await query
 }
 
-export type AllExpensesByBudgetId = Awaited<ReturnType<typeof getAllExpensesByBudgetIdQuery>>

@@ -1,6 +1,6 @@
+import { eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { budgets, expenses } from '@/db/schema'
-import { eq } from 'drizzle-orm'
 
 export async function createExpenseQuery(data: {
   budgetId: number
@@ -42,4 +42,3 @@ export async function createExpenseQuery(data: {
   })
 }
 
-export type CreateExpenseResult = Awaited<ReturnType<typeof createExpenseQuery>>

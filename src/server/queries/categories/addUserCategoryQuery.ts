@@ -45,4 +45,3 @@ export async function addUserCategoryQuery(data: {
   return userCategory
 }
 
-export type AddUserCategoryResult = Awaited<ReturnType<typeof addUserCategoryQuery>>

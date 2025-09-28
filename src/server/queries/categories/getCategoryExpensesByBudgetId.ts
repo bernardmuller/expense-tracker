@@ -41,4 +41,3 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 	}));
 }
 
-export type CategoryExpensesByBudgetId = Awaited<ReturnType<typeof getCategoryExpensesByBudgetId>>

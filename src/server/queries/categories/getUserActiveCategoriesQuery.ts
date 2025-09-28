@@ -27,4 +27,3 @@ export async function getUserActiveCategoriesQuery(userId: string) {
   return result
 }
 
-export type UserActiveCategories = Awaited<ReturnType<typeof getUserActiveCategoriesQuery>>

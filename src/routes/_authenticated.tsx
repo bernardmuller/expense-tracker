@@ -11,6 +11,8 @@ function AuthenticatedLayout() {
   const { data: session, isLoading: sessionLoading } = useSession()
   const navigate = useNavigate()
 
+  console.log(session?.data?.user)
+
   useEffect(() => {
     if (!sessionLoading && !session?.data?.user) {
       const currentPath = window.location.pathname + window.location.search

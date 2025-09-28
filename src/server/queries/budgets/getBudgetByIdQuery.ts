@@ -12,4 +12,3 @@ export async function getBudgetByIdQuery(budgetId: number) {
   return budget
 }
 
-export type BudgetById = Awaited<ReturnType<typeof getBudgetByIdQuery>>

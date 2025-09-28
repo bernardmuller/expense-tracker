@@ -15,4 +15,3 @@ export async function getExpenseByIdQuery(expenseId: number) {
   return expense || null
 }
 
-export type ExpenseById = Awaited<ReturnType<typeof getExpenseByIdQuery>>

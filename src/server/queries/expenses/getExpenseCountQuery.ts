@@ -14,4 +14,3 @@ export async function getExpenseCountQuery(budgetId: number) {
   return result.length
 }
 
-export type ExpenseCount = Awaited<ReturnType<typeof getExpenseCountQuery>>

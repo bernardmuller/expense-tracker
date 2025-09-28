@@ -9,4 +9,3 @@ export async function getAllCategoriesQuery() {
     .where(isNull(categories.deletedAt))
 }
 
-export type AllCategories = Awaited<ReturnType<typeof getAllCategoriesQuery>>
