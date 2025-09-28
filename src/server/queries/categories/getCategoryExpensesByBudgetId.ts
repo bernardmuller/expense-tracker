@@ -1,6 +1,6 @@
-import { eq, sum, and } from "drizzle-orm"
+import { and, eq, sum } from "drizzle-orm"
 import { db } from "@/db"
-import { categories, categoryBudgets, expenses, budgets, userCategories } from "@/db/schema"
+import { budgets, categories, categoryBudgets, expenses, userCategories } from "@/db/schema"
 
 export default async function getCategoryExpensesByBudgetId(id: number) {
 	const result = await db
