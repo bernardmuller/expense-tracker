@@ -10,17 +10,17 @@ import { removeUserCategoryQuery } from "./removeUserCategoryQuery"
 import { setupDefaultUserCategoriesQuery } from "./setupDefaultUserCategoriesQuery"
 import { updateCategoryQuery } from "./updateCategoryQuery"
 
-export type AddUserCategoryResult = Awaited<ReturnType<typeof addUserCategoryQuery>>
-export type CreateCategoryResult = Awaited<ReturnType<typeof createCategoryQuery>>
-export type DeleteCategoryResult = Awaited<ReturnType<typeof deleteCategoryQuery>>
+// export type AddUserCategoryResult = Awaited<ReturnType<typeof addUserCategoryQuery>>
+// export type CreateCategoryResult = Awaited<ReturnType<typeof createCategoryQuery>>
+// export type DeleteCategoryResult = Awaited<ReturnType<typeof deleteCategoryQuery>>
 export type CategoriesByUserId = Awaited<ReturnType<typeof getAllCategoriesByUserId>>
-export type AllCategories = Awaited<ReturnType<typeof getAllCategoriesQuery>>
-export type CategoryByKey = Awaited<ReturnType<typeof getCategoryByKeyQuery>>
-export type CategoryExpensesByBudgetId = Awaited<ReturnType<typeof getCategoryExpensesByBudgetId>>
-export type UserActiveCategories = Awaited<ReturnType<typeof getUserActiveCategoriesQuery>>
-export type RemoveUserCategoryResult = Awaited<ReturnType<typeof removeUserCategoryQuery>>
-export type SetupDefaultUserCategoriesResult = Awaited<ReturnType<typeof setupDefaultUserCategoriesQuery>>
-export type UpdateCategoryResult = Awaited<ReturnType<typeof updateCategoryQuery>>
+// export type AllCategories = Awaited<ReturnType<typeof getAllCategoriesQuery>>
+// export type CategoryByKey = Awaited<ReturnType<typeof getCategoryByKeyQuery>>
+// export type CategoryExpensesByBudgetId = Awaited<ReturnType<typeof getCategoryExpensesByBudgetId>>
+// export type UserActiveCategories = Awaited<ReturnType<typeof getUserActiveCategoriesQuery>>
+// export type RemoveUserCategoryResult = Awaited<ReturnType<typeof removeUserCategoryQuery>>
+// export type SetupDefaultUserCategoriesResult = Awaited<ReturnType<typeof setupDefaultUserCategoriesQuery>>
+// export type UpdateCategoryResult = Awaited<ReturnType<typeof updateCategoryQuery>>
 
 export {
 	addUserCategoryQuery,
