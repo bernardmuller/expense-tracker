@@ -1,6 +1,6 @@
+import { getAllCategoriesQuery } from './getAllCategoriesQuery'
 import { db } from '@/db'
 import { userCategories } from '@/db/schema'
-import { getAllCategoriesQuery } from './getAllCategoriesQuery'
 import { defaultUserCategories } from '@/db/seed-categories'
 
 export async function setupDefaultUserCategoriesQuery(userId: string) {
