@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
+import { Outlet, createFileRoute, useNavigate, useRouterState } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import AppLayout from '../components/AppLayout'
 import { useSession } from '@/lib/hooks'
@@ -10,19 +10,22 @@ export const Route = createFileRoute('/_authenticated')({
 function AuthenticatedLayout() {
   const { data: session, isLoading: sessionLoading } = useSession()
   const navigate = useNavigate()
+  const router = useRouterState()
 
   console.log(session?.data?.user)
 
   useEffect(() => {
+    if (typeof window === 'undefined') return // Skip on server
+
     if (!sessionLoading && !session?.data?.user) {
-      const currentPath = window.location.pathname + window.location.search
+      const currentPath = router.location.pathname + router.location.search
       navigate({
         to: '/auth',
         search: { redirect: currentPath },
         replace: true,
       })
     } else if (!sessionLoading && session?.data?.user && !session.data.user.onboarded) {
-      const currentPath = window.location.pathname
+      const currentPath = router.location.pathname
       if (!currentPath.startsWith('/onboarding')) {
         navigate({
           to: '/onboarding',
@@ -30,7 +33,7 @@ function AuthenticatedLayout() {
         })
       }
     }
-  }, [session, sessionLoading, navigate])
+  }, [session, sessionLoading, navigate, router.location])
 
   if (sessionLoading) {
     return (
