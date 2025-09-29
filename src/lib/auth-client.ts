@@ -1,5 +1,7 @@
-import { createAuthClient } from "better-auth/react"
+import { createAuthClient } from "better-auth/client"
 
 export const authClient = createAuthClient({
-  // Will use the same domain and port as the current page
+  baseURL: process.env.NODE_ENV === 'production'
+    ? 'https://expense-tracker.bernardmuller.co.za'
+    : 'http://localhost:3000'
 })

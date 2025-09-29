@@ -19,11 +19,14 @@ function AuthenticatedLayout() {
 
     if (!sessionLoading && !session?.data?.user) {
       const currentPath = router.location.pathname + router.location.search
-      navigate({
-        to: '/auth',
-        search: { redirect: currentPath },
-        replace: true,
-      })
+      // Only navigate if we're not already on the auth page to prevent infinite loops
+      if (router.location.pathname !== '/auth') {
+        navigate({
+          to: '/auth',
+          search: { redirect: currentPath },
+          replace: true,
+        })
+      }
     } else if (!sessionLoading && session?.data?.user && !session.data.user.onboarded) {
       const currentPath = router.location.pathname
       if (!currentPath.startsWith('/onboarding')) {
