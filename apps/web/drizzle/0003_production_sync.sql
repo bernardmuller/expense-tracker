@@ -1,0 +1,2 @@
+-- Production sync migration - no operations needed
+-- This migration exists to align local migration state with production database
