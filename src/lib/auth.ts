@@ -6,6 +6,7 @@ import { db } from "@/db"; // your drizzle instance
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema
@@ -34,5 +35,9 @@ export const auth = betterAuth({
     modelName: "accounts"
   },
   plugins: [reactStartCookies()],
-  trustedOrigins: ["http://192.168.111.73:3000", "https://expense-tracker.bernardmuller.co.za"]
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://192.168.111.73:3000",
+    "https://expense-tracker.bernardmuller.co.za"
+  ]
 });

@@ -15,12 +15,14 @@ export default function AuthPage({ redirect }: AuthPageProps) {
   const { data: session, isLoading: sessionLoading } = useSession()
 
   useEffect(() => {
-    if (session?.data?.user && !sessionLoading) {
+    console.log(session)
+    if (session?.data?.user) {
       navigate({ to: redirect })
     }
   }, [session, sessionLoading, navigate, redirect])
 
   const handleAuthSuccess = () => {
+    console.log("invalidating session")
     queryClient.invalidateQueries({ queryKey: ['session'] })
   }
 

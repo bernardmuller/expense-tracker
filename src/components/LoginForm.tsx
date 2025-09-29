@@ -18,20 +18,48 @@ export default function LoginForm({ onSuccess, onSwitchToSignup, showSignupLink 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Login form submitted')
     setIsLoading(true)
     setError(null)
 
+    console.log('Attempting to sign in with email:', email)
+
     try {
-      await authClient.signIn.email({
+      console.log('Calling authClient.signIn.email...')
+      const result = await authClient.signIn.email({
         email,
         password,
       })
+      console.log('Sign in successful:', result)
 
       onSuccess?.()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      console.error('Sign in error:', err)
+      console.error('Error details:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+        error: err
+      })
+
+      let errorMessage = 'Login failed'
+
+      if (err instanceof Error) {
+        errorMessage = err.message
+
+        // Handle specific error types
+        if (err.message.includes('fetch')) {
+          errorMessage = 'Unable to connect to server. Please check your internet connection.'
+        } else if (err.message.includes('Invalid') || err.message.includes('credentials')) {
+          errorMessage = 'Invalid email or password. Please try again.'
+        } else if (err.message.includes('Network')) {
+          errorMessage = 'Network error. Please try again.'
+        }
+      }
+
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
+      console.log('Login attempt completed')
     }
   }
 
@@ -67,8 +95,14 @@ export default function LoginForm({ onSuccess, onSwitchToSignup, showSignupLink 
       </div>
 
       {error && (
-        <div className="bg-destructive/5 border border-destructive/50 rounded-md p-3">
-          <p className="text-destructive text-sm">{error}</p>
+        <div className="bg-destructive/10 border-2 border-destructive/50 rounded-md p-4">
+          <div className="flex items-start gap-2">
+            <div className="text-destructive text-lg">⚠️</div>
+            <div>
+              <p className="text-destructive font-medium text-sm mb-1">Login Failed</p>
+              <p className="text-destructive text-sm">{error}</p>
+            </div>
+          </div>
         </div>
       )}
 
