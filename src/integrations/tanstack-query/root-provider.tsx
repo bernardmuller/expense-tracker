@@ -2,10 +2,14 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { createQueryClient } from '../../lib/query-client'
 import type { QueryClient} from '@tanstack/react-query';
 
+let globalQueryClient: QueryClient | undefined
+
 export function getContext() {
-  const queryClient = createQueryClient()
+  if (!globalQueryClient) {
+    globalQueryClient = createQueryClient()
+  }
   return {
-    queryClient,
+    queryClient: globalQueryClient,
   }
 }
 

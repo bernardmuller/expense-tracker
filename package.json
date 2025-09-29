@@ -69,6 +69,7 @@
     "tsx": "^4.20.4",
     "typescript": "^5.7.2",
     "vite": "^6.3.5",
+    "vite-plugin-node-polyfills": "^0.24.0",
     "vitest": "^3.0.5",
     "web-vitals": "^4.2.4"
   }
