@@ -20,3 +20,10 @@ export function markUserAsVerified(user: User): User {
     emailVerified: true
   };
 }
+
+export function updateUserProfile(user: User, updatedUser: User): User {
+  return {
+    ...user,
+    name: updatedUser.name
+  };
+}
