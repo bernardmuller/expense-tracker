@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { markUserAsOnboarded, markUserAsVerified } from '@/domain/entities/user';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { markUserAsOnboarded, markUserAsVerified, updateUserProfile, type User } from '@/domain/entities/user';
 import { mockUsers } from './__mocks__/user.mock';
 
 describe('markUserAsOnboarded', () => {
@@ -21,5 +21,39 @@ describe('markUserAsVerified', () => {
       const markedUser = markUserAsVerified(user);
       expect(markedUser.emailVerified).toEqual(true);
     }
+  });
+});
+
+describe('updateUserProfile', () => {
+  let mockUser: User;
+
+  beforeEach(() => {
+    mockUser = {
+      id: '47d2aada-ac9d-4353-a95a-8dcea2aeb96f',
+      name: "John Doe",
+      email: "john@email.com",
+      emailVerified: false,
+      onboarded: true
+    };
+  });
+
+  it('should update user name', () => {
+    const params = {
+      ...mockUser,
+      name: "Jane Doe"
+    };
+
+    const markedUser = updateUserProfile(mockUser, params);
+    expect(markedUser.name).toEqual(params.name);
+  });
+
+  it('should not update user email', () => {
+    const params = {
+      ...mockUser,
+      email: "shouldnotwork@email.com"
+    };
+
+    const result = updateUserProfile(mockUser, params);
+    expect(result.email).toEqual(mockUser.email);
   });
 });
