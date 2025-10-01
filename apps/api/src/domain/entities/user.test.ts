@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { markUserAsOnboarded, markUserAsVerified, updateUserProfile, type User } from '@/domain/entities/user';
+import {
+  markUserAsOnboarded,
+  markUserAsVerified,
+  updateUserProfile,
+  isUserFullySetup,
+  type User
+} from '@/domain/entities/user';
 import { mockUsers, generateMockUser } from './__mocks__/user.mock';
 
 describe('markUserAsOnboarded', () => {
@@ -67,4 +73,43 @@ describe('updateUserProfile', () => {
     expect(result.onboarded).toEqual(mockUser.onboarded);
     expect(result.id).toEqual(mockUser.id);
   });
+});
+
+describe('isUserFullySetup', () => {
+  it("should return true if user is verified and onboarded", () => {
+    const mock = generateMockUser();
+    mock.emailVerified = true;
+    mock.onboarded = true;
+
+    const result = isUserFullySetup(mock);
+    expect(result).toEqual(true);
+  });
+
+  it("should return false if user is not verified and not onboarded", () => {
+    const mock = generateMockUser();
+    mock.emailVerified = false;
+    mock.onboarded = false;
+
+    const result = isUserFullySetup(mock);
+    expect(result).toEqual(false);
+  });
+
+  it("should return false if user is verified and not onboarded", () => {
+    const mock = generateMockUser();
+    mock.emailVerified = true;
+    mock.onboarded = false;
+
+    const result = isUserFullySetup(mock);
+    expect(result).toEqual(false);
+  });
+
+  it("should return false if user is not verified and onboarded", () => {
+    const mock = generateMockUser();
+    mock.emailVerified = false;
+    mock.onboarded = true;
+
+    const result = isUserFullySetup(mock);
+    expect(result).toEqual(false);
+  });
+
 });

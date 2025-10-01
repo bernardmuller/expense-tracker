@@ -27,3 +27,7 @@ export function updateUserProfile(user: User, updatedUser: User): User {
     name: updatedUser.name
   };
 }
+
+export function isUserFullySetup(user: User): boolean {
+  return user.onboarded && user.emailVerified;
+}
