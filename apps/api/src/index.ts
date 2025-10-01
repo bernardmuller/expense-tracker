@@ -1,7 +1,5 @@
-import { Elysia } from "elysia";
+import { Effect, Console } from "effect"
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(8080);
+const program = Console.log("Hello, World!")
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+Effect.runSync(program)
