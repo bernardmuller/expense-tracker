@@ -1,8 +1,8 @@
 export type Budget = {
-	readonly id: number;
-	readonly userId: string;
-	name: string;
-	startAmount: number;
-	currentAmount: number;
-	isActive: boolean;
+  readonly id: number;
+  readonly userId: string;
+  name: string;
+  startAmount: number;
+  currentAmount: number;
+  isActive: boolean;
 };

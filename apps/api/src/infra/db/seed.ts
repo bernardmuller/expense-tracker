@@ -1,8 +1,23 @@
 import 'dotenv/config';
 import { db } from './index';
-import { categories, users, accounts, userCategories, budgets, categoryBudgets, expenses, NewCategory, NewBudget, NewCategoryBudget, NewExpense } from './schema';
+import {
+  categories,
+  users,
+  accounts,
+  userCategories,
+  budgets,
+  categoryBudgets,
+  expenses,
+  NewCategory,
+  NewBudget,
+  NewCategoryBudget,
+  NewExpense,
+} from './schema';
 
-const categoriesData: Omit<NewCategory, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+const categoriesData: Omit<
+  NewCategory,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>[] = [
   { key: 'rent', label: 'Rent', icon: '🏠' },
   { key: 'groceries', label: 'Groceries', icon: '🛒' },
   { key: 'eat-out-takeaways', label: 'Eat Out & Takeaways', icon: '🍽️' },
@@ -34,7 +49,10 @@ const categoriesData: Omit<NewCategory, 'id' | 'createdAt' | 'updatedAt' | 'dele
   { key: 'gifts', label: 'Gifts', icon: '🎁' },
 ];
 
-const budgetsData: Omit<NewBudget, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+const budgetsData: Omit<
+  NewBudget,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>[] = [
   {
     userId: 'h6yJqmzqgaZOLKJqC7R1gJrWGIq54gq5',
     name: 'Budget - 23 Sep 2025',
@@ -44,7 +62,10 @@ const budgetsData: Omit<NewBudget, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt
   },
 ];
 
-const categoryBudgetsData: Omit<NewCategoryBudget, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+const categoryBudgetsData: Omit<
+  NewCategoryBudget,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>[] = [
   {
     budgetId: 1,
     categoryId: 1,
@@ -72,7 +93,10 @@ const categoryBudgetsData: Omit<NewCategoryBudget, 'id' | 'createdAt' | 'updated
   },
 ];
 
-const expensesData: Omit<NewExpense, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+const expensesData: Omit<
+  NewExpense,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>[] = [
   {
     budgetId: 1,
     description: 'Rent',
@@ -144,7 +168,8 @@ const accountData = {
   accessTokenExpiresAt: null,
   refreshTokenExpiresAt: null,
   scope: null,
-  password: '97e1fe8d5e6d11f56c29ce3c9ca659ed:119dd77d8a419319a40363c499bd4e8bfc02fa9f72b860d6ed06f1bfbb89c7cc69874483f0fa780b716585895127bee35fef525c120465b4568c3e2abc0b97a5',
+  password:
+    '97e1fe8d5e6d11f56c29ce3c9ca659ed:119dd77d8a419319a40363c499bd4e8bfc02fa9f72b860d6ed06f1bfbb89c7cc69874483f0fa780b716585895127bee35fef525c120465b4568c3e2abc0b97a5',
   createdAt: new Date('2025-09-23 21:24:05.312'),
   updatedAt: new Date('2025-09-23 21:24:05.312'),
 };
@@ -185,68 +210,116 @@ const userCategoriesData = [
 export async function seedDatabase() {
   try {
     for (const category of categoriesData) {
-      await db.insert(categories).values({
-        ...category,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }).onConflictDoNothing();
+      await db
+        .insert(categories)
+        .values({
+          ...category,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .onConflictDoNothing();
     }
 
     await db.insert(users).values(userData).onConflictDoNothing();
     await db.insert(accounts).values(accountData).onConflictDoNothing();
 
     for (const userCategory of userCategoriesData) {
-      await db.insert(userCategories).values(userCategory).onConflictDoNothing();
+      await db
+        .insert(userCategories)
+        .values(userCategory)
+        .onConflictDoNothing();
     }
 
     for (const budget of budgetsData) {
-      await db.insert(budgets).values({
-        ...budget,
-        createdAt: new Date('2025-09-23 21:42:47.023'),
-        updatedAt: new Date('2025-09-23 21:44:45.153'),
-      }).onConflictDoNothing();
+      await db
+        .insert(budgets)
+        .values({
+          ...budget,
+          createdAt: new Date('2025-09-23 21:42:47.023'),
+          updatedAt: new Date('2025-09-23 21:44:45.153'),
+        })
+        .onConflictDoNothing();
     }
 
     for (const categoryBudget of categoryBudgetsData) {
-      await db.insert(categoryBudgets).values({
-        ...categoryBudget,
-        createdAt: new Date('2025-09-23 21:42:47.024'),
-        updatedAt: new Date('2025-09-23 21:42:47.024'),
-      }).onConflictDoNothing();
+      await db
+        .insert(categoryBudgets)
+        .values({
+          ...categoryBudget,
+          createdAt: new Date('2025-09-23 21:42:47.024'),
+          updatedAt: new Date('2025-09-23 21:42:47.024'),
+        })
+        .onConflictDoNothing();
     }
 
     for (const expense of expensesData) {
-      await db.insert(expenses).values({
-        ...expense,
-        createdAt: new Date(expense.description === 'Rent' ? '2025-09-23 21:43:32.306' :
-                          expense.description === 'Entertainment' && expense.amount === '200.00' ? '2025-09-23 21:43:40.633' :
-                          expense.description === 'Eat-out-takeaways' ? '2025-09-23 21:43:45.649' :
-                          expense.description === 'Groceries' ? '2025-09-23 21:43:52.687' :
-                          expense.description === 'Entertainment' && expense.amount === '600.00' ? '2025-09-23 21:44:01.429' :
-                          expense.description === 'Savings' ? '2025-09-23 21:44:24.679' :
-                          expense.description === 'Investments' ? '2025-09-23 21:44:35.256' :
-                          '2025-09-23 21:44:45.152'),
-        updatedAt: new Date(expense.description === 'Rent' ? '2025-09-23 21:43:32.306' :
-                          expense.description === 'Entertainment' && expense.amount === '200.00' ? '2025-09-23 21:43:40.633' :
-                          expense.description === 'Eat-out-takeaways' ? '2025-09-23 21:43:45.649' :
-                          expense.description === 'Groceries' ? '2025-09-23 21:43:52.687' :
-                          expense.description === 'Entertainment' && expense.amount === '600.00' ? '2025-09-23 21:44:01.429' :
-                          expense.description === 'Savings' ? '2025-09-23 21:44:24.679' :
-                          expense.description === 'Investments' ? '2025-09-23 21:44:35.256' :
-                          '2025-09-23 21:44:45.152'),
-      }).onConflictDoNothing();
+      await db
+        .insert(expenses)
+        .values({
+          ...expense,
+          createdAt: new Date(
+            expense.description === 'Rent'
+              ? '2025-09-23 21:43:32.306'
+              : expense.description === 'Entertainment' &&
+                  expense.amount === '200.00'
+                ? '2025-09-23 21:43:40.633'
+                : expense.description === 'Eat-out-takeaways'
+                  ? '2025-09-23 21:43:45.649'
+                  : expense.description === 'Groceries'
+                    ? '2025-09-23 21:43:52.687'
+                    : expense.description === 'Entertainment' &&
+                        expense.amount === '600.00'
+                      ? '2025-09-23 21:44:01.429'
+                      : expense.description === 'Savings'
+                        ? '2025-09-23 21:44:24.679'
+                        : expense.description === 'Investments'
+                          ? '2025-09-23 21:44:35.256'
+                          : '2025-09-23 21:44:45.152'
+          ),
+          updatedAt: new Date(
+            expense.description === 'Rent'
+              ? '2025-09-23 21:43:32.306'
+              : expense.description === 'Entertainment' &&
+                  expense.amount === '200.00'
+                ? '2025-09-23 21:43:40.633'
+                : expense.description === 'Eat-out-takeaways'
+                  ? '2025-09-23 21:43:45.649'
+                  : expense.description === 'Groceries'
+                    ? '2025-09-23 21:43:52.687'
+                    : expense.description === 'Entertainment' &&
+                        expense.amount === '600.00'
+                      ? '2025-09-23 21:44:01.429'
+                      : expense.description === 'Savings'
+                        ? '2025-09-23 21:44:24.679'
+                        : expense.description === 'Investments'
+                          ? '2025-09-23 21:44:35.256'
+                          : '2025-09-23 21:44:45.152'
+          ),
+        })
+        .onConflictDoNothing();
     }
 
     console.table([
-      { Entity: 'Categories', Count: categoriesData.length, Status: '✓ Seeded' },
+      {
+        Entity: 'Categories',
+        Count: categoriesData.length,
+        Status: '✓ Seeded',
+      },
       { Entity: 'Users', Count: 1, Status: '✓ Seeded' },
       { Entity: 'Accounts', Count: 1, Status: '✓ Seeded' },
-      { Entity: 'User Categories', Count: userCategoriesData.length, Status: '✓ Seeded' },
+      {
+        Entity: 'User Categories',
+        Count: userCategoriesData.length,
+        Status: '✓ Seeded',
+      },
       { Entity: 'Budgets', Count: budgetsData.length, Status: '✓ Seeded' },
-      { Entity: 'Category Budgets', Count: categoryBudgetsData.length, Status: '✓ Seeded' },
+      {
+        Entity: 'Category Budgets',
+        Count: categoryBudgetsData.length,
+        Status: '✓ Seeded',
+      },
       { Entity: 'Expenses', Count: expensesData.length, Status: '✓ Seeded' },
     ]);
-
   } catch (error) {
     console.error('Error seeding database:', error);
     throw error;
