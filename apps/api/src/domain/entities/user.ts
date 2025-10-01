@@ -9,22 +9,21 @@ export type User = {
 export function markUserAsOnboarded(user: User): User {
   return {
     ...user,
-    onboarded: true
+    onboarded: true,
   };
 }
-
 
 export function markUserAsVerified(user: User): User {
   return {
     ...user,
-    emailVerified: true
+    emailVerified: true,
   };
 }
 
 export function updateUserProfile(user: User, updatedUser: User): User {
   return {
     ...user,
-    name: updatedUser.name
+    name: updatedUser.name,
   };
 }
 

@@ -29,7 +29,7 @@ describe('mockUsers', () => {
   it('should generate users with all required properties', () => {
     const users = mockUsers(3);
 
-    users.forEach(user => {
+    users.forEach((user) => {
       expect(user).toHaveProperty('id');
       expect(user).toHaveProperty('email');
       expect(user).toHaveProperty('onboarded');
