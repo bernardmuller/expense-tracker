@@ -3,7 +3,10 @@ import { db } from './index';
 import { categories, userCategories, NewCategory } from './schema';
 import { eq } from 'drizzle-orm';
 
-export const defaultCategories: Omit<NewCategory, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+export const defaultCategories: Omit<
+  NewCategory,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>[] = [
   { key: 'rent', label: 'Rent', icon: '🏠' },
   { key: 'groceries', label: 'Groceries', icon: '🛒' },
   { key: 'eat-out-takeaways', label: 'Eat Out & Takeaways', icon: '🍽️' },
@@ -36,26 +39,29 @@ export const defaultCategories: Omit<NewCategory, 'id' | 'createdAt' | 'updatedA
 
 export const defaultUserCategories = [
   'groceries',
-  'savings', 
+  'savings',
   'entertainment',
   'medical',
-  'general-purchases'
+  'general-purchases',
 ];
 
 export async function seedCategories() {
   try {
     console.log('Starting category seed...');
-    
+
     const now = new Date();
-    
+
     for (const category of defaultCategories) {
-      await db.insert(categories).values({
-        ...category,
-        createdAt: now,
-        updatedAt: now,
-      }).onConflictDoNothing();
+      await db
+        .insert(categories)
+        .values({
+          ...category,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .onConflictDoNothing();
     }
-    
+
     console.log(`Seeded ${defaultCategories.length} categories successfully.`);
   } catch (error) {
     console.error('Error seeding categories:', error);
@@ -66,23 +72,31 @@ export async function seedCategories() {
 export async function seedUserCategories(userId: string) {
   try {
     console.log(`Starting user categories seed for user ${userId}...`);
-    
+
     const now = new Date();
-    
+
     for (const categoryKey of defaultUserCategories) {
-      const [category] = await db.select().from(categories).where(eq(categories.key, categoryKey));
-      
+      const [category] = await db
+        .select()
+        .from(categories)
+        .where(eq(categories.key, categoryKey));
+
       if (category) {
-        await db.insert(userCategories).values({
-          userId,
-          categoryId: category.id,
-          createdAt: now,
-          updatedAt: now,
-        }).onConflictDoNothing();
+        await db
+          .insert(userCategories)
+          .values({
+            userId,
+            categoryId: category.id,
+            createdAt: now,
+            updatedAt: now,
+          })
+          .onConflictDoNothing();
       }
     }
-    
-    console.log(`Seeded ${defaultUserCategories.length} user categories successfully.`);
+
+    console.log(
+      `Seeded ${defaultUserCategories.length} user categories successfully.`
+    );
   } catch (error) {
     console.error('Error seeding user categories:', error);
     throw error;

@@ -21,7 +21,6 @@
 //
 // export type Database = typeof db
 
-
 // import 'dotenv/config';
 // import { drizzle } from 'drizzle-orm/node-postgres';
 // import * as schema from './schema';
@@ -35,7 +34,6 @@
 //   schema
 // });
 
-
 // import 'dotenv/config';
 // import { drizzle } from 'drizzle-orm/neon-http';
 // import { neon } from '@neondatabase/serverless';
@@ -45,11 +43,11 @@
 //
 // export const db = drizzle(sql, { schema })
 
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import * as schema from './schema'
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import * as schema from './schema';
 
 // Use local/remote Postgres connection
-const connectionString = process.env.DATABASE_URL! 
-const client = postgres(connectionString, { prepare: false })
-export const db = drizzle(client, { schema })
+const connectionString = process.env.DATABASE_URL!;
+const client = postgres(connectionString, { prepare: false });
+export const db = drizzle(client, { schema });
