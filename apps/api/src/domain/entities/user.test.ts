@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { markUserAsOnboarded, markUserAsVerified, updateUserProfile, type User } from '@/domain/entities/user';
-import { mockUsers } from './__mocks__/user.mock';
+import { mockUsers, generateMockUser } from './__mocks__/user.mock';
 
 describe('markUserAsOnboarded', () => {
   it('should mark the user as onboarded', () => {
@@ -55,5 +55,16 @@ describe('updateUserProfile', () => {
 
     const result = updateUserProfile(mockUser, params);
     expect(result.email).toEqual(mockUser.email);
+  });
+
+  it('should not update any properties other than user name', () => {
+    const params = generateMockUser();
+    const result = updateUserProfile(mockUser, params);
+
+    expect(result.email).toEqual(mockUser.email);
+    expect(result.name).toEqual(params.name);
+    expect(result.emailVerified).toEqual(mockUser.emailVerified);
+    expect(result.onboarded).toEqual(mockUser.onboarded);
+    expect(result.id).toEqual(mockUser.id);
   });
 });
