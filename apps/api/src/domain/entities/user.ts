@@ -3,6 +3,20 @@ export type User = {
   name: string;
   email: string;
   emailVerified: boolean;
-  image: string | null;
   onboarded: boolean;
 };
+
+export function markUserAsOnboarded(user: User): User {
+  return {
+    ...user,
+    onboarded: true
+  };
+}
+
+
+export function markUserAsVerified(user: User): User {
+  return {
+    ...user,
+    emailVerified: true
+  };
+}
