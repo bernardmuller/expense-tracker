@@ -4,7 +4,7 @@ import {
   markUserAsVerified,
   updateUserProfile,
   isUserFullySetup,
-  type User
+  type User,
 } from '@/domain/entities/user';
 import { mockUsers, generateMockUser } from './__mocks__/user.mock';
 
@@ -36,17 +36,17 @@ describe('updateUserProfile', () => {
   beforeEach(() => {
     mockUser = {
       id: '47d2aada-ac9d-4353-a95a-8dcea2aeb96f',
-      name: "John Doe",
-      email: "john@email.com",
+      name: 'John Doe',
+      email: 'john@email.com',
       emailVerified: false,
-      onboarded: true
+      onboarded: true,
     };
   });
 
   it('should update user name', () => {
     const params = {
       ...mockUser,
-      name: "Jane Doe"
+      name: 'Jane Doe',
     };
 
     const markedUser = updateUserProfile(mockUser, params);
@@ -56,7 +56,7 @@ describe('updateUserProfile', () => {
   it('should not update user email', () => {
     const params = {
       ...mockUser,
-      email: "shouldnotwork@email.com"
+      email: 'shouldnotwork@email.com',
     };
 
     const result = updateUserProfile(mockUser, params);
@@ -76,7 +76,7 @@ describe('updateUserProfile', () => {
 });
 
 describe('isUserFullySetup', () => {
-  it("should return true if user is verified and onboarded", () => {
+  it('should return true if user is verified and onboarded', () => {
     const mock = generateMockUser();
     mock.emailVerified = true;
     mock.onboarded = true;
@@ -85,7 +85,7 @@ describe('isUserFullySetup', () => {
     expect(result).toEqual(true);
   });
 
-  it("should return false if user is not verified and not onboarded", () => {
+  it('should return false if user is not verified and not onboarded', () => {
     const mock = generateMockUser();
     mock.emailVerified = false;
     mock.onboarded = false;
@@ -94,7 +94,7 @@ describe('isUserFullySetup', () => {
     expect(result).toEqual(false);
   });
 
-  it("should return false if user is verified and not onboarded", () => {
+  it('should return false if user is verified and not onboarded', () => {
     const mock = generateMockUser();
     mock.emailVerified = true;
     mock.onboarded = false;
@@ -103,7 +103,7 @@ describe('isUserFullySetup', () => {
     expect(result).toEqual(false);
   });
 
-  it("should return false if user is not verified and onboarded", () => {
+  it('should return false if user is not verified and onboarded', () => {
     const mock = generateMockUser();
     mock.emailVerified = false;
     mock.onboarded = true;
@@ -111,5 +111,4 @@ describe('isUserFullySetup', () => {
     const result = isUserFullySetup(mock);
     expect(result).toEqual(false);
   });
-
 });
