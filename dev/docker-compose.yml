@@ -1,0 +1,33 @@
+name: expense-tracker
+services:
+    database:
+        image: postgres:latest
+        ports:
+            - 6420:5432
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: devuser
+            POSTGRES_PASSWORD: devpassword
+            POSTGRES_DB: devdb
+
+    drizzle-gateway:
+        image: ghcr.io/drizzle-team/gateway:latest
+        restart: always
+        ports:
+            - "4983:4983"
+        environment:
+            - PORT=4983
+            - STORE_PATH=/app
+            - MASTERPASS=your_master_password
+        volumes:
+            - drizzle-gateway:/app
+        depends_on:
+            - database
+
+volumes:
+    pgdata:
+    drizzle-gateway:
+
+# PG URL Internal -> postgresql://devuser:devpassword@database:5432/devdb
+# PG URL External -> postgresql://devuser:devpassword@database:6420/devdb
