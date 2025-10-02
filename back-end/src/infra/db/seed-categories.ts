@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { db } from './index';
-import { categories, userCategories, NewCategory } from './schema';
+import { db } from './index.js';
+import { categories, userCategories, NewCategory } from './schema.js';
 import { eq } from 'drizzle-orm';
 
 export const defaultCategories: Omit<

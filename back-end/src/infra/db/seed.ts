@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { db } from './index';
+import { db } from './index.js';
 import {
   categories,
   users,
@@ -12,7 +12,7 @@ import {
   NewBudget,
   NewCategoryBudget,
   NewExpense,
-} from './schema';
+} from './schema.js';
 
 const categoriesData: Omit<
   NewCategory,

@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+
 export type User = {
   readonly id: string;
   name: string;
@@ -32,9 +34,9 @@ export function isUserFullySetup(user: User): boolean {
   return user.onboarded && user.emailVerified;
 }
 
-export function softDeleteUser(user: User): User {
-  return {
+export function softDeleteUser(user: User): Effect.Effect<User, Error, User> {
+  return Effect.succeed({
     ...user,
-    deletedAt: new Date().toLocaleString()
-  };
+    deletedAt: new Date().toLocaleString(),
+  });
 }
