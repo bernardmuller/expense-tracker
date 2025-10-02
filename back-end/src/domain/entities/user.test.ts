@@ -10,6 +10,7 @@ import {
 } from "@/domain/entities/user";
 import { mockUsers, generateMockUser } from "./__mocks__/user.mock.js";
 import { Effect, Exit } from "effect";
+import { UserAlreadyDeletedError } from "@/lib/errors/index.js";
 
 describe("markUserAsOnboarded", () => {
   it("should mark the user as onboarded", () => {
@@ -117,29 +118,24 @@ describe("isUserFullySetup", () => {
 });
 
 describe("softDeleteUser", () => {
-  effectIt("should be marked as deleted", () => {
-    Effect.gen(function* () {
+  effectIt.effect("should be marked as deleted", () =>
+    Effect.gen(function*() {
       const user = generateMockUser();
       const result = yield* Effect.exit(softDeleteUser(user));
-
       expect(Exit.isSuccess(result)).toBe(true);
-
       if (Exit.isSuccess(result)) {
-        expect(result.value.deletedAt).toBeFalsy();
+        expect(result.value.deletedAt).toBeTruthy();
       }
-    });
-  });
+    })
+  );
 
-  effectIt(
-    "should not be able to soft delete as user that is already deleted",
-    () => {
-      Effect.gen(function* () {
-        const user = generateMockUser();
-        user.deletedAt = new Date().toLocaleString();
-
-        const result = yield* Effect.exit(softDeleteUser(user));
-        expect(Exit.isFailure(result)).toBe(true);
-      });
-    },
+  effectIt.effect("should not be able to soft delete as user that is already deleted", () =>
+    Effect.gen(function*() {
+      const user = generateMockUser();
+      user.deletedAt = new Date().toLocaleString();
+      const result = yield* Effect.exit(softDeleteUser(user));
+      expect(Exit.isFailure(result)).toBeTruthy()
+      expect(result).toStrictEqual(Exit.fail(new UserAlreadyDeletedError()));
+    })
   );
 });
