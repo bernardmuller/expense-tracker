@@ -31,3 +31,10 @@ export function updateUserProfile(user: User, updatedUser: User): User {
 export function isUserFullySetup(user: User): boolean {
   return user.onboarded && user.emailVerified;
 }
+
+export function softDeleteUser(user: User): User {
+  return {
+    ...user,
+    deletedAt: new Date().toLocaleString()
+  };
+}
