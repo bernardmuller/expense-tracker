@@ -4,6 +4,7 @@ export type User = {
   email: string;
   emailVerified: boolean;
   onboarded: boolean;
+  deletedAt?: string;
 };
 
 export function markUserAsOnboarded(user: User): User {
