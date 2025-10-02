@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { it as effectIt } from '@effect/vitest';
 import {
   markUserAsOnboarded,
   markUserAsVerified,
@@ -7,7 +8,8 @@ import {
   softDeleteUser,
   type User,
 } from '@/domain/entities/user';
-import { mockUsers, generateMockUser } from './__mocks__/user.mock';
+import { mockUsers, generateMockUser } from './__mocks__/user.mock.js';
+import { Effect, Exit } from "effect";
 
 describe('markUserAsOnboarded', () => {
   it('should mark the user as onboarded', () => {
@@ -116,10 +118,27 @@ describe('isUserFullySetup', () => {
 });
 
 describe('softDeleteUser', () => {
-  it('should be marked as deleted', () => {
-    const user = generateMockUser();
-    const deletedUser = softDeleteUser(user);
-    expect(deletedUser.deletedAt).toBeTruthy();
+  effectIt('should be marked as deleted', () => {
+    Effect.gen(function*() {
+      const user = generateMockUser();
+      const result = yield* Effect.exit(softDeleteUser(user));
+
+      expect(Exit.isSuccess(result)).toBe(true);
+
+      if (Exit.isSuccess(result)) {
+        expect(result.value.deletedAt).toBeFalsy();
+      }
+    });
+  });
+
+  effectIt('should not be able to soft delete as user that is already deleted', () => {
+    Effect.gen(function*() {
+      const user = generateMockUser();
+      user.deletedAt = new Date().toLocaleString();
+
+      const result = yield* Effect.exit(softDeleteUser(user));
+      expect(Exit.isFailure(result)).toBe(true);
+    });
   });
 });
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMockUser, mockUsers } from './user.mock';
+import { generateMockUser, mockUsers } from './user.mock.js';
 
 describe('generateMockUser', () => {
   it('should generate a user with all required properties', () => {
