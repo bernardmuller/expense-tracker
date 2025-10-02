@@ -4,6 +4,7 @@ import {
   markUserAsVerified,
   updateUserProfile,
   isUserFullySetup,
+  softDeleteUser,
   type User,
 } from '@/domain/entities/user';
 import { mockUsers, generateMockUser } from './__mocks__/user.mock';
@@ -40,6 +41,7 @@ describe('updateUserProfile', () => {
       email: 'john@email.com',
       emailVerified: false,
       onboarded: true,
+
     };
   });
 
@@ -112,3 +114,12 @@ describe('isUserFullySetup', () => {
     expect(result).toEqual(false);
   });
 });
+
+describe('softDeleteUser', () => {
+  it('should be marked as deleted', () => {
+    const user = generateMockUser();
+    const deletedUser = softDeleteUser(user);
+    expect(deletedUser.deletedAt).toBeTruthy();
+  });
+});
+
