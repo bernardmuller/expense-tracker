@@ -1,3 +1,4 @@
+import { UserAlreadyDeletedError } from "@/lib/errors";
 import { Effect } from "effect";
 
 export type User = {
@@ -34,7 +35,8 @@ export function isUserFullySetup(user: User): boolean {
   return user.onboarded && user.emailVerified;
 }
 
-export function softDeleteUser(user: User): Effect.Effect<User, Error, User> {
+export function softDeleteUser(user: User): Effect.Effect<User, Error> {
+  if (user.deletedAt) return Effect.fail(new UserAlreadyDeletedError())
   return Effect.succeed({
     ...user,
     deletedAt: new Date().toLocaleString(),
