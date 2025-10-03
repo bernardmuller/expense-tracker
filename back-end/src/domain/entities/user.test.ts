@@ -121,6 +121,7 @@ describe("softDeleteUser", () => {
   effectIt.effect("should be marked as deleted", () =>
     Effect.gen(function*() {
       const user = generateMockUser();
+      user.deletedAt = undefined;
       const result = yield* Effect.exit(softDeleteUser(user));
       expect(Exit.isSuccess(result)).toBe(true);
       if (Exit.isSuccess(result)) {
