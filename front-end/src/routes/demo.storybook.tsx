@@ -27,12 +27,15 @@ function StorybookDemo() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div
+      className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4
+        py-12 dark:from-gray-900 dark:to-gray-800"
+    >
+      <div className="mx-auto max-w-2xl">
         <Dialog
           title="Employee Information Form"
           footer={
-            <div className="flex gap-3 justify-end">
+            <div className="flex justify-end gap-3">
               <Button variant="secondary" size="medium" onClick={handleReset}>
                 Reset
               </Button>
