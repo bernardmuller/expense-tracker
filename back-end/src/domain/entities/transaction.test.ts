@@ -1,13 +1,20 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
-import { mockUsers, generateMockUser } from "./__mocks__/user.mock.js";
 import { Effect, Exit } from "effect";
-import { AlreadyDeletedError, UserAlreadyDeletedError } from "@/lib/errors/index.js";
-import { createTransaction, softDeleteTransaction, updateTransaction, type CreateTransactionParams, type Transaction } from "./transaction.js";
+import { AlreadyDeletedError } from "@/lib/errors/index.js";
+import {
+  createTransaction,
+  softDeleteTransaction,
+  updateTransaction,
+  type CreateTransactionParams,
+  type Transaction
+} from "./transaction.js";
 import { transactionType } from "./types/TransactionType.js";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { generateMockTransaction, mockExpenseTransactions } from "./__mocks__/transaction.mock.js";
+import {
+  mockExpenseTransactions
+} from "./__mocks__/transaction.mock.js";
 
 describe("createTransaction", () => {
   let mock: CreateTransactionParams;

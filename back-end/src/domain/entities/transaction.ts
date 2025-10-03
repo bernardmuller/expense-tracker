@@ -1,8 +1,7 @@
 import { generateUuid } from "@/lib/utils/generateUuid";
 import type { TransactionType } from "./types/TransactionType";
-import { v4 as uuidv4 } from 'uuid';
 import { Effect } from "effect";
-import { AlreadyDeletedError, UpdateTransactionError, type CreateTransactionError } from "@/lib/errors";
+import { AlreadyDeletedError, UpdateTransactionError } from "@/lib/errors";
 
 export type Transaction = {
   readonly id: string;
