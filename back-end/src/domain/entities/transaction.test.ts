@@ -2,12 +2,12 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { mockUsers, generateMockUser } from "./__mocks__/user.mock.js";
 import { Effect, Exit } from "effect";
-import { UserAlreadyDeletedError } from "@/lib/errors/index.js";
-import { createTransaction, updateTransaction, type CreateTransactionParams, type Transaction } from "./transaction.js";
+import { AlreadyDeletedError, UserAlreadyDeletedError } from "@/lib/errors/index.js";
+import { createTransaction, softDeleteTransaction, updateTransaction, type CreateTransactionParams, type Transaction } from "./transaction.js";
 import { transactionType } from "./types/TransactionType.js";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { mockExpenseTransactions } from "./__mocks__/transaction.mock.js";
+import { generateMockTransaction, mockExpenseTransactions } from "./__mocks__/transaction.mock.js";
 
 describe("createTransaction", () => {
   let mock: CreateTransactionParams;
@@ -193,3 +193,32 @@ describe("updateTransaction", () => {
     })
   );
 })
+
+
+describe("softDeleteTransaction", () => {
+  effectIt.effect("should be marked as deleted", () =>
+    Effect.gen(function*() {
+      const transactions = mockExpenseTransactions()
+      for (const t of transactions) {
+        t.deletedAt = undefined;
+        const result = yield* Effect.exit(softDeleteTransaction(t));
+        expect(Exit.isSuccess(result)).toBe(true);
+        if (Exit.isSuccess(result)) {
+          expect(result.value.deletedAt).toBeTruthy();
+        }
+      }
+    })
+  );
+
+  effectIt.effect("should not be able to soft delete as user that is already deleted", () =>
+    Effect.gen(function*() {
+      const transactions = mockExpenseTransactions()
+      for (const t of transactions) {
+        t.deletedAt = faker.date.anytime().toLocaleString();
+        const result = yield* Effect.exit(softDeleteTransaction(t));
+        expect(Exit.isFailure(result)).toBeTruthy()
+        expect(result).toStrictEqual(Exit.fail(new AlreadyDeletedError()));
+      }
+    })
+  );
+});
