@@ -26,13 +26,13 @@ export default function BudgetBreakdownItem({
 }: BudgetBreakdownItemProps) {
   return (
     <Card
-      className="p-4 cursor-pointer border-border/50"
+      className="border-border/50 cursor-pointer p-4"
       onClick={() => onClick()}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-lg">{icon}</span>
-          <h3 className="font-semibold text-foreground text-lg">{name}</h3>
+          <h3 className="text-foreground text-lg font-semibold">{name}</h3>
         </div>
         {isOverBudget && <Badge variant="destructive">Over budget</Badge>}
         {isUnplanned && <Badge variant="outline">Unplanned</Badge>}
