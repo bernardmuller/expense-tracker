@@ -1,18 +1,7 @@
 import { Badge } from '../ui/badge'
 import { Card } from '../ui/card'
 import { Progress } from '../ui/progress'
-
-type BudgetBreakdownItemProps = {
-  key: string
-  name: string
-  icon: string
-  spent: number
-  planned?: number
-  percentage: number
-  onClick: () => void
-  isUnplanned: boolean
-  isOverBudget: boolean
-}
+import type { BudgetBreakdownItemProps } from './types'
 
 export default function BudgetBreakdownItem({
   name,
