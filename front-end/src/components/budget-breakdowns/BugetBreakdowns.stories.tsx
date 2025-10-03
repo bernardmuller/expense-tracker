@@ -1,6 +1,6 @@
 import { fn } from 'storybook/test'
 
-import BudgetBreakdownItem from './BudgetBreakdowns'
+import BudgetBreakdownItem from '@/components/budget-breakdowns/BudgetBreakdownItem'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 const meta = {
