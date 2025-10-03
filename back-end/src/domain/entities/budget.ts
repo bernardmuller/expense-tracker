@@ -5,4 +5,6 @@ export type Budget = {
   startAmount: number;
   currentAmount: number;
   isActive: boolean;
+  deletedAt?: string;
+  updatedAt?: string;
 };
