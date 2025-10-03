@@ -6,12 +6,12 @@ type BudgetBreakdownItemProps = {
   key: string
   name: string
   icon: string
-  planned?: number
   spent: number
+  planned?: number
   percentage: number
-  isOverBudget: boolean
-  isUnplanned: boolean
   onClick: () => void
+  isUnplanned: boolean
+  isOverBudget: boolean
 }
 
 export default function BudgetBreakdownItem({
@@ -38,11 +38,7 @@ export default function BudgetBreakdownItem({
         {isUnplanned && <Badge variant="outline">Unplanned</Badge>}
       </div>
       <div className="space-y-2">
-        <Progress
-          value={percentage}
-          className="h-1"
-          // isError={isOverBudget}
-        />
+        <Progress value={percentage} className="h-1" />
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">
             Planned: R{planned?.toLocaleString() ?? '0'}
