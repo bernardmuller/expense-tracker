@@ -2,7 +2,7 @@ import { generateUuid } from "@/lib/utils/generateUuid";
 import type { TransactionType } from "./types/TransactionType";
 import { v4 as uuidv4 } from 'uuid';
 import { Effect } from "effect";
-import { UpdateTransactionError, type CreateTransactionError } from "@/lib/errors";
+import { AlreadyDeletedError, UpdateTransactionError, type CreateTransactionError } from "@/lib/errors";
 
 export type Transaction = {
   readonly id: string;
@@ -38,3 +38,10 @@ export function updateTransaction(transaction: Transaction, params: Transaction)
   })
 }
 
+export function softDeleteTransaction(transaction: Transaction) {
+  if (transaction.deletedAt) return Effect.fail(new AlreadyDeletedError())
+  return Effect.succeed({
+    ...transaction,
+    deletedAt: new Date().toLocaleString(),
+  });
+}
