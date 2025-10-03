@@ -109,7 +109,6 @@ describe("updateTransaction", () => {
       const transactions = mockExpenseTransactions()
       for (const t of transactions) {
         const randomAmount = faker.number.float({ max: 10000, fractionDigits: 1 })
-
         const update = {
           ...t,
           amount: randomAmount
@@ -171,6 +170,24 @@ describe("updateTransaction", () => {
         expect(Exit.isSuccess(result)).toBe(true);
         if (Exit.isSuccess(result)) {
           expect(result.value.type).toBe(randomType);
+        }
+      }
+    })
+  );
+
+  effectIt.effect("should update the description of a transaction", () =>
+    Effect.gen(function*() {
+      const transactions = mockExpenseTransactions()
+      for (const t of transactions) {
+        const randomString = faker.lorem.words(faker.number.int({ min: 1, max: 10 }));
+        const update = {
+          ...t,
+          description: randomString
+        };
+        const result = yield* Effect.exit(updateTransaction(t, update));
+        expect(Exit.isSuccess(result)).toBe(true);
+        if (Exit.isSuccess(result)) {
+          expect(result.value.description).toBe(randomString);
         }
       }
     })
