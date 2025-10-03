@@ -3,4 +3,4 @@ const financialAccountType = {
   crypto: "crypto"
 } as const;
 
-export type FinancialAccount = typeof financialAccountType;
+export type FinancialAccountType = typeof financialAccountType;
