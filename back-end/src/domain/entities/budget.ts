@@ -29,3 +29,9 @@ export function createBudget(params: CreateBudgetParams): Effect.Effect<Budget, 
     updatedAt: undefined
   })
 }
+
+export function getBudgetSpentAmount(budget: Budget): Effect.Effect<number, ValidationError> {
+  if (!budget.startAmount || !budget.currentAmount) return fail(new ValidationError({ message: 'unable to calculate budget spent amount, no startAmount or currentAmount found' }))
+  const spent = budget.startAmount - budget.currentAmount;
+  return succeed(spent)
+}
