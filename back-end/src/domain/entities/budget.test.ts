@@ -1,7 +1,7 @@
 import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
-import { AlreadyDeletedError } from "@/lib/errors";
+import { AlreadyDeletedError, ValidationError } from "@/lib/errors";
 import { createBudget, type CreateBudgetParams } from "./budget";
 import { transactionType } from "./types/TransactionType";
 import { faker } from "@faker-js/faker";
@@ -30,6 +30,41 @@ describe("createBudget", () => {
         expect(result.value.name).toBe(mock.name);
         expect(result.value.startAmount).toBe(mock.startAmount);
         expect(result.value.userId).toBe(mock.userId);
+      }
+    })
+  );
+
+  effectIt.effect("should error if the create properties are not provided", () =>
+    Effect.gen(function*() {
+      //@ts-expect-error
+      const result = yield* Effect.exit(createBudget({}));
+      expect(Exit.isFailure(result)).toBe(true);
+      if (Exit.isFailure(result)) {
+        expect(result).toStrictEqual(Exit.fail(new ValidationError({ message: "" })))
+      }
+    })
+  );
+
+  effectIt.effect("should create a complete budget entity", () =>
+    Effect.gen(function*() {
+      const result = yield* Effect.exit(createBudget(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toHaveProperty("isActive")
+        expect(result.value).toHaveProperty("id")
+        expect(result.value).toHaveProperty("currentAmount")
+        expect(result.value).toHaveProperty("deletedAt")
+        expect(result.value).toHaveProperty("updatedAt")
+      }
+    })
+  );
+
+  effectIt.effect("should set the currentAmount to the start amount", () =>
+    Effect.gen(function*() {
+      const result = yield* Effect.exit(createBudget(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.currentAmount).toBe(mock.startAmount)
       }
     })
   );
