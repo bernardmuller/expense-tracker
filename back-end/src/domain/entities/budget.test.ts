@@ -2,11 +2,12 @@ import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import { AlreadyDeletedError, ValidationError } from "@/lib/errors";
-import { createBudget, getBudgetSpentAmount, type Budget, type CreateBudgetParams } from "./budget";
+import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, type Budget, type CreateBudgetParams } from "./budget";
 import { transactionType } from "./types/TransactionType";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import {
+  generateMockBudget,
   mockBudgets
 } from "./__mocks__/budget.mock.js";
 
@@ -113,6 +114,66 @@ describe("getBudgetSpentAmount", () => {
     })
   );
 })
+
+
+describe("getBudgetSpentPercentage", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    const randomStartAmount = faker.number.int({ min: 1, max: 10000 });
+    const randomCurrentAmount = faker.number.int({ min: 1, max: 10000 });
+    mock = {
+      id: faker.string.uuid(),
+      userId: faker.string.uuid(),
+      name: faker.animal.cow(),
+      startAmount: randomStartAmount,
+      currentAmount: randomCurrentAmount,
+      isActive: true,
+    };
+  });
+
+  effectIt.effect("should calculate the total spent percentage", () =>
+    Effect.gen(function*() {
+      const result = yield* Effect.exit(getBudgetSpentPercentage(mock));
+      const expected = ((mock.startAmount - mock.currentAmount) / mock.startAmount * 100).toFixed(1);
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(expected);
+      }
+    })
+  );
+
+  effectIt.effect("should throw if budget has no start or currentAmount", () =>
+    Effect.gen(function*() {
+      const result = yield* Effect.exit(getBudgetSpentPercentage({
+        ...mock,
+        //@ts-expect-error: testing undefined edge-cases
+        currentAmount: undefined,
+        //@ts-expect-error: testing undefined edge-cases
+        startAmount: undefined
+      }));
+      expect(Exit.isFailure(result)).toBe(true);
+      if (Exit.isFailure(result)) {
+        expect(result).toStrictEqual(Exit.fail(new ValidationError({ message: "" })));
+      }
+    })
+  );
+
+  effectIt.effect("should calculate up to 1 decimals", () =>
+    Effect.gen(function*() {
+      const budgets = mockBudgets()
+      for (const mock of budgets) {
+        const result = yield* Effect.exit(getBudgetSpentPercentage(mock));
+        expect(Exit.isSuccess(result)).toBe(true);
+        if (Exit.isSuccess(result)) {
+          const decimalPlaces = result.value.split('.')[1]?.length || 1
+          expect(decimalPlaces).toBe(1)
+        }
+      }
+    })
+  );
+})
+
 
 
 

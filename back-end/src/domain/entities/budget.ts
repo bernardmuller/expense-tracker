@@ -35,3 +35,9 @@ export function getBudgetSpentAmount(budget: Budget): Effect.Effect<number, Vali
   const spent = budget.startAmount - budget.currentAmount;
   return succeed(spent)
 }
+
+export function getBudgetSpentPercentage(budget: Budget): Effect.Effect<string, ValidationError> {
+  if (!budget.startAmount || !budget.currentAmount) return fail(new ValidationError({ message: 'unable to calculate budget spent percentage, no startAmount or currentAmount found' }))
+  const percentage = ((budget.startAmount - budget.currentAmount) / budget.startAmount * 100).toFixed(1);
+  return succeed(percentage)
+}
