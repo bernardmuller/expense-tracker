@@ -115,7 +115,6 @@ describe("getBudgetSpentAmount", () => {
   );
 })
 
-
 describe("getBudgetSpentPercentage", () => {
   let mock: Budget;
 
@@ -174,6 +173,53 @@ describe("getBudgetSpentPercentage", () => {
   );
 })
 
+describe("setBudgetActive", () => {
+  let mock: Budget;
 
+  beforeEach(() => {
+    mock = generateMockBudget();
+  });
+
+  effectIt.effect("should calculate the total spent percentage", () =>
+    Effect.gen(function*() {
+      const result = yield* Effect.exit(getBudgetSpentPercentage(mock));
+      const expected = ((mock.startAmount - mock.currentAmount) / mock.startAmount * 100).toFixed(1);
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(expected);
+      }
+    })
+  );
+
+  effectIt.effect("should throw if budget has no start or currentAmount", () =>
+    Effect.gen(function*() {
+      const result = yield* Effect.exit(getBudgetSpentPercentage({
+        ...mock,
+        //@ts-expect-error: testing undefined edge-cases
+        currentAmount: undefined,
+        //@ts-expect-error: testing undefined edge-cases
+        startAmount: undefined
+      }));
+      expect(Exit.isFailure(result)).toBe(true);
+      if (Exit.isFailure(result)) {
+        expect(result).toStrictEqual(Exit.fail(new ValidationError({ message: "" })));
+      }
+    })
+  );
+
+  effectIt.effect("should calculate up to 1 decimals", () =>
+    Effect.gen(function*() {
+      const budgets = mockBudgets()
+      for (const mock of budgets) {
+        const result = yield* Effect.exit(getBudgetSpentPercentage(mock));
+        expect(Exit.isSuccess(result)).toBe(true);
+        if (Exit.isSuccess(result)) {
+          const decimalPlaces = result.value.split('.')[1]?.length || 1
+          expect(decimalPlaces).toBe(1)
+        }
+      }
+    })
+  );
+})
 
 
