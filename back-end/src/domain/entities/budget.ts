@@ -43,5 +43,13 @@ export function getBudgetSpentPercentage(budget: Budget): Effect.Effect<string, 
 }
 
 export function setBudgetActive(budget: Budget): Effect.Effect<Budget, ValidationError> {
-  return succeed(budget)
+  if (budget.isActive) return fail(new ValidationError({ message: 'budget is already active', entityId: budget.id }))
+  return succeed({
+    ...budget,
+    isActive: true
+  })
+}
+
+export function isBudgetActive(budget: Budget): Effect.Effect<boolean, never> {
+  return succeed(budget.isActive)
 }
