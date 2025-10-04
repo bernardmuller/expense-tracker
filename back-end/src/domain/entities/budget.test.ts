@@ -24,7 +24,13 @@ describe("createBudget", () => {
 
   effectIt.effect("should create a budget with the provided properties", () =>
     Effect.gen(function*() {
-      const _result = yield* Effect.exit(createBudget(mock));
+      const result = yield* Effect.exit(createBudget(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.name).toBe(mock.name);
+        expect(result.value.startAmount).toBe(mock.startAmount);
+        expect(result.value.userId).toBe(mock.userId);
+      }
     })
   );
 
