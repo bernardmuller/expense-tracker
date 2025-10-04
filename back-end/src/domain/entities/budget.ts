@@ -1,4 +1,4 @@
-import { CreateBudgetError, ValidationError } from "@/lib/errors";
+import { AlreadyDeletedError, CreateBudgetError, ValidationError } from "@/lib/errors";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import type { Effect } from "effect";
 import { fail, succeed } from "effect/Exit";
@@ -50,10 +50,38 @@ export function setBudgetActive(budget: Budget): Effect.Effect<Budget, Validatio
   })
 }
 
+export function setBudgetInactive(budget: Budget): Effect.Effect<Budget, ValidationError> {
+  if (!budget.isActive) return fail(new ValidationError({ message: 'budget is already inactive', entityId: budget.id }))
+  return succeed({
+    ...budget,
+    isActive: false
+  })
+}
+
 export function isBudgetActive(budget: Budget): Effect.Effect<boolean, never> {
   return succeed(budget.isActive)
 }
 
 export function isBudgetOverbudget(budget: Budget): Effect.Effect<boolean, never> {
   return succeed(budget.currentAmount < 0)
+}
+
+export function isBudgetSoftDeleted(budget: Budget): Effect.Effect<boolean, never> {
+  return succeed(!!budget.deletedAt)
+}
+
+export function softDeleteBudget(budget: Budget): Effect.Effect<Budget, AlreadyDeletedError> {
+  if (budget.deletedAt) return fail(new AlreadyDeletedError())
+  return succeed({
+    ...budget,
+    deletedAt: new Date().toLocaleString(),
+  })
+}
+
+export function updateBudgetName(budget: Budget, name: string): Effect.Effect<Budget, never> {
+  return succeed({
+    ...budget,
+    name,
+    updatedAt: new Date().toLocaleString()
+  })
 }
