@@ -1,7 +1,8 @@
 import { Data } from 'effect';
 
 export class ValidationError extends Data.TaggedError('ValidationError')<{
-  message: string;
+  message?: string;
+  entityId?: string;
 }> { }
 
 export class UserAlreadyDeletedError extends Data.TaggedError('UserAlreadyDeletedError')<{}> { }
