@@ -2,7 +2,7 @@ import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import { AlreadyDeletedError, ValidationError } from "@/lib/errors";
-import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, isBudgetActive, isBudgetOverbudget, isBudgetSoftDeleted, setBudgetActive, setBudgetInactive, softDeleteBudget, updateBudgetName, type Budget, type CreateBudgetParams } from "./budget";
+import { addToBudgetCurrentAmount, createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, isBudgetActive, isBudgetOverbudget, isBudgetSoftDeleted, setBudgetActive, setBudgetInactive, softDeleteBudget, subtractFromBudgetCurrentAmount, updateBudgetName, type Budget, type CreateBudgetParams } from "./budget";
 import { faker } from "@faker-js/faker";
 import {
   generateMockBudget,
@@ -73,16 +73,7 @@ describe("getBudgetSpentAmount", () => {
   let mock: Budget;
 
   beforeEach(() => {
-    const randomStartAmount = faker.number.int({ min: 1, max: 10000 });
-    const randomCurrentAmount = faker.number.int({ min: 1, max: 10000 });
-    mock = {
-      id: faker.string.uuid(),
-      userId: faker.string.uuid(),
-      name: faker.animal.cow(),
-      startAmount: randomStartAmount,
-      currentAmount: randomCurrentAmount,
-      isActive: true,
-    };
+    mock = generateMockBudget()
   });
 
   effectIt.effect("should calculate the total spent amount", () =>
@@ -117,16 +108,7 @@ describe("getBudgetSpentPercentage", () => {
   let mock: Budget;
 
   beforeEach(() => {
-    const randomStartAmount = faker.number.int({ min: 1, max: 10000 });
-    const randomCurrentAmount = faker.number.int({ min: 1, max: 10000 });
-    mock = {
-      id: faker.string.uuid(),
-      userId: faker.string.uuid(),
-      name: faker.animal.cow(),
-      startAmount: randomStartAmount,
-      currentAmount: randomCurrentAmount,
-      isActive: true,
-    };
+    mock = generateMockBudget()
   });
 
   effectIt.effect("should calculate the total spent percentage", () =>
@@ -175,8 +157,9 @@ describe("setBudgetActive", () => {
   let mock: Budget;
 
   beforeEach(() => {
-    mock = generateMockBudget();
-    mock.isActive = false;
+    mock = generateMockBudget({
+      isActive: false
+    });
   });
 
   effectIt.effect("should set the budget as active", () =>
@@ -207,8 +190,9 @@ describe("setBudgetInactive", () => {
   let mock: Budget;
 
   beforeEach(() => {
-    mock = generateMockBudget();
-    mock.isActive = true;
+    mock = generateMockBudget({
+      isActive: true
+    });
   });
 
   effectIt.effect("should set the budget as inactive", () =>
@@ -388,6 +372,70 @@ describe("updateBudgetName", () => {
     Effect.gen(function*() {
       const newName = faker.animal.cow();
       const result = yield* Effect.exit(updateBudgetName(mock, newName));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.updatedAt).toBeTruthy();
+      }
+    })
+  );
+})
+
+describe("addToBudgetCurrentAmount", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget({
+      currentAmount: 1000
+    });
+  });
+
+  effectIt.effect("should add to the current amount", () =>
+    Effect.gen(function*() {
+      const amountToAdd = 500;
+      const result = yield* Effect.exit(addToBudgetCurrentAmount(mock, amountToAdd));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.currentAmount).toBe(1500);
+      }
+    })
+  );
+
+  effectIt.effect("should update the updatedAt property", () =>
+    Effect.gen(function*() {
+      const amountToAdd = 500;
+      const result = yield* Effect.exit(addToBudgetCurrentAmount(mock, amountToAdd));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.updatedAt).toBeTruthy();
+      }
+    })
+  );
+})
+
+describe("subtractFromBudgetCurrentAmount", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget({
+      currentAmount: 1000
+    });
+  });
+
+  effectIt.effect("should subtract from the current amount", () =>
+    Effect.gen(function*() {
+      const amountToSubtract = 300;
+      const result = yield* Effect.exit(subtractFromBudgetCurrentAmount(mock, amountToSubtract));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.currentAmount).toBe(700);
+      }
+    })
+  );
+
+  effectIt.effect("should update the updatedAt property", () =>
+    Effect.gen(function*() {
+      const amountToSubtract = 300;
+      const result = yield* Effect.exit(subtractFromBudgetCurrentAmount(mock, amountToSubtract));
       expect(Exit.isSuccess(result)).toBe(true);
       if (Exit.isSuccess(result)) {
         expect(result.value.updatedAt).toBeTruthy();
