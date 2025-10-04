@@ -2,7 +2,7 @@ import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import { AlreadyDeletedError, ValidationError } from "@/lib/errors";
-import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, isBudgetActive, setBudgetActive, type Budget, type CreateBudgetParams } from "./budget";
+import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, isBudgetActive, isBudgetOverbudget, setBudgetActive, type Budget, type CreateBudgetParams } from "./budget";
 import { transactionType } from "./types/TransactionType";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
@@ -227,6 +227,47 @@ describe("isBudgetActive", () => {
     Effect.gen(function*() {
       mock.isActive = false
       const result = yield* Effect.exit(isBudgetActive(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(false);
+      }
+    })
+  );
+})
+
+describe("isBudgetOverbudget", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget();
+  });
+
+  effectIt.effect("should return true if current amount is negative", () =>
+    Effect.gen(function*() {
+      mock.currentAmount = -100;
+      const result = yield* Effect.exit(isBudgetOverbudget(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(true);
+      }
+    })
+  );
+
+  effectIt.effect("should return false if current amount is positive", () =>
+    Effect.gen(function*() {
+      mock.currentAmount = 100;
+      const result = yield* Effect.exit(isBudgetOverbudget(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(false);
+      }
+    })
+  );
+
+  effectIt.effect("should return false if current amount is zero", () =>
+    Effect.gen(function*() {
+      mock.currentAmount = 0;
+      const result = yield* Effect.exit(isBudgetOverbudget(mock));
       expect(Exit.isSuccess(result)).toBe(true);
       if (Exit.isSuccess(result)) {
         expect(result.value).toBe(false);
