@@ -53,3 +53,7 @@ export function setBudgetActive(budget: Budget): Effect.Effect<Budget, Validatio
 export function isBudgetActive(budget: Budget): Effect.Effect<boolean, never> {
   return succeed(budget.isActive)
 }
+
+export function isBudgetOverbudget(budget: Budget): Effect.Effect<boolean, never> {
+  return succeed(budget.currentAmount < 0)
+}
