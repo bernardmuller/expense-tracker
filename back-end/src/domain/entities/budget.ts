@@ -85,3 +85,19 @@ export function updateBudgetName(budget: Budget, name: string): Effect.Effect<Bu
     updatedAt: new Date().toLocaleString()
   })
 }
+
+export function addToBudgetCurrentAmount(budget: Budget, amount: number): Effect.Effect<Budget, never> {
+  return succeed({
+    ...budget,
+    currentAmount: budget.currentAmount + amount,
+    updatedAt: new Date().toLocaleString()
+  })
+}
+
+export function subtractFromBudgetCurrentAmount(budget: Budget, amount: number): Effect.Effect<Budget, never> {
+  return succeed({
+    ...budget,
+    currentAmount: budget.currentAmount - amount,
+    updatedAt: new Date().toLocaleString()
+  })
+}
