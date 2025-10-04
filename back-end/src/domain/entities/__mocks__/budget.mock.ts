@@ -1,14 +1,23 @@
 import type { Budget } from '../budget';
 import { faker } from '@faker-js/faker';
 
-export const generateMockBudget = (): Budget => ({
-  id: faker.number.int(),
-  userId: faker.string.uuid(),
-  name: faker.finance.accountName(),
-  startAmount: faker.number.float({ min: 0, max: 10000 }),
-  currentAmount: faker.number.float({ min: 0, max: 10000 }),
-  isActive: faker.datatype.boolean(),
-});
+type GenerateMockBudgetParams = {
+  mockBudget?: Budget
+}
+
+export const generateMockBudget = (overwrites: Partial<Budget> = {}): Budget => {
+  const randomStartAmount = faker.number.int({ min: 1, max: 10000 });
+  const randomCurrentAmount = faker.number.int({ min: 1, max: 10000 });
+  return {
+    id: faker.string.uuid(),
+    userId: faker.string.uuid(),
+    name: faker.finance.accountName(),
+    startAmount: randomStartAmount,
+    currentAmount: randomCurrentAmount,
+    isActive: faker.datatype.boolean(),
+    ...overwrites
+  }
+};
 
 export const mockBudgets = (count: number = 10): Budget[] => {
   return Array.from({ length: count }, () => generateMockBudget());
