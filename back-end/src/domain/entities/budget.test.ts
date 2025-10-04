@@ -2,10 +2,8 @@ import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import { AlreadyDeletedError, ValidationError } from "@/lib/errors";
-import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, isBudgetActive, isBudgetOverbudget, setBudgetActive, type Budget, type CreateBudgetParams } from "./budget";
-import { transactionType } from "./types/TransactionType";
+import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, isBudgetActive, isBudgetOverbudget, isBudgetSoftDeleted, setBudgetActive, setBudgetInactive, softDeleteBudget, updateBudgetName, type Budget, type CreateBudgetParams } from "./budget";
 import { faker } from "@faker-js/faker";
-import { generateUuid } from "@/lib/utils/generateUuid";
 import {
   generateMockBudget,
   mockBudgets
@@ -205,6 +203,38 @@ describe("setBudgetActive", () => {
   );
 })
 
+describe("setBudgetInactive", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget();
+    mock.isActive = true;
+  });
+
+  effectIt.effect("should set the budget as inactive", () =>
+    Effect.gen(function*() {
+      const result = yield* Effect.exit(setBudgetInactive(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.isActive).toBe(false);
+      }
+    })
+  );
+
+  effectIt.effect("should throw if the budget is already inactive", () =>
+    Effect.gen(function*() {
+      mock.isActive = false
+      const result = yield* Effect.exit(setBudgetInactive(mock));
+      expect(Exit.isFailure(result)).toBe(true);
+      if (Exit.isFailure(result)) {
+        expect(result).toStrictEqual(Exit.fail(new ValidationError({
+          entityId: mock.id,
+        })));
+      }
+    })
+  );
+})
+
 describe("isBudgetActive", () => {
   let mock: Budget;
 
@@ -271,6 +301,96 @@ describe("isBudgetOverbudget", () => {
       expect(Exit.isSuccess(result)).toBe(true);
       if (Exit.isSuccess(result)) {
         expect(result.value).toBe(false);
+      }
+    })
+  );
+})
+
+describe("isBudgetSoftDeleted", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget();
+  });
+
+  effectIt.effect("should return true if budget is soft deleted", () =>
+    Effect.gen(function*() {
+      mock.deletedAt = faker.date.anytime().toLocaleString();
+      const result = yield* Effect.exit(isBudgetSoftDeleted(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(true);
+      }
+    })
+  );
+
+  effectIt.effect("should return false if budget is not soft deleted", () =>
+    Effect.gen(function*() {
+      mock.deletedAt = undefined;
+      const result = yield* Effect.exit(isBudgetSoftDeleted(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(false);
+      }
+    })
+  );
+})
+
+describe("softDeleteBudget", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget();
+  });
+
+  effectIt.effect("should be marked as deleted", () =>
+    Effect.gen(function*() {
+      mock.deletedAt = undefined;
+      const result = yield* Effect.exit(softDeleteBudget(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.deletedAt).toBeTruthy();
+      }
+    })
+  );
+
+  effectIt.effect("should not be able to soft delete a budget that is already deleted", () =>
+    Effect.gen(function*() {
+      mock.deletedAt = faker.date.anytime().toLocaleString();
+      const result = yield* Effect.exit(softDeleteBudget(mock));
+      expect(Exit.isFailure(result)).toBe(true);
+      if (Exit.isFailure(result)) {
+        expect(result).toStrictEqual(Exit.fail(new AlreadyDeletedError()));
+      }
+    })
+  );
+})
+
+describe("updateBudgetName", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget();
+  });
+
+  effectIt.effect("should update the name of the budget", () =>
+    Effect.gen(function*() {
+      const newName = faker.animal.cow();
+      const result = yield* Effect.exit(updateBudgetName(mock, newName));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.name).toBe(newName);
+      }
+    })
+  );
+
+  effectIt.effect("should update the updatedAt property", () =>
+    Effect.gen(function*() {
+      const newName = faker.animal.cow();
+      const result = yield* Effect.exit(updateBudgetName(mock, newName));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value.updatedAt).toBeTruthy();
       }
     })
   );
