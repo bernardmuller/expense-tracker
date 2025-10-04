@@ -41,3 +41,7 @@ export function getBudgetSpentPercentage(budget: Budget): Effect.Effect<string, 
   const percentage = ((budget.startAmount - budget.currentAmount) / budget.startAmount * 100).toFixed(1);
   return succeed(percentage)
 }
+
+export function setBudgetActive(budget: Budget): Effect.Effect<Budget, ValidationError> {
+  return succeed(budget)
+}
