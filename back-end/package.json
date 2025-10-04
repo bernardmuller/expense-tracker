@@ -10,7 +10,8 @@
   "dependencies": {
     "@hono/node-server": "^1.19.5",
     "effect": "^3.18.1",
-    "hono": "^4.9.9"
+    "hono": "^4.9.9",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@effect/vitest": "^0.26.0",
