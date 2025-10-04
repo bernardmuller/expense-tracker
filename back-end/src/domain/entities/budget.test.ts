@@ -2,7 +2,7 @@ import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import { AlreadyDeletedError, ValidationError } from "@/lib/errors";
-import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, type Budget, type CreateBudgetParams } from "./budget";
+import { createBudget, getBudgetSpentAmount, getBudgetSpentPercentage, isBudgetActive, setBudgetActive, type Budget, type CreateBudgetParams } from "./budget";
 import { transactionType } from "./types/TransactionType";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
@@ -41,7 +41,7 @@ describe("createBudget", () => {
       const result = yield* Effect.exit(createBudget({}));
       expect(Exit.isFailure(result)).toBe(true);
       if (Exit.isFailure(result)) {
-        expect(result).toStrictEqual(Exit.fail(new ValidationError({ message: "" })))
+        expect(result).toStrictEqual(Exit.fail(new ValidationError({})))
       }
     })
   );
@@ -153,7 +153,7 @@ describe("getBudgetSpentPercentage", () => {
       }));
       expect(Exit.isFailure(result)).toBe(true);
       if (Exit.isFailure(result)) {
-        expect(result).toStrictEqual(Exit.fail(new ValidationError({ message: "" })));
+        expect(result).toStrictEqual(Exit.fail(new ValidationError({})));
       }
     })
   );
@@ -178,48 +178,60 @@ describe("setBudgetActive", () => {
 
   beforeEach(() => {
     mock = generateMockBudget();
+    mock.isActive = false;
   });
 
-  effectIt.effect("should calculate the total spent percentage", () =>
+  effectIt.effect("should set the budget as active", () =>
     Effect.gen(function*() {
-      const result = yield* Effect.exit(getBudgetSpentPercentage(mock));
-      const expected = ((mock.startAmount - mock.currentAmount) / mock.startAmount * 100).toFixed(1);
+      const result = yield* Effect.exit(setBudgetActive(mock));
       expect(Exit.isSuccess(result)).toBe(true);
       if (Exit.isSuccess(result)) {
-        expect(result.value).toBe(expected);
+        expect(result.value.isActive).toBe(true);
       }
     })
   );
 
-  effectIt.effect("should throw if budget has no start or currentAmount", () =>
+  effectIt.effect("should throw if the budget is already active", () =>
     Effect.gen(function*() {
-      const result = yield* Effect.exit(getBudgetSpentPercentage({
-        ...mock,
-        //@ts-expect-error: testing undefined edge-cases
-        currentAmount: undefined,
-        //@ts-expect-error: testing undefined edge-cases
-        startAmount: undefined
-      }));
+      mock.isActive = true
+      const result = yield* Effect.exit(setBudgetActive(mock));
       expect(Exit.isFailure(result)).toBe(true);
       if (Exit.isFailure(result)) {
-        expect(result).toStrictEqual(Exit.fail(new ValidationError({ message: "" })));
-      }
-    })
-  );
-
-  effectIt.effect("should calculate up to 1 decimals", () =>
-    Effect.gen(function*() {
-      const budgets = mockBudgets()
-      for (const mock of budgets) {
-        const result = yield* Effect.exit(getBudgetSpentPercentage(mock));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          const decimalPlaces = result.value.split('.')[1]?.length || 1
-          expect(decimalPlaces).toBe(1)
-        }
+        expect(result).toStrictEqual(Exit.fail(new ValidationError({
+          entityId: mock.id,
+        })));
       }
     })
   );
 })
 
+describe("isBudgetActive", () => {
+  let mock: Budget;
+
+  beforeEach(() => {
+    mock = generateMockBudget();
+  });
+
+  effectIt.effect("should return true if budget is active", () =>
+    Effect.gen(function*() {
+      mock.isActive = true;
+      const result = yield* Effect.exit(isBudgetActive(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(true);
+      }
+    })
+  );
+
+  effectIt.effect("should return false if budget is not active", () =>
+    Effect.gen(function*() {
+      mock.isActive = false
+      const result = yield* Effect.exit(isBudgetActive(mock));
+      expect(Exit.isSuccess(result)).toBe(true);
+      if (Exit.isSuccess(result)) {
+        expect(result.value).toBe(false);
+      }
+    })
+  );
+})
 
