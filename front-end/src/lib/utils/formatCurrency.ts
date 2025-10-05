@@ -1,5 +1,5 @@
 import { supportedLocales } from "../constants/supportedLocales"
-import type { SupportedLocalesValues } from "../types/SupportedLocalesValues"
+import type { SupportedLocalesValues } from "../types/supportedLocalesValues"
 
 export function formatCurrency(value: number, locale: SupportedLocalesValues) {
   switch (locale){
