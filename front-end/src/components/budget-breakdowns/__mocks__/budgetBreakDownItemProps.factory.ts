@@ -1,6 +1,7 @@
+import { supportedLocales } from "@/lib/constants/supportedLocales";
+import { formatCurrency } from "@/lib/utils/formatCurrency";
 import { faker } from "@faker-js/faker";
-import type { BudgetBreakdownItemProps } from "../types";
-import { getRandomBool } from "@/lib/utils";
+import type { DefaultBudgetBreakdownItemProps, PlannedBudgetBreakdownItemProps } from "../types";
 
 const BUDGET_NAMES = [
       'Groceries',
@@ -19,13 +20,14 @@ const plannedAmount = faker.number.int({min: 0, max: 20000})
 const spentAmount = faker.number.int({min:0, max: plannedAmount})
 const percentage = Number(((spentAmount / plannedAmount) * 100).toFixed(0))
 
-export const budgetBreakDownItemProps: BudgetBreakdownItemProps = ({
+export const budgetBreakDownItemProps: DefaultBudgetBreakdownItemProps = {
   icon: faker.internet.emoji(),
   name: faker.helpers.arrayElement(BUDGET_NAMES),
-  planned: plannedAmount,
-  spent: spentAmount,
+  spentAmount: formatCurrency(plannedAmount, supportedLocales.SOUTH_AFRICA),
   percentage: percentage,
-  isOverBudget: false,
-  isUnplanned: getRandomBool(),
-  onClick: () => {}
-})
+}
+
+export const plannedBudgetBreakDownItemProps: PlannedBudgetBreakdownItemProps = {
+  ...budgetBreakDownItemProps,
+  plannedAmount: formatCurrency(plannedAmount, supportedLocales.SOUTH_AFRICA)
+}

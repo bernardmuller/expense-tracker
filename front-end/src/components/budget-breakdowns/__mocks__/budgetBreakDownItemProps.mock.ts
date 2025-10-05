@@ -1,9 +1,16 @@
-import type { BudgetBreakdownItemProps } from "../types";
-import { budgetBreakDownItemProps } from "./budgetBreakDownItemProps.factory";
+import type { DefaultBudgetBreakdownItemProps, PlannedBudgetBreakdownItemProps } from "../types";
+import { budgetBreakDownItemProps, plannedBudgetBreakDownItemProps } from "./budgetBreakDownItemProps.factory";
 
-export const generateBudgetBreakdownItemProps = (
-  overwrites: Partial<BudgetBreakdownItemProps> = {}
+export const generateDefaultBudgetBreakdownItemProps = (
+  overwrites: Partial<DefaultBudgetBreakdownItemProps> = {}
 ) => ({
   ...budgetBreakDownItemProps,
+  ...overwrites,
+});
+
+export const generatePlannedBudgetBreakdownItemProps = (
+  overwrites: Partial<PlannedBudgetBreakdownItemProps> = {}
+) => ({
+  ...plannedBudgetBreakDownItemProps,
   ...overwrites,
 });

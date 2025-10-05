@@ -1,10 +1,10 @@
-export type BudgetBreakdownItemProps = {
+export type DefaultBudgetBreakdownItemProps = {
   name: string
   icon: string
-  spent: number
-  planned?: number
   percentage: number
-  onClick: () => void
-  isUnplanned: boolean
-  isOverBudget: boolean
+  spentAmount: string,
+}
+
+export type PlannedBudgetBreakdownItemProps = DefaultBudgetBreakdownItemProps & {
+  plannedAmount: string
 }
