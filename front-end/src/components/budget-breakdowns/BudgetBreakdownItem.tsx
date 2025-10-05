@@ -1,45 +1,109 @@
-import { Badge } from '../ui/badge'
-import { Card } from '../ui/card'
-import { Progress } from '../ui/progress'
-import type { BudgetBreakdownItemProps } from './types'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 
-export default function BudgetBreakdownItem({
+import { Link, type NavigateOptions } from '@tanstack/react-router'
+
+export function BudgetBreakdownItem({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <Card className="border-border/50 cursor-pointer p-4">{children}</Card>
+}
+
+BudgetBreakdownItem.LinkProvider = function LinkProvider({
+  children,
+  url,
+  params,
+  searchParams,
+}: {
+  children: React.ReactNode
+  url: NavigateOptions['to']
+  params: NavigateOptions['params']
+  searchParams: NavigateOptions['search']
+}) {
+  return (
+    <Link to={url} params={params} search={searchParams}>
+      {children}
+    </Link>
+  )
+}
+
+BudgetBreakdownItem.Header = function Header({
   name,
   icon,
-  planned,
-  spent,
-  percentage,
-  isOverBudget = false,
-  isUnplanned = false,
-  onClick,
-}: BudgetBreakdownItemProps) {
+  children,
+}: {
+  name: string
+  icon: string
+  children?: React.ReactNode
+}) {
   return (
-    <Card
-      className="border-border/50 cursor-pointer p-4"
-      onClick={() => onClick()}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-lg">{icon}</span>
-          <h3 className="text-foreground text-lg font-semibold">{name}</h3>
-        </div>
-        {isOverBudget && <Badge variant="destructive">Over budget</Badge>}
-        {isUnplanned && <Badge variant="outline">Unplanned</Badge>}
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <span className="text-lg">{icon}</span>
+        <h3 className="text-foreground text-lg font-semibold">{name}</h3>
       </div>
-      <div className="space-y-2">
-        <Progress value={percentage} className="h-1" />
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">
-            Planned: R{planned?.toLocaleString() ?? '0'}
-          </span>
-          <span className="text-muted-foreground font-sm">
-            Spent:{' '}
-            <span className="text-primary font-semibold">
-              R{spent.toLocaleString()}
-            </span>
-          </span>
-        </div>
-      </div>
-    </Card>
+      {children}
+    </div>
   )
+}
+
+BudgetBreakdownItem.OverBudget = function OverBudget() {
+  return (
+    <Badge data-testid="badge" variant="destructive">
+      Over budget
+    </Badge>
+  )
+}
+
+BudgetBreakdownItem.Unplanned = function Unplanned() {
+  return (
+    <Badge data-testid="badge" variant="outline">
+      Unplanned
+    </Badge>
+  )
+}
+
+BudgetBreakdownItem.Progress = function ProgressBar({
+  percentage,
+}: {
+  percentage: number
+}) {
+  return <Progress value={percentage} className="h-1" />
+}
+
+BudgetBreakdownItem.Stats = function Stats({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <div className="space-y-2">{children}</div>
+}
+
+BudgetBreakdownItem.Planned = function Planned({ amount }: { amount: string }) {
+  return (
+    <div className="text-muted-foreground flex gap-1">
+      <span>Planned:</span>
+      <span>{amount}</span>
+    </div>
+  )
+}
+
+BudgetBreakdownItem.Spent = function Spent({ amount }: { amount: string }) {
+  return (
+    <div className="text-muted-foreground font-sm flex gap-1">
+      <span>Spent:</span>
+      <span className="text-primary font-semibold">{amount}</span>
+    </div>
+  )
+}
+
+BudgetBreakdownItem.Row = function Row({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <div className="flex justify-between text-sm">{children}</div>
 }
