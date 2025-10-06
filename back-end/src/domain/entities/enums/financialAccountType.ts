@@ -1,6 +1,6 @@
 const financialAccountType = {
   bank: "bank",
-  crypto: "crypto"
+  crypto: "crypto",
 } as const;
 
 export type FinancialAccountType = typeof financialAccountType;
