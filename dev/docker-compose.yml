@@ -13,7 +13,6 @@ services:
 
     drizzle-gateway:
         image: ghcr.io/drizzle-team/gateway:latest
-        restart: always
         ports:
             - "4983:4983"
         environment:
