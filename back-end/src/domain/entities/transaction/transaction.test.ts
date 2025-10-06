@@ -9,7 +9,7 @@ import {
   type CreateTransactionParams,
   type Transaction,
 } from "./index.js";
-import { transactionType } from "../enums/TransactionType";
+import { transactionType } from "../enums/transactionType";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { mockExpenseTransactions } from "../__mocks__/transaction.mock";
@@ -29,25 +29,19 @@ describe("createTransaction", () => {
 
   effectIt.effect("should create an expense with the provided type", () =>
     Effect.gen(function* () {
-      const result = yield* Effect.exit(createTransaction(mock));
-      expect(Exit.isSuccess(result)).toBe(true);
-      if (Exit.isSuccess(result)) {
-        expect(result.value.type).toBe(mock.type);
-      }
+      const result = yield* createTransaction(mock);
+      expect(result.type).toBe(mock.type);
     }),
   );
 
   effectIt.effect("should create an expense with the provided properties", () =>
     Effect.gen(function* () {
-      const result = yield* Effect.exit(createTransaction(mock));
-      expect(Exit.isSuccess(result)).toBe(true);
-      if (Exit.isSuccess(result)) {
-        expect(result.value.type).toBe(mock.type);
-        expect(result.value.description).toBe(mock.description);
-        expect(result.value.amount).toBe(mock.amount);
-        expect(result.value.budgetId).toBe(mock.budgetId);
-        expect(result.value.categoryId).toBe(mock.categoryId);
-      }
+      const result = yield* createTransaction(mock);
+      expect(result.type).toBe(mock.type);
+      expect(result.description).toBe(mock.description);
+      expect(result.amount).toBe(mock.amount);
+      expect(result.budgetId).toBe(mock.budgetId);
+      expect(result.categoryId).toBe(mock.categoryId);
     }),
   );
 
@@ -55,11 +49,8 @@ describe("createTransaction", () => {
     "should create an expense with that has no deletedAt property",
     () =>
       Effect.gen(function* () {
-        const result = yield* Effect.exit(createTransaction(mock));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.deletedAt).toBeFalsy();
-        }
+        const result = yield* createTransaction(mock);
+        expect(result.deletedAt).toBeFalsy();
       }),
   );
 
@@ -67,11 +58,8 @@ describe("createTransaction", () => {
     "should create an expense with that has no deletedAt property",
     () =>
       Effect.gen(function* () {
-        const result = yield* Effect.exit(createTransaction(mock));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.deletedAt).toBeFalsy();
-        }
+        const result = yield* createTransaction(mock);
+        expect(result.deletedAt).toBeFalsy();
       }),
   );
 
@@ -79,11 +67,8 @@ describe("createTransaction", () => {
     "should create an expense with that has no deletedAt property",
     () =>
       Effect.gen(function* () {
-        const result = yield* Effect.exit(createTransaction(mock));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.id).toBeTruthy();
-        }
+        const result = yield* createTransaction(mock);
+        expect(result.id).toBeTruthy();
       }),
   );
 });
@@ -108,11 +93,8 @@ describe("updateTransaction", () => {
       Effect.gen(function* () {
         const transactions = mockExpenseTransactions();
         for (const t of transactions) {
-          const result = yield* Effect.exit(updateTransaction(t, t));
-          expect(Exit.isSuccess(result)).toBe(true);
-          if (Exit.isSuccess(result)) {
-            expect(result.value.updatedAt).toBeTruthy();
-          }
+          const result = yield* updateTransaction(t, t);
+          expect(result.updatedAt).toBeTruthy();
         }
       }),
   );
@@ -129,11 +111,8 @@ describe("updateTransaction", () => {
           ...t,
           amount: randomAmount,
         };
-        const result = yield* Effect.exit(updateTransaction(t, update));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.amount).toBe(randomAmount);
-        }
+        const result = yield* updateTransaction(t, update);
+        expect(result.amount).toBe(randomAmount);
       }
     }),
   );
@@ -185,11 +164,8 @@ describe("updateTransaction", () => {
           ...t,
           type: randomType,
         };
-        const result = yield* Effect.exit(updateTransaction(t, update));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.type).toBe(randomType);
-        }
+        const result = yield* updateTransaction(t, update);
+        expect(result.type).toBe(randomType);
       }
     }),
   );
@@ -205,11 +181,8 @@ describe("updateTransaction", () => {
           ...t,
           description: randomString,
         };
-        const result = yield* Effect.exit(updateTransaction(t, update));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.description).toBe(randomString);
-        }
+        const result = yield* updateTransaction(t, update);
+        expect(result.description).toBe(randomString);
       }
     }),
   );
@@ -221,11 +194,8 @@ describe("softDeleteTransaction", () => {
       const transactions = mockExpenseTransactions();
       for (const t of transactions) {
         t.deletedAt = undefined;
-        const result = yield* Effect.exit(softDeleteTransaction(t));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.deletedAt).toBeTruthy();
-        }
+        const result = yield* softDeleteTransaction(t);
+        expect(result.deletedAt).toBeTruthy();
       }
     }),
   );
