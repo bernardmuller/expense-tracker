@@ -28,7 +28,7 @@ export const markUserAsOnboarded = (
       );
     }
 
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...user,
@@ -49,7 +49,7 @@ export const markUserAsVerified = (
       );
     }
 
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...user,
@@ -63,7 +63,7 @@ export const updateUserProfile = (
   updatedUser: User,
 ): Effect.Effect<User, never> =>
   Effect.gen(function* () {
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...user,
@@ -89,7 +89,7 @@ export const softDeleteUser = (
       );
     }
 
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...user,
