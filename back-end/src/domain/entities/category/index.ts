@@ -77,7 +77,7 @@ export const updateCategory = (
       );
     }
 
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...category,
@@ -100,7 +100,7 @@ export const softDeleteCategory = (
       );
     }
 
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...category,

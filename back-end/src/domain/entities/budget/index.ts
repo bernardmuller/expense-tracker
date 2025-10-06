@@ -161,7 +161,7 @@ export const softDeleteBudget = (
         }),
       );
     }
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
     return {
       ...budget,
       deletedAt: now,
@@ -180,7 +180,7 @@ export const updateBudgetName = (
         }),
       );
     }
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
     return {
       ...budget,
       name,
@@ -193,7 +193,7 @@ export const addToBudgetCurrentAmount = (
   amount: number,
 ): Effect.Effect<Budget, never> =>
   Effect.gen(function* () {
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
     return {
       ...budget,
       currentAmount: budget.currentAmount + amount,
@@ -206,7 +206,7 @@ export const subtractFromBudgetCurrentAmount = (
   amount: number,
 ): Effect.Effect<Budget, never> =>
   Effect.gen(function* () {
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
     return {
       ...budget,
       currentAmount: budget.currentAmount - amount,
