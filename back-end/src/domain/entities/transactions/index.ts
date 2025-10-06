@@ -1,6 +1,6 @@
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { getCurrentISOString } from "@/lib/utils/time";
-import type { TransactionType } from "./types/TransactionType";
+import type { TransactionType } from "../enums/TransactionType";
 import { Effect } from "effect";
 import {
   MissingRequiredFieldsError,
@@ -19,7 +19,10 @@ export type Transaction = {
   updatedAt?: string;
 };
 
-export type CreateTransactionParams = Omit<Transaction, "id" | "deletedAt" | "updatedAt">;
+export type CreateTransactionParams = Omit<
+  Transaction,
+  "id" | "deletedAt" | "updatedAt"
+>;
 
 export const createTransaction = (
   params: CreateTransactionParams,
