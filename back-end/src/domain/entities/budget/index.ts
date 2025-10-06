@@ -6,10 +6,11 @@ import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
   BudgetAlreadySoftDeletedError,
+  InvalidBudgetNameError,
   InvalidStartAmountError,
   MissingRequiredFieldsError,
   type BudgetValidationError,
-} from "./budget-errors";
+} from "./budgetErrors";
 import { calculatePercentage } from "@/lib/utils/calculatePercentage";
 
 export type Budget = {
@@ -28,8 +29,13 @@ export type CreateBudgetParams = Omit<
   "id" | "deletedAt" | "updatedAt" | "isActive" | "currentAmount"
 >;
 
-export function createBudget(params: CreateBudgetParams) {
-  return Effect.gen(function* () {
+export const createBudget = (
+  params: CreateBudgetParams,
+): Effect.Effect<
+  Budget,
+  MissingRequiredFieldsError | InvalidStartAmountError
+> =>
+  Effect.gen(function* () {
     const missingFields: string[] = [];
     if (!params.userId) missingFields.push("userId");
     if (!params.name) missingFields.push("name");
@@ -60,10 +66,11 @@ export function createBudget(params: CreateBudgetParams) {
       updatedAt: undefined,
     };
   });
-}
 
-export function getBudgetSpentAmount(budget: Budget) {
-  return Effect.gen(function* () {
+export const getBudgetSpentAmount = (
+  budget: Budget,
+): Effect.Effect<number, MissingRequiredFieldsError> =>
+  Effect.gen(function* () {
     const missingFields: string[] = [];
     if (!budget.startAmount) missingFields.push("startAmount");
     if (!budget.currentAmount) missingFields.push("currentAmount");
@@ -81,10 +88,9 @@ export function getBudgetSpentAmount(budget: Budget) {
 
     return spent;
   });
-}
 
-export function getBudgetSpentPercentage(budget: Budget) {
-  return Effect.gen(function* () {
+export const getBudgetSpentPercentage = (budget: Budget) =>
+  Effect.gen(function* () {
     const missingFields: string[] = [];
     if (!budget.startAmount) missingFields.push("startAmount");
     if (!budget.currentAmount) missingFields.push("currentAmount");
@@ -103,10 +109,11 @@ export function getBudgetSpentPercentage(budget: Budget) {
 
     return percentage;
   });
-}
 
-export function setBudgetActive(budget: Budget) {
-  return Effect.gen(function* () {
+export const setBudgetActive = (
+  budget: Budget,
+): Effect.Effect<Budget, BudgetAlreadyActiveError> =>
+  Effect.gen(function* () {
     if (budget.isActive)
       return yield* Effect.fail(
         new BudgetAlreadyActiveError({
@@ -118,10 +125,11 @@ export function setBudgetActive(budget: Budget) {
       isActive: true,
     };
   });
-}
 
-export function setBudgetInactive(budget: Budget) {
-  return Effect.gen(function* () {
+export const setBudgetInactive = (
+  budget: Budget,
+): Effect.Effect<Budget, BudgetAlreadyInActiveError> =>
+  Effect.gen(function* () {
     if (!budget.isActive)
       return yield* Effect.fail(
         new BudgetAlreadyInActiveError({
@@ -133,22 +141,19 @@ export function setBudgetInactive(budget: Budget) {
       isActive: false,
     };
   });
-}
 
-export function isBudgetActive(budget: Budget) {
-  return budget.isActive;
-}
+export const isBudgetActive = (budget: Budget): boolean => budget.isActive;
 
-export function isBudgetOverbudget(budget: Budget) {
-  return budget.currentAmount < 0;
-}
+export const isBudgetOverbudget = (budget: Budget): boolean =>
+  budget.currentAmount < 0;
 
-export function isBudgetSoftDeleted(budget: Budget) {
-  return !!budget.deletedAt;
-}
+export const isBudgetSoftDeleted = (budget: Budget): boolean =>
+  !!budget.deletedAt;
 
-export function softDeleteBudget(budget: Budget) {
-  return Effect.gen(function* () {
+export const softDeleteBudget = (
+  budget: Budget,
+): Effect.Effect<Budget, BudgetAlreadySoftDeletedError> =>
+  Effect.gen(function* () {
     if (budget.deletedAt) {
       return yield* Effect.fail(
         new BudgetAlreadySoftDeletedError({
@@ -162,10 +167,19 @@ export function softDeleteBudget(budget: Budget) {
       deletedAt: now,
     };
   });
-}
 
-export function updateBudgetName(budget: Budget, name: string) {
-  return Effect.gen(function* () {
+export const updateBudgetName = (
+  budget: Budget,
+  name: string,
+): Effect.Effect<Budget, InvalidBudgetNameError> =>
+  Effect.gen(function* () {
+    if (!name || name.trim() === "") {
+      return yield* Effect.fail(
+        new InvalidBudgetNameError({
+          name,
+        }),
+      );
+    }
     const now = yield* getCurrentISOString;
     return {
       ...budget,
@@ -173,10 +187,12 @@ export function updateBudgetName(budget: Budget, name: string) {
       updatedAt: now,
     };
   });
-}
 
-export function addToBudgetCurrentAmount(budget: Budget, amount: number) {
-  return Effect.gen(function* () {
+export const addToBudgetCurrentAmount = (
+  budget: Budget,
+  amount: number,
+): Effect.Effect<Budget, never> =>
+  Effect.gen(function* () {
     const now = yield* getCurrentISOString;
     return {
       ...budget,
@@ -184,13 +200,12 @@ export function addToBudgetCurrentAmount(budget: Budget, amount: number) {
       updatedAt: now,
     };
   });
-}
 
-export function subtractFromBudgetCurrentAmount(
+export const subtractFromBudgetCurrentAmount = (
   budget: Budget,
   amount: number,
-) {
-  return Effect.gen(function* () {
+): Effect.Effect<Budget, never> =>
+  Effect.gen(function* () {
     const now = yield* getCurrentISOString;
     return {
       ...budget,
@@ -198,4 +213,3 @@ export function subtractFromBudgetCurrentAmount(
       updatedAt: now,
     };
   });
-}
