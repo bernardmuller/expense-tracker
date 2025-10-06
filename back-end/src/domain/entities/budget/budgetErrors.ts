@@ -34,3 +34,9 @@ export class BudgetAlreadySoftDeletedError extends Data.TaggedError(
 )<{
   budgetId: string;
 }> {}
+
+export class InvalidBudgetNameError extends Data.TaggedError(
+  "InvalidBudgetNameError",
+)<{
+  name: string;
+}> {}
