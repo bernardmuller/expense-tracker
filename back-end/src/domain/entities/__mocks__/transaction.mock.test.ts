@@ -5,7 +5,7 @@ import {
   mockIncomeTransactions,
   mockTransferTransactions,
 } from "./transaction.mock";
-import { transactionType } from "../enums/TransactionType";
+import { transactionType } from "../enums/transactionType";
 
 describe("generateMockTransaction", () => {
   it("should generate a transaction with the given transaction type", () => {
