@@ -1,4 +1,4 @@
-import type { FinancialAccountType } from "./types/FinancialAccountType";
+import type { FinancialAccountType } from "./enums/financialAccountType";
 
 export type FinancialAccount = {
   readonly id: string;
@@ -6,4 +6,4 @@ export type FinancialAccount = {
   name: string;
   description: string;
   currentAmount: number;
-}
+};
