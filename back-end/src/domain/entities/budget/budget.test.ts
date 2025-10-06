@@ -7,7 +7,7 @@ import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
   BudgetAlreadySoftDeletedError,
-} from "./budget-errors";
+} from "./budgetErrors";
 import {
   addToBudgetCurrentAmount,
   createBudget,
