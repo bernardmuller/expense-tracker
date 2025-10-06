@@ -23,11 +23,8 @@ describe("markUserAsOnboarded", () => {
 
       for (const user of users) {
         user.onboarded = false;
-        const result = yield* Effect.exit(markUserAsOnboarded(user));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.onboarded).toEqual(true);
-        }
+        const result = yield* markUserAsOnboarded(user);
+        expect(result.onboarded).toEqual(true);
       }
     }),
   );
@@ -55,11 +52,8 @@ describe("markUserAsVerified", () => {
 
       for (const user of users) {
         user.emailVerified = false;
-        const result = yield* Effect.exit(markUserAsVerified(user));
-        expect(Exit.isSuccess(result)).toBe(true);
-        if (Exit.isSuccess(result)) {
-          expect(result.value.emailVerified).toEqual(true);
-        }
+        const result = yield* markUserAsVerified(user);
+        expect(result.emailVerified).toEqual(true);
       }
     }),
   );
@@ -100,11 +94,8 @@ describe("updateUserProfile", () => {
         name: "Jane Doe",
       };
 
-      const result = yield* Effect.exit(updateUserProfile(mockUser, params));
-      expect(Exit.isSuccess(result)).toBe(true);
-      if (Exit.isSuccess(result)) {
-        expect(result.value.name).toEqual(params.name);
-      }
+      const result = yield* updateUserProfile(mockUser, params);
+      expect(result.name).toEqual(params.name);
     }),
   );
 
@@ -115,27 +106,21 @@ describe("updateUserProfile", () => {
         email: "shouldnotwork@email.com",
       };
 
-      const result = yield* Effect.exit(updateUserProfile(mockUser, params));
-      expect(Exit.isSuccess(result)).toBe(true);
-      if (Exit.isSuccess(result)) {
-        expect(result.value.email).toEqual(mockUser.email);
-      }
+      const result = yield* updateUserProfile(mockUser, params);
+      expect(result.email).toEqual(mockUser.email);
     }),
   );
 
   effectIt.effect("should not update any properties other than user name", () =>
     Effect.gen(function* () {
       const params = generateMockUser();
-      const result = yield* Effect.exit(updateUserProfile(mockUser, params));
+      const result = yield* updateUserProfile(mockUser, params);
 
-      expect(Exit.isSuccess(result)).toBe(true);
-      if (Exit.isSuccess(result)) {
-        expect(result.value.email).toEqual(mockUser.email);
-        expect(result.value.name).toEqual(params.name);
-        expect(result.value.emailVerified).toEqual(mockUser.emailVerified);
-        expect(result.value.onboarded).toEqual(mockUser.onboarded);
-        expect(result.value.id).toEqual(mockUser.id);
-      }
+      expect(result.email).toEqual(mockUser.email);
+      expect(result.name).toEqual(params.name);
+      expect(result.emailVerified).toEqual(mockUser.emailVerified);
+      expect(result.onboarded).toEqual(mockUser.onboarded);
+      expect(result.id).toEqual(mockUser.id);
     }),
   );
 });
@@ -183,11 +168,8 @@ describe("softDeleteUser", () => {
     Effect.gen(function* () {
       const user = generateMockUser();
       user.deletedAt = undefined;
-      const result = yield* Effect.exit(softDeleteUser(user));
-      expect(Exit.isSuccess(result)).toBe(true);
-      if (Exit.isSuccess(result)) {
-        expect(result.value.deletedAt).toBeTruthy();
-      }
+      const result = yield* softDeleteUser(user);
+      expect(result.deletedAt).toBeTruthy();
     }),
   );
 

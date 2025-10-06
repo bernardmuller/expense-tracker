@@ -28,12 +28,14 @@ describe("createUserCategory", () => {
     };
   });
 
-  effectIt.effect("should create a userCategory with the provided properties", () =>
-    Effect.gen(function* () {
-      const result = yield* createUserCategory(mock);
-      expect(result.userId).toBe(mock.userId);
-      expect(result.categoryId).toBe(mock.categoryId);
-    }),
+  effectIt.effect(
+    "should create a userCategory with the provided properties",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* createUserCategory(mock);
+        expect(result.userId).toBe(mock.userId);
+        expect(result.categoryId).toBe(mock.categoryId);
+      }),
   );
 
   effectIt.effect("should create a userCategory with an id", () =>
@@ -43,11 +45,13 @@ describe("createUserCategory", () => {
     }),
   );
 
-  effectIt.effect("should create a userCategory with no deletedAt property", () =>
-    Effect.gen(function* () {
-      const result = yield* createUserCategory(mock);
-      expect(result.deletedAt).toBeFalsy();
-    }),
+  effectIt.effect(
+    "should create a userCategory with no deletedAt property",
+    () =>
+      Effect.gen(function* () {
+        const result = yield* createUserCategory(mock);
+        expect(result.deletedAt).toBeFalsy();
+      }),
   );
 
   effectIt.effect("should fail when userId is missing", () =>
@@ -97,9 +101,7 @@ describe("softDeleteUserCategory", () => {
       Effect.gen(function* () {
         const userCategory = generateMockUserCategory();
         userCategory.deletedAt = faker.date.anytime().toISOString();
-        const result = yield* Effect.exit(
-          softDeleteUserCategory(userCategory),
-        );
+        const result = yield* Effect.exit(softDeleteUserCategory(userCategory));
         expect(Exit.isFailure(result)).toBeTruthy();
         if (Exit.isFailure(result)) {
           expect(result.cause._tag).toBe("Fail");
