@@ -1,7 +1,7 @@
 import {
   transactionType,
   type TransactionType,
-} from "../enums/TransactionType";
+} from "../enums/transactionType";
 import { faker } from "@faker-js/faker";
 import type { Transaction } from "../transaction";
 
