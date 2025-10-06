@@ -1,6 +1,6 @@
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { getCurrentISOString } from "@/lib/utils/time";
-import type { TransactionType } from "../enums/TransactionType";
+import type { TransactionType } from "../enums/transactionType";
 import { Effect } from "effect";
 import {
   MissingRequiredFieldsError,
