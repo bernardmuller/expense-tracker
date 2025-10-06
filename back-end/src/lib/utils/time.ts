@@ -1,7 +1,5 @@
-import { Effect } from "effect"
+export const getCurrentISOString = (): string => new Date().toISOString();
 
-export const getCurrentISOString = Effect.sync(() => new Date().toISOString())
+export const getCurrentDate = (): Date => new Date();
 
-export const getCurrentDate = Effect.sync(() => new Date())
-
-export const getCurrentTimestamp = Effect.sync(() => Date.now())
+export const getCurrentTimestamp = (): number => Date.now();

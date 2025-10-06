@@ -82,7 +82,7 @@ export const updateTransaction = (
       );
     }
 
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...transaction,
@@ -105,7 +105,7 @@ export const softDeleteTransaction = (
       );
     }
 
-    const now = yield* getCurrentISOString;
+    const now = getCurrentISOString();
 
     return {
       ...transaction,
