@@ -9,7 +9,7 @@ import {
   type CreateTransactionParams,
   type Transaction,
 } from "./index.js";
-import { transactionType } from "../types/TransactionType";
+import { transactionType } from "../enums/TransactionType";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { mockExpenseTransactions } from "../__mocks__/transaction.mock";
