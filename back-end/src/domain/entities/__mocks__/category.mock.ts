@@ -10,8 +10,6 @@ export const generateMockCategory = (
     key,
     label: faker.word.words(2),
     icon: faker.internet.emoji(),
-    deletedAt: undefined,
-    updatedAt: undefined,
     ...overwrites,
   };
 };
@@ -20,10 +18,3 @@ export const mockCategories = (count: number = 10): Category[] => {
   return Array.from({ length: count }, () => generateMockCategory());
 };
 
-export const mockDeletedCategories = (count: number = 10): Category[] => {
-  return Array.from({ length: count }, () =>
-    generateMockCategory({
-      deletedAt: faker.date.past().toISOString(),
-    }),
-  );
-};

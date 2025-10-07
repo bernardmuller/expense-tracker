@@ -3,7 +3,6 @@ import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import {
   MissingRequiredFieldsError,
-  FinancialAccountAlreadySoftDeletedError,
   InvalidFinancialAccountNameError,
   InvalidCurrentAmountError,
   FinancialAccountTypeAlreadySetError,
@@ -16,8 +15,6 @@ import {
   changeFinancialAccountType,
   addToCurrentAmount,
   subtractFromCurrentAmount,
-  softDeleteFinancialAccount,
-  isFinancialAccountSoftDeleted,
   type FinancialAccount,
   type CreateFinancialAccountParams,
 } from "./index";
@@ -57,15 +54,6 @@ describe("createFinancialAccount", () => {
       const result = yield* createFinancialAccount(mock);
       expect(result.id).toBeTruthy();
     }),
-  );
-
-  effectIt.effect(
-    "should create a financialAccount with no deletedAt property",
-    () =>
-      Effect.gen(function* () {
-        const result = yield* createFinancialAccount(mock);
-        expect(result.deletedAt).toBeFalsy();
-      }),
   );
 
   effectIt.effect("should fail when type is missing", () =>
@@ -153,15 +141,6 @@ describe("updateFinancialAccount", () => {
     }),
   );
 
-  effectIt.effect("should timestamp the updatedAt property", () =>
-    Effect.gen(function* () {
-      const account = generateMockFinancialAccount();
-      const newName = faker.finance.accountName();
-      const result = yield* updateFinancialAccount(account, { name: newName });
-      expect(result.updatedAt).toBeTruthy();
-    }),
-  );
-
   effectIt.effect("should not modify fields that are not provided", () =>
     Effect.gen(function* () {
       const account = generateMockFinancialAccount();
@@ -225,19 +204,6 @@ describe("changeFinancialAccountType", () => {
     }),
   );
 
-  effectIt.effect("should timestamp the updatedAt property", () =>
-    Effect.gen(function* () {
-      const account = generateMockFinancialAccount({
-        type: financialAccountType.crypto,
-      });
-      const result = yield* changeFinancialAccountType(
-        account,
-        financialAccountType.bank,
-      );
-      expect(result.updatedAt).toBeTruthy();
-    }),
-  );
-
   effectIt.effect(
     "should error if the type is already of the provided type",
     () =>
@@ -267,14 +233,6 @@ describe("addToCurrentAmount", () => {
       const account = generateMockFinancialAccount({ currentAmount: 1000 });
       const result = yield* addToCurrentAmount(account, 500);
       expect(result.currentAmount).toBe(1500);
-    }),
-  );
-
-  effectIt.effect("should timestamp the updatedAt property", () =>
-    Effect.gen(function* () {
-      const account = generateMockFinancialAccount();
-      const result = yield* addToCurrentAmount(account, 100);
-      expect(result.updatedAt).toBeTruthy();
     }),
   );
 
@@ -310,14 +268,6 @@ describe("subtractFromCurrentAmount", () => {
     }),
   );
 
-  effectIt.effect("should timestamp the updatedAt property", () =>
-    Effect.gen(function* () {
-      const account = generateMockFinancialAccount();
-      const result = yield* subtractFromCurrentAmount(account, 50);
-      expect(result.updatedAt).toBeTruthy();
-    }),
-  );
-
   effectIt.effect("should fail when amount is negative", () =>
     Effect.gen(function* () {
       const account = generateMockFinancialAccount();
@@ -334,61 +284,5 @@ describe("subtractFromCurrentAmount", () => {
         }
       }
     }),
-  );
-});
-
-describe("softDeleteFinancialAccount", () => {
-  effectIt.effect("should be marked as deleted", () =>
-    Effect.gen(function* () {
-      const financialAccounts = mockFinancialAccounts(5);
-      for (const account of financialAccounts) {
-        account.deletedAt = undefined;
-        const result = yield* softDeleteFinancialAccount(account);
-        expect(result.deletedAt).toBeTruthy();
-      }
-    }),
-  );
-
-  effectIt.effect(
-    "should not be able to soft delete a financialAccount that is already deleted",
-    () =>
-      Effect.gen(function* () {
-        const account = generateMockFinancialAccount();
-        account.deletedAt = faker.date.anytime().toISOString();
-        const result = yield* Effect.exit(softDeleteFinancialAccount(account));
-        expect(Exit.isFailure(result)).toBeTruthy();
-        if (Exit.isFailure(result)) {
-          expect(result.cause._tag).toBe("Fail");
-          if (result.cause._tag === "Fail") {
-            expect(result.cause.error).toBeInstanceOf(
-              FinancialAccountAlreadySoftDeletedError,
-            );
-          }
-        }
-      }),
-  );
-});
-
-describe("isFinancialAccountSoftDeleted", () => {
-  effectIt.effect("should return true when financialAccount is deleted", () =>
-    Effect.gen(function* () {
-      const account = generateMockFinancialAccount({
-        deletedAt: faker.date.anytime().toISOString(),
-      });
-      const result = isFinancialAccountSoftDeleted(account);
-      expect(result).toBe(true);
-    }),
-  );
-
-  effectIt.effect(
-    "should return false when financialAccount is not deleted",
-    () =>
-      Effect.gen(function* () {
-        const account = generateMockFinancialAccount({
-          deletedAt: undefined,
-        });
-        const result = isFinancialAccountSoftDeleted(account);
-        expect(result).toBe(false);
-      }),
   );
 });

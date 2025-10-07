@@ -7,12 +7,6 @@ export class MissingRequiredFieldsError extends Data.TaggedError(
   fields: string[];
 }> {}
 
-export class CategoryAlreadySoftDeletedError extends Data.TaggedError(
-  "CategoryAlreadySoftDeletedError",
-)<{
-  categoryId: string;
-}> {}
-
 export class InvalidCategoryUpdateError extends Data.TaggedError(
   "InvalidCategoryUpdateError",
 )<{
@@ -33,7 +27,6 @@ export class InvalidCategoryKeyError extends Data.TaggedError(
 
 export type CategoryValidationError =
   | MissingRequiredFieldsError
-  | CategoryAlreadySoftDeletedError
   | InvalidCategoryUpdateError
   | InvalidCategoryLabelError
   | InvalidCategoryKeyError;
