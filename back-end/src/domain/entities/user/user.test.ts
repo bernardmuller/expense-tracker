@@ -5,13 +5,11 @@ import {
   markUserAsVerified,
   updateUserProfile,
   isUserFullySetup,
-  softDeleteUser,
   type User,
 } from "@/domain/entities/user";
 import { mockUsers, generateMockUser } from "../__mocks__/user.mock";
 import { Effect, Exit } from "effect";
 import {
-  UserAlreadySoftDeletedError,
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./userErrors";
@@ -161,34 +159,4 @@ describe("isUserFullySetup", () => {
     const result = isUserFullySetup(mock);
     expect(result).toEqual(false);
   });
-});
-
-describe("softDeleteUser", () => {
-  effectIt.effect("should be marked as deleted", () =>
-    Effect.gen(function* () {
-      const user = generateMockUser();
-      user.deletedAt = undefined;
-      const result = yield* softDeleteUser(user);
-      expect(result.deletedAt).toBeTruthy();
-    }),
-  );
-
-  effectIt.effect(
-    "should not be able to soft delete as user that is already deleted",
-    () =>
-      Effect.gen(function* () {
-        const user = generateMockUser();
-        user.deletedAt = new Date().toLocaleString();
-        const result = yield* Effect.exit(softDeleteUser(user));
-        expect(Exit.isFailure(result)).toBeTruthy();
-        if (Exit.isFailure(result)) {
-          expect(result.cause._tag).toBe("Fail");
-          if (result.cause._tag === "Fail") {
-            expect(result.cause.error).toBeInstanceOf(
-              UserAlreadySoftDeletedError,
-            );
-          }
-        }
-      }),
-  );
 });

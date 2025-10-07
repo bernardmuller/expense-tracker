@@ -1,25 +1,21 @@
 import { Effect } from "effect";
 import {
   MissingRequiredFieldsError,
-  CategoryAlreadySoftDeletedError,
   InvalidCategoryLabelError,
   InvalidCategoryKeyError,
 } from "./categoryErrors";
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { getCurrentISOString } from "@/lib/utils/time";
 
 export type Category = {
   readonly id: string;
   key: string;
   label: string;
   icon: string;
-  deletedAt?: string;
-  updatedAt?: string;
 };
 
 export type CreateCategoryParams = Omit<
   Category,
-  "id" | "deletedAt" | "updatedAt"
+  "id"
 >;
 
 export const createCategory = (
@@ -44,8 +40,6 @@ export const createCategory = (
     return {
       ...params,
       id: uuid,
-      deletedAt: undefined,
-      updatedAt: undefined,
     };
   });
 
@@ -77,36 +71,22 @@ export const updateCategory = (
       );
     }
 
-    const now = getCurrentISOString();
-
     return {
       ...category,
       ...(params.key !== undefined && { key: params.key }),
       ...(params.label !== undefined && { label: params.label }),
       ...(params.icon !== undefined && { icon: params.icon }),
-      updatedAt: now,
     };
   });
 
 export const softDeleteCategory = (
   category: Category,
-): Effect.Effect<Category, CategoryAlreadySoftDeletedError> =>
+): Effect.Effect<Category, never> =>
   Effect.gen(function* () {
-    if (category.deletedAt) {
-      return yield* Effect.fail(
-        new CategoryAlreadySoftDeletedError({
-          categoryId: category.id,
-        }),
-      );
-    }
-
-    const now = getCurrentISOString();
-
-    return {
-      ...category,
-      deletedAt: now,
-    };
+    return yield* Effect.fail(
+      new Error("Soft delete is not supported for categories"),
+    );
   });
 
 export const isCategorySoftDeleted = (category: Category): boolean =>
-  !!category.deletedAt;
+  false;

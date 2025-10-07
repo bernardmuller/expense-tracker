@@ -2,7 +2,6 @@ import { Effect } from "effect";
 import type { FinancialAccountType } from "../enums/financialAccountType";
 import {
   MissingRequiredFieldsError,
-  FinancialAccountAlreadySoftDeletedError,
   InvalidFinancialAccountNameError,
   InvalidCurrentAmountError,
   FinancialAccountTypeAlreadySetError,
@@ -10,7 +9,6 @@ import {
   InvalidSubtractionAmountError,
 } from "./financialAccountErrors";
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { getCurrentISOString } from "@/lib/utils/time";
 
 export type FinancialAccount = {
   readonly id: string;
@@ -18,14 +16,9 @@ export type FinancialAccount = {
   name: string;
   description: string;
   currentAmount: number;
-  deletedAt?: string;
-  updatedAt?: string;
 };
 
-export type CreateFinancialAccountParams = Omit<
-  FinancialAccount,
-  "id" | "deletedAt" | "updatedAt"
->;
+export type CreateFinancialAccountParams = Omit<FinancialAccount, "id">;
 
 export const createFinancialAccount = (
   params: CreateFinancialAccountParams,
@@ -61,8 +54,6 @@ export const createFinancialAccount = (
     return {
       ...params,
       id: uuid,
-      deletedAt: undefined,
-      updatedAt: undefined,
     };
   });
 
@@ -86,15 +77,12 @@ export const updateFinancialAccount = (
       );
     }
 
-    const now = getCurrentISOString();
-
     return {
       ...financialAccount,
       ...(params.name !== undefined && { name: params.name }),
       ...(params.description !== undefined && {
         description: params.description,
       }),
-      updatedAt: now,
     };
   });
 
@@ -111,12 +99,9 @@ export const changeFinancialAccountType = (
       );
     }
 
-    const now = getCurrentISOString();
-
     return {
       ...financialAccount,
       type,
-      updatedAt: now,
     };
   });
 
@@ -133,12 +118,9 @@ export const addToCurrentAmount = (
       );
     }
 
-    const now = getCurrentISOString();
-
     return {
       ...financialAccount,
       currentAmount: financialAccount.currentAmount + amount,
-      updatedAt: now,
     };
   });
 
@@ -155,35 +137,8 @@ export const subtractFromCurrentAmount = (
       );
     }
 
-    const now = getCurrentISOString();
-
     return {
       ...financialAccount,
       currentAmount: financialAccount.currentAmount - amount,
-      updatedAt: now,
     };
   });
-
-export const softDeleteFinancialAccount = (
-  financialAccount: FinancialAccount,
-): Effect.Effect<FinancialAccount, FinancialAccountAlreadySoftDeletedError> =>
-  Effect.gen(function* () {
-    if (financialAccount.deletedAt) {
-      return yield* Effect.fail(
-        new FinancialAccountAlreadySoftDeletedError({
-          financialAccountId: financialAccount.id,
-        }),
-      );
-    }
-
-    const now = getCurrentISOString();
-
-    return {
-      ...financialAccount,
-      deletedAt: now,
-    };
-  });
-
-export const isFinancialAccountSoftDeleted = (
-  financialAccount: FinancialAccount,
-): boolean => !!financialAccount.deletedAt;

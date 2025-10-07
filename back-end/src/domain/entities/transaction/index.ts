@@ -1,10 +1,8 @@
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { getCurrentISOString } from "@/lib/utils/time";
 import type { TransactionType } from "../enums/transactionType";
 import { Effect } from "effect";
 import {
   MissingRequiredFieldsError,
-  TransactionAlreadySoftDeletedError,
   InvalidTransactionUpdateError,
 } from "./transactionErrors";
 
@@ -15,13 +13,11 @@ export type Transaction = {
   type: TransactionType;
   description: string;
   amount: number;
-  deletedAt?: string;
-  updatedAt?: string;
 };
 
 export type CreateTransactionParams = Omit<
   Transaction,
-  "id" | "deletedAt" | "updatedAt"
+  "id"
 >;
 
 export const createTransaction = (
@@ -48,8 +44,6 @@ export const createTransaction = (
     return {
       ...params,
       id: uuid,
-      deletedAt: undefined,
-      updatedAt: undefined,
     };
   });
 
@@ -82,36 +76,22 @@ export const updateTransaction = (
       );
     }
 
-    const now = getCurrentISOString();
-
     return {
       ...transaction,
       amount: params.amount,
       description: params.description,
       type: params.type,
-      updatedAt: now,
     };
   });
 
 export const softDeleteTransaction = (
   transaction: Transaction,
-): Effect.Effect<Transaction, TransactionAlreadySoftDeletedError> =>
+): Effect.Effect<Transaction, never> =>
   Effect.gen(function* () {
-    if (transaction.deletedAt) {
-      return yield* Effect.fail(
-        new TransactionAlreadySoftDeletedError({
-          transactionId: transaction.id,
-        }),
-      );
-    }
-
-    const now = getCurrentISOString();
-
-    return {
-      ...transaction,
-      deletedAt: now,
-    };
+    return yield* Effect.fail(
+      new Error("Soft delete is not supported for transactions"),
+    );
   });
 
 export const isTransactionSoftDeleted = (transaction: Transaction): boolean =>
-  !!transaction.deletedAt;
+  false;

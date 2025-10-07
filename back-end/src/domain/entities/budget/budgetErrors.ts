@@ -29,12 +29,6 @@ export class BudgetAlreadyInActiveError extends Data.TaggedError(
   budgetId: string;
 }> {}
 
-export class BudgetAlreadySoftDeletedError extends Data.TaggedError(
-  "BudgetAlreadySoftDeletedError",
-)<{
-  budgetId: string;
-}> {}
-
 export class InvalidBudgetNameError extends Data.TaggedError(
   "InvalidBudgetNameError",
 )<{

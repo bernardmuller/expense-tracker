@@ -6,7 +6,6 @@ import {
   InvalidStartAmountError,
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
-  BudgetAlreadySoftDeletedError,
 } from "./budgetErrors";
 import {
   addToBudgetCurrentAmount,
@@ -18,14 +17,13 @@ import {
   isBudgetSoftDeleted,
   setBudgetActive,
   setBudgetInactive,
-  softDeleteBudget,
   subtractFromBudgetCurrentAmount,
   updateBudgetName,
   type Budget,
   type CreateBudgetParams,
 } from "./index";
 import { faker } from "@faker-js/faker";
-import { generateMockBudget, mockBudgets } from "../__mocks__/budget.mock.js";
+import { generateMockBudget, mockBudgets } from "../__mocks__/budget.mock";
 import {
   calculatePercentage,
   PercentageCalculationError,
@@ -100,8 +98,6 @@ describe("createBudget", () => {
       expect(result).toHaveProperty("isActive");
       expect(result).toHaveProperty("id");
       expect(result).toHaveProperty("currentAmount");
-      expect(result).toHaveProperty("deletedAt");
-      expect(result).toHaveProperty("updatedAt");
     }),
   );
 
@@ -341,65 +337,6 @@ describe("isBudgetOverbudget", () => {
   );
 });
 
-describe("isBudgetSoftDeleted", () => {
-  let mock: Budget;
-
-  beforeEach(() => {
-    mock = generateMockBudget();
-  });
-
-  effectIt.effect("should return true if budget is soft deleted", () =>
-    Effect.gen(function* () {
-      mock.deletedAt = faker.date.anytime().toLocaleString();
-      const result = isBudgetSoftDeleted(mock);
-      expect(result).toBe(true);
-    }),
-  );
-
-  effectIt.effect("should return false if budget is not soft deleted", () =>
-    Effect.gen(function* () {
-      mock.deletedAt = undefined;
-      const result = isBudgetSoftDeleted(mock);
-      expect(result).toBe(false);
-    }),
-  );
-});
-
-describe("softDeleteBudget", () => {
-  let mock: Budget;
-
-  beforeEach(() => {
-    mock = generateMockBudget();
-  });
-
-  effectIt.effect("should be marked as deleted", () =>
-    Effect.gen(function* () {
-      mock.deletedAt = undefined;
-      const result = yield* softDeleteBudget(mock);
-      expect(result.deletedAt).toBeTruthy();
-    }),
-  );
-
-  effectIt.effect(
-    "should not be able to soft delete a budget that is already deleted",
-    () =>
-      Effect.gen(function* () {
-        mock.deletedAt = faker.date.anytime().toLocaleString();
-        const result = yield* Effect.exit(softDeleteBudget(mock));
-        expect(Exit.isFailure(result)).toBe(true);
-        if (Exit.isFailure(result)) {
-          expect(result).toStrictEqual(
-            Exit.fail(
-              new BudgetAlreadySoftDeletedError({
-                budgetId: mock.id,
-              }),
-            ),
-          );
-        }
-      }),
-  );
-});
-
 describe("updateBudgetName", () => {
   let mock: Budget;
 
@@ -414,17 +351,6 @@ describe("updateBudgetName", () => {
       expect(Exit.isSuccess(result)).toBe(true);
       if (Exit.isSuccess(result)) {
         expect(result.value.name).toBe(newName);
-      }
-    }),
-  );
-
-  effectIt.effect("should update the updatedAt property", () =>
-    Effect.gen(function* () {
-      const newName = faker.animal.cow();
-      const result = yield* Effect.exit(updateBudgetName(mock, newName));
-      expect(Exit.isSuccess(result)).toBe(true);
-      if (Exit.isSuccess(result)) {
-        expect(result.value.updatedAt).toBeTruthy();
       }
     }),
   );
@@ -446,14 +372,6 @@ describe("addToBudgetCurrentAmount", () => {
       expect(result.currentAmount).toBe(1500);
     }),
   );
-
-  effectIt.effect("should update the updatedAt property", () =>
-    Effect.gen(function* () {
-      const amountToAdd = 500;
-      const result = yield* addToBudgetCurrentAmount(mock, amountToAdd);
-      expect(result.updatedAt).toBeTruthy();
-    }),
-  );
 });
 
 describe("subtractFromBudgetCurrentAmount", () => {
@@ -473,17 +391,6 @@ describe("subtractFromBudgetCurrentAmount", () => {
         amountToSubtract,
       );
       expect(result.currentAmount).toBe(700);
-    }),
-  );
-
-  effectIt.effect("should update the updatedAt property", () =>
-    Effect.gen(function* () {
-      const amountToSubtract = 300;
-      const result = yield* subtractFromBudgetCurrentAmount(
-        mock,
-        amountToSubtract,
-      );
-      expect(result.updatedAt).toBeTruthy();
     }),
   );
 });

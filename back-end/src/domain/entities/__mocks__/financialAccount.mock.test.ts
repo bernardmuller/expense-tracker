@@ -11,8 +11,6 @@ describe("generateMockFinancialAccount", () => {
     expect(result).toHaveProperty("name");
     expect(result).toHaveProperty("description");
     expect(result).toHaveProperty("currentAmount");
-    expect(result).toHaveProperty("deletedAt");
-    expect(result).toHaveProperty("updatedAt");
   });
 
   it("should apply overwrites to generated financialAccount", () => {
