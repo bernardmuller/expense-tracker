@@ -3,7 +3,6 @@ import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import {
   MissingRequiredFieldsError,
-  CategoryAlreadySoftDeletedError,
   InvalidCategoryLabelError,
   InvalidCategoryKeyError,
 } from "./categoryErrors";
@@ -12,9 +11,7 @@ import {
   updateCategory,
   softDeleteCategory,
   isCategorySoftDeleted,
-  type Category,
   type CreateCategoryParams,
-  type UpdateCategoryParams,
 } from "./index";
 import { faker } from "@faker-js/faker";
 import { generateUuid } from "@/lib/utils/generateUuid";
@@ -47,13 +44,6 @@ describe("createCategory", () => {
     Effect.gen(function* () {
       const result = yield* createCategory(mock);
       expect(result.id).toBeTruthy();
-    }),
-  );
-
-  effectIt.effect("should create a category with no deletedAt property", () =>
-    Effect.gen(function* () {
-      const result = yield* createCategory(mock);
-      expect(result.deletedAt).toBeFalsy();
     }),
   );
 
@@ -152,15 +142,6 @@ describe("updateCategory", () => {
     }),
   );
 
-  effectIt.effect("should timestamp the updatedAt property", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory();
-      const newLabel = faker.word.words(2);
-      const result = yield* updateCategory(category, { label: newLabel });
-      expect(result.updatedAt).toBeTruthy();
-    }),
-  );
-
   effectIt.effect("should not modify fields that are not provided", () =>
     Effect.gen(function* () {
       const category = generateMockCategory();
@@ -234,60 +215,6 @@ describe("updateCategory", () => {
           expect(result.cause.error).toBeInstanceOf(InvalidCategoryKeyError);
         }
       }
-    }),
-  );
-});
-
-describe("softDeleteCategory", () => {
-  effectIt.effect("should be marked as deleted", () =>
-    Effect.gen(function* () {
-      const categories = mockCategories(5);
-      for (const category of categories) {
-        category.deletedAt = undefined;
-        const result = yield* softDeleteCategory(category);
-        expect(result.deletedAt).toBeTruthy();
-      }
-    }),
-  );
-
-  effectIt.effect(
-    "should not be able to soft delete a category that is already deleted",
-    () =>
-      Effect.gen(function* () {
-        const category = generateMockCategory();
-        category.deletedAt = faker.date.anytime().toISOString();
-        const result = yield* Effect.exit(softDeleteCategory(category));
-        expect(Exit.isFailure(result)).toBeTruthy();
-        if (Exit.isFailure(result)) {
-          expect(result.cause._tag).toBe("Fail");
-          if (result.cause._tag === "Fail") {
-            expect(result.cause.error).toBeInstanceOf(
-              CategoryAlreadySoftDeletedError,
-            );
-          }
-        }
-      }),
-  );
-});
-
-describe("isCategorySoftDeleted", () => {
-  effectIt.effect("should return true when category is deleted", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory({
-        deletedAt: faker.date.anytime().toISOString(),
-      });
-      const result = isCategorySoftDeleted(category);
-      expect(result).toBe(true);
-    }),
-  );
-
-  effectIt.effect("should return false when category is not deleted", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory({
-        deletedAt: undefined,
-      });
-      const result = isCategorySoftDeleted(category);
-      expect(result).toBe(false);
     }),
   );
 });

@@ -1,25 +1,18 @@
 import { Effect } from "effect";
 import {
   MissingRequiredFieldsError,
-  CategoryBudgetAlreadySoftDeletedError,
   InvalidAllocatedAmountError,
 } from "./categoryBudgetErrors";
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { getCurrentISOString } from "@/lib/utils/time";
 
 export type CategoryBudget = {
   readonly id: string;
   readonly budgetId: string;
   readonly categoryId: string;
   allocatedAmount: number;
-  deletedAt?: string;
-  updatedAt?: string;
 };
 
-export type CreateCategoryBudgetParams = Omit<
-  CategoryBudget,
-  "id" | "deletedAt" | "updatedAt"
->;
+export type CreateCategoryBudgetParams = Omit<CategoryBudget, "id">;
 
 export const createCategoryBudget = (
   params: CreateCategoryBudgetParams,
@@ -55,8 +48,6 @@ export const createCategoryBudget = (
     return {
       ...params,
       id: uuid,
-      deletedAt: undefined,
-      updatedAt: undefined,
     };
   });
 
@@ -73,35 +64,12 @@ export const updateAllocatedAmount = (
       );
     }
 
-    const now = getCurrentISOString();
-
     return {
       ...categoryBudget,
       allocatedAmount: amount,
-      updatedAt: now,
-    };
-  });
-
-export const softDeleteCategoryBudget = (
-  categoryBudget: CategoryBudget,
-): Effect.Effect<CategoryBudget, CategoryBudgetAlreadySoftDeletedError> =>
-  Effect.gen(function* () {
-    if (categoryBudget.deletedAt) {
-      return yield* Effect.fail(
-        new CategoryBudgetAlreadySoftDeletedError({
-          categoryBudgetId: categoryBudget.id,
-        }),
-      );
-    }
-
-    const now = getCurrentISOString();
-
-    return {
-      ...categoryBudget,
-      deletedAt: now,
     };
   });
 
 export const isCategoryBudgetSoftDeleted = (
   categoryBudget: CategoryBudget,
-): boolean => !!categoryBudget.deletedAt;
+): boolean => false;

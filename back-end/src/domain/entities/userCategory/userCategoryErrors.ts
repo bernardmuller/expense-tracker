@@ -7,12 +7,4 @@ export class MissingRequiredFieldsError extends Data.TaggedError(
   fields: string[];
 }> {}
 
-export class UserCategoryAlreadySoftDeletedError extends Data.TaggedError(
-  "UserCategoryAlreadySoftDeletedError",
-)<{
-  userCategoryId: string;
-}> {}
-
-export type UserCategoryValidationError =
-  | MissingRequiredFieldsError
-  | UserCategoryAlreadySoftDeletedError;
+export type UserCategoryValidationError = MissingRequiredFieldsError;
