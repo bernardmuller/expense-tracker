@@ -1,7 +1,6 @@
 import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
-import { TransactionAlreadySoftDeletedError } from "./transactionErrors";
 import {
   createTransaction,
   softDeleteTransaction,
@@ -45,31 +44,11 @@ describe("createTransaction", () => {
     }),
   );
 
-  effectIt.effect(
-    "should create an expense with that has no deletedAt property",
-    () =>
-      Effect.gen(function* () {
-        const result = yield* createTransaction(mock);
-        expect(result.deletedAt).toBeFalsy();
-      }),
-  );
-
-  effectIt.effect(
-    "should create an expense with that has no deletedAt property",
-    () =>
-      Effect.gen(function* () {
-        const result = yield* createTransaction(mock);
-        expect(result.deletedAt).toBeFalsy();
-      }),
-  );
-
-  effectIt.effect(
-    "should create an expense with that has no deletedAt property",
-    () =>
-      Effect.gen(function* () {
-        const result = yield* createTransaction(mock);
-        expect(result.id).toBeTruthy();
-      }),
+  effectIt.effect("should create an expense with an id", () =>
+    Effect.gen(function* () {
+      const result = yield* createTransaction(mock);
+      expect(result.id).toBeTruthy();
+    }),
   );
 });
 
@@ -86,18 +65,6 @@ describe("updateTransaction", () => {
       description: faker.lorem.text(),
     };
   });
-
-  effectIt.effect(
-    "should timestamp the updatedAt property of the transaction",
-    () =>
-      Effect.gen(function* () {
-        const transactions = mockExpenseTransactions();
-        for (const t of transactions) {
-          const result = yield* updateTransaction(t, t);
-          expect(result.updatedAt).toBeTruthy();
-        }
-      }),
-  );
 
   effectIt.effect("should update the amount of a transaction", () =>
     Effect.gen(function* () {
@@ -185,39 +152,5 @@ describe("updateTransaction", () => {
         expect(result.description).toBe(randomString);
       }
     }),
-  );
-});
-
-describe("softDeleteTransaction", () => {
-  effectIt.effect("should be marked as deleted", () =>
-    Effect.gen(function* () {
-      const transactions = mockExpenseTransactions();
-      for (const t of transactions) {
-        t.deletedAt = undefined;
-        const result = yield* softDeleteTransaction(t);
-        expect(result.deletedAt).toBeTruthy();
-      }
-    }),
-  );
-
-  effectIt.effect(
-    "should not be able to soft delete as user that is already deleted",
-    () =>
-      Effect.gen(function* () {
-        const transactions = mockExpenseTransactions();
-        for (const t of transactions) {
-          t.deletedAt = faker.date.anytime().toLocaleString();
-          const result = yield* Effect.exit(softDeleteTransaction(t));
-          expect(Exit.isFailure(result)).toBeTruthy();
-          if (Exit.isFailure(result)) {
-            expect(result.cause._tag).toBe("Fail");
-            if (result.cause._tag === "Fail") {
-              expect(result.cause.error).toBeInstanceOf(
-                TransactionAlreadySoftDeletedError,
-              );
-            }
-          }
-        }
-      }),
   );
 });

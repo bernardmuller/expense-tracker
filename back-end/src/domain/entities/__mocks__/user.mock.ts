@@ -1,5 +1,5 @@
-import type { User } from '../user.js';
-import { faker } from '@faker-js/faker';
+import type { User } from "../user";
+import { faker } from "@faker-js/faker";
 
 export const generateMockUser = (): User => ({
   id: faker.string.uuid(),

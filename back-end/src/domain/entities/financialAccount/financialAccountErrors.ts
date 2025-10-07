@@ -7,12 +7,6 @@ export class MissingRequiredFieldsError extends Data.TaggedError(
   fields: string[];
 }> {}
 
-export class FinancialAccountAlreadySoftDeletedError extends Data.TaggedError(
-  "FinancialAccountAlreadySoftDeletedError",
-)<{
-  financialAccountId: string;
-}> {}
-
 export class InvalidFinancialAccountNameError extends Data.TaggedError(
   "InvalidFinancialAccountNameError",
 )<{
@@ -45,7 +39,6 @@ export class InvalidAdditionAmountError extends Data.TaggedError(
 
 export type FinancialAccountValidationError =
   | MissingRequiredFieldsError
-  | FinancialAccountAlreadySoftDeletedError
   | InvalidFinancialAccountNameError
   | FinancialAccountTypeAlreadySetError
   | InvalidAdditionAmountError

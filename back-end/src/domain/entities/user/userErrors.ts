@@ -1,16 +1,9 @@
 import { Data } from "effect";
-import type { User } from ".";
 
 export class MissingRequiredFieldsError extends Data.TaggedError(
   "MissingRequiredFieldsError",
 )<{
   fields: string[];
-}> {}
-
-export class UserAlreadySoftDeletedError extends Data.TaggedError(
-  "UserAlreadySoftDeletedError",
-)<{
-  userId: string;
 }> {}
 
 export class UserAlreadyOnboardedError extends Data.TaggedError(
@@ -27,6 +20,5 @@ export class UserAlreadyVerifiedError extends Data.TaggedError(
 
 export type UserValidationError =
   | MissingRequiredFieldsError
-  | UserAlreadySoftDeletedError
   | UserAlreadyOnboardedError
   | UserAlreadyVerifiedError;

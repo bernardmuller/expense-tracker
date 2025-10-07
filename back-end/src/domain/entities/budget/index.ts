@@ -1,11 +1,9 @@
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { getCurrentISOString } from "@/lib/utils/time";
 import { Effect } from "effect";
 import { fail, succeed } from "effect/Exit";
 import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
-  BudgetAlreadySoftDeletedError,
   InvalidBudgetNameError,
   InvalidStartAmountError,
   MissingRequiredFieldsError,
@@ -20,13 +18,11 @@ export type Budget = {
   startAmount: number;
   currentAmount: number;
   isActive: boolean;
-  deletedAt?: string;
-  updatedAt?: string;
 };
 
 export type CreateBudgetParams = Omit<
   Budget,
-  "id" | "deletedAt" | "updatedAt" | "isActive" | "currentAmount"
+  "id" | "isActive" | "currentAmount"
 >;
 
 export const createBudget = (
@@ -62,8 +58,6 @@ export const createBudget = (
       id: uuid,
       isActive: false,
       currentAmount: params.startAmount,
-      deletedAt: undefined,
-      updatedAt: undefined,
     };
   });
 
@@ -147,26 +141,7 @@ export const isBudgetActive = (budget: Budget): boolean => budget.isActive;
 export const isBudgetOverbudget = (budget: Budget): boolean =>
   budget.currentAmount < 0;
 
-export const isBudgetSoftDeleted = (budget: Budget): boolean =>
-  !!budget.deletedAt;
-
-export const softDeleteBudget = (
-  budget: Budget,
-): Effect.Effect<Budget, BudgetAlreadySoftDeletedError> =>
-  Effect.gen(function* () {
-    if (budget.deletedAt) {
-      return yield* Effect.fail(
-        new BudgetAlreadySoftDeletedError({
-          budgetId: budget.id,
-        }),
-      );
-    }
-    const now = getCurrentISOString();
-    return {
-      ...budget,
-      deletedAt: now,
-    };
-  });
+export const isBudgetSoftDeleted = (budget: Budget): boolean => false;
 
 export const updateBudgetName = (
   budget: Budget,
@@ -180,11 +155,9 @@ export const updateBudgetName = (
         }),
       );
     }
-    const now = getCurrentISOString();
     return {
       ...budget,
       name,
-      updatedAt: now,
     };
   });
 
@@ -193,11 +166,9 @@ export const addToBudgetCurrentAmount = (
   amount: number,
 ): Effect.Effect<Budget, never> =>
   Effect.gen(function* () {
-    const now = getCurrentISOString();
     return {
       ...budget,
       currentAmount: budget.currentAmount + amount,
-      updatedAt: now,
     };
   });
 
@@ -206,10 +177,8 @@ export const subtractFromBudgetCurrentAmount = (
   amount: number,
 ): Effect.Effect<Budget, never> =>
   Effect.gen(function* () {
-    const now = getCurrentISOString();
     return {
       ...budget,
       currentAmount: budget.currentAmount - amount,
-      updatedAt: now,
     };
   });
