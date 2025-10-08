@@ -15,10 +15,7 @@ export type Transaction = {
   amount: number;
 };
 
-export type CreateTransactionParams = Omit<
-  Transaction,
-  "id"
->;
+export type CreateTransactionParams = Omit<Transaction, "id">;
 
 export const createTransaction = (
   params: CreateTransactionParams,
@@ -83,15 +80,3 @@ export const updateTransaction = (
       type: params.type,
     };
   });
-
-export const softDeleteTransaction = (
-  transaction: Transaction,
-): Effect.Effect<Transaction, never> =>
-  Effect.gen(function* () {
-    return yield* Effect.fail(
-      new Error("Soft delete is not supported for transactions"),
-    );
-  });
-
-export const isTransactionSoftDeleted = (transaction: Transaction): boolean =>
-  false;

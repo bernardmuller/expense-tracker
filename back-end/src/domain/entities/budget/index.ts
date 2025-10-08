@@ -139,8 +139,6 @@ export const isBudgetActive = (budget: Budget): boolean => budget.isActive;
 export const isBudgetOverbudget = (budget: Budget): boolean =>
   budget.currentAmount < 0;
 
-export const isBudgetSoftDeleted = (budget: Budget): boolean => false;
-
 export const updateBudgetName = (
   budget: Budget,
   name: string,
