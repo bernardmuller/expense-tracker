@@ -1,18 +1,25 @@
+import { Link } from '@tanstack/react-router'
+import type { NavigateOptions } from '@tanstack/react-router'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-
-import { Link, type NavigateOptions } from '@tanstack/react-router'
 
 export function BudgetBreakdownItem({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <Card className="border-border/50 cursor-pointer p-4">{children}</Card>
+  return (
+    <Card
+      data-testid="budgetBreakdownItem"
+      className="border-border/50 cursor-pointer p-4"
+    >
+      {children}
+    </Card>
+  )
 }
 
-BudgetBreakdownItem.LinkProvider = function LinkProvider({
+BudgetBreakdownItem.Link = function LinkProvider({
   children,
   url,
   params,
@@ -20,8 +27,8 @@ BudgetBreakdownItem.LinkProvider = function LinkProvider({
 }: {
   children: React.ReactNode
   url: NavigateOptions['to']
-  params: NavigateOptions['params']
-  searchParams: NavigateOptions['search']
+  params?: NavigateOptions['params']
+  searchParams?: NavigateOptions['search']
 }) {
   return (
     <Link to={url} params={params} search={searchParams}>
@@ -40,7 +47,10 @@ BudgetBreakdownItem.Header = function Header({
   children?: React.ReactNode
 }) {
   return (
-    <div className="flex items-center justify-between">
+    <div
+      data-testid="headerRootDivider"
+      className="flex items-center justify-between"
+    >
       <div className="flex items-center gap-3">
         <span className="text-lg">{icon}</span>
         <h3 className="text-foreground text-lg font-semibold">{name}</h3>
@@ -52,7 +62,7 @@ BudgetBreakdownItem.Header = function Header({
 
 BudgetBreakdownItem.OverBudget = function OverBudget() {
   return (
-    <Badge data-testid="badge" variant="destructive">
+    <Badge data-testid="overBudgetBadge" variant="destructive">
       Over budget
     </Badge>
   )
@@ -60,7 +70,7 @@ BudgetBreakdownItem.OverBudget = function OverBudget() {
 
 BudgetBreakdownItem.Unplanned = function Unplanned() {
   return (
-    <Badge data-testid="badge" variant="outline">
+    <Badge data-testid="unplannedBudgetBadge" variant="outline">
       Unplanned
     </Badge>
   )
@@ -71,7 +81,19 @@ BudgetBreakdownItem.Progress = function ProgressBar({
 }: {
   percentage: number
 }) {
-  return <Progress value={percentage} className="h-1" />
+  return <Progress data-testid="progress" value={percentage} className="h-1" />
+}
+
+BudgetBreakdownItem.DisabledProgress = function DisabledProgressBar() {
+  return (
+    <Progress data-testid="progressDisabled" className="bg-primary/10 h-1" />
+  )
+}
+
+BudgetBreakdownItem.OverBudgetProgress = function OverBudgetProgressBar() {
+  return (
+    <Progress data-testid="progressOverBudget" className="h-1 bg-red-500/50" />
+  )
 }
 
 BudgetBreakdownItem.Stats = function Stats({
@@ -79,7 +101,11 @@ BudgetBreakdownItem.Stats = function Stats({
 }: {
   children: React.ReactNode
 }) {
-  return <div className="space-y-2">{children}</div>
+  return (
+    <div data-testid="statsContainer" className="space-y-2">
+      {children}
+    </div>
+  )
 }
 
 BudgetBreakdownItem.Planned = function Planned({ amount }: { amount: string }) {
@@ -100,10 +126,14 @@ BudgetBreakdownItem.Spent = function Spent({ amount }: { amount: string }) {
   )
 }
 
-BudgetBreakdownItem.Row = function Row({
+BudgetBreakdownItem.ReverseRow = function ReverseRow({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <div className="flex justify-between text-sm">{children}</div>
+  return (
+    <div data-testid="reverseRowContainer" className="flex flex-row-reverse justify-between text-sm">
+      {children}
+    </div>
+  )
 }
