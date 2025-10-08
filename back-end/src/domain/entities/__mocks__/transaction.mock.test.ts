@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { transactionType } from "../enums/transactionType";
 import {
   generateMockTransaction,
   mockExpenseTransactions,
   mockIncomeTransactions,
   mockTransferTransactions,
 } from "./transaction.mock";
-import { transactionType } from "../enums/transactionType";
 
 describe("generateMockTransaction", () => {
   it("should generate a transaction with the given transaction type", () => {
