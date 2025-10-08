@@ -3,7 +3,7 @@ import { it as effectIt } from "@effect/vitest";
 import {
   markUserAsOnboarded,
   markUserAsVerified,
-  updateUserProfile,
+  updateUser,
   isUserFullySetup,
   type User,
 } from "@/domain/entities/user";
@@ -92,7 +92,7 @@ describe("updateUserProfile", () => {
         name: "Jane Doe",
       };
 
-      const result = yield* updateUserProfile(mockUser, params);
+      const result = yield* updateUser(mockUser, params);
       expect(result.name).toEqual(params.name);
     }),
   );
@@ -104,7 +104,7 @@ describe("updateUserProfile", () => {
         email: "shouldnotwork@email.com",
       };
 
-      const result = yield* updateUserProfile(mockUser, params);
+      const result = yield* updateUser(mockUser, params);
       expect(result.email).toEqual(mockUser.email);
     }),
   );
@@ -112,7 +112,7 @@ describe("updateUserProfile", () => {
   effectIt.effect("should not update any properties other than user name", () =>
     Effect.gen(function* () {
       const params = generateMockUser();
-      const result = yield* updateUserProfile(mockUser, params);
+      const result = yield* updateUser(mockUser, params);
 
       expect(result.email).toEqual(mockUser.email);
       expect(result.name).toEqual(params.name);
