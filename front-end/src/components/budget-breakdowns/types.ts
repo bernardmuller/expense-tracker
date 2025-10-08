@@ -1,10 +1,14 @@
-export type DefaultBudgetBreakdownItemProps = {
+export type BudgetBreakdownItemProps = {
   name: string
   icon: string
-  percentage: number
-  spentAmount: string,
+  spentAmount: string
 }
 
-export type PlannedBudgetBreakdownItemProps = DefaultBudgetBreakdownItemProps & {
+export type OverBudgetBreakdownItemProps = BudgetBreakdownItemProps & {
+  plannedAmount: string
+}
+
+export type PlannedBudgetBreakdownItemProps = BudgetBreakdownItemProps & {
+  percentage: number
   plannedAmount: string
 }

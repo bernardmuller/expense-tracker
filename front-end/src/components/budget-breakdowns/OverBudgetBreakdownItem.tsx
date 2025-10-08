@@ -1,18 +1,19 @@
 import { BudgetBreakdownItem } from './BudgetBreakdownItem'
-import type { PlannedBudgetBreakdownItemProps } from './types'
+import type { OverBudgetBreakdownItemProps } from './types'
 
-export default function PlannedBudgetBreakdownItem({
+export default function OverBudgetBreakdownItem({
   name,
   icon,
-  percentage,
   plannedAmount,
   spentAmount,
-}: PlannedBudgetBreakdownItemProps) {
+}: OverBudgetBreakdownItemProps) {
   return (
     <BudgetBreakdownItem>
-      <BudgetBreakdownItem.Header name={name} icon={icon} />
+      <BudgetBreakdownItem.Header name={name} icon={icon}>
+        <BudgetBreakdownItem.OverBudget />
+      </BudgetBreakdownItem.Header>
       <BudgetBreakdownItem.Stats>
-        <BudgetBreakdownItem.Progress percentage={percentage} />
+        <BudgetBreakdownItem.OverBudgetProgress />
         <BudgetBreakdownItem.ReverseRow>
           <BudgetBreakdownItem.Spent amount={spentAmount} />
           <BudgetBreakdownItem.Planned amount={plannedAmount} />
