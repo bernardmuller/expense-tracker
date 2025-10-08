@@ -1,5 +1,4 @@
 import { Data } from "effect";
-import type { FinancialAccount } from ".";
 
 export class MissingRequiredFieldsError extends Data.TaggedError(
   "MissingRequiredFieldsError",
