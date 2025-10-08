@@ -1,12 +1,12 @@
-import { Context, Effect } from "effect";
 import type {
-  CreateCategoryBudgetParams,
   CategoryBudget,
+  CreateCategoryBudgetParams,
 } from "@/domain/entities/categoryBudget";
 import type {
   InvalidAllocatedAmountError,
   MissingRequiredFieldsError,
 } from "@/domain/entities/categoryBudget/categoryBudgetErrors";
+import { Context, Effect } from "effect";
 
 export interface CategoryBudgetServiceShape {
   readonly createCategoryBudget: (

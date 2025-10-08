@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { generateMockFinancialAccount } from "./financialAccount.mock";
+import { describe, expect, it } from "vitest";
 import { financialAccountType } from "../enums/financialAccountType";
+import { generateMockFinancialAccount } from "./financialAccount.mock";
 
 describe("generateMockFinancialAccount", () => {
   it("should generate a financialAccount with all required properties", () => {

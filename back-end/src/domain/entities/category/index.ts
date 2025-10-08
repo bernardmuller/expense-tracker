@@ -1,10 +1,10 @@
+import { generateUuid } from "@/lib/utils/generateUuid";
 import { Effect } from "effect";
 import {
-  MissingRequiredFieldsError,
-  InvalidCategoryLabelError,
   InvalidCategoryKeyError,
+  InvalidCategoryLabelError,
+  MissingRequiredFieldsError,
 } from "./categoryErrors";
-import { generateUuid } from "@/lib/utils/generateUuid";
 
 export type Category = {
   readonly id: string;
@@ -13,10 +13,7 @@ export type Category = {
   icon: string;
 };
 
-export type CreateCategoryParams = Omit<
-  Category,
-  "id"
->;
+export type CreateCategoryParams = Omit<Category, "id">;
 
 export const createCategory = (
   params: CreateCategoryParams,
@@ -55,7 +52,10 @@ export const updateCategory = (
   InvalidCategoryLabelError | InvalidCategoryKeyError
 > =>
   Effect.gen(function* () {
-    if (params.label !== undefined && (!params.label || params.label.trim() === "")) {
+    if (
+      params.label !== undefined &&
+      (!params.label || params.label.trim() === "")
+    ) {
       return yield* Effect.fail(
         new InvalidCategoryLabelError({
           label: params.label,
@@ -79,14 +79,4 @@ export const updateCategory = (
     };
   });
 
-export const softDeleteCategory = (
-  category: Category,
-): Effect.Effect<Category, never> =>
-  Effect.gen(function* () {
-    return yield* Effect.fail(
-      new Error("Soft delete is not supported for categories"),
-    );
-  });
-
-export const isCategorySoftDeleted = (category: Category): boolean =>
-  false;
+export const isCategorySoftDeleted = (category: Category): boolean => false;
