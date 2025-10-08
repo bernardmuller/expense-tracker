@@ -1,5 +1,4 @@
 import { Data } from "effect";
-import type { Category } from ".";
 
 export class MissingRequiredFieldsError extends Data.TaggedError(
   "MissingRequiredFieldsError",
