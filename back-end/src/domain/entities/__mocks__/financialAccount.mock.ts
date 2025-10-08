@@ -1,9 +1,5 @@
-import type { FinancialAccount } from "../financialAccount";
 import { faker } from "@faker-js/faker";
-import {
-  financialAccountType,
-  type FinancialAccountType,
-} from "../enums/financialAccountType";
+import type { FinancialAccount } from "../financialAccount";
 
 export const generateMockFinancialAccount = (
   overwrites: Partial<FinancialAccount> = {},
@@ -23,4 +19,3 @@ export const mockFinancialAccounts = (
 ): FinancialAccount[] => {
   return Array.from({ length: count }, () => generateMockFinancialAccount());
 };
-

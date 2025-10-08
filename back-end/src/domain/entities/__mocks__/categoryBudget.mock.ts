@@ -1,5 +1,5 @@
-import type { CategoryBudget } from "../categoryBudget";
 import { faker } from "@faker-js/faker";
+import type { CategoryBudget } from "../categoryBudget";
 
 export const generateMockCategoryBudget = (
   overwrites: Partial<CategoryBudget> = {},
@@ -16,4 +16,3 @@ export const generateMockCategoryBudget = (
 export const mockCategoryBudgets = (count: number = 10): CategoryBudget[] => {
   return Array.from({ length: count }, () => generateMockCategoryBudget());
 };
-

@@ -1,11 +1,15 @@
-import { describe, expect, beforeEach } from "vitest";
+import { calculatePercentage } from "@/lib/utils/calculatePercentage";
+import { getNumberOfDecimalPlaces } from "@/lib/utils/getNumberOfDecimalPlaces";
 import { it as effectIt } from "@effect/vitest";
+import { faker } from "@faker-js/faker";
 import { Cause, Effect, Exit } from "effect";
+import { beforeEach, describe, expect } from "vitest";
+import { generateMockBudget, mockBudgets } from "../__mocks__/budget.mock";
 import {
-  MissingRequiredFieldsError,
-  InvalidStartAmountError,
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
+  InvalidStartAmountError,
+  MissingRequiredFieldsError,
 } from "./budgetErrors";
 import {
   addToBudgetCurrentAmount,
@@ -21,13 +25,6 @@ import {
   type Budget,
   type CreateBudgetParams,
 } from "./index";
-import { faker } from "@faker-js/faker";
-import { generateMockBudget, mockBudgets } from "../__mocks__/budget.mock";
-import {
-  calculatePercentage,
-  PercentageCalculationError,
-} from "@/lib/utils/calculatePercentage";
-import { getNumberOfDecimalPlaces } from "@/lib/utils/getNumberOfDecimalPlaces";
 
 describe("createBudget", () => {
   let mock: CreateBudgetParams;

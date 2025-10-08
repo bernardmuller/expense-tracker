@@ -1,15 +1,13 @@
+import { calculatePercentage } from "@/lib/utils/calculatePercentage";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { Effect } from "effect";
-import { fail, succeed } from "effect/Exit";
 import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
   InvalidBudgetNameError,
   InvalidStartAmountError,
   MissingRequiredFieldsError,
-  type BudgetValidationError,
 } from "./budgetErrors";
-import { calculatePercentage } from "@/lib/utils/calculatePercentage";
 
 export type Budget = {
   readonly id: string;
