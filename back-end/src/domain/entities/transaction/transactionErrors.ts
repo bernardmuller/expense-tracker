@@ -12,6 +12,6 @@ export class InvalidTransactionUpdateError extends Data.TaggedError(
   reason: string;
 }> {}
 
-export type TransactionValidationError =
+export type TransactionError =
   | MissingRequiredFieldsError
   | InvalidTransactionUpdateError;
