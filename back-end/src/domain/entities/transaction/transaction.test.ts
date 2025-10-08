@@ -3,7 +3,6 @@ import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
 import {
   createTransaction,
-  softDeleteTransaction,
   updateTransaction,
   type CreateTransactionParams,
   type Transaction,

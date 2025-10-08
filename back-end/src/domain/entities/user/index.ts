@@ -12,6 +12,8 @@ export type User = {
   onboarded: boolean;
 };
 
+export type CreateUserParams = Pick<User, "id" | "emailVerified" | "onboarded">;
+
 export const markUserAsOnboarded = (
   user: User,
 ): Effect.Effect<User, UserAlreadyOnboardedError> =>
@@ -48,7 +50,7 @@ export const markUserAsVerified = (
     };
   });
 
-export const updateUserProfile = (
+export const updateUser = (
   user: User,
   updatedUser: User,
 ): Effect.Effect<User, never> =>
@@ -61,5 +63,3 @@ export const updateUserProfile = (
 
 export const isUserFullySetup = (user: User): boolean =>
   user.onboarded && user.emailVerified;
-
-export const isUserSoftDeleted = (user: User): boolean => false;

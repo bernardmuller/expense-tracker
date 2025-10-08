@@ -14,7 +14,6 @@ import {
   getBudgetSpentPercentage,
   isBudgetActive,
   isBudgetOverbudget,
-  isBudgetSoftDeleted,
   setBudgetActive,
   setBudgetInactive,
   subtractFromBudgetCurrentAmount,
