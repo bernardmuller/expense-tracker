@@ -1,22 +1,20 @@
-import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
-import { Effect, Exit } from "effect";
-import {
-  MissingRequiredFieldsError,
-  InvalidAllocatedAmountError,
-} from "./categoryBudgetErrors";
-import {
-  createCategoryBudget,
-  updateAllocatedAmount,
-  isCategoryBudgetSoftDeleted,
-  type CategoryBudget,
-  type CreateCategoryBudgetParams,
-} from "./index";
 import { faker } from "@faker-js/faker";
+import { Effect, Exit } from "effect";
+import { beforeEach, describe, expect } from "vitest";
 import {
   generateMockCategoryBudget,
   mockCategoryBudgets,
 } from "../__mocks__/categoryBudget.mock";
+import {
+  InvalidAllocatedAmountError,
+  MissingRequiredFieldsError,
+} from "./categoryBudgetErrors";
+import {
+  createCategoryBudget,
+  updateAllocatedAmount,
+  type CreateCategoryBudgetParams,
+} from "./index";
 
 describe("createCategoryBudget", () => {
   let mock: CreateCategoryBudgetParams;
