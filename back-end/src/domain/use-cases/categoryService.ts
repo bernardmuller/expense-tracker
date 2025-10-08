@@ -1,14 +1,14 @@
-import { Context, Effect } from "effect";
 import type {
-  CreateCategoryParams,
   Category,
+  CreateCategoryParams,
   UpdateCategoryParams,
 } from "@/domain/entities/category";
 import type {
-  InvalidCategoryLabelError,
   InvalidCategoryKeyError,
+  InvalidCategoryLabelError,
   MissingRequiredFieldsError,
 } from "@/domain/entities/category/categoryErrors";
+import { Context, Effect } from "effect";
 
 export interface CategoryServiceShape {
   readonly createCategory: (

@@ -1,9 +1,9 @@
+import { generateUuid } from "@/lib/utils/generateUuid";
 import { Effect } from "effect";
 import {
-  MissingRequiredFieldsError,
   InvalidAllocatedAmountError,
+  MissingRequiredFieldsError,
 } from "./categoryBudgetErrors";
-import { generateUuid } from "@/lib/utils/generateUuid";
 
 export type CategoryBudget = {
   readonly id: string;

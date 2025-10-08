@@ -1,24 +1,21 @@
-import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
-import { Effect, Exit } from "effect";
-import {
-  MissingRequiredFieldsError,
-  InvalidCategoryLabelError,
-  InvalidCategoryKeyError,
-} from "./categoryErrors";
-import {
-  createCategory,
-  updateCategory,
-  softDeleteCategory,
-  isCategorySoftDeleted,
-  type CreateCategoryParams,
-} from "./index";
 import { faker } from "@faker-js/faker";
-import { generateUuid } from "@/lib/utils/generateUuid";
+import { Effect, Exit } from "effect";
+import { beforeEach, describe, expect } from "vitest";
 import {
   generateMockCategory,
   mockCategories,
 } from "../__mocks__/category.mock";
+import {
+  InvalidCategoryKeyError,
+  InvalidCategoryLabelError,
+  MissingRequiredFieldsError,
+} from "./categoryErrors";
+import {
+  createCategory,
+  updateCategory,
+  type CreateCategoryParams,
+} from "./index";
 
 describe("createCategory", () => {
   let mock: CreateCategoryParams;

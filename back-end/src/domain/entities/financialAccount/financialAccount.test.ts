@@ -1,29 +1,28 @@
-import { describe, expect, beforeEach } from "vitest";
 import { it as effectIt } from "@effect/vitest";
-import { Effect, Exit } from "effect";
-import {
-  MissingRequiredFieldsError,
-  InvalidFinancialAccountNameError,
-  InvalidCurrentAmountError,
-  FinancialAccountTypeAlreadySetError,
-  InvalidSubtractionAmountError,
-  InvalidAdditionAmountError,
-} from "./financialAccountErrors";
-import {
-  createFinancialAccount,
-  updateFinancialAccount,
-  changeFinancialAccountType,
-  addToCurrentAmount,
-  subtractFromCurrentAmount,
-  type FinancialAccount,
-  type CreateFinancialAccountParams,
-} from "./index";
 import { faker } from "@faker-js/faker";
+import { Effect, Exit } from "effect";
+import { beforeEach, describe, expect } from "vitest";
 import {
   generateMockFinancialAccount,
   mockFinancialAccounts,
 } from "../__mocks__/financialAccount.mock";
 import { financialAccountType } from "../enums/financialAccountType";
+import {
+  FinancialAccountTypeAlreadySetError,
+  InvalidAdditionAmountError,
+  InvalidCurrentAmountError,
+  InvalidFinancialAccountNameError,
+  InvalidSubtractionAmountError,
+  MissingRequiredFieldsError,
+} from "./financialAccountErrors";
+import {
+  addToCurrentAmount,
+  changeFinancialAccountType,
+  createFinancialAccount,
+  subtractFromCurrentAmount,
+  updateFinancialAccount,
+  type CreateFinancialAccountParams,
+} from "./index";
 
 describe("createFinancialAccount", () => {
   let mock: CreateFinancialAccountParams;
