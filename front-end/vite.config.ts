@@ -1,17 +1,20 @@
-import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
-import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from '@tailwindcss/vite';
+import viteReact from '@vitejs/plugin-react';
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite';
 
-import { VitePWA } from 'vite-plugin-pwa'
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    TanStackRouterVite({ autoCodeSplitting: true }),
+    tanstackRouter({ autoCodeSplitting: true }),
     VitePWA({ registerType: 'autoUpdate' }),
-    viteReact(),
+    viteReact({
+      babel:{
+        plugins: ['babel-plugin-react-compiler']
+      }
+    }),
     tailwindcss(),
   ],
   test: {
