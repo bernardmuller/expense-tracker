@@ -1,16 +1,20 @@
-import { describe, expect, beforeEach } from "vitest";
+import { generateUuid } from "@/lib/utils/generateUuid";
 import { it as effectIt } from "@effect/vitest";
+import { faker } from "@faker-js/faker";
 import { Effect, Exit } from "effect";
+import { beforeEach, describe, expect } from "vitest";
+import {
+  generateMockTransaction,
+  mockExpenseTransactions,
+} from "../__mocks__/transaction.mock";
+import { transactionType } from "../enums/transactionType";
 import {
   createTransaction,
+  isExpenseTransaction,
   updateTransaction,
   type CreateTransactionParams,
   type Transaction,
 } from "./index.js";
-import { transactionType } from "../enums/transactionType";
-import { faker } from "@faker-js/faker";
-import { generateUuid } from "@/lib/utils/generateUuid";
-import { mockExpenseTransactions } from "../__mocks__/transaction.mock";
 
 describe("createTransaction", () => {
   let mock: CreateTransactionParams;
@@ -150,6 +154,36 @@ describe("updateTransaction", () => {
         const result = yield* updateTransaction(t, update);
         expect(result.description).toBe(randomString);
       }
+    }),
+  );
+});
+
+describe("isExpenseTransaction", () => {
+  let mock: Transaction;
+  beforeEach(() => {
+    mock = generateMockTransaction("expense");
+  });
+  effectIt.effect("should return true for expense transaction type", () =>
+    Effect.gen(function* () {
+      mock.type = "expense";
+      const result = isExpenseTransaction(mock);
+      expect(result).toBe(true);
+    }),
+  );
+
+  effectIt.effect("should return false for income transaction type", () =>
+    Effect.gen(function* () {
+      mock.type = "income";
+      const result = isExpenseTransaction(mock);
+      expect(result).toBe(false);
+    }),
+  );
+
+  effectIt.effect("should return false for transfer transaction type", () =>
+    Effect.gen(function* () {
+      mock.type = "transfer";
+      const result = isExpenseTransaction(mock);
+      expect(result).toBe(false);
     }),
   );
 });
