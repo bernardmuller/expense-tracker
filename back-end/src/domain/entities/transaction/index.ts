@@ -80,3 +80,6 @@ export const updateTransaction = (
       type: params.type,
     };
   });
+
+export const isExpenseTransaction = (transaction: Transaction): boolean =>
+  transaction.type === "expense";
