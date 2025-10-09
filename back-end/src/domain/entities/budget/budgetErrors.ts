@@ -33,3 +33,15 @@ export class InvalidBudgetNameError extends Data.TaggedError(
 )<{
   name: string;
 }> {}
+
+export class BudgetNotFoundError extends Data.TaggedError(
+  "BudgetNotFoundError",
+)<{
+  id: string;
+}> {}
+
+export class BudgetNotActiveError extends Data.TaggedError(
+  "BudgetNotActiveError",
+)<{
+  id: string;
+}> {}
