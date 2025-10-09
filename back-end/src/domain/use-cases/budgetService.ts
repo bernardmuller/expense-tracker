@@ -1,15 +1,19 @@
-import { Context, Effect } from "effect";
-import type { CreateBudgetParams, Budget } from "@/domain/entities/budget";
+import type { Budget, CreateBudgetParams } from "@/domain/entities/budget";
 import type {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
+  BudgetNotFoundError,
   BudgetValidationError,
 } from "@/domain/entities/budget/budgetErrors";
+import { Context, Effect } from "effect";
 
 export interface BudgetServiceShape {
   readonly createBudget: (
     params: CreateBudgetParams,
   ) => Effect.Effect<Budget, BudgetValidationError>;
+  readonly getBudgetById: (
+    id: string,
+  ) => Effect.Effect<Budget, BudgetNotFoundError>;
   readonly getBudgetSpentAmount: (
     budget: Budget,
   ) => Effect.Effect<number, BudgetValidationError>;
