@@ -1,4 +1,4 @@
-import { Context, Effect, Layer } from "effect";
+import { Context, Effect, Layer, pipe } from "effect";
 import type {
   CreateTransactionParams,
   Transaction,
@@ -9,25 +9,24 @@ import { TransactionService } from "@/domain/use-cases/transactionService";
 
 export const TransactionServiceLive = Layer.effect(
   TransactionService,
-  Effect.gen(function* () {
-    const transactionRepository = yield* TransactionRepository;
-
-    return {
+  pipe(
+    TransactionRepository,
+    Effect.map((transactionRepository) => ({
       createTransaction: (params: CreateTransactionParams) =>
-        Effect.gen(function* () {
-          const transaction =
-            yield* TransactionEntity.createTransaction(params);
-          return yield* transactionRepository.create(transaction);
-        }),
-
+        pipe(
+          TransactionEntity.createTransaction(params),
+          Effect.andThen(transactionRepository.create),
+        ),
       updateTransaction: (transaction: Transaction, params: Transaction) =>
-        Effect.gen(function* () {
-          const updatedTransaction = yield* TransactionEntity.updateTransaction(
-            transaction,
-            params,
-          );
-          return yield* transactionRepository.create(updatedTransaction);
-        }),
-    };
-  }),
+        pipe(
+          TransactionEntity.updateTransaction(transaction, params),
+          // TODO: update this
+          Effect.andThen(transactionRepository.create),
+        ),
+      isExpenseTransaction: (transaction: Transaction) =>
+        Effect.succeed(TransactionEntity.isExpenseTransaction(transaction)),
+      isIncomeTransaction: (transaction: Transaction) =>
+        Effect.succeed(!TransactionEntity.isExpenseTransaction(transaction)),
+    })),
+  ),
 );
