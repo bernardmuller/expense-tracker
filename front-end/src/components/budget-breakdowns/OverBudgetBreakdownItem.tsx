@@ -10,7 +10,7 @@ export default function OverBudgetBreakdownItem({
   return (
     <BudgetBreakdownItem>
       <BudgetBreakdownItem.Header name={name} icon={icon}>
-        <BudgetBreakdownItem.OverBudget />
+        <BudgetBreakdownItem.OverBudgetBadge />
       </BudgetBreakdownItem.Header>
       <BudgetBreakdownItem.Stats>
         <BudgetBreakdownItem.OverBudgetProgress />
