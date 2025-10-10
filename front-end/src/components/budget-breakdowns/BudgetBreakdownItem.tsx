@@ -9,14 +9,7 @@ export function BudgetBreakdownItem({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <Card
-      data-testid="budgetBreakdownItem"
-      className="border-border/50 cursor-pointer p-4"
-    >
-      {children}
-    </Card>
-  )
+  return <Card className="border-border/50 cursor-pointer p-4">{children}</Card>
 }
 
 BudgetBreakdownItem.Link = function LinkProvider({
@@ -47,10 +40,7 @@ BudgetBreakdownItem.Header = function Header({
   children?: React.ReactNode
 }) {
   return (
-    <div
-      data-testid="headerRootDivider"
-      className="flex items-center justify-between"
-    >
+    <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         <span className="text-lg">{icon}</span>
         <h3 className="text-foreground text-lg font-semibold">{name}</h3>
@@ -60,20 +50,12 @@ BudgetBreakdownItem.Header = function Header({
   )
 }
 
-BudgetBreakdownItem.OverBudget = function OverBudget() {
-  return (
-    <Badge data-testid="overBudgetBadge" variant="destructive">
-      Over budget
-    </Badge>
-  )
+BudgetBreakdownItem.OverBudgetBadge = function OverBudget() {
+  return <Badge variant="destructive">Over budget</Badge>
 }
 
-BudgetBreakdownItem.Unplanned = function Unplanned() {
-  return (
-    <Badge data-testid="unplannedBudgetBadge" variant="outline">
-      Unplanned
-    </Badge>
-  )
+BudgetBreakdownItem.UnplannedBadge = function Unplanned() {
+  return <Badge variant="outline">Unplanned</Badge>
 }
 
 BudgetBreakdownItem.Progress = function ProgressBar({
@@ -81,19 +63,15 @@ BudgetBreakdownItem.Progress = function ProgressBar({
 }: {
   percentage: number
 }) {
-  return <Progress data-testid="progress" value={percentage} className="h-1" />
+  return <Progress value={percentage} className="h-1" />
 }
 
 BudgetBreakdownItem.DisabledProgress = function DisabledProgressBar() {
-  return (
-    <Progress data-testid="progressDisabled" className="bg-primary/10 h-1" />
-  )
+  return <Progress className="bg-primary/10 h-1" />
 }
 
 BudgetBreakdownItem.OverBudgetProgress = function OverBudgetProgressBar() {
-  return (
-    <Progress data-testid="progressOverBudget" className="h-1 bg-red-500/50" />
-  )
+  return <Progress className="h-1 bg-red-500/50" />
 }
 
 BudgetBreakdownItem.Stats = function Stats({
@@ -101,11 +79,7 @@ BudgetBreakdownItem.Stats = function Stats({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <div data-testid="statsContainer" className="space-y-2">
-      {children}
-    </div>
-  )
+  return <div className="space-y-2">{children}</div>
 }
 
 BudgetBreakdownItem.Planned = function Planned({ amount }: { amount: string }) {
@@ -132,7 +106,7 @@ BudgetBreakdownItem.ReverseRow = function ReverseRow({
   children: React.ReactNode
 }) {
   return (
-    <div data-testid="reverseRowContainer" className="flex flex-row-reverse justify-between text-sm">
+    <div className="flex flex-row-reverse justify-between text-sm">
       {children}
     </div>
   )
