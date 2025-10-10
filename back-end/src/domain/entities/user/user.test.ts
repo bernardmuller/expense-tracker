@@ -1,18 +1,35 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { it as effectIt } from "@effect/vitest";
 import {
+  createUser,
+  isUserFullySetup,
   markUserAsOnboarded,
   markUserAsVerified,
   updateUser,
-  isUserFullySetup,
+  type CreateUserParams,
   type User,
 } from "@/domain/entities/user";
-import { mockUsers, generateMockUser } from "../__mocks__/user.mock";
+import { it as effectIt } from "@effect/vitest";
 import { Effect, Exit } from "effect";
+import { beforeEach, describe, expect, it } from "vitest";
+import { generateMockUser, mockUsers } from "../__mocks__/user.mock";
 import {
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./userErrors";
+
+describe("createUser", () => {
+  effectIt.effect("should create a user", () =>
+    Effect.gen(function* () {
+      const mockParams: CreateUserParams = {
+        email: "john@doe.com",
+        name: "John",
+      };
+      const result = yield* createUser(mockParams);
+      expect(result.id).toBeTruthy();
+      expect(result.onboarded).toBe(false);
+      expect(result.emailVerified).toBe(false);
+    }),
+  );
+});
 
 describe("markUserAsOnboarded", () => {
   effectIt.effect("should mark the user as onboarded", () =>

@@ -3,6 +3,7 @@ import {
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./userErrors";
+import { generateUuid } from "@/lib/utils/generateUuid";
 
 export type User = {
   readonly id: string;
@@ -12,7 +13,18 @@ export type User = {
   onboarded: boolean;
 };
 
-export type CreateUserParams = Pick<User, "id" | "emailVerified" | "onboarded">;
+export type CreateUserParams = Omit<User, "id" | "emailVerified" | "onboarded">;
+
+export const createUser = (params: CreateUserParams) =>
+  Effect.gen(function* () {
+    const uuid = generateUuid();
+    return {
+      id: uuid,
+      ...params,
+      emailVerified: false,
+      onboarded: false,
+    };
+  });
 
 export const markUserAsOnboarded = (
   user: User,
