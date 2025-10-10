@@ -6,6 +6,10 @@ export interface TransactionRepositoryShape {
     transaction: Transaction,
   ) => Effect.Effect<Transaction, Error>;
   readonly findById: (id: string) => Effect.Effect<Transaction | null, Error>;
+  readonly update: (
+    transaction: Transaction,
+  ) => Effect.Effect<Transaction, never>;
+  readonly delete: (transaction: Transaction) => Effect.Effect<boolean, never>;
 }
 
 export class TransactionRepository extends Context.Tag(
