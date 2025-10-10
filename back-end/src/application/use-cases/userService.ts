@@ -1,9 +1,8 @@
-import { Context, Effect, Layer, pipe } from "effect";
 import type { CreateUserParams, User } from "@/domain/entities/user";
 import * as UserEntity from "@/domain/entities/user";
 import { UserRepository } from "@/domain/repositories/userRepository";
 import { UserService } from "@/domain/use-cases/userService";
-import type { ReadParams } from "@/domain/repositories/baseRepository";
+import { Effect, Layer, pipe } from "effect";
 
 export const userServiceLive = Layer.effect(
   UserService,
