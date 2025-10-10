@@ -1,11 +1,15 @@
 import { Context, Effect } from "effect";
 import type { Budget } from "@/domain/entities/budget";
+import type {
+  BudgetNotFoundError,
+  BudgetValidationError,
+} from "../entities/budget/budgetErrors";
 
 export interface BudgetRepositoryShape {
   readonly create: (
     budget: Budget,
-  ) => Effect.Effect<Budget, Error>;
-  readonly findById: (id: string) => Effect.Effect<Budget | null, Error>;
+  ) => Effect.Effect<Budget, never>;
+  readonly findById: (id: string) => Effect.Effect<Budget, BudgetNotFoundError>;
   readonly update: (
     budget: Budget,
   ) => Effect.Effect<Budget, never>;

@@ -21,7 +21,7 @@ export const TransactionServiceLive = Layer.effect(
         pipe(
           TransactionEntity.updateTransaction(transaction, params),
           // TODO: update this
-          Effect.andThen(transactionRepository.create),
+          Effect.andThen(transactionRepository.update),
         ),
       isExpenseTransaction: (transaction: Transaction) =>
         Effect.succeed(TransactionEntity.isExpenseTransaction(transaction)),
