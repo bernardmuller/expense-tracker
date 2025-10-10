@@ -9,11 +9,9 @@ import { Effect, Layer, pipe } from "effect";
 import { BudgetServiceLive } from "../use-cases/budgetService";
 import { TransactionServiceLive } from "../use-cases/transactionService";
 
-const transactionLayer = Effect.gen(function* () {
-  const transactionService = yield* TransactionService;
-  const budgetService = yield* BudgetService;
-
-  return {
+const transactionLayer = pipe(
+  Effect.all([TransactionService, BudgetService]),
+  Effect.map(([transactionService, budgetService]) => ({
     createTransaction: (params: CreateTransactionParams) =>
       pipe(
         budgetService.getBudgetById(params.budgetId),
@@ -43,10 +41,12 @@ const transactionLayer = Effect.gen(function* () {
           ),
         ),
       ),
-  };
-});
+  })),
+);
 
-export type TransactionLayerShape = Effect.Effect.Success<typeof transactionLayer>;
+export type TransactionLayerShape = Effect.Effect.Success<
+  typeof transactionLayer
+>;
 
 export class TransactionLayer extends Effect.Tag(
   "/application/use-cases/transactionLayer",
