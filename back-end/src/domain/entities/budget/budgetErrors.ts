@@ -12,10 +12,6 @@ export class InvalidStartAmountError extends Data.TaggedError(
   amount: number;
 }> {}
 
-export type BudgetValidationError =
-  | MissingRequiredFieldsError
-  | InvalidStartAmountError;
-
 export class BudgetAlreadyActiveError extends Data.TaggedError(
   "BudgetAlreadyActiveError",
 )<{
@@ -45,3 +41,8 @@ export class BudgetNotActiveError extends Data.TaggedError(
 )<{
   id: string;
 }> {}
+
+export type BudgetValidationError =
+  | MissingRequiredFieldsError
+  | InvalidStartAmountError
+  | InvalidBudgetNameError;
