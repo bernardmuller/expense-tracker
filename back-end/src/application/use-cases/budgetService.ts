@@ -3,6 +3,7 @@ import type { CreateBudgetParams, Budget } from "@/domain/entities/budget";
 import * as BudgetEntity from "@/domain/entities/budget";
 import { BudgetRepository } from "@/domain/repositories/budgetRepository";
 import { BudgetService } from "@/domain/use-cases/budgetService";
+import type { ReadParams } from "@/domain/repositories/baseRepository";
 
 export const BudgetServiceLive = Layer.effect(
   BudgetService,
@@ -14,6 +15,8 @@ export const BudgetServiceLive = Layer.effect(
           BudgetEntity.createBudget(params),
           Effect.andThen(budgetRepository.create),
         ),
+      getAllBudgets: (params: ReadParams<Budget>) =>
+        budgetRepository.read(params),
       getBudgetById: (id: string) => budgetRepository.findById(id),
       getBudgetSpentAmount: (budget: Budget) =>
         BudgetEntity.getBudgetSpentAmount(budget),
@@ -29,8 +32,7 @@ export const BudgetServiceLive = Layer.effect(
           BudgetEntity.setBudgetInactive(budget),
           Effect.andThen(budgetRepository.update),
         ),
-      isBudgetActive: (budget: Budget) =>
-        BudgetEntity.isBudgetActive(budget),
+      isBudgetActive: (budget: Budget) => BudgetEntity.isBudgetActive(budget),
       isBudgetOverbudget: (budget: Budget) =>
         BudgetEntity.isBudgetOverbudget(budget),
       updateBudgetName: (budget: Budget, params: Budget) =>
