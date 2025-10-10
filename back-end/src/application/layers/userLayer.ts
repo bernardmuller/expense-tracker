@@ -1,7 +1,6 @@
 import type { CreateUserParams } from "@/domain/entities/user";
 import { UserService } from "@/domain/use-cases/userService";
 import { Effect, Layer, pipe } from "effect";
-import { BudgetServiceLive } from "../use-cases/budgetService";
 import { userServiceLive } from "../use-cases/userService";
 
 const userLayer = pipe(
