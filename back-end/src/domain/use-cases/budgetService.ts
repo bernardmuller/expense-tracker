@@ -5,6 +5,7 @@ import type {
   BudgetNotFoundError,
   BudgetValidationError,
 } from "@/domain/entities/budget/budgetErrors";
+import type { PercentageCalculationError } from "@/lib/utils/calculatePercentage";
 import { Context, Effect } from "effect";
 
 export interface BudgetServiceShape {
@@ -19,13 +20,16 @@ export interface BudgetServiceShape {
   ) => Effect.Effect<number, BudgetValidationError>;
   readonly getBudgetSpentPercentage: (
     budget: Budget,
-  ) => Effect.Effect<number, BudgetValidationError>;
+  ) => Effect.Effect<
+    string,
+    BudgetValidationError | PercentageCalculationError
+  >;
   readonly setBudgetActive: (
     budget: Budget,
-  ) => Effect.Effect<number, BudgetAlreadyActiveError>;
+  ) => Effect.Effect<Budget, BudgetAlreadyActiveError>;
   readonly setBudgetInactive: (
     budget: Budget,
-  ) => Effect.Effect<number, BudgetAlreadyInActiveError>;
+  ) => Effect.Effect<Budget, BudgetAlreadyInActiveError>;
   readonly isBudgetActive: (budget: Budget) => boolean;
   readonly isBudgetOverbudget: (budget: Budget) => boolean;
   readonly updateBudgetName: (
