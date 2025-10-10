@@ -9,7 +9,7 @@ export default function UnplannedBudgetBreakdownItem({
   return (
     <BudgetBreakdownItem>
       <BudgetBreakdownItem.Header name={name} icon={icon}>
-        <BudgetBreakdownItem.Unplanned />
+        <BudgetBreakdownItem.UnplannedBadge />
       </BudgetBreakdownItem.Header>
       <BudgetBreakdownItem.Stats>
         <BudgetBreakdownItem.DisabledProgress />
