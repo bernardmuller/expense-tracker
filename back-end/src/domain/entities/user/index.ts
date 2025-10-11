@@ -5,6 +5,7 @@ import {
   UserAlreadyVerifiedError,
 } from "./userErrors";
 import { generateUuid } from "@/lib/utils/generateUuid";
+import { ok } from "neverthrow";
 
 export type User = {
   readonly id: string;
@@ -16,16 +17,15 @@ export type User = {
 
 export type CreateUserParams = Omit<User, "id" | "emailVerified" | "onboarded">;
 
-export const createUser = (params: CreateUserParams) =>
-  Effect.gen(function* () {
+export const createUser = (params: CreateUserParams) => {
     const uuid = generateUuid();
-    return {
+    return ok({
       id: uuid,
       ...params,
       emailVerified: false,
       onboarded: false,
-    } satisfies User;
-  });
+    });
+};
 
 export const markUserAsOnboarded = (user: User) =>
   Effect.gen(function* () {
@@ -35,7 +35,6 @@ export const markUserAsOnboarded = (user: User) =>
           userId: user.id,
         }),
       );
-    }
 
     return {
       ...user,
@@ -48,7 +47,7 @@ export const markUserAsVerified = (user: User) =>
     if (user.emailVerified) {
       return yield* Effect.fail(
         new UserAlreadyVerifiedError({
-          userId: user.id,
+     userId: user.id,
         }),
       );
     }
