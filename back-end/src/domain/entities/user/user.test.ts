@@ -17,20 +17,18 @@ import {
 } from "./userErrors";
 
 describe("createUser", () => {
-  it("should create a user", () =>
-    {
-
-      const mockParams: CreateUserParams = {
-        email: "john@doe.com",
-        name: "John",
-      };
-      const result = yield* createUser(mockParams);
-      expect(result.id).toBeTruthy();
-      expect(result.onboarded).toBe(false);
-      expect(result.emailVerified).toBe(false);
-    }),
-  }
-  );
+  it("should create a user", () => {
+    const mockParams: CreateUserParams = {
+      email: "john@doe.com",
+      name: "John",
+    };
+    const result = createUser(mockParams);
+    expect(result.isOk()).toBeTruthy();
+    if (result.isOk()) {
+      expect(result.value.onboarded).toBe(false);
+      expect(result.value.emailVerified).toBe(false);
+    }
+  });
 });
 
 describe("markUserAsOnboarded", () => {
