@@ -8,6 +8,6 @@ export const InvalidAllocatedAmountError = createError<
   (amount) => `Invalid allocated amount: ${amount}`,
 );
 
-export type CategoryBudgetValidationError = InstanceType<
+export type CategoryBudgetError = InstanceType<
   typeof InvalidAllocatedAmountError
 >;

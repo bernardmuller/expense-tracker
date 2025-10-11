@@ -1,46 +1,36 @@
 import type { Budget, CreateBudgetParams } from "@/domain/entities/budget";
-import type {
-  BudgetAlreadyActiveError,
-  BudgetAlreadyInActiveError,
-  BudgetNotFoundError,
-  BudgetValidationError,
-} from "@/domain/entities/budget/budgetErrors";
-import type { PercentageCalculationError } from "@/lib/utils/calculatePercentage";
-import type {
-  EntityCreateError,
-  EntityNotFoundError,
-  EntityReadError,
-  EntityUpdateError,
-} from "@/domain/errors/repositoryErrors";
 import type { ReadParams } from "@/domain/repositories/baseRepository";
-import { Context, Effect } from "effect";
+import { Result } from "neverthrow";
+import type { BudgetError } from "../entities/budget/budgetErrors";
 
-export interface BudgetServiceShape {
-  readonly createBudget: (params: CreateBudgetParams) => Effect.Effect<Budget>;
+export interface BudgetService {
+  readonly createBudget: (
+    params: CreateBudgetParams,
+  ) => Result<Budget, BudgetError>;
   readonly getAllBudgets: (
     params?: ReadParams<Budget>,
-  ) => Effect.Effect<Budget[]>;
-  readonly getBudgetById: (id: string) => Effect.Effect<Budget>;
-  readonly getBudgetSpentAmount: (budget: Budget) => Effect.Effect<number>;
-  readonly getBudgetSpentPercentage: (budget: Budget) => Effect.Effect<string>;
-  readonly setBudgetActive: (budget: Budget) => Effect.Effect<Budget>;
-  readonly setBudgetInactive: (budget: Budget) => Effect.Effect<Budget>;
-  readonly isBudgetActive: (budget: Budget) => boolean;
-  readonly isBudgetOverbudget: (budget: Budget) => boolean;
+  ) => Result<Budget[], never>;
+  readonly getBudgetById: (id: string) => Result<Budget, BudgetError>;
+  readonly getBudgetSpentAmount: (
+    budget: Budget,
+  ) => Result<number, BudgetError>;
+  readonly getBudgetSpentPercentage: (
+    budget: Budget,
+  ) => Result<string, BudgetError>;
+  readonly setBudgetActive: (budget: Budget) => Result<Budget, BudgetError>;
+  readonly setBudgetInactive: (budget: Budget) => Result<Budget, BudgetError>;
+  readonly isBudgetActive: (budget: Budget) => Result<boolean, never>;
+  readonly isBudgetOverbudget: (budget: Budget) => Result<boolean, never>;
   readonly updateBudgetName: (
     Budget: Budget,
     params: Budget,
-  ) => Effect.Effect<Budget>;
+  ) => Result<Budget, BudgetError>;
   readonly addToBudgetCurrentAmount: (
     Budget: Budget,
     amount: number,
-  ) => Effect.Effect<Budget>;
+  ) => Result<Budget, BudgetError>;
   readonly subtractFromBudgetCurrentAmount: (
     Budget: Budget,
     amount: number,
-  ) => Effect.Effect<Budget>;
+  ) => Result<Budget, BudgetError>;
 }
-
-export class BudgetService extends Context.Tag(
-  "domain/use-cases/budgetService",
-)<BudgetService, BudgetServiceShape>() {}

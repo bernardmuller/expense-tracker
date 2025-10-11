@@ -17,7 +17,7 @@ import type {
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
-} from "@/domain/errors/repositoryErrors";
+} from "@/domain/repositories/repositoryErrors";
 
 export interface TransactionLayerShape {
   readonly createTransaction: (
