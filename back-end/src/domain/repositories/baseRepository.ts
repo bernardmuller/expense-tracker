@@ -1,11 +1,11 @@
-import type { Result } from "neverthrow";
+import type { Result, ResultAsync } from "neverthrow";
 import type {
   EntityCreateError,
   EntityDeleteError,
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
-} from "@/domain/repositories/repositoryErrors";
+} from "@/lib/errors/repositoryErrors";
 
 export type ReadParams<Entity> = {
   filter?: (entity: Entity, value: string) => void;
@@ -14,17 +14,22 @@ export type ReadParams<Entity> = {
 };
 
 export interface BaseRepository<Entity> {
-  readonly create: (entity: Entity) => Result<Entity, typeof EntityCreateError>;
+  readonly create: (
+    entity: Entity,
+  ) => ResultAsync<Entity, InstanceType<typeof EntityCreateError>>;
   readonly read: (
     params?: ReadParams<Entity>,
-  ) => Result<Entity[], typeof EntityReadError>;
+  ) => ResultAsync<Entity[], InstanceType<typeof EntityReadError>>;
   readonly findById: (
     id: string,
-  ) => Result<Entity, typeof EntityNotFoundError | typeof EntityReadError>;
+  ) => ResultAsync<Entity, InstanceType<typeof EntityNotFoundError> | InstanceType<typeof EntityReadError>>;
   readonly update: (
     entity: Entity,
-  ) => Result<Entity, typeof EntityUpdateError | typeof EntityNotFoundError>;
+  ) => ResultAsync<
+    Entity,
+    InstanceType<typeof EntityUpdateError> | InstanceType<typeof EntityNotFoundError>
+  >;
   readonly delete: (
     entity: Entity,
-  ) => Result<boolean, typeof EntityDeleteError>;
+  ) => ResultAsync<boolean, InstanceType<typeof EntityDeleteError>>;
 }
