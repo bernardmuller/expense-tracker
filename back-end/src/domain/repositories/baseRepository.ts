@@ -1,11 +1,11 @@
-import { Effect } from "effect";
+import type { Result } from "neverthrow";
 import type {
   EntityCreateError,
   EntityDeleteError,
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
-} from "@/domain/errors/repositoryErrors";
+} from "@/domain/repositories/repositoryErrors";
 
 export type ReadParams<Entity> = {
   filter?: (entity: Entity, value: string) => void;
@@ -13,18 +13,18 @@ export type ReadParams<Entity> = {
   search?: (property: keyof Entity, value: string) => void;
 };
 
-export interface BaseRepositoryShape<Entity> {
-  readonly create: (entity: Entity) => Effect.Effect<Entity, EntityCreateError>;
+export interface BaseRepository<Entity> {
+  readonly create: (entity: Entity) => Result<Entity, typeof EntityCreateError>;
   readonly read: (
     params?: ReadParams<Entity>,
-  ) => Effect.Effect<Entity[], EntityReadError>;
+  ) => Result<Entity[], typeof EntityReadError>;
   readonly findById: (
     id: string,
-  ) => Effect.Effect<Entity, EntityNotFoundError | EntityReadError>;
+  ) => Result<Entity, typeof EntityNotFoundError | typeof EntityReadError>;
   readonly update: (
     entity: Entity,
-  ) => Effect.Effect<Entity, EntityUpdateError | EntityNotFoundError>;
+  ) => Result<Entity, typeof EntityUpdateError | typeof EntityNotFoundError>;
   readonly delete: (
     entity: Entity,
-  ) => Effect.Effect<boolean, EntityDeleteError>;
+  ) => Result<boolean, typeof EntityDeleteError>;
 }

@@ -1,35 +1,26 @@
 import type { CreateUserParams, User } from "@/domain/entities/user";
-import type {
-  UserAlreadyOnboardedError,
-  UserAlreadyVerifiedError,
-  UserValidationError,
-} from "@/domain/entities/user/userErrors";
-import { Context, Effect } from "effect";
+import type { UserValidationError } from "@/domain/entities/user/userErrors";
 import type {
   EntityCreateError,
   EntityReadError,
   EntityUpdateError,
-} from "../errors/repositoryErrors";
+} from "@/lib/errors/repositoryErrors";
+import type { Result } from "neverthrow";
 
-export interface UserServiceShape {
+export interface UserService {
   readonly createUser: (
     params: CreateUserParams,
-  ) => Effect.Effect<User, EntityCreateError>;
-  readonly getAllUsers: () => Effect.Effect<User[], EntityReadError>;
+  ) => Result<User, InstanceType<typeof EntityCreateError>>;
+  readonly getAllUsers: () => Result<User[], InstanceType<typeof EntityReadError>>;
   readonly markUserAsOnboarded: (
     user: User,
-  ) => Effect.Effect<User, UserAlreadyOnboardedError, EntityUpdateError>;
+  ) => Result<User, UserValidationError | InstanceType<typeof EntityUpdateError>>;
   readonly markUserAsVerified: (
     user: User,
-  ) => Effect.Effect<User, UserAlreadyVerifiedError, EntityUpdateError>;
+  ) => Result<User, UserValidationError | InstanceType<typeof EntityUpdateError>>;
   readonly updateUser: (
     user: User,
     params: User,
-  ) => Effect.Effect<User, EntityUpdateError>;
-  readonly isUserFullySetup: (user: User) => Effect.Effect<boolean>;
+  ) => Result<User, InstanceType<typeof EntityUpdateError>>;
+  readonly isUserFullySetup: (user: User) => Result<boolean, never>;
 }
-
-export class UserService extends Context.Tag("domain/use-cases/userService")<
-  UserService,
-  UserServiceShape
->() {}
