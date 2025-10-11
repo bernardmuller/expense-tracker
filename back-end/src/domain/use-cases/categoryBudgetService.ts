@@ -2,25 +2,15 @@ import type {
   CategoryBudget,
   CreateCategoryBudgetParams,
 } from "@/domain/entities/categoryBudget";
-import type {
-  InvalidAllocatedAmountError,
-  MissingRequiredFieldsError,
-} from "@/domain/entities/categoryBudget/categoryBudgetErrors";
-import { Context, Effect } from "effect";
+import type { Result } from "neverthrow";
+import type { CategoryBudgetError } from "../entities/categoryBudget/categoryBudgetErrors";
 
-export interface CategoryBudgetServiceShape {
+export interface CategoryBudgetService {
   readonly createCategoryBudget: (
     params: CreateCategoryBudgetParams,
-  ) => Effect.Effect<
-    CategoryBudget,
-    MissingRequiredFieldsError | InvalidAllocatedAmountError
-  >;
+  ) => Result<CategoryBudget, CategoryBudgetError>;
   readonly updateAllocatedAmount: (
     categoryBudget: CategoryBudget,
     amount: number,
-  ) => Effect.Effect<CategoryBudget, InvalidAllocatedAmountError>;
+  ) => Result<CategoryBudget, CategoryBudgetError>;
 }
-
-export class CategoryBudgetService extends Context.Tag(
-  "domain/use-cases/categoryBudgetService",
-)<CategoryBudgetService, CategoryBudgetServiceShape>() {}

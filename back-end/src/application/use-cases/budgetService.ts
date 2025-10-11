@@ -2,7 +2,10 @@ import { Context, Effect, Layer, pipe } from "effect";
 import type { CreateBudgetParams, Budget } from "@/domain/entities/budget";
 import type { BudgetServiceShape } from "@/domain/use-cases/budgetService";
 import type { BudgetValidationError } from "@/domain/entities/budget/budgetErrors";
-import type { EntityCreateError, EntityReadError } from "@/domain/errors/repositoryErrors";
+import type {
+  EntityCreateError,
+  EntityReadError,
+} from "@/domain/repositories/repositoryErrors";
 import * as BudgetEntity from "@/domain/entities/budget";
 import { BudgetRepository } from "@/domain/repositories/budgetRepository";
 import { BudgetService } from "@/domain/use-cases/budgetService";
@@ -14,12 +17,16 @@ export const BudgetServiceLive = Layer.effect(
     BudgetRepository,
     Effect.map((budgetRepository): BudgetServiceShape => {
       const service: BudgetServiceShape = {
-        createBudget: (params: CreateBudgetParams): Effect.Effect<Budget, BudgetValidationError | EntityCreateError> =>
+        createBudget: (
+          params: CreateBudgetParams,
+        ): Effect.Effect<Budget, BudgetValidationError | EntityCreateError> =>
           pipe(
             BudgetEntity.createBudget(params),
             Effect.andThen(budgetRepository.create),
           ),
-        getAllBudgets: (params?: ReadParams<Budget>): Effect.Effect<Budget[], EntityReadError> =>
+        getAllBudgets: (
+          params?: ReadParams<Budget>,
+        ): Effect.Effect<Budget[], EntityReadError> =>
           budgetRepository.read(params ?? {}),
         getBudgetById: (id: string) => budgetRepository.findById(id),
         getBudgetSpentAmount: (budget: Budget) =>
