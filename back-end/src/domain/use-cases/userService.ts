@@ -2,25 +2,31 @@ import type { CreateUserParams, User } from "@/domain/entities/user";
 import type { UserValidationError } from "@/domain/entities/user/userErrors";
 import type {
   EntityCreateError,
+  EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
+  RepositoryErrorType,
 } from "@/lib/errors/repositoryErrors";
-import type { Result } from "neverthrow";
+import type { ResultAsync } from "neverthrow";
 
 export interface UserService {
   readonly createUser: (
     params: CreateUserParams,
-  ) => Result<User, InstanceType<typeof EntityCreateError>>;
-  readonly getAllUsers: () => Result<User[], InstanceType<typeof EntityReadError>>;
+  ) => ResultAsync<User, InstanceType<typeof EntityCreateError>>;
+  readonly getAllUsers: () => ResultAsync<
+    User[],
+    InstanceType<typeof EntityReadError>
+  >;
   readonly markUserAsOnboarded: (
-    user: User,
-  ) => Result<User, UserValidationError | InstanceType<typeof EntityUpdateError>>;
+    userId: string,
+  ) => ResultAsync<User, UserValidationError | RepositoryErrorType>;
   readonly markUserAsVerified: (
-    user: User,
-  ) => Result<User, UserValidationError | InstanceType<typeof EntityUpdateError>>;
+    userId: string,
+  ) => ResultAsync<User, UserValidationError | RepositoryErrorType>;
   readonly updateUser: (
-    user: User,
     params: User,
-  ) => Result<User, InstanceType<typeof EntityUpdateError>>;
-  readonly isUserFullySetup: (user: User) => Result<boolean, never>;
+  ) => ResultAsync<User, UserValidationError | RepositoryErrorType>;
+  readonly isUserFullySetup: (
+    userId: string,
+  ) => ResultAsync<boolean, UserValidationError | RepositoryErrorType>;
 }
