@@ -7,8 +7,6 @@ import {
   type CreateUserParams,
   type User,
 } from "@/domain/entities/user";
-import { it as effectIt } from "@effect/vitest";
-import { Effect, Exit } from "effect";
 import { beforeEach, describe, expect, it } from "vitest";
 import { generateMockUser, mockUsers } from "../__mocks__/user.mock";
 import {
@@ -32,61 +30,53 @@ describe("createUser", () => {
 });
 
 describe("markUserAsOnboarded", () => {
-  effectIt.effect("should mark the user as onboarded", () =>
-    Effect.gen(function* () {
-      const users = mockUsers(5);
+  it("should mark the user as onboarded", () => {
+    const users = mockUsers(5);
 
-      for (const user of users) {
-        user.onboarded = false;
-        const result = yield* markUserAsOnboarded(user);
-        expect(result.onboarded).toEqual(true);
+    for (const user of users) {
+      user.onboarded = false;
+      const result = markUserAsOnboarded(user);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.onboarded).toEqual(true);
       }
-    }),
-  );
+    }
+  });
 
-  effectIt.effect("should fail if user is already onboarded", () =>
-    Effect.gen(function* () {
-      const user = generateMockUser();
-      user.onboarded = true;
-      const result = yield* Effect.exit(markUserAsOnboarded(user));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(UserAlreadyOnboardedError);
-        }
-      }
-    }),
-  );
+  it("should fail if user is already onboarded", () => {
+    const user = generateMockUser();
+    user.onboarded = true;
+    const result = markUserAsOnboarded(user);
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(UserAlreadyOnboardedError);
+    }
+  });
 });
 
 describe("markUserAsVerified", () => {
-  effectIt.effect("should mark the user as verified", () =>
-    Effect.gen(function* () {
-      const users = mockUsers(5);
+  it("should mark the user as verified", () => {
+    const users = mockUsers(5);
 
-      for (const user of users) {
-        user.emailVerified = false;
-        const result = yield* markUserAsVerified(user);
-        expect(result.emailVerified).toEqual(true);
+    for (const user of users) {
+      user.emailVerified = false;
+      const result = markUserAsVerified(user);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.emailVerified).toEqual(true);
       }
-    }),
-  );
+    }
+  });
 
-  effectIt.effect("should fail if user is already verified", () =>
-    Effect.gen(function* () {
-      const user = generateMockUser();
-      user.emailVerified = true;
-      const result = yield* Effect.exit(markUserAsVerified(user));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(UserAlreadyVerifiedError);
-        }
-      }
-    }),
-  );
+  it("should fail if user is already verified", () => {
+    const user = generateMockUser();
+    user.emailVerified = true;
+    const result = markUserAsVerified(user);
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(UserAlreadyVerifiedError);
+    }
+  });
 });
 
 describe("updateUserProfile", () => {
@@ -102,42 +92,45 @@ describe("updateUserProfile", () => {
     };
   });
 
-  effectIt.effect("should update user name", () =>
-    Effect.gen(function* () {
-      const params = {
-        ...mockUser,
-        name: "Jane Doe",
-      };
+  it("should update user name", () => {
+    const params = {
+      ...mockUser,
+      name: "Jane Doe",
+    };
 
-      const result = yield* updateUser(mockUser, params);
-      expect(result.name).toEqual(params.name);
-    }),
-  );
+    const result = updateUser(mockUser, params);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.name).toEqual(params.name);
+    }
+  });
 
-  effectIt.effect("should not update user email", () =>
-    Effect.gen(function* () {
-      const params = {
-        ...mockUser,
-        email: "shouldnotwork@email.com",
-      };
+  it("should not update user email", () => {
+    const params = {
+      ...mockUser,
+      email: "shouldnotwork@email.com",
+    };
 
-      const result = yield* updateUser(mockUser, params);
-      expect(result.email).toEqual(mockUser.email);
-    }),
-  );
+    const result = updateUser(mockUser, params);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.email).toEqual(mockUser.email);
+    }
+  });
 
-  effectIt.effect("should not update any properties other than user name", () =>
-    Effect.gen(function* () {
-      const params = generateMockUser();
-      const result = yield* updateUser(mockUser, params);
+  it("should not update any properties other than user name", () => {
+    const params = generateMockUser();
+    const result = updateUser(mockUser, params);
 
-      expect(result.email).toEqual(mockUser.email);
-      expect(result.name).toEqual(params.name);
-      expect(result.emailVerified).toEqual(mockUser.emailVerified);
-      expect(result.onboarded).toEqual(mockUser.onboarded);
-      expect(result.id).toEqual(mockUser.id);
-    }),
-  );
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.email).toEqual(mockUser.email);
+      expect(result.value.name).toEqual(params.name);
+      expect(result.value.emailVerified).toEqual(mockUser.emailVerified);
+      expect(result.value.onboarded).toEqual(mockUser.onboarded);
+      expect(result.value.id).toEqual(mockUser.id);
+    }
+  });
 });
 
 describe("isUserFullySetup", () => {
