@@ -1,17 +1,9 @@
-import { Data } from "effect";
+export class InvalidAllocatedAmountError extends Error {
+  readonly _tag = "InvalidAllocatedAmountError";
+  constructor(public amount: number) {
+    super(`Invalid allocated amount: ${amount}`);
+    this.name = "InvalidAllocatedAmountError";
+  }
+}
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class InvalidAllocatedAmountError extends Data.TaggedError(
-  "InvalidAllocatedAmountError",
-)<{
-  amount: number;
-}> {}
-
-export type CategoryBudgetValidationError =
-  | MissingRequiredFieldsError
-  | InvalidAllocatedAmountError;
+export type CategoryBudgetValidationError = InvalidAllocatedAmountError;

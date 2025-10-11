@@ -1,10 +1,9 @@
+import { generateUuid } from "@/lib/utils/generateUuid";
+import { err, ok } from "neverthrow";
 import {
-  type UserValidationError,
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./userErrors";
-import { generateUuid } from "@/lib/utils/generateUuid";
-import { err, ok } from "neverthrow";
 
 export type User = {
   readonly id: string;
@@ -28,11 +27,7 @@ export const createUser = (params: CreateUserParams) => {
 
 export const markUserAsOnboarded = (user: User) => {
   if (user.onboarded) {
-    return err(
-      new UserAlreadyOnboardedError({
-        userId: user.id,
-      }),
-    );
+    return err(new UserAlreadyOnboardedError(user.id));
   }
 
   return ok({
@@ -43,11 +38,7 @@ export const markUserAsOnboarded = (user: User) => {
 
 export const markUserAsVerified = (user: User) => {
   if (user.emailVerified) {
-    return err(
-      new UserAlreadyVerifiedError({
-        userId: user.id,
-      }),
-    );
+    return err(new UserAlreadyVerifiedError(user.id));
   }
 
   return ok({
