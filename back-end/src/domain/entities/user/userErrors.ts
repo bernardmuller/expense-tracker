@@ -1,24 +1,19 @@
-import { Data } from "effect";
+export class UserAlreadyOnboardedError extends Error {
+  readonly _tag = "UserAlreadyOnboardedError";
+  constructor(public userId: string) {
+    super(`User ${userId} is already onboarded`);
+    this.name = "UserAlreadyOnboardedError";
+  }
+}
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class UserAlreadyOnboardedError extends Data.TaggedError(
-  "UserAlreadyOnboardedError",
-)<{
-  userId: string;
-}> {}
-
-export class UserAlreadyVerifiedError extends Data.TaggedError(
-  "UserAlreadyVerifiedError",
-)<{
-  userId: string;
-}> {}
+export class UserAlreadyVerifiedError extends Error {
+  readonly _tag = "UserAlreadyVerifiedError";
+  constructor(public userId: string) {
+    super(`User ${userId} is already verified`);
+    this.name = "UserAlreadyVerifiedError";
+  }
+}
 
 export type UserValidationError =
-  | MissingRequiredFieldsError
   | UserAlreadyOnboardedError
   | UserAlreadyVerifiedError;

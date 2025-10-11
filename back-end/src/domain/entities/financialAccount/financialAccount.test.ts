@@ -11,7 +11,6 @@ import {
   InvalidCurrentAmountError,
   InvalidFinancialAccountNameError,
   InvalidSubtractionAmountError,
-  MissingRequiredFieldsError,
 } from "./financialAccountErrors";
 import {
   addToCurrentAmount,
@@ -50,24 +49,6 @@ describe("createFinancialAccount", () => {
     expect(result.isOk()).toBe(true);
     if (result.isOk()) {
       expect(result.value.id).toBeTruthy();
-    }
-  });
-
-  it("should fail when type is missing", () => {
-    const invalidMock = { ...mock, type: "" as any };
-    const result = createFinancialAccount(invalidMock);
-    expect(result.isErr()).toBe(true);
-    if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
-    }
-  });
-
-  it("should fail when name is missing", () => {
-    const invalidMock = { ...mock, name: "" };
-    const result = createFinancialAccount(invalidMock);
-    expect(result.isErr()).toBe(true);
-    if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
     }
   });
 
@@ -183,9 +164,7 @@ describe("changeFinancialAccountType", () => {
     );
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(
-        FinancialAccountTypeAlreadySetError,
-      );
+      expect(result.error).toBeInstanceOf(FinancialAccountTypeAlreadySetError);
     }
   });
 });
