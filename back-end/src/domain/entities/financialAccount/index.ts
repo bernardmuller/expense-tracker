@@ -23,33 +23,11 @@ export type CreateFinancialAccountParams = Omit<FinancialAccount, "id">;
 export const createFinancialAccount = (
   params: CreateFinancialAccountParams,
 ) => {
-  const missingFields: string[] = [];
-  if (!params.type) missingFields.push("type");
-  if (!params.name) missingFields.push("name");
-  if (!params.description) missingFields.push("description");
-  if (params.currentAmount === undefined) missingFields.push("currentAmount");
-
-  if (missingFields.length > 0) {
-    return err(
-      new MissingRequiredFieldsError({
-        fields: missingFields,
-      }),
-    );
-  }
-
-  if (params.currentAmount < 0) {
-    return err(
-      new InvalidCurrentAmountError({
-        amount: params.currentAmount,
-      }),
-    );
-  }
-
-  const uuid = generateUuid();
-
+  if (params.currentAmount < 0)
+    return err(new InvalidCurrentAmountError(params.currentAmount));
   return ok({
     ...params,
-    id: uuid,
+    id: generateUuid(),
   });
 };
 
@@ -65,11 +43,7 @@ export const updateFinancialAccount = (
     params.name !== undefined &&
     (!params.name || params.name.trim() === "")
   ) {
-    return err(
-      new InvalidFinancialAccountNameError({
-        name: params.name,
-      }),
-    );
+    return err(new InvalidFinancialAccountNameError(params.name));
   }
 
   return ok({
@@ -85,14 +59,8 @@ export const changeFinancialAccountType = (
   financialAccount: FinancialAccount,
   type: FinancialAccountType,
 ) => {
-  if (financialAccount.type === type) {
-    return err(
-      new FinancialAccountTypeAlreadySetError({
-        type: financialAccount.type,
-      }),
-    );
-  }
-
+  if (financialAccount.type === type)
+    return err(new FinancialAccountTypeAlreadySetError(financialAccount.type));
   return ok({
     ...financialAccount,
     type,
@@ -103,14 +71,7 @@ export const addToCurrentAmount = (
   financialAccount: FinancialAccount,
   amount: number,
 ) => {
-  if (amount < 0) {
-    return err(
-      new InvalidAdditionAmountError({
-        amount,
-      }),
-    );
-  }
-
+  if (amount < 0) return err(new InvalidAdditionAmountError(amount));
   return ok({
     ...financialAccount,
     currentAmount: financialAccount.currentAmount + amount,
@@ -121,14 +82,7 @@ export const subtractFromCurrentAmount = (
   financialAccount: FinancialAccount,
   amount: number,
 ) => {
-  if (amount < 0) {
-    return err(
-      new InvalidSubtractionAmountError({
-        amount,
-      }),
-    );
-  }
-
+  if (amount < 0) return err(new InvalidSubtractionAmountError(amount));
   return ok({
     ...financialAccount,
     currentAmount: financialAccount.currentAmount - amount,

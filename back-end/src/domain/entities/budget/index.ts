@@ -7,7 +7,6 @@ import {
   type BudgetValidationError,
   InvalidBudgetNameError,
   InvalidStartAmountError,
-  MissingRequiredFieldsError,
 } from "./budgetErrors";
 import type { w } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js";
 
@@ -26,79 +25,31 @@ export type CreateBudgetParams = Omit<
 >;
 
 export const createBudget = (params: CreateBudgetParams) => {
-  const missingFields: string[] = [];
-  if (!params.userId) missingFields.push("userId");
-  if (!params.name) missingFields.push("name");
-  if (params.startAmount === undefined) missingFields.push("startAmount");
-
-  if (missingFields.length > 0) {
-    return err(
-      new MissingRequiredFieldsError({
-        fields: missingFields,
-      }),
-    );
-  }
-
-  if (params.startAmount < 0) {
-    return err(new InvalidStartAmountError({ amount: params.startAmount }));
-  }
-
-  const uuid = generateUuid();
-
+  if (params.startAmount < 0)
+    return err(new InvalidStartAmountError(params.startAmount));
   return ok({
     ...params,
-    id: uuid,
+    id: generateUuid(),
     isActive: false,
     currentAmount: params.startAmount,
   });
 };
 
 export const getBudgetSpentAmount = (budget: Budget) => {
-  const missingFields: string[] = [];
-  if (!budget.startAmount) missingFields.push("startAmount");
-  if (!budget.currentAmount) missingFields.push("currentAmount");
-
-  if (missingFields.length > 0) {
-    return err(
-      new MissingRequiredFieldsError({
-        fields: missingFields,
-      }),
-    );
-  }
-
   const spent = budget.startAmount - budget.currentAmount;
-
   return ok(spent);
 };
 
 export const getBudgetSpentPercentage = (budget: Budget) => {
-  const missingFields: string[] = [];
-  if (!budget.startAmount) missingFields.push("startAmount");
-  if (!budget.currentAmount) missingFields.push("currentAmount");
-
-  if (missingFields.length > 0) {
-    return err(
-      new MissingRequiredFieldsError({
-        fields: missingFields,
-      }),
-    );
-  }
-
-  const percentageResult = calculatePercentage(
+  return calculatePercentage(
     budget.startAmount - budget.currentAmount,
     budget.startAmount,
   );
-
-  return percentageResult;
 };
 
 export const setBudgetActive = (budget: Budget) => {
   if (budget.isActive) {
-    return err(
-      new BudgetAlreadyActiveError({
-        budgetId: budget.id,
-      }),
-    );
+    return err(new BudgetAlreadyActiveError(budget.id));
   }
   return ok({
     ...budget,
@@ -108,11 +59,7 @@ export const setBudgetActive = (budget: Budget) => {
 
 export const setBudgetInactive = (budget: Budget) => {
   if (!budget.isActive) {
-    return err(
-      new BudgetAlreadyInActiveError({
-        budgetId: budget.id,
-      }),
-    );
+    return err(new BudgetAlreadyInActiveError(budget.id));
   }
   return ok({
     ...budget,
@@ -127,11 +74,7 @@ export const isBudgetOverbudget = (budget: Budget): boolean =>
 
 export const updateBudgetName = (budget: Budget, name: string) => {
   if (!name || name.trim() === "") {
-    return err(
-      new InvalidBudgetNameError({
-        name,
-      }),
-    );
+    return err(new InvalidBudgetNameError(name));
   }
   return ok({
     ...budget,

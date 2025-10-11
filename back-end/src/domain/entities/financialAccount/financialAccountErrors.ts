@@ -1,43 +1,52 @@
-import { Data } from "effect";
+export class MissingRequiredFieldsError extends Error {
+  readonly _tag = "MissingRequiredFieldsError";
+  constructor(public fields: string[]) {
+    super(`Missing required fields: ${fields.join(", ")}`);
+    this.name = "MissingRequiredFieldsError";
+  }
+}
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
+export class InvalidFinancialAccountNameError extends Error {
+  readonly _tag = "InvalidFinancialAccountNameError";
+  constructor(public accountName: string) {
+    super(`Invalid financial account name: ${accountName}`);
+    this.name = "InvalidFinancialAccountNameError";
+  }
+}
 
-export class InvalidFinancialAccountNameError extends Data.TaggedError(
-  "InvalidFinancialAccountNameError",
-)<{
-  name: string;
-}> {}
+export class InvalidCurrentAmountError extends Error {
+  readonly _tag = "InvalidCurrentAmountError";
+  constructor(public amount: number) {
+    super(`Invalid current amount: ${amount}`);
+    this.name = "InvalidCurrentAmountError";
+  }
+}
 
-export class InvalidCurrentAmountError extends Data.TaggedError(
-  "InvalidCurrentAmountError",
-)<{
-  amount: number;
-}> {}
+export class FinancialAccountTypeAlreadySetError extends Error {
+  readonly _tag = "FinancialAccountTypeAlreadySetError";
+  constructor(public type: string) {
+    super(`Financial account type is already set: ${type}`);
+    this.name = "FinancialAccountTypeAlreadySetError";
+  }
+}
 
-export class FinancialAccountTypeAlreadySetError extends Data.TaggedError(
-  "FinancialAccountTypeAlreadySetError",
-)<{
-  type: string;
-}> {}
+export class InvalidSubtractionAmountError extends Error {
+  readonly _tag = "InvalidSubtractionAmountError";
+  constructor(public amount: number) {
+    super(`Invalid subtraction amount: ${amount}`);
+    this.name = "InvalidSubtractionAmountError";
+  }
+}
 
-export class InvalidSubtractionAmountError extends Data.TaggedError(
-  "InvalidSubtractionAmountError",
-)<{
-  amount: number;
-}> {}
-
-export class InvalidAdditionAmountError extends Data.TaggedError(
-  "InvalidAdditionAmountError",
-)<{
-  amount: number;
-}> {}
+export class InvalidAdditionAmountError extends Error {
+  readonly _tag = "InvalidAdditionAmountError";
+  constructor(public amount: number) {
+    super(`Invalid addition amount: ${amount}`);
+    this.name = "InvalidAdditionAmountError";
+  }
+}
 
 export type FinancialAccountValidationError =
-  | MissingRequiredFieldsError
   | InvalidFinancialAccountNameError
   | FinancialAccountTypeAlreadySetError
   | InvalidAdditionAmountError

@@ -4,10 +4,7 @@ import {
   generateMockCategoryBudget,
   mockCategoryBudgets,
 } from "../__mocks__/categoryBudget.mock";
-import {
-  InvalidAllocatedAmountError,
-  MissingRequiredFieldsError,
-} from "./categoryBudgetErrors";
+import { InvalidAllocatedAmountError } from "./categoryBudgetErrors";
 import {
   createCategoryBudget,
   updateAllocatedAmount,
@@ -40,24 +37,6 @@ describe("createCategoryBudget", () => {
     expect(result.isOk()).toBe(true);
     if (result.isOk()) {
       expect(result.value.id).toBeTruthy();
-    }
-  });
-
-  it("should fail when budgetId is missing", () => {
-    const invalidMock = { ...mock, budgetId: "" };
-    const result = createCategoryBudget(invalidMock);
-    expect(result.isErr()).toBe(true);
-    if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
-    }
-  });
-
-  it("should fail when categoryId is missing", () => {
-    const invalidMock = { ...mock, categoryId: "" };
-    const result = createCategoryBudget(invalidMock);
-    expect(result.isErr()).toBe(true);
-    if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
     }
   });
 
