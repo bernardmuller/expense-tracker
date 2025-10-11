@@ -1,7 +1,24 @@
-import type { CreateUserParams } from "@/domain/entities/user";
+import type { CreateUserParams, User } from "@/domain/entities/user";
 import { UserService } from "@/domain/use-cases/userService";
 import { Effect, Layer, pipe } from "effect";
 import { userServiceLive } from "../use-cases/userService";
+import { userRepositoryLive } from "@/infrastructure/repositories/userRepository";
+import type {
+  UserAlreadyOnboardedError,
+  UserAlreadyVerifiedError,
+  UserValidationError,
+} from "@/domain/entities/user/userErrors";
+import type {
+  EntityCreateError,
+  EntityNotFoundError,
+  EntityReadError,
+  EntityUpdateError,
+} from "@/domain/errors/repositoryErrors";
+
+export interface UserLayerShape {
+  readonly createUser: (params: CreateUserParams) => Effect.Effect<User>;
+  readonly getAllUsers: () => Effect.Effect<User[]>;
+}
 
 const userLayer = pipe(
   Effect.all([UserService]),
@@ -11,8 +28,6 @@ const userLayer = pipe(
   })),
 );
 
-export type UserLayerShape = Effect.Effect.Success<typeof userLayer>;
-
 export class UserLayer extends Effect.Tag("/application/use-cases/UserLayer")<
   UserLayer,
   UserLayerShape
@@ -20,4 +35,5 @@ export class UserLayer extends Effect.Tag("/application/use-cases/UserLayer")<
 
 export const UserLayerLive = Layer.effect(UserLayer, userLayer).pipe(
   Layer.provide(userServiceLive),
+  Layer.provide(userRepositoryLive),
 );
