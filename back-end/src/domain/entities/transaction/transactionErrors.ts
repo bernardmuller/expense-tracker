@@ -1,17 +1,9 @@
-import { Data } from "effect";
+export class InvalidTransactionUpdateError extends Error {
+  readonly _tag = "InvalidTransactionUpdateError";
+  constructor(public reason: string) {
+    super(`Invalid transaction update: ${reason}`);
+    this.name = "InvalidTransactionUpdateError";
+  }
+}
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class InvalidTransactionUpdateError extends Data.TaggedError(
-  "InvalidTransactionUpdateError",
-)<{
-  reason: string;
-}> {}
-
-export type TransactionError =
-  | MissingRequiredFieldsError
-  | InvalidTransactionUpdateError;
+export type TransactionError = InvalidTransactionUpdateError;

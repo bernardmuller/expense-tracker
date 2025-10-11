@@ -1,7 +1,5 @@
-import { it as effectIt } from "@effect/vitest";
 import { faker } from "@faker-js/faker";
-import { Effect, Exit } from "effect";
-import { beforeEach, describe, expect } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   generateMockCategory,
   mockCategories,
@@ -9,7 +7,6 @@ import {
 import {
   InvalidCategoryKeyError,
   InvalidCategoryLabelError,
-  MissingRequiredFieldsError,
 } from "./categoryErrors";
 import {
   createCategory,
@@ -28,190 +25,129 @@ describe("createCategory", () => {
     };
   });
 
-  effectIt.effect("should create a category with the provided properties", () =>
-    Effect.gen(function* () {
-      const result = yield* createCategory(mock);
-      expect(result.key).toBe(mock.key);
-      expect(result.label).toBe(mock.label);
-      expect(result.icon).toBe(mock.icon);
-    }),
-  );
+  it("should create a category with the provided properties", () => {
+    const result = createCategory(mock);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.key).toBe(mock.key);
+      expect(result.value.label).toBe(mock.label);
+      expect(result.value.icon).toBe(mock.icon);
+    }
+  });
 
-  effectIt.effect("should create a category with an id", () =>
-    Effect.gen(function* () {
-      const result = yield* createCategory(mock);
-      expect(result.id).toBeTruthy();
-    }),
-  );
-
-  effectIt.effect("should fail when key is missing", () =>
-    Effect.gen(function* () {
-      const invalidMock = { ...mock, key: "" };
-      const result = yield* Effect.exit(createCategory(invalidMock));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(MissingRequiredFieldsError);
-        }
-      }
-    }),
-  );
-
-  effectIt.effect("should fail when label is missing", () =>
-    Effect.gen(function* () {
-      const invalidMock = { ...mock, label: "" };
-      const result = yield* Effect.exit(createCategory(invalidMock));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(MissingRequiredFieldsError);
-        }
-      }
-    }),
-  );
-
-  effectIt.effect("should fail when icon is missing", () =>
-    Effect.gen(function* () {
-      const invalidMock = { ...mock, icon: "" };
-      const result = yield* Effect.exit(createCategory(invalidMock));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(MissingRequiredFieldsError);
-        }
-      }
-    }),
-  );
+  it("should create a category with an id", () => {
+    const result = createCategory(mock);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.id).toBeTruthy();
+    }
+  });
 });
 
 describe("updateCategory", () => {
-  effectIt.effect("should update the label of a category", () =>
-    Effect.gen(function* () {
-      const categories = mockCategories(5);
-      for (const category of categories) {
-        const newLabel = faker.word.words(3);
-        const result = yield* updateCategory(category, { label: newLabel });
-        expect(result.label).toBe(newLabel);
+  it("should update the label of a category", () => {
+    const categories = mockCategories(5);
+    for (const category of categories) {
+      const newLabel = faker.word.words(3);
+      const result = updateCategory(category, { label: newLabel });
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.label).toBe(newLabel);
       }
-    }),
-  );
+    }
+  });
 
-  effectIt.effect("should update the key of a category", () =>
-    Effect.gen(function* () {
-      const categories = mockCategories(5);
-      for (const category of categories) {
-        const newKey = faker.word.noun().toLowerCase();
-        const result = yield* updateCategory(category, { key: newKey });
-        expect(result.key).toBe(newKey);
-      }
-    }),
-  );
-
-  effectIt.effect("should update the icon of a category", () =>
-    Effect.gen(function* () {
-      const categories = mockCategories(5);
-      for (const category of categories) {
-        const newIcon = faker.internet.emoji();
-        const result = yield* updateCategory(category, { icon: newIcon });
-        expect(result.icon).toBe(newIcon);
-      }
-    }),
-  );
-
-  effectIt.effect("should update multiple fields at once", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory();
-      const newLabel = faker.word.words(2);
+  it("should update the key of a category", () => {
+    const categories = mockCategories(5);
+    for (const category of categories) {
       const newKey = faker.word.noun().toLowerCase();
+      const result = updateCategory(category, { key: newKey });
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.key).toBe(newKey);
+      }
+    }
+  });
+
+  it("should update the icon of a category", () => {
+    const categories = mockCategories(5);
+    for (const category of categories) {
       const newIcon = faker.internet.emoji();
-
-      const result = yield* updateCategory(category, {
-        label: newLabel,
-        key: newKey,
-        icon: newIcon,
-      });
-      expect(result.label).toBe(newLabel);
-      expect(result.key).toBe(newKey);
-      expect(result.icon).toBe(newIcon);
-    }),
-  );
-
-  effectIt.effect("should not modify fields that are not provided", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory();
-      const originalKey = category.key;
-      const originalIcon = category.icon;
-      const newLabel = faker.word.words(2);
-
-      const result = yield* updateCategory(category, { label: newLabel });
-      expect(result.label).toBe(newLabel);
-      expect(result.key).toBe(originalKey);
-      expect(result.icon).toBe(originalIcon);
-    }),
-  );
-
-  effectIt.effect("should fail when label is empty", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory();
-      const result = yield* Effect.exit(
-        updateCategory(category, { label: "" }),
-      );
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(InvalidCategoryLabelError);
-        }
+      const result = updateCategory(category, { icon: newIcon });
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.icon).toBe(newIcon);
       }
-    }),
-  );
+    }
+  });
 
-  effectIt.effect("should fail when label is only whitespace", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory();
-      const result = yield* Effect.exit(
-        updateCategory(category, { label: "   " }),
-      );
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(InvalidCategoryLabelError);
-        }
-      }
-    }),
-  );
+  it("should update multiple fields at once", () => {
+    const category = generateMockCategory();
+    const newLabel = faker.word.words(2);
+    const newKey = faker.word.noun().toLowerCase();
+    const newIcon = faker.internet.emoji();
 
-  effectIt.effect("should fail when key is empty", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory();
-      const result = yield* Effect.exit(updateCategory(category, { key: "" }));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(InvalidCategoryKeyError);
-        }
-      }
-    }),
-  );
+    const result = updateCategory(category, {
+      label: newLabel,
+      key: newKey,
+      icon: newIcon,
+    });
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.label).toBe(newLabel);
+      expect(result.value.key).toBe(newKey);
+      expect(result.value.icon).toBe(newIcon);
+    }
+  });
 
-  effectIt.effect("should fail when key is only whitespace", () =>
-    Effect.gen(function* () {
-      const category = generateMockCategory();
-      const result = yield* Effect.exit(
-        updateCategory(category, { key: "   " }),
-      );
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(InvalidCategoryKeyError);
-        }
-      }
-    }),
-  );
+  it("should not modify fields that are not provided", () => {
+    const category = generateMockCategory();
+    const originalKey = category.key;
+    const originalIcon = category.icon;
+    const newLabel = faker.word.words(2);
+
+    const result = updateCategory(category, { label: newLabel });
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.label).toBe(newLabel);
+      expect(result.value.key).toBe(originalKey);
+      expect(result.value.icon).toBe(originalIcon);
+    }
+  });
+
+  it("should fail when label is empty", () => {
+    const category = generateMockCategory();
+    const result = updateCategory(category, { label: "" });
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(InvalidCategoryLabelError);
+    }
+  });
+
+  it("should fail when label is only whitespace", () => {
+    const category = generateMockCategory();
+    const result = updateCategory(category, { label: "   " });
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(InvalidCategoryLabelError);
+    }
+  });
+
+  it("should fail when key is empty", () => {
+    const category = generateMockCategory();
+    const result = updateCategory(category, { key: "" });
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(InvalidCategoryKeyError);
+    }
+  });
+
+  it("should fail when key is only whitespace", () => {
+    const category = generateMockCategory();
+    const result = updateCategory(category, { key: "   " });
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(InvalidCategoryKeyError);
+    }
+  });
 });

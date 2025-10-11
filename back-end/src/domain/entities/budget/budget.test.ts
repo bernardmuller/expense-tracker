@@ -7,7 +7,6 @@ import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
   InvalidStartAmountError,
-  MissingRequiredFieldsError,
 } from "./budgetErrors";
 import {
   addToBudgetCurrentAmount,
@@ -42,18 +41,6 @@ describe("createBudget", () => {
       expect(result.value.name).toBe(mock.name);
       expect(result.value.startAmount).toBe(mock.startAmount);
       expect(result.value.userId).toBe(mock.userId);
-    }
-  });
-
-  it("should error with a list of fields if the create properties are not provided", () => {
-    //@ts-expect-error
-    const result = createBudget({});
-    expect(result.isErr()).toBe(true);
-    if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
-      expect(result.error).toMatchObject({
-        fields: ["userId", "name", "startAmount"],
-      });
     }
   });
 
@@ -106,23 +93,6 @@ describe("getBudgetSpentAmount", () => {
     }
   });
 
-  it("should throw if budget has no start or currentAmount", () => {
-    const result = getBudgetSpentAmount({
-      ...mock,
-      //@ts-expect-error: testing undefined edge-cases
-      currentAmount: undefined,
-      //@ts-expect-error: testing undefined edge-cases
-      startAmount: undefined,
-    });
-    expect(result.isErr()).toBe(true);
-    if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
-      expect(result.error).toMatchObject({
-        fields: ["startAmount", "currentAmount"],
-      });
-    }
-  });
-
   it("should handle currentAmount going into the negatives", () => {
     const result = getBudgetSpentAmount({
       ...mock,
@@ -152,23 +122,6 @@ describe("getBudgetSpentPercentage", () => {
     expect(expected.isOk()).toBe(true);
     if (result.isOk() && expected.isOk()) {
       expect(result.value).toBe(expected.value);
-    }
-  });
-
-  it("should throw if budget has no start or currentAmount", () => {
-    const result = getBudgetSpentPercentage({
-      ...mock,
-      //@ts-expect-error: testing undefined edge-cases
-      currentAmount: undefined,
-      //@ts-expect-error: testing undefined edge-cases
-      startAmount: undefined,
-    });
-    expect(result.isErr()).toBe(true);
-    if (result.isErr()) {
-      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
-      expect(result.error).toMatchObject({
-        fields: ["startAmount", "currentAmount"],
-      });
     }
   });
 
@@ -348,4 +301,3 @@ describe("subtractFromBudgetCurrentAmount", () => {
     }
   });
 });
-
