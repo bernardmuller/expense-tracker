@@ -1,57 +1,51 @@
 import type { CreateUserParams, User } from "@/domain/entities/user";
-import type { UserServiceShape } from "@/domain/use-cases/userService";
-import type { UserValidationError } from "@/domain/entities/user/userErrors";
-import type {
-  EntityCreateError,
-  EntityUpdateError,
-  EntityNotFoundError,
-} from "@/domain/errors/repositoryErrors";
 import * as UserEntity from "@/domain/entities/user";
-import { UserRepository } from "@/domain/repositories/userRepository";
-import { UserService } from "@/domain/use-cases/userService";
-import { Effect, Layer, pipe } from "effect";
+import type { UserRepository } from "@/domain/repositories/userRepository";
+import type { UserService } from "@/domain/use-cases/userService";
+import { mapToDomainUser } from "@/infrastructure/mappers/userMapper";
 
-export const userServiceLive = Layer.effect(
-  UserService,
-  pipe(
-    UserRepository,
-    Effect.map((userRepository) => {
-      const service: UserServiceShape = {
-        createUser: (params: CreateUserParams) =>
-          pipe(
-            UserEntity.createUser(params),
-            Effect.andThen(userRepository.create),
-          ),
-        getAllUsers: () => userRepository.read(),
-        markUserAsOnboarded: (user: User) =>
-          pipe(
-            UserEntity.markUserAsOnboarded(user),
-            Effect.andThen(userRepository.update),
-            Effect.catchTag("UserAlreadyOnboardedError", (error) =>
-              Effect.logError("User Already onboarded").pipe(
-                Effect.flatMap(() => Effect.fail(error)),
-              ),
-            ),
-          ),
-        markUserAsVerified: (user: User) =>
-          pipe(
-            UserEntity.markUserAsVerified(user),
-            Effect.andThen(userRepository.update),
-            Effect.catchTag("UserAlreadyOnboardedError", (error) =>
-              Effect.logError("User Already onboarded").pipe(
-                Effect.flatMap(() => Effect.fail(error)),
-              ),
-            ),
-          ),
-        updateUser: (user: User, params: User) =>
-          pipe(
-            UserEntity.updateUser(user, params),
-            Effect.andThen(userRepository.update),
-          ),
-        isUserFullySetup: (user: User) =>
-          Effect.sync(() => UserEntity.isUserFullySetup(user)),
-      };
-      return service;
-    }),
-  ),
-);
+export const createUserService = (
+  userRepository: UserRepository,
+): UserService => {
+  return {
+    createUser: (params: CreateUserParams) =>
+      // TODO: add a findByEmail here to see if the user with the email already exists
+      // Add a custom find to the userRepository
+      UserEntity.createUser(params).asyncAndThen((user) =>
+        userRepository.create(user),
+      ),
+
+    getAllUsers: () =>
+      userRepository.read().map((users) => users.map(mapToDomainUser)),
+
+    markUserAsOnboarded: (userId: string) =>
+      userRepository
+        .findById(userId)
+        .map(mapToDomainUser)
+        .andThen(UserEntity.markUserAsOnboarded)
+        .andThen((updatedUser) => userRepository.update(updatedUser))
+        .map(mapToDomainUser),
+
+    markUserAsVerified: (userId: string) =>
+      userRepository
+        .findById(userId)
+        .map(mapToDomainUser)
+        .andThen(UserEntity.markUserAsVerified)
+        .andThen((updatedUser) => userRepository.update(updatedUser))
+        .map(mapToDomainUser),
+
+    updateUser: (params: User) =>
+      userRepository
+        .findById(params.id)
+        .map(mapToDomainUser)
+        .andThen((user) => UserEntity.updateUser(user, params))
+        .andThen((updatedUser) => userRepository.update(updatedUser))
+        .map(mapToDomainUser),
+
+    isUserFullySetup: (userId: string) =>
+      userRepository
+        .findById(userId)
+        .map(mapToDomainUser)
+        .map((user) => UserEntity.isUserFullySetup(user)),
+  };
+};

@@ -15,21 +15,26 @@ export type ReadParams<Entity> = {
 
 export interface BaseRepository<Entity> {
   readonly create: (
-    entity: Entity,
+    entity: Partial<Entity>,
   ) => ResultAsync<Entity, InstanceType<typeof EntityCreateError>>;
   readonly read: (
     params?: ReadParams<Entity>,
   ) => ResultAsync<Entity[], InstanceType<typeof EntityReadError>>;
   readonly findById: (
     id: string,
-  ) => ResultAsync<Entity, InstanceType<typeof EntityNotFoundError> | InstanceType<typeof EntityReadError>>;
-  readonly update: (
-    entity: Entity,
   ) => ResultAsync<
     Entity,
-    InstanceType<typeof EntityUpdateError> | InstanceType<typeof EntityNotFoundError>
+    | InstanceType<typeof EntityNotFoundError>
+    | InstanceType<typeof EntityReadError>
+  >;
+  readonly update: (
+    entity: Partial<Entity> & { id: string },
+  ) => ResultAsync<
+    Entity,
+    | InstanceType<typeof EntityUpdateError>
+    | InstanceType<typeof EntityNotFoundError>
   >;
   readonly delete: (
-    entity: Entity,
+    entityId: string,
   ) => ResultAsync<boolean, InstanceType<typeof EntityDeleteError>>;
 }

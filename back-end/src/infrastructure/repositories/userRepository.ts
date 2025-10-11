@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/infrastructure/db";
 import { users } from "@/infrastructure/db/schema";
 import type { UserRepository } from "@/domain/repositories/userRepository";
-import type { User } from "@/infrastructure/db/schema";
+import type { User as DbUser } from "@/infrastructure/db/schema";
 import type { ReadParams } from "@/domain/repositories/baseRepository";
 import {
   EntityCreateError,
@@ -13,7 +13,7 @@ import {
   EntityUpdateError,
 } from "@/lib/errors/repositoryErrors";
 
-const create = (user: User) =>
+const create = (user: Partial<DbUser>) =>
   ResultAsync.fromPromise(
     (async () => {
       const [createdUser] = await db
@@ -32,7 +32,7 @@ const create = (user: User) =>
     (error) => new EntityCreateError("User", error),
   );
 
-const read = (_params?: ReadParams<User>) =>
+const read = (_params?: ReadParams<DbUser>) =>
   ResultAsync.fromPromise(
     (async () => {
       return await db.select().from(users);
@@ -50,7 +50,7 @@ const findById = (id: string) =>
     (error) => new EntityReadError("User", error),
   );
 
-const update = (user: User) =>
+const update = (user: Partial<DbUser> & { id: string }) =>
   ResultAsync.fromPromise(
     (async () => {
       const [updatedUser] = await db
@@ -70,10 +70,10 @@ const update = (user: User) =>
     (error) => new EntityUpdateError("User", error),
   );
 
-const deleteUser = (user: User) =>
+const deleteUser = (entityId: string) =>
   ResultAsync.fromPromise(
     (async () => {
-      await db.delete(users).where(eq(users.id, user.id));
+      await db.delete(users).where(eq(users.id, entityId));
       return true;
     })(),
     (error) => new EntityDeleteError("User", error),
