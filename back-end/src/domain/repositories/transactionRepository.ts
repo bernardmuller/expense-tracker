@@ -1,9 +1,9 @@
-import { Context, Effect } from "effect";
+import { Context } from "effect";
 import type { Transaction } from "@/domain/entities/transaction";
 import type { BaseRepositoryShape } from "./baseRepository";
 
 export interface TransactionRepositoryShape
-  extends BaseRepositoryShape<Transaction, Error, never, Error, never> {}
+  extends BaseRepositoryShape<Transaction> {}
 
 export class TransactionRepository extends Context.Tag(
   "domain/repositories/transactionRepository",

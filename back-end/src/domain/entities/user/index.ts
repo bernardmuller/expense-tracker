@@ -1,5 +1,6 @@
 import { Effect } from "effect";
 import {
+  type UserValidationError,
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./userErrors";
@@ -23,12 +24,10 @@ export const createUser = (params: CreateUserParams) =>
       ...params,
       emailVerified: false,
       onboarded: false,
-    };
+    } satisfies User;
   });
 
-export const markUserAsOnboarded = (
-  user: User,
-): Effect.Effect<User, UserAlreadyOnboardedError> =>
+export const markUserAsOnboarded = (user: User) =>
   Effect.gen(function* () {
     if (user.onboarded) {
       return yield* Effect.fail(
@@ -41,12 +40,10 @@ export const markUserAsOnboarded = (
     return {
       ...user,
       onboarded: true,
-    };
+    } satisfies User;
   });
 
-export const markUserAsVerified = (
-  user: User,
-): Effect.Effect<User, UserAlreadyVerifiedError> =>
+export const markUserAsVerified = (user: User) =>
   Effect.gen(function* () {
     if (user.emailVerified) {
       return yield* Effect.fail(
@@ -62,10 +59,7 @@ export const markUserAsVerified = (
     };
   });
 
-export const updateUser = (
-  user: User,
-  updatedUser: User,
-): Effect.Effect<User, never> =>
+export const updateUser = (user: User, updatedUser: User) =>
   Effect.gen(function* () {
     return {
       ...user,
@@ -73,5 +67,5 @@ export const updateUser = (
     };
   });
 
-export const isUserFullySetup = (user: User): boolean =>
+export const isUserFullySetup = (user: User) =>
   user.onboarded && user.emailVerified;
