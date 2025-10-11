@@ -1,9 +1,13 @@
-export class InvalidAllocatedAmountError extends Error {
-  readonly _tag = "InvalidAllocatedAmountError";
-  constructor(public amount: number) {
-    super(`Invalid allocated amount: ${amount}`);
-    this.name = "InvalidAllocatedAmountError";
-  }
-}
+import { createError } from "@/lib/utils/createError";
 
-export type CategoryBudgetValidationError = InvalidAllocatedAmountError;
+export const InvalidAllocatedAmountError = createError<
+  "InvalidAllocatedAmountError",
+  number
+>(
+  "InvalidAllocatedAmountError",
+  (amount) => `Invalid allocated amount: ${amount}`,
+);
+
+export type CategoryBudgetValidationError = InstanceType<
+  typeof InvalidAllocatedAmountError
+>;

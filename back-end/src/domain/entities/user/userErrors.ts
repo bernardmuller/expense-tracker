@@ -1,19 +1,15 @@
-export class UserAlreadyOnboardedError extends Error {
-  readonly _tag = "UserAlreadyOnboardedError";
-  constructor(public userId: string) {
-    super(`User ${userId} is already onboarded`);
-    this.name = "UserAlreadyOnboardedError";
-  }
-}
+import { createError } from "@/lib/utils/createError";
 
-export class UserAlreadyVerifiedError extends Error {
-  readonly _tag = "UserAlreadyVerifiedError";
-  constructor(public userId: string) {
-    super(`User ${userId} is already verified`);
-    this.name = "UserAlreadyVerifiedError";
-  }
-}
+export const UserAlreadyOnboardedError = createError(
+  "UserAlreadyOnboardedError",
+  (userId: string) => `User ${userId} is already onboarded`,
+);
+
+export const UserAlreadyVerifiedError = createError(
+  "UserAlreadyVerifiedError",
+  (userId: string) => `User ${userId} is already verified`,
+);
 
 export type UserValidationError =
-  | UserAlreadyOnboardedError
-  | UserAlreadyVerifiedError;
+  | InstanceType<typeof UserAlreadyOnboardedError>
+  | InstanceType<typeof UserAlreadyVerifiedError>;
