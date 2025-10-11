@@ -1,10 +1,4 @@
-import { Context } from "effect";
 import type { Transaction } from "@/domain/entities/transaction";
-import type { BaseRepositoryShape } from "./baseRepository";
+import type { BaseRepository } from "./baseRepository";
 
-export interface TransactionRepositoryShape
-  extends BaseRepositoryShape<Transaction> {}
-
-export class TransactionRepository extends Context.Tag(
-  "domain/repositories/transactionRepository",
-)<TransactionRepository, TransactionRepositoryShape>() {}
+export interface TransactionRepository extends BaseRepository<Transaction> {}

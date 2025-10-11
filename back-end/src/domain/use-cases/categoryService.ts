@@ -3,26 +3,15 @@ import type {
   CreateCategoryParams,
   UpdateCategoryParams,
 } from "@/domain/entities/category";
-import type {
-  InvalidCategoryKeyError,
-  InvalidCategoryLabelError,
-  MissingRequiredFieldsError,
-} from "@/domain/entities/category/categoryErrors";
-import { Context, Effect } from "effect";
+import type { CategoryValidationError } from "@/domain/entities/category/categoryErrors";
+import type { Result } from "neverthrow";
 
-export interface CategoryServiceShape {
+export interface CategoryService {
   readonly createCategory: (
     params: CreateCategoryParams,
-  ) => Effect.Effect<Category, MissingRequiredFieldsError>;
+  ) => Result<Category, CategoryValidationError>;
   readonly updateCategory: (
     category: Category,
     params: UpdateCategoryParams,
-  ) => Effect.Effect<
-    Category,
-    InvalidCategoryLabelError | InvalidCategoryKeyError
-  >;
+  ) => Result<Category, CategoryValidationError>;
 }
-
-export class CategoryService extends Context.Tag(
-  "domain/use-cases/categoryService",
-)<CategoryService, CategoryServiceShape>() {}

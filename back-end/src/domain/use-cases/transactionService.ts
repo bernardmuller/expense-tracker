@@ -7,30 +7,32 @@ import type {
   EntityCreateError,
   EntityNotFoundError,
   EntityUpdateError,
-} from "@/domain/errors/repositoryErrors";
-import { Context, Effect } from "effect";
+} from "@/lib/errors/repositoryErrors";
+import type { Result } from "neverthrow";
 
-export interface TransactionServiceShape {
-  // createTransaction can fail with validation errors OR repository errors (auto-propagated)
+export interface TransactionService {
   readonly createTransaction: (
     params: CreateTransactionParams,
-  ) => Effect.Effect<Transaction, TransactionError | EntityCreateError>;
+  ) => Result<
+    Transaction,
+    TransactionError | InstanceType<typeof EntityCreateError>
+  >;
 
-  // updateTransaction can fail with validation errors OR update/not-found errors (auto-propagated)
   readonly updateTransaction: (
     transaction: Transaction,
     params: Transaction,
-  ) => Effect.Effect<Transaction, TransactionError | EntityUpdateError | EntityNotFoundError>;
+  ) => Result<
+    Transaction,
+    | TransactionError
+    | InstanceType<typeof EntityUpdateError>
+    | InstanceType<typeof EntityNotFoundError>
+  >;
 
   readonly isExpenseTransaction: (
     transaction: Transaction,
-  ) => Effect.Effect<boolean, never>;
+  ) => Result<boolean, never>;
 
   readonly isIncomeTransaction: (
     transaction: Transaction,
-  ) => Effect.Effect<boolean, never>;
+  ) => Result<boolean, never>;
 }
-
-export class TransactionService extends Context.Tag(
-  "domain/use-cases/transactionService",
-)<TransactionService, TransactionServiceShape>() {}

@@ -1,16 +1,12 @@
-import { Context, Effect } from "effect";
 import type {
   CreateUserCategoryParams,
   UserCategory,
 } from "@/domain/entities/userCategory";
-import type { MissingRequiredFieldsError } from "@/domain/entities/userCategory/userCategoryErrors";
+import type { UserCategoryError } from "@/domain/entities/userCategory/userCategoryErrors";
+import type { Result } from "neverthrow";
 
-export interface UserCategoryServiceShape {
+export interface UserCategoryService {
   readonly createUserCategory: (
     params: CreateUserCategoryParams,
-  ) => Effect.Effect<UserCategory, MissingRequiredFieldsError>;
+  ) => Result<UserCategory, UserCategoryError>;
 }
-
-export class UserCategoryService extends Context.Tag(
-  "domain/use-cases/userCategoryService",
-)<UserCategoryService, UserCategoryServiceShape>() {}
