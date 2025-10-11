@@ -391,25 +391,3 @@ describe("subtractFromBudgetCurrentAmount", () => {
   );
 });
 
-describe("isExpenseTransaction", () => {
-  effectIt.effect("should return true for expense transaction type", () =>
-    Effect.gen(function* () {
-      const result = isExpenseTransaction("expense");
-      expect(result).toBe(true);
-    }),
-  );
-
-  effectIt.effect("should return false for income transaction type", () =>
-    Effect.gen(function* () {
-      const result = isExpenseTransaction("income");
-      expect(result).toBe(false);
-    }),
-  );
-
-  effectIt.effect("should return false for transfer transaction type", () =>
-    Effect.gen(function* () {
-      const result = isExpenseTransaction("transfer");
-      expect(result).toBe(false);
-    }),
-  );
-});

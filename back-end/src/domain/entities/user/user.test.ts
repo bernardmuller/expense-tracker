@@ -17,8 +17,9 @@ import {
 } from "./userErrors";
 
 describe("createUser", () => {
-  effectIt.effect("should create a user", () =>
-    Effect.gen(function* () {
+  it("should create a user", () =>
+    {
+
       const mockParams: CreateUserParams = {
         email: "john@doe.com",
         name: "John",
@@ -28,6 +29,7 @@ describe("createUser", () => {
       expect(result.onboarded).toBe(false);
       expect(result.emailVerified).toBe(false);
     }),
+  }
   );
 });
 
