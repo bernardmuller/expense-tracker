@@ -5,16 +5,12 @@ import {
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
-} from "@/domain/errors/repositoryErrors";
+} from "@/lib/errors/repositoryErrors";
 import {
-  MissingRequiredFieldsError as UserMissingFieldsError,
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "@/domain/entities/user/userErrors";
-import {
-  InvalidTransactionUpdateError,
-  MissingRequiredFieldsError as TransactionMissingFieldsError,
-} from "@/domain/entities/transaction/transactionErrors";
+import { InvalidTransactionUpdateError } from "@/domain/entities/transaction/transactionErrors";
 import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
@@ -22,20 +18,14 @@ import {
   BudgetNotFoundError,
   InvalidBudgetNameError,
   InvalidStartAmountError,
-  MissingRequiredFieldsError as BudgetMissingFieldsError,
 } from "@/domain/entities/budget/budgetErrors";
 
-/**
- * Maps application errors to HTTP responses
- * This centralizes error handling and ensures consistent error responses
- */
 export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
-  // Repository Errors
   if (error instanceof EntityNotFoundError) {
     return c.json(
       {
         error: "Not Found",
-        message: error.message || `${error.entityType} with id ${error.id} not found`,
+        message: error.message,
         code: "ENTITY_NOT_FOUND",
       },
       404,
@@ -46,7 +36,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Failed to Create",
-        message: error.message || `Failed to create ${error.entityType}`,
+        message: error.message,
         code: "ENTITY_CREATE_ERROR",
       },
       500,
@@ -57,7 +47,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Failed to Update",
-        message: error.message || `Failed to update ${error.entityType}`,
+        message: error.message,
         code: "ENTITY_UPDATE_ERROR",
       },
       500,
@@ -68,7 +58,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Failed to Delete",
-        message: error.message || `Failed to delete ${error.entityType}`,
+        message: error.message,
         code: "ENTITY_DELETE_ERROR",
       },
       500,
@@ -79,23 +69,10 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Failed to Read",
-        message: error.message || `Failed to read ${error.entityType}`,
+        message: error.message,
         code: "ENTITY_READ_ERROR",
       },
       500,
-    );
-  }
-
-  // User Validation Errors
-  if (error instanceof UserMissingFieldsError) {
-    return c.json(
-      {
-        error: "Validation Error",
-        message: "Missing required fields",
-        fields: error.fields,
-        code: "MISSING_REQUIRED_FIELDS",
-      },
-      400,
     );
   }
 
@@ -103,7 +80,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `User ${error.userId} is already onboarded`,
+        message: error.message,
         code: "USER_ALREADY_ONBOARDED",
       },
       400,
@@ -114,21 +91,8 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `User ${error.userId} is already verified`,
+        message: error.message,
         code: "USER_ALREADY_VERIFIED",
-      },
-      400,
-    );
-  }
-
-  // Transaction Validation Errors
-  if (error instanceof TransactionMissingFieldsError) {
-    return c.json(
-      {
-        error: "Validation Error",
-        message: "Missing required fields",
-        fields: error.fields,
-        code: "MISSING_REQUIRED_FIELDS",
       },
       400,
     );
@@ -138,21 +102,8 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `Invalid transaction update: ${error.reason}`,
+        message: error.message,
         code: "INVALID_TRANSACTION_UPDATE",
-      },
-      400,
-    );
-  }
-
-  // Budget Validation Errors
-  if (error instanceof BudgetMissingFieldsError) {
-    return c.json(
-      {
-        error: "Validation Error",
-        message: "Missing required fields",
-        fields: error.fields,
-        code: "MISSING_REQUIRED_FIELDS",
       },
       400,
     );
@@ -162,7 +113,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `Invalid start amount: ${error.amount}`,
+        message: error.message,
         code: "INVALID_START_AMOUNT",
       },
       400,
@@ -173,7 +124,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `Invalid budget name: ${error.name}`,
+        message: error.message,
         code: "INVALID_BUDGET_NAME",
       },
       400,
@@ -184,7 +135,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `Budget ${error.budgetId} is already active`,
+        message: error.message,
         code: "BUDGET_ALREADY_ACTIVE",
       },
       400,
@@ -195,7 +146,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `Budget ${error.budgetId} is already inactive`,
+        message: error.message,
         code: "BUDGET_ALREADY_INACTIVE",
       },
       400,
@@ -206,7 +157,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Validation Error",
-        message: `Budget ${error.id} is not active`,
+        message: error.message,
         code: "BUDGET_NOT_ACTIVE",
       },
       400,
@@ -217,7 +168,7 @@ export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
     return c.json(
       {
         error: "Not Found",
-        message: `Budget with id ${error.id} not found`,
+        message: error.message,
         code: "BUDGET_NOT_FOUND",
       },
       404,

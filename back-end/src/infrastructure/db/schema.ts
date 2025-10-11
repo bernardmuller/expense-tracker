@@ -1,4 +1,14 @@
-import { boolean, decimal, pgTable, text, timestamp, varchar, serial, integer, unique } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  decimal,
+  pgTable,
+  text,
+  timestamp,
+  varchar,
+  serial,
+  integer,
+  unique,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
@@ -72,10 +82,17 @@ export const budgets = pgTable("budgets", {
     .references(() => users.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
   startAmount: decimal("start_amount", { precision: 10, scale: 2 }).notNull(),
-  currentAmount: decimal("current_amount", { precision: 10, scale: 2 }).notNull(),
+  currentAmount: decimal("current_amount", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
-  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
-  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
   deletedAt: timestamp("deleted_at"),
 });
 
@@ -84,27 +101,39 @@ export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
   key: varchar("key", { length: 50 }).notNull().unique(),
   label: varchar("label", { length: 100 }).notNull(),
-  icon: varchar("icon", { length: 10 }).default('').notNull(),
-  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
-  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  icon: varchar("icon", { length: 10 }).default("").notNull(),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
   deletedAt: timestamp("deleted_at"),
 });
 
 // User categories junction table
-export const userCategories = pgTable("user_categories", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  categoryId: integer("category_id")
-    .notNull()
-    .references(() => categories.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
-  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
-  deletedAt: timestamp("deleted_at"),
-}, (table) => ({
-  uniqueUserCategory: unique().on(table.userId, table.categoryId),
-}));
+export const userCategories = pgTable(
+  "user_categories",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    categoryId: integer("category_id")
+      .notNull()
+      .references(() => categories.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (table) => ({
+    uniqueUserCategory: unique().on(table.userId, table.categoryId),
+  }),
+);
 
 // Category budgets junction table
 export const categoryBudgets = pgTable("category_budgets", {
@@ -115,9 +144,16 @@ export const categoryBudgets = pgTable("category_budgets", {
   categoryId: integer("category_id")
     .notNull()
     .references(() => categories.id, { onDelete: "cascade" }),
-  allocatedAmount: decimal("allocated_amount", { precision: 10, scale: 2 }).notNull(),
-  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
-  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  allocatedAmount: decimal("allocated_amount", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
   deletedAt: timestamp("deleted_at"),
 });
 
@@ -130,8 +166,12 @@ export const expenses = pgTable("expenses", {
   description: varchar("description", { length: 255 }).notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   category: varchar("category", { length: 50 }).notNull(),
-  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
-  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()).notNull(),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
   deletedAt: timestamp("deleted_at"),
 });
 
@@ -173,18 +213,22 @@ export const userCategoryRelations = relations(userCategories, ({ one }) => ({
   }),
 }));
 
-export const categoryBudgetRelations = relations(categoryBudgets, ({ one }) => ({
-  budget: one(budgets, {
-    fields: [categoryBudgets.budgetId],
-    references: [budgets.id],
+export const categoryBudgetRelations = relations(
+  categoryBudgets,
+  ({ one }) => ({
+    budget: one(budgets, {
+      fields: [categoryBudgets.budgetId],
+      references: [budgets.id],
+    }),
+    category: one(categories, {
+      fields: [categoryBudgets.categoryId],
+      references: [categories.id],
+    }),
   }),
-  category: one(categories, {
-    fields: [categoryBudgets.categoryId],
-    references: [categories.id],
-  }),
-}));
+);
 
 // Types
+export type User = typeof users.$inferSelect;
 export type Budget = typeof budgets.$inferSelect;
 export type NewBudget = typeof budgets.$inferInsert;
 export type Expense = typeof expenses.$inferSelect;
