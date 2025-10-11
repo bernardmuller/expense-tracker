@@ -1,7 +1,5 @@
-import { it as effectIt } from "@effect/vitest";
 import { faker } from "@faker-js/faker";
-import { Effect, Exit } from "effect";
-import { beforeEach, describe, expect } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   generateMockCategoryBudget,
   mockCategoryBudgets,
@@ -27,96 +25,71 @@ describe("createCategoryBudget", () => {
     };
   });
 
-  effectIt.effect(
-    "should create a categoryBudget with the provided properties",
-    () =>
-      Effect.gen(function* () {
-        const result = yield* createCategoryBudget(mock);
-        expect(result.budgetId).toBe(mock.budgetId);
-        expect(result.categoryId).toBe(mock.categoryId);
-        expect(result.allocatedAmount).toBe(mock.allocatedAmount);
-      }),
-  );
+  it("should create a categoryBudget with the provided properties", () => {
+    const result = createCategoryBudget(mock);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.budgetId).toBe(mock.budgetId);
+      expect(result.value.categoryId).toBe(mock.categoryId);
+      expect(result.value.allocatedAmount).toBe(mock.allocatedAmount);
+    }
+  });
 
-  effectIt.effect("should create a categoryBudget with an id", () =>
-    Effect.gen(function* () {
-      const result = yield* createCategoryBudget(mock);
-      expect(result.id).toBeTruthy();
-    }),
-  );
+  it("should create a categoryBudget with an id", () => {
+    const result = createCategoryBudget(mock);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.id).toBeTruthy();
+    }
+  });
 
-  effectIt.effect("should fail when budgetId is missing", () =>
-    Effect.gen(function* () {
-      const invalidMock = { ...mock, budgetId: "" };
-      const result = yield* Effect.exit(createCategoryBudget(invalidMock));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(MissingRequiredFieldsError);
-        }
-      }
-    }),
-  );
+  it("should fail when budgetId is missing", () => {
+    const invalidMock = { ...mock, budgetId: "" };
+    const result = createCategoryBudget(invalidMock);
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
+    }
+  });
 
-  effectIt.effect("should fail when categoryId is missing", () =>
-    Effect.gen(function* () {
-      const invalidMock = { ...mock, categoryId: "" };
-      const result = yield* Effect.exit(createCategoryBudget(invalidMock));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(MissingRequiredFieldsError);
-        }
-      }
-    }),
-  );
+  it("should fail when categoryId is missing", () => {
+    const invalidMock = { ...mock, categoryId: "" };
+    const result = createCategoryBudget(invalidMock);
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(MissingRequiredFieldsError);
+    }
+  });
 
-  effectIt.effect("should fail when allocatedAmount is negative", () =>
-    Effect.gen(function* () {
-      const invalidMock = { ...mock, allocatedAmount: -100 };
-      const result = yield* Effect.exit(createCategoryBudget(invalidMock));
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(
-            InvalidAllocatedAmountError,
-          );
-        }
-      }
-    }),
-  );
+  it("should fail when allocatedAmount is negative", () => {
+    const invalidMock = { ...mock, allocatedAmount: -100 };
+    const result = createCategoryBudget(invalidMock);
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(InvalidAllocatedAmountError);
+    }
+  });
 });
 
 describe("updateAllocatedAmount", () => {
-  effectIt.effect("should update the allocated amount", () =>
-    Effect.gen(function* () {
-      const categoryBudgets = mockCategoryBudgets(5);
-      for (const categoryBudget of categoryBudgets) {
-        const newAmount = faker.number.float({ min: 0, max: 10000 });
-        const result = yield* updateAllocatedAmount(categoryBudget, newAmount);
-        expect(result.allocatedAmount).toBe(newAmount);
+  it("should update the allocated amount", () => {
+    const categoryBudgets = mockCategoryBudgets(5);
+    for (const categoryBudget of categoryBudgets) {
+      const newAmount = faker.number.float({ min: 0, max: 10000 });
+      const result = updateAllocatedAmount(categoryBudget, newAmount);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.allocatedAmount).toBe(newAmount);
       }
-    }),
-  );
+    }
+  });
 
-  effectIt.effect("should fail when amount is negative", () =>
-    Effect.gen(function* () {
-      const categoryBudget = generateMockCategoryBudget();
-      const result = yield* Effect.exit(
-        updateAllocatedAmount(categoryBudget, -100),
-      );
-      expect(Exit.isFailure(result)).toBe(true);
-      if (Exit.isFailure(result)) {
-        expect(result.cause._tag).toBe("Fail");
-        if (result.cause._tag === "Fail") {
-          expect(result.cause.error).toBeInstanceOf(
-            InvalidAllocatedAmountError,
-          );
-        }
-      }
-    }),
-  );
+  it("should fail when amount is negative", () => {
+    const categoryBudget = generateMockCategoryBudget();
+    const result = updateAllocatedAmount(categoryBudget, -100);
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error).toBeInstanceOf(InvalidAllocatedAmountError);
+    }
+  });
 });
