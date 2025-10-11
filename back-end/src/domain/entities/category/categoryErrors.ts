@@ -1,19 +1,15 @@
-export class InvalidCategoryLabelError extends Error {
-  readonly _tag = "InvalidCategoryLabelError";
-  constructor(public label: string) {
-    super(`Invalid category label: ${label}`);
-    this.name = "InvalidCategoryLabelError";
-  }
-}
+import { createError } from "@/lib/utils/createError";
 
-export class InvalidCategoryKeyError extends Error {
-  readonly _tag = "InvalidCategoryKeyError";
-  constructor(public key: string) {
-    super(`Invalid category key: ${key}`);
-    this.name = "InvalidCategoryKeyError";
-  }
-}
+export const InvalidCategoryLabelError = createError(
+  "InvalidCategoryLabelError",
+  (label: string) => `Invalid category label: ${label}`,
+);
+
+export const InvalidCategoryKeyError = createError(
+  "InvalidCategoryKeyError",
+  (key: string) => `Invalid category key: ${key}`,
+);
 
 export type CategoryValidationError =
-  | InvalidCategoryLabelError
-  | InvalidCategoryKeyError;
+  | InstanceType<typeof InvalidCategoryLabelError>
+  | InstanceType<typeof InvalidCategoryKeyError>;
