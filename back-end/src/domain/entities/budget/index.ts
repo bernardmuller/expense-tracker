@@ -1,6 +1,6 @@
 import { calculatePercentage } from "@/lib/utils/calculatePercentage";
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { Effect } from "effect";
+import { err, ok } from "neverthrow";
 import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
@@ -25,154 +25,133 @@ export type CreateBudgetParams = Omit<
   "id" | "isActive" | "currentAmount"
 >;
 
-export const createBudget = (
-  params: CreateBudgetParams,
-): Effect.Effect<Budget, BudgetValidationError> =>
-  Effect.gen(function* () {
-    const missingFields: string[] = [];
-    if (!params.userId) missingFields.push("userId");
-    if (!params.name) missingFields.push("name");
-    if (params.startAmount === undefined) missingFields.push("startAmount");
+export const createBudget = (params: CreateBudgetParams) => {
+  const missingFields: string[] = [];
+  if (!params.userId) missingFields.push("userId");
+  if (!params.name) missingFields.push("name");
+  if (params.startAmount === undefined) missingFields.push("startAmount");
 
-    if (missingFields.length > 0) {
-      return yield* Effect.fail(
-        new MissingRequiredFieldsError({
-          fields: missingFields,
-        }),
-      );
-    }
-
-    if (params.startAmount < 0) {
-      return yield* Effect.fail(
-        new InvalidStartAmountError({ amount: params.startAmount }),
-      );
-    }
-
-    const uuid = yield* Effect.sync(() => generateUuid());
-
-    return {
-      ...params,
-      id: uuid,
-      isActive: false,
-      currentAmount: params.startAmount,
-    };
-  });
-
-export const getBudgetSpentAmount = (
-  budget: Budget,
-): Effect.Effect<number, BudgetValidationError> =>
-  Effect.gen(function* () {
-    const missingFields: string[] = [];
-    if (!budget.startAmount) missingFields.push("startAmount");
-    if (!budget.currentAmount) missingFields.push("currentAmount");
-
-    if (missingFields.length > 0)
-      return yield* Effect.fail(
-        new MissingRequiredFieldsError({
-          fields: missingFields,
-        }),
-      );
-
-    const spent = yield* Effect.sync(
-      () => budget.startAmount - budget.currentAmount,
+  if (missingFields.length > 0) {
+    return err(
+      new MissingRequiredFieldsError({
+        fields: missingFields,
+      }),
     );
+  }
 
-    return spent;
+  if (params.startAmount < 0) {
+    return err(new InvalidStartAmountError({ amount: params.startAmount }));
+  }
+
+  const uuid = generateUuid();
+
+  return ok({
+    ...params,
+    id: uuid,
+    isActive: false,
+    currentAmount: params.startAmount,
   });
+};
 
-export const getBudgetSpentPercentage = (
-  budget: Budget,
-): Effect.Effect<
-  string,
-  | BudgetValidationError
-  | import("@/lib/utils/calculatePercentage").PercentageCalculationError
-> =>
-  Effect.gen(function* () {
-    const missingFields: string[] = [];
-    if (!budget.startAmount) missingFields.push("startAmount");
-    if (!budget.currentAmount) missingFields.push("currentAmount");
+export const getBudgetSpentAmount = (budget: Budget) => {
+  const missingFields: string[] = [];
+  if (!budget.startAmount) missingFields.push("startAmount");
+  if (!budget.currentAmount) missingFields.push("currentAmount");
 
-    if (missingFields.length > 0)
-      return yield* Effect.fail(
-        new MissingRequiredFieldsError({
-          fields: missingFields,
-        }),
-      );
-
-    const percentage = yield* calculatePercentage(
-      budget.startAmount - budget.currentAmount,
-      budget.startAmount,
+  if (missingFields.length > 0) {
+    return err(
+      new MissingRequiredFieldsError({
+        fields: missingFields,
+      }),
     );
+  }
 
-    return percentage;
-  });
+  const spent = budget.startAmount - budget.currentAmount;
 
-export const setBudgetActive = (budget: Budget) =>
-  Effect.gen(function* () {
-    if (budget.isActive)
-      return yield* Effect.fail(
-        new BudgetAlreadyActiveError({
-          budgetId: budget.id,
-        }),
-      );
-    return {
-      ...budget,
-      isActive: true,
-    };
-  });
+  return ok(spent);
+};
 
-export const setBudgetInactive = (budget: Budget) =>
-  Effect.gen(function* () {
-    if (!budget.isActive)
-      return yield* Effect.fail(
-        new BudgetAlreadyInActiveError({
-          budgetId: budget.id,
-        }),
-      );
-    return {
-      ...budget,
-      isActive: false,
-    };
+export const getBudgetSpentPercentage = (budget: Budget) => {
+  const missingFields: string[] = [];
+  if (!budget.startAmount) missingFields.push("startAmount");
+  if (!budget.currentAmount) missingFields.push("currentAmount");
+
+  if (missingFields.length > 0) {
+    return err(
+      new MissingRequiredFieldsError({
+        fields: missingFields,
+      }),
+    );
+  }
+
+  const percentageResult = calculatePercentage(
+    budget.startAmount - budget.currentAmount,
+    budget.startAmount,
+  );
+
+  return percentageResult;
+};
+
+export const setBudgetActive = (budget: Budget) => {
+  if (budget.isActive) {
+    return err(
+      new BudgetAlreadyActiveError({
+        budgetId: budget.id,
+      }),
+    );
+  }
+  return ok({
+    ...budget,
+    isActive: true,
   });
+};
+
+export const setBudgetInactive = (budget: Budget) => {
+  if (!budget.isActive) {
+    return err(
+      new BudgetAlreadyInActiveError({
+        budgetId: budget.id,
+      }),
+    );
+  }
+  return ok({
+    ...budget,
+    isActive: false,
+  });
+};
 
 export const isBudgetActive = (budget: Budget): boolean => budget.isActive;
 
 export const isBudgetOverbudget = (budget: Budget): boolean =>
   budget.currentAmount < 0;
 
-export const updateBudgetName = (
-  budget: Budget,
-  name: string,
-): Effect.Effect<Budget, BudgetValidationError> =>
-  Effect.gen(function* () {
-    if (!name || name.trim() === "") {
-      return yield* Effect.fail(
-        new InvalidBudgetNameError({
-          name,
-        }),
-      );
-    }
-    return {
-      ...budget,
-      name,
-    };
+export const updateBudgetName = (budget: Budget, name: string) => {
+  if (!name || name.trim() === "") {
+    return err(
+      new InvalidBudgetNameError({
+        name,
+      }),
+    );
+  }
+  return ok({
+    ...budget,
+    name,
   });
+};
 
-export const addToBudgetCurrentAmount = (budget: Budget, amount: number) =>
-  Effect.gen(function* () {
-    return {
-      ...budget,
-      currentAmount: budget.currentAmount + amount,
-    };
+export const addToBudgetCurrentAmount = (budget: Budget, amount: number) => {
+  return ok({
+    ...budget,
+    currentAmount: budget.currentAmount + amount,
   });
+};
 
 export const subtractFromBudgetCurrentAmount = (
   budget: Budget,
   amount: number,
-) =>
-  Effect.gen(function* () {
-    return {
-      ...budget,
-      currentAmount: budget.currentAmount - amount,
-    };
+) => {
+  return ok({
+    ...budget,
+    currentAmount: budget.currentAmount - amount,
   });
+};
