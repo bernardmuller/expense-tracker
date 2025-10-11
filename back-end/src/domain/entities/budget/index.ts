@@ -4,7 +4,6 @@ import { err, ok } from "neverthrow";
 import {
   BudgetAlreadyActiveError,
   BudgetAlreadyInActiveError,
-  type BudgetValidationError,
   InvalidBudgetNameError,
   InvalidStartAmountError,
 } from "./budgetErrors";

@@ -1,9 +1,10 @@
-export class InvalidTransactionUpdateError extends Error {
-  readonly _tag = "InvalidTransactionUpdateError";
-  constructor(public reason: string) {
-    super(`Invalid transaction update: ${reason}`);
-    this.name = "InvalidTransactionUpdateError";
-  }
-}
+import { createError } from "@/lib/utils/createError";
 
-export type TransactionError = InvalidTransactionUpdateError;
+export const InvalidTransactionUpdateError = createError(
+  "InvalidTransactionUpdateError",
+  (reason: string) => `Invalid transaction update: ${reason}`,
+);
+
+export type TransactionError = InstanceType<
+  typeof InvalidTransactionUpdateError
+>;

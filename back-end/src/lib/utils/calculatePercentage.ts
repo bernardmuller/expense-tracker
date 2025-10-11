@@ -1,23 +1,8 @@
 import { err, ok } from "neverthrow";
-
-export class DivideByZeroError extends Error {
-  readonly _tag = "DivideByZeroError";
-  constructor() {
-    super("Cannot divide by zero");
-    this.name = "DivideByZeroError";
-  }
-}
-
-export class PercentageCalculationError extends Error {
-  readonly _tag = "PercentageCalculationError";
-  constructor(
-    public cause: unknown,
-    message: string,
-  ) {
-    super(message);
-    this.name = "PercentageCalculationError";
-  }
-}
+import {
+  DivideByZeroError,
+  PercentageCalculationError,
+} from "../errors/utilityErrors";
 
 export const calculatePercentage = (value: number, target: number) => {
   try {
@@ -25,7 +10,7 @@ export const calculatePercentage = (value: number, target: number) => {
     return ok(((value / target) * 100).toFixed(1));
   } catch (error) {
     return err(
-      new PercentageCalculationError(error, "Failed to calculate percentage"),
+      new PercentageCalculationError("Failed to calculate percentage"),
     );
   }
 };
