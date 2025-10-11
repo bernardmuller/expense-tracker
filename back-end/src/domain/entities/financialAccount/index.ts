@@ -1,6 +1,5 @@
 import type { FinancialAccountType } from "../enums/financialAccountType";
 import {
-  MissingRequiredFieldsError,
   InvalidFinancialAccountNameError,
   InvalidCurrentAmountError,
   FinancialAccountTypeAlreadySetError,
