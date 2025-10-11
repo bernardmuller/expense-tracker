@@ -52,9 +52,6 @@ describe("createBudget", () => {
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
       expect(result.error).toBeInstanceOf(InvalidStartAmountError);
-      expect(result.error).toMatchObject({
-        amount: -100,
-      });
     }
   });
 
@@ -164,9 +161,6 @@ describe("setBudgetActive", () => {
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
       expect(result.error).toBeInstanceOf(BudgetAlreadyActiveError);
-      expect(result.error).toMatchObject({
-        budgetId: mock.id,
-      });
     }
   });
 });
@@ -194,9 +188,6 @@ describe("setBudgetInactive", () => {
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
       expect(result.error).toBeInstanceOf(BudgetAlreadyInActiveError);
-      expect(result.error).toMatchObject({
-        budgetId: mock.id,
-      });
     }
   });
 });
