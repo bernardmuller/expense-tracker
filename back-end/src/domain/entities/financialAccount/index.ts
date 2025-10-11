@@ -45,7 +45,6 @@ export const updateFinancialAccount = (
   ) {
     return err(new InvalidFinancialAccountNameError(params.name));
   }
-
   return ok({
     ...financialAccount,
     ...(params.name !== undefined && { name: params.name }),

@@ -1,16 +1,9 @@
 import { err, ok } from "neverthrow";
+import { InvalidDecimalNumberStringError } from "../errors/utilityErrors";
 
 const floatRegex = /^-?\d+(\.\d+)?$/;
-
-export class InvalidDecimalNumberString extends Error {
-  readonly _tag = "InvalidDecimalNumberString";
-  constructor() {
-    super("Invalid decimal number string");
-    this.name = "InvalidDecimalNumberString";
-  }
-}
 
 export const getNumberOfDecimalPlaces = (value: string) =>
   floatRegex.test(value)
     ? ok(value.split(".")[1]?.length ?? 0)
-    : err(new InvalidDecimalNumberString());
+    : err(new InvalidDecimalNumberStringError());

@@ -1,57 +1,41 @@
-export class InvalidStartAmountError extends Error {
-  readonly _tag = "InvalidStartAmountError";
-  constructor(public amount: number) {
-    super(`Invalid start amount: ${amount}`);
-    this.name = "InvalidStartAmountError";
-  }
-}
+import { createError } from "@/lib/utils/createError";
 
-export class BudgetAlreadyActiveError extends Error {
-  readonly _tag = "BudgetAlreadyActiveError";
-  constructor(public budgetId: string) {
-    super(`Budget ${budgetId} is already active`);
-    this.name = "BudgetAlreadyActiveError";
-  }
-}
+export const InvalidStartAmountError = createError<
+  "InvalidStartAmountError",
+  number
+>("InvalidStartAmountError", (amount) => `Invalid start amount: ${amount}`);
 
-export class BudgetAlreadyInActiveError extends Error {
-  readonly _tag = "BudgetAlreadyInActiveError";
-  constructor(public budgetId: string) {
-    super(`Budget ${budgetId} is already inactive`);
-    this.name = "BudgetAlreadyInActiveError";
-  }
-}
+export const BudgetAlreadyActiveError = createError(
+  "BudgetAlreadyActiveError",
+  (budgetId: string) => `Budget ${budgetId} is already active`,
+);
 
-export class InvalidBudgetNameError extends Error {
-  readonly _tag = "InvalidBudgetNameError";
-  constructor(public budgetName: string) {
-    super(`Invalid budget name: ${budgetName}`);
-    this.name = "InvalidBudgetNameError";
-  }
-}
+export const BudgetAlreadyInActiveError = createError(
+  "BudgetAlreadyInActiveError",
+  (budgetId: string) => `Budget ${budgetId} is already inactive`,
+);
 
-export class BudgetNotFoundError extends Error {
-  readonly _tag = "BudgetNotFoundError";
-  constructor(public id: string) {
-    super(`Budget not found: ${id}`);
-    this.name = "BudgetNotFoundError";
-  }
-}
+export const InvalidBudgetNameError = createError(
+  "InvalidBudgetNameError",
+  (budgetName: string) => `Invalid budget name: ${budgetName}`,
+);
 
-export class BudgetNotActiveError extends Error {
-  readonly _tag = "BudgetNotActiveError";
-  constructor(public id: string) {
-    super(`Budget ${id} is not active`);
-    this.name = "BudgetNotActiveError";
-  }
-}
+export const BudgetNotFoundError = createError(
+  "BudgetNotFoundError",
+  (id: string) => `Budget not found: ${id}`,
+);
+
+export const BudgetNotActiveError = createError(
+  "BudgetNotActiveError",
+  (id: string) => `Budget ${id} is not active`,
+);
 
 export type BudgetValidationError =
-  | InvalidStartAmountError
-  | InvalidBudgetNameError;
+  | InstanceType<typeof InvalidStartAmountError>
+  | InstanceType<typeof InvalidBudgetNameError>;
 
 export type BudgetError =
-  | BudgetAlreadyActiveError
-  | BudgetAlreadyInActiveError
-  | BudgetNotActiveError
-  | BudgetNotFoundError;
+  | InstanceType<typeof BudgetAlreadyActiveError>
+  | InstanceType<typeof BudgetAlreadyInActiveError>
+  | InstanceType<typeof BudgetNotActiveError>
+  | InstanceType<typeof BudgetNotFoundError>;
