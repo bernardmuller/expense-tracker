@@ -16,6 +16,9 @@ import {
 const create = (user: Partial<DbUser>) =>
   ResultAsync.fromPromise(
     (async () => {
+      if (!user.id || !user.name || !user.email) {
+        throw new Error("Missing required fields: id, name, or email");
+      }
       const [createdUser] = await db
         .insert(users)
         .values({
