@@ -1,7 +1,6 @@
-export type FilterItems = string[]
-
-export type FilterProps<T extends FilterItems> = {
-    filterItems: T,
+export type FilterProps = {
+    filterItems: string[],
     placeHolder: string,
-    defaultOption: T[number]
+    defaultOption: string,
+    handleValueChange: (value: string) => void
 }
