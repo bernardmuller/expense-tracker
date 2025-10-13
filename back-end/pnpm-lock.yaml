@@ -57,14 +57,21 @@ importers:
         version: 4.9.9
       hono-openapi:
         specifier: ^1.1.0
+<<<<<<< HEAD
         version: 1.1.0(@hono/standard-validator@0.1.5(@standard-schema/spec@1.0.0)(hono@4.9.9))(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.11))(@standard-community/standard-openapi@0.2.8(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.11))(@standard-schema/spec@1.0.0)(effect@3.18.1)(openapi-types@12.1.3)(zod@4.1.11))(@types/json-schema@7.0.15)(hono@4.9.9)(openapi-types@12.1.3)
+=======
+        version: 1.1.0(@hono/standard-validator@0.1.5(@standard-schema/spec@1.0.0)(hono@4.9.9))(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.12))(@standard-community/standard-openapi@0.2.8(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.12))(@standard-schema/spec@1.0.0)(effect@3.18.1)(openapi-types@12.1.3)(zod@4.1.12))(@types/json-schema@7.0.15)(hono@4.9.9)(openapi-types@12.1.3)
+>>>>>>> 175c3a0 (chore: cleanup)
       neverthrow:
         specifier: ^8.2.0
         version: 8.2.0
       postgres:
         specifier: ^3.4.7
         version: 3.4.7
+<<<<<<< HEAD
 >>>>>>> f1a4e57 (feat: new never throw method)
+=======
+>>>>>>> 175c3a0 (chore: cleanup)
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -81,6 +88,9 @@ importers:
       '@types/node':
         specifier: ^20.11.17
         version: 20.19.19
+      eslint-plugin-neverthrow:
+        specifier: ^1.1.4
+        version: 1.1.4(@typescript-eslint/parser@8.46.0(eslint@9.37.0)(typescript@5.9.3))(eslint@9.37.0)(typescript@5.9.3)
       tsx:
         specifier: ^4.7.1
         version: 4.20.6
@@ -677,6 +687,7 @@ packages:
     engines: {node: '>=6'}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   defu@6.1.4:
     resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
 
@@ -695,6 +706,10 @@ packages:
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 >>>>>>> f1a4e57 (feat: new never throw method)
+=======
+  deep-is@0.1.4:
+    resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
+>>>>>>> 175c3a0 (chore: cleanup)
 
   drizzle-orm@0.44.6:
     resolution: {integrity: sha512-uy6uarrrEOc9K1u5/uhBFJbdF5VJ5xQ/Yzbecw3eAYOunv5FDeYkR2m8iitocdHBOHbvorviKOW5GVw0U1j4LQ==}
@@ -1187,7 +1202,6 @@ packages:
   std-env@3.9.0:
     resolution: {integrity: sha512-UGvjygr6F6tpH7o2qyqR6QYpwraIjKSdtzyBdyytFOHmPZY917kwdwLG0RbOjWOnKmnm3PeHjaoLLMie7kPLQw==}
 
-<<<<<<< HEAD
   stoker@2.0.1:
     resolution: {integrity: sha512-liSQNnJmn8fWSEan7sVaFe6iSHuN3X02fDGLS6snwW+FUuKi5HmKUHm3P+Kzr5xiDPqRpmSTtmGEBbSL9H2zkQ==}
     peerDependencies:
@@ -1206,11 +1220,6 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
-=======
-  strip-json-comments@3.1.1:
-    resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
-    engines: {node: '>=8'}
->>>>>>> f1a4e57 (feat: new never throw method)
 
   strip-literal@3.1.0:
     resolution: {integrity: sha512-8r3mkIM/2+PpjHoOtiAW8Rg3jJLHaV7xPwG+YRGrv6FP0wwk/toTpATxWYOW0BKdWwl82VT2tFYi5DlROa0Mxg==}
@@ -1896,6 +1905,7 @@ snapshots:
   deep-eql@5.0.2: {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   defu@6.1.4: {}
 
   dotenv-expand@12.0.3:
@@ -1908,6 +1918,9 @@ snapshots:
 =======
   deep-is@0.1.4: {}
 >>>>>>> f1a4e57 (feat: new never throw method)
+=======
+  deep-is@0.1.4: {}
+>>>>>>> 175c3a0 (chore: cleanup)
 
   drizzle-orm@0.44.6(postgres@3.4.7):
     optionalDependencies:
@@ -2117,6 +2130,7 @@ snapshots:
   globrex@0.1.2: {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   help-me@5.0.0: {}
 
   hono-pino@0.10.3(hono@4.9.9)(pino@9.13.1):
@@ -2125,6 +2139,11 @@ snapshots:
 
   hono-openapi@1.1.0(@hono/standard-validator@0.1.5(@standard-schema/spec@1.0.0)(hono@4.9.9))(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.11))(@standard-community/standard-openapi@0.2.8(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.11))(@standard-schema/spec@1.0.0)(effect@3.18.1)(openapi-types@12.1.3)(zod@4.1.11))(@types/json-schema@7.0.15)(hono@4.9.9)(openapi-types@12.1.3):
 >>>>>>> f1a4e57 (feat: new never throw method)
+=======
+  has-flag@4.0.0: {}
+
+  hono-openapi@1.1.0(@hono/standard-validator@0.1.5(@standard-schema/spec@1.0.0)(hono@4.9.9))(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.12))(@standard-community/standard-openapi@0.2.8(@standard-community/standard-json@0.3.5(@standard-schema/spec@1.0.0)(@types/json-schema@7.0.15)(effect@3.18.1)(quansync@0.2.11)(zod@4.1.12))(@standard-schema/spec@1.0.0)(effect@3.18.1)(openapi-types@12.1.3)(zod@4.1.12))(@types/json-schema@7.0.15)(hono@4.9.9)(openapi-types@12.1.3):
+>>>>>>> 175c3a0 (chore: cleanup)
     dependencies:
       defu: 6.1.4
       hono: 4.9.9
@@ -2188,24 +2207,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-<<<<<<< HEAD
   minimist@1.2.8: {}
-=======
-  merge2@1.4.1: {}
-
-  micromatch@4.0.8:
-    dependencies:
-      braces: 3.0.3
-      picomatch: 2.3.1
-
-  minimatch@3.1.2:
-    dependencies:
-      brace-expansion: 1.1.12
-
-  minimatch@9.0.5:
-    dependencies:
-      brace-expansion: 2.0.2
->>>>>>> f1a4e57 (feat: new never throw method)
 
   ms@2.1.3: {}
 
@@ -2310,8 +2312,11 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  postgres@3.4.7:
-    optional: true
+  postgres@3.4.7: {}
+
+  prelude-ls@1.2.1: {}
+
+  punycode@2.3.1: {}
 
   process-warning@5.0.0: {}
 
