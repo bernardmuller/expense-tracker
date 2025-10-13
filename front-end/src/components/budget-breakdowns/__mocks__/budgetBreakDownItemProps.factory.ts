@@ -3,7 +3,7 @@ import type {
   BudgetBreakdownItemProps,
   OverBudgetBreakdownItemProps,
   PlannedBudgetBreakdownItemProps,
-} from '../types'
+} from '../BudgetBreakdownItem.types'
 import { supportedLocales } from '@/lib/constants/supportedLocales'
 import { formatCurrency } from '@/lib/utils/formatCurrency'
 
