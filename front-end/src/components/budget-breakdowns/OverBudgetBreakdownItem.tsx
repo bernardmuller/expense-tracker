@@ -1,5 +1,5 @@
 import { BudgetBreakdownItem } from './BudgetBreakdownItem'
-import type { OverBudgetBreakdownItemProps } from './types'
+import type { OverBudgetBreakdownItemProps } from './BudgetBreakdownItem.types'
 
 export default function OverBudgetBreakdownItem({
   name,
