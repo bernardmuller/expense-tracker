@@ -3,7 +3,6 @@ import { type User as DbUser } from "@/infrastructure/db/schema";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { beforeEach, describe, expect, it } from "vitest";
 import { mapToDomainUser } from "./userMapper";
-import { mock } from "effect/Layer";
 
 describe("mapToDomainUser", () => {
   it("should map a Db user to a Domain User Type", () => {
