@@ -6,18 +6,33 @@ import {
   openAPIRouteHandler,
   validator,
 } from "hono-openapi";
-import { Schema as S } from "effect";
 import { Scalar } from "@scalar/hono-api-reference";
+import { mapErrorToHttpResponse } from "@/infrastructure/http/errorMapper";
+import { z } from "zod";
 
 const app = new Hono();
 
-const querySchema = S.Struct({
-  query: S.String,
+const querySchema = z.object({
+  query: z.string(),
 });
 
-const responseSchema = S.String;
-const responseStandardSchema = S.standardSchemaV1(responseSchema);
-const queryStandardSchema = S.standardSchemaV1(querySchema);
+const responseSchema = z.string();
+
+// User schemas
+const createUserSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+});
+
+const userResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+  emailVerified: z.boolean(),
+  onboarded: z.boolean(),
+});
+
+const usersResponseSchema = z.array(userResponseSchema);
 
 app.get(
   "/healthcheck",
@@ -27,12 +42,12 @@ app.get(
       200: {
         description: "Successful response",
         content: {
-          "text/plain": { schema: resolver(responseStandardSchema) },
+          "text/plain": { schema: resolver(responseSchema) },
         },
       },
     },
   }),
-  validator("query", queryStandardSchema),
+  validator("query", querySchema),
   (c) => {
     const query = c.req.valid("query");
     return c.json(`Your query: ${query.query}`);
