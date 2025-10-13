@@ -1,5 +1,5 @@
 import { BudgetBreakdownItem } from './BudgetBreakdownItem'
-import type { BudgetBreakdownItemProps } from './types'
+import type { BudgetBreakdownItemProps } from './BudgetBreakdownItem.types'
 
 export default function UnplannedBudgetBreakdownItem({
   name,
