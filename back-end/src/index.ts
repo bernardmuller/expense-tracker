@@ -18,22 +18,6 @@ const querySchema = z.object({
 
 const responseSchema = z.string();
 
-// User schemas
-const createUserSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-});
-
-const userResponseSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string(),
-  emailVerified: z.boolean(),
-  onboarded: z.boolean(),
-});
-
-const usersResponseSchema = z.array(userResponseSchema);
-
 app.get(
   "/healthcheck",
   describeRoute({
