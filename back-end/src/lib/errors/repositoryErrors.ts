@@ -1,4 +1,3 @@
-import { Data } from "effect";
 import { createError } from "@/lib/utils/createError";
 
 export const EntityNotFoundError = createError(
