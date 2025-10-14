@@ -1,6 +1,6 @@
 import { screen, render } from '@testing-library/react'
-import { generateOverBudgetBreakdownItemProps } from './__mocks__/budgetBreakDownItemProps.mock'
-import OverBudgetBreakdownItem from './OverBudgetBreakdownItem'
+import { generateOverBudgetBreakdownItemProps } from '../__mocks__/budgetBreakDownItemProps.mock'
+import OverBudgetBreakdownItem from '../OverBudgetBreakdownItem'
 
 describe('OverBudgetBreakdownItem', () => {
   const { name, icon, spentAmount, plannedAmount } =

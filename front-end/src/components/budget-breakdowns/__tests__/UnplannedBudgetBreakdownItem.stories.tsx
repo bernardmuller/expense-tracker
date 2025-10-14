@@ -1,4 +1,4 @@
-import { generateBudgetBreakdownItemProps } from './__mocks__/budgetBreakDownItemProps.mock'
+import { generateBudgetBreakdownItemProps } from '../__mocks__/budgetBreakDownItemProps.mock'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import UnplannedBudgetBreakdownItem from '@/components/budget-breakdowns/UnplannedBudgetBreakdownItem'
 
