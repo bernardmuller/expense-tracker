@@ -18,5 +18,6 @@ export const Default: Story = {
     filterItems: filterItems,
     handleValueChange: handleValueChange,
     placeHolder: placeHolder,
+    rootClassName: 'w-full',
   },
 }

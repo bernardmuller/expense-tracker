@@ -1,6 +1,11 @@
+import type { HTMLProps } from 'react'
+
 export type FilterProps = {
-    filterItems: string[],
-    placeHolder: string,
-    defaultOption: string,
-    handleValueChange: (value: string) => void
+  filterItems: {
+    name: string
+    value: string
+  }[]
+  placeHolder: string
+  handleValueChange: (value: string) => void
+  rootClassName?: HTMLProps<HTMLElement>['className']
 }
