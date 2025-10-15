@@ -1,5 +1,5 @@
-import type { StoryObj, Meta } from '@storybook/react-vite'
 import { NewBudgetModal } from '../NewBudgetModal'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 
 const meta = {
   title: 'New Budget Modal',
