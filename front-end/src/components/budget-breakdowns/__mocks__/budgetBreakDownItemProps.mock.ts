@@ -7,7 +7,7 @@ import type {
   BudgetBreakdownItemProps,
   OverBudgetBreakdownItemProps,
   PlannedBudgetBreakdownItemProps,
-} from '../types'
+} from '../BudgetBreakdownItem.types'
 
 export const generateBudgetBreakdownItemProps = (
   overwrites: Partial<BudgetBreakdownItemProps> = {},
