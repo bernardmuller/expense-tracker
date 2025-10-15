@@ -1,5 +1,11 @@
 import { render, screen } from '@testing-library/react'
-import { BudgetBreakdownItem } from '../BudgetBreakdownItem'
+import {
+  Header,
+  OverBudgetBadge,
+  UnplannedBadge,
+  Planned,
+  Spent,
+} from '../BudgetBreakdownItem'
 import {
   generateBudgetBreakdownItemProps,
   generatePlannedBudgetBreakdownItemProps,
@@ -14,43 +20,43 @@ describe('BudgetBreakdownItem', () => {
   })
   describe('BudgetBreakdownItem.Header', () => {
     it('should render a name', () => {
-      render(<BudgetBreakdownItem.Header icon={icon} name={name} />)
+      render(<Header icon={icon} name={name} />)
       expect(screen.getByText(name))
     })
     it('should render an icon', () => {
-      render(<BudgetBreakdownItem.Header icon={icon} name={name} />)
+      render(<Header icon={icon} name={name} />)
       expect(screen.getByText(icon))
     })
   })
   describe('BudgetBreakdownItem.OverBudgetBadge', () => {
     it('should render over budget text', () => {
-      render(<BudgetBreakdownItem.OverBudgetBadge />)
+      render(<OverBudgetBadge />)
       expect(screen.getByText(/over budget/i))
     })
   })
   describe('BudgetBreakdownItem.UnplannedBadge', () => {
     it('should render unplanned text', () => {
-      render(<BudgetBreakdownItem.UnplannedBadge />)
+      render(<UnplannedBadge />)
       expect(screen.getByText(/unplanned/i))
     })
   })
   describe('BudgetBreakdownItem.Planned', () => {
     it('should render "planned"', () => {
-      render(<BudgetBreakdownItem.Planned amount={plannedAmount} />)
+      render(<Planned amount={plannedAmount} />)
       expect(screen.getByText(/planned/i)).toBeInTheDocument()
     })
     it('should render the planned amount', () => {
-      render(<BudgetBreakdownItem.Planned amount={plannedAmount} />)
+      render(<Planned amount={plannedAmount} />)
       expect(screen.getByText(plannedAmount)).toBeInTheDocument()
     })
   })
   describe('BudgetBreakdownItem.Spent', () => {
     it('should render "planned"', () => {
-      render(<BudgetBreakdownItem.Spent amount={spentAmount} />)
+      render(<Spent amount={spentAmount} />)
       expect(screen.getByText(/spent/i)).toBeInTheDocument()
     })
     it('should render the planned amount', () => {
-      render(<BudgetBreakdownItem.Spent amount={spentAmount} />)
+      render(<Spent amount={spentAmount} />)
       expect(screen.getByText(spentAmount)).toBeInTheDocument()
     })
   })
