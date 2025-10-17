@@ -22,7 +22,13 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 			)
 		)
 		.where(eq(budgets.id, id))
-		.groupBy(categories.id) // Only group by the primary key
+		.groupBy(
+			categories.id,
+			categories.key,
+			categories.label,
+			categories.icon,
+			categoryBudgets.allocatedAmount
+		)
 	
 	const expensesByCategory = await db
 		.select({
@@ -40,10 +46,17 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		])
 	)
 	
-	return result.map(item => ({
-		...item,
-		spent: expensesMap.get(item.key) || 0,
-		planned: item.planned ? parseFloat(item.planned.toString()) : 0
-	}))
+	const uniqueCategories = new Map()
+	
+	for (const item of result) {
+		if (!uniqueCategories.has(item.id)) {
+			uniqueCategories.set(item.id, {
+				...item,
+				spent: expensesMap.get(item.key) || 0,
+				planned: item.planned ? parseFloat(item.planned.toString()) : 0
+			})
+		}
+	}
+	
+	return Array.from(uniqueCategories.values())
 }
-
