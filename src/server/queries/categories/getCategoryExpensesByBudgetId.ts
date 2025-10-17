@@ -10,7 +10,7 @@ import { eq, sum, and } from "drizzle-orm"
   		return []
   	}
 
-  	const result = await 
+  	const result = await db
   		.select({
   			id: categories.id,
   			key: categories.key,
