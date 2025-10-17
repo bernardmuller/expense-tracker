@@ -14,10 +14,16 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		.from(budgets)
 		.innerJoin(userCategories, eq(budgets.userId, userCategories.userId))
 		.innerJoin(categories, eq(userCategories.categoryId, categories.id))
-		.leftJoin(categoryBudgets, and(eq(categoryBudgets.categoryId, categories.id), eq(categoryBudgets.budgetId, id)))
+		.leftJoin(
+			categoryBudgets, 
+			and(
+				eq(categoryBudgets.categoryId, categories.id), 
+				eq(categoryBudgets.budgetId, id)
+			)
+		)
 		.where(eq(budgets.id, id))
-		.groupBy(categories.id, categories.key, categories.label, categories.icon, categoryBudgets.allocatedAmount)
-
+		.groupBy(categories.id) // Only group by the primary key
+	
 	const expensesByCategory = await db
 		.select({
 			category: expenses.category,
@@ -26,18 +32,18 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		.from(expenses)
 		.where(eq(expenses.budgetId, id))
 		.groupBy(expenses.category)
-
+	
 	const expensesMap = new Map(
 		expensesByCategory.map(item => [
 			item.category,
 			parseFloat(item.spent?.toString() || '0')
 		])
 	)
-
+	
 	return result.map(item => ({
 		...item,
 		spent: expensesMap.get(item.key) || 0,
 		planned: item.planned ? parseFloat(item.planned.toString()) : 0
-	}));
+	}))
 }
 
