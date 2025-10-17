@@ -1,5 +1,5 @@
-import type { UserCategory } from "../userCategory";
 import { faker } from "@faker-js/faker";
+import type { UserCategory } from "../userCategory";
 
 export const generateMockUserCategory = (
   overwrites: Partial<UserCategory> = {},
@@ -15,4 +15,3 @@ export const generateMockUserCategory = (
 export const mockUserCategories = (count: number = 10): UserCategory[] => {
   return Array.from({ length: count }, () => generateMockUserCategory());
 };
-

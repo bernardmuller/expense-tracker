@@ -1,36 +1,41 @@
-import { Data } from "effect";
-import type { Budget } from ".";
+import { createError } from "@/lib/utils/createError";
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class InvalidStartAmountError extends Data.TaggedError(
+export const InvalidStartAmountError = createError<
   "InvalidStartAmountError",
-)<{
-  amount: number;
-}> {}
+  number
+>("InvalidStartAmountError", (amount) => `Invalid start amount: ${amount}`);
+
+export const BudgetAlreadyActiveError = createError(
+  "BudgetAlreadyActiveError",
+  (budgetId: string) => `Budget ${budgetId} is already active`,
+);
+
+export const BudgetAlreadyInActiveError = createError(
+  "BudgetAlreadyInActiveError",
+  (budgetId: string) => `Budget ${budgetId} is already inactive`,
+);
+
+export const InvalidBudgetNameError = createError(
+  "InvalidBudgetNameError",
+  (budgetName: string) => `Invalid budget name: ${budgetName}`,
+);
+
+export const BudgetNotFoundError = createError(
+  "BudgetNotFoundError",
+  (id: string) => `Budget not found: ${id}`,
+);
+
+export const BudgetNotActiveError = createError(
+  "BudgetNotActiveError",
+  (id: string) => `Budget ${id} is not active`,
+);
 
 export type BudgetValidationError =
-  | MissingRequiredFieldsError
-  | InvalidStartAmountError;
+  | InstanceType<typeof InvalidStartAmountError>
+  | InstanceType<typeof InvalidBudgetNameError>;
 
-export class BudgetAlreadyActiveError extends Data.TaggedError(
-  "BudgetAlreadyActiveError",
-)<{
-  budgetId: string;
-}> {}
-
-export class BudgetAlreadyInActiveError extends Data.TaggedError(
-  "BudgetAlreadyInActiveError",
-)<{
-  budgetId: string;
-}> {}
-
-export class InvalidBudgetNameError extends Data.TaggedError(
-  "InvalidBudgetNameError",
-)<{
-  name: string;
-}> {}
+export type BudgetError =
+  | InstanceType<typeof BudgetAlreadyActiveError>
+  | InstanceType<typeof BudgetAlreadyInActiveError>
+  | InstanceType<typeof BudgetNotActiveError>
+  | InstanceType<typeof BudgetNotFoundError>;
