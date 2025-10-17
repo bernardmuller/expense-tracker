@@ -1,18 +1,31 @@
-import { and, eq, sum } from "drizzle-orm"
+import { and, eq, sum, sql } from "drizzle-orm"
 import { db } from "@/db"
 import { budgets, categories, categoryBudgets, expenses, userCategories } from "@/db/schema"
 
 export default async function getCategoryExpensesByBudgetId(id: number) {
+	// First, get the budget to find the userId
+	const budget = await db
+		.select({ userId: budgets.userId })
+		.from(budgets)
+		.where(eq(budgets.id, id))
+		.limit(1)
+	
+	if (!budget.length) {
+		return []
+	}
+	
+	const userId = budget[0].userId
+	
+	// Get all unique categories for this user with their budget allocations
 	const result = await db
-		.select({
+		.selectDistinct({
 			id: categories.id,
 			key: categories.key,
 			name: categories.label,
 			icon: categories.icon,
 			planned: categoryBudgets.allocatedAmount,
 		})
-		.from(budgets)
-		.innerJoin(userCategories, eq(budgets.userId, userCategories.userId))
+		.from(userCategories)
 		.innerJoin(categories, eq(userCategories.categoryId, categories.id))
 		.leftJoin(
 			categoryBudgets, 
@@ -21,15 +34,9 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 				eq(categoryBudgets.budgetId, id)
 			)
 		)
-		.where(eq(budgets.id, id))
-		.groupBy(
-			categories.id,
-			categories.key,
-			categories.label,
-			categories.icon,
-			categoryBudgets.allocatedAmount
-		)
+		.where(eq(userCategories.userId, userId))
 	
+	// Get total expenses by category for this budget
 	const expensesByCategory = await db
 		.select({
 			category: expenses.category,
@@ -39,6 +46,7 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		.where(eq(expenses.budgetId, id))
 		.groupBy(expenses.category)
 	
+	// Create a map for quick lookup
 	const expensesMap = new Map(
 		expensesByCategory.map(item => [
 			item.category,
@@ -46,6 +54,7 @@ export default async function getCategoryExpensesByBudgetId(id: number) {
 		])
 	)
 	
+	// Merge the data and ensure uniqueness
 	const uniqueCategories = new Map()
 	
 	for (const item of result) {
