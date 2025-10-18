@@ -1,5 +1,5 @@
-import type { FilterProps } from './../Filter.types'
 import { filterProps } from './filterProps.factory'
+import type { FilterProps } from './../Filter.types'
 
 export const generateFilterProps = (overwrites: Partial<FilterProps> = {}) => ({
   ...filterProps,
