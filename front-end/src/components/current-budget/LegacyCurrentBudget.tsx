@@ -9,7 +9,7 @@ export function LegacyCurrentBudget() {
         <div className="flex items-start justify-between">
           <div>
             <CardTitle>Current Budget</CardTitle>
-            {/*Current Budget*/}
+            {/*Budget Name*/}
             <p className="text-muted-foreground text-sm">Budget - 01/09/2025</p>
           </div>
           {/*Needs to be a link*/}
