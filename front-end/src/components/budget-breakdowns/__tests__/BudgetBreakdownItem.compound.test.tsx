@@ -5,7 +5,7 @@ import {
   Planned,
   Spent,
   UnplannedBadge,
-} from '../BudgetBreakdownItem'
+} from '../BudgetBreakdownItem.compound'
 import {
   generateBudgetBreakdownItemProps,
   generatePlannedBudgetBreakdownItemProps,
