@@ -1,29 +1,9 @@
-import { Link } from '@tanstack/react-router'
-import type { NavigateOptions } from '@tanstack/react-router'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
 export function Root({ children }: { children: React.ReactNode }) {
   return <Card className="border-border/50 cursor-pointer p-4">{children}</Card>
-}
-
-export function LinkTrigger({
-  children,
-  url,
-  params,
-  searchParams,
-}: {
-  children: React.ReactNode
-  url: NavigateOptions['to']
-  params?: NavigateOptions['params']
-  searchParams?: NavigateOptions['search']
-}) {
-  return (
-    <Link to={url} params={params} search={searchParams}>
-      {children}
-    </Link>
-  )
 }
 
 export function Header({
