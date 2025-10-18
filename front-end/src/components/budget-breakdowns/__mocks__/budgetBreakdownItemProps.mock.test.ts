@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   generateBudgetBreakdownItemProps,
   generateOverBudgetBreakdownItemProps,
-  generatePlannedBudgetBreakdownItemProps
+  generatePlannedBudgetBreakdownItemProps,
 } from './budgetBreakDownItemProps.mock'
 
 describe('generateBudgetBreakDownItemProps', () => {
@@ -61,7 +61,7 @@ describe('generatePlannedBudgetBreakDownItemProps', () => {
       icon: 'testIcon',
       spentAmount: 'R1000',
       plannedAmount: 'R2000',
-      percentage: 100
+      percentage: 100,
     })
     expect(budgetBreakDownItemProps.name).toBe('testName')
     expect(budgetBreakDownItemProps.icon).toBe('testIcon')
