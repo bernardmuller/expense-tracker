@@ -1,4 +1,4 @@
-import * as BudgetBreakdownItem from './BudgetBreakdownItem'
+import * as BudgetBreakdownItem from './BudgetBreakdownItem.compound'
 import type { PlannedBudgetBreakdownItemProps } from './BudgetBreakdownItem.types'
 
 export default function PlannedBudgetBreakdownItem({
