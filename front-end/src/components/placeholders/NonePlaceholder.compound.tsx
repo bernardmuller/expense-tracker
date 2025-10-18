@@ -10,15 +10,27 @@ export function Root({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function Header({ emoji }: { emoji: string }) {
+export function Header({ children }: { children: React.ReactNode }) {
+  return <>{children}</>
+}
+
+export function Content({ children }: { children: React.ReactNode }) {
+  return <>{children}</>
+}
+
+export function Footer({ children }: { children: React.ReactNode }) {
+  return <>{children}</>
+}
+
+export function Emoji({ emoji }: { emoji: string }) {
   return <div className="text-4xl">{emoji}</div>
 }
 
-export function Content({ text }: { text: string }) {
+export function BoldText({ text }: { text: string }) {
   return <h2 className="text-md font-bold">{text}</h2>
 }
 
-export function Footer({ text }: { text: string }) {
+export function MutedText({ text }: { text: string }) {
   return (
     <p className="text-muted-foreground mad-w-60 mx-auto text-sm">{text}</p>
   )
