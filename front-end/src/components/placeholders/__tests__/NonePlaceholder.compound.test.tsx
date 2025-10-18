@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { Root, Header, Content, Footer } from '../NonePlaceholder.compound'
+import { BoldText, MutedText, Root, Emoji } from '../NonePlaceholder.compound'
 
 describe('NonePlaceholderCompound', () => {
   describe('NonePlaceholderCompound.Root', () => {
@@ -12,22 +12,24 @@ describe('NonePlaceholderCompound', () => {
       expect(screen.getByText('Children content')).toBeInTheDocument()
     })
   })
-  describe('NonePlaceholderCompound.Header', () => {
+  describe('NonePlaceholderCompound.Emoji', () => {
     it('should render an emoji', () => {
-      render(<Header emoji={'📖'} />)
+      render(<Emoji emoji={'📖'} />)
       expect(screen.getByText('📖')).toBeInTheDocument()
     })
   })
-  describe('NonePlaceHolder.Content', () => {
+  describe('NonePlaceHolder.BoldText', () => {
     it('should render text', () => {
-      render(<Content text={'No Expenses Yet'} />)
+      render(<BoldText text={'No Expenses Yet'} />)
       expect(screen.getByText('No Expenses Yet')).toBeInTheDocument()
     })
   })
-  describe('NonePlaceHolder.Footer', () => {
+  describe('NonePlaceHolder.MutedText', () => {
     it('should render text', () => {
       render(
-        <Footer text={'Start adding expenses to see your budget breakdown.'} />,
+        <MutedText
+          text={'Start adding expenses to see your budget breakdown.'}
+        />,
       )
       expect(
         screen.getByText('Start adding expenses to see your budget breakdown.'),
