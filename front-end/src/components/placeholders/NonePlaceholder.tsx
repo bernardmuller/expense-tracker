@@ -13,9 +13,15 @@ export function NonePlaceholder({
 }: NoneplaceholderProps) {
   return (
     <NonePlaceholderCompound.Root>
-      <NonePlaceholderCompound.Header emoji={headerEmoji} />
-      <NonePlaceholderCompound.Content text={contentText} />
-      <NonePlaceholderCompound.Footer text={footerText} />
+      <NonePlaceholderCompound.Header>
+        <NonePlaceholderCompound.Emoji emoji={headerEmoji} />
+      </NonePlaceholderCompound.Header>
+      <NonePlaceholderCompound.Content>
+        <NonePlaceholderCompound.BoldText text={contentText} />
+      </NonePlaceholderCompound.Content>
+      <NonePlaceholderCompound.Footer>
+        <NonePlaceholderCompound.MutedText text={footerText} />
+      </NonePlaceholderCompound.Footer>
     </NonePlaceholderCompound.Root>
   )
 }
