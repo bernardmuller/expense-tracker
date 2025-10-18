@@ -1,4 +1,4 @@
-import * as NonePlaceholderCompound from './NonePlaceholder.compound'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 
 export type NoneplaceholderProps = {
   headerEmoji: string
@@ -12,16 +12,18 @@ export function NonePlaceholder({
   footerText,
 }: NoneplaceholderProps) {
   return (
-    <NonePlaceholderCompound.Root>
-      <NonePlaceholderCompound.Header>
-        <NonePlaceholderCompound.Emoji emoji={headerEmoji} />
-      </NonePlaceholderCompound.Header>
-      <NonePlaceholderCompound.Content>
-        <NonePlaceholderCompound.BoldText text={contentText} />
-      </NonePlaceholderCompound.Content>
-      <NonePlaceholderCompound.Footer>
-        <NonePlaceholderCompound.MutedText text={footerText} />
-      </NonePlaceholderCompound.Footer>
-    </NonePlaceholderCompound.Root>
+    <Card>
+      <CardHeader className="text-center">
+        <div className="text-4xl">{headerEmoji}</div>
+      </CardHeader>
+      <CardContent className="text-center">
+        <h2 className="text-md font-bold">{contentText}</h2>
+      </CardContent>
+      <CardFooter>
+        <p className="text-muted-foreground mad-w-60 mx-auto text-sm">
+          {footerText}
+        </p>
+      </CardFooter>
+    </Card>
   )
 }
