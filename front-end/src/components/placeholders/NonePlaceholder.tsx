@@ -12,7 +12,7 @@ export function NonePlaceholder({
   footerText,
 }: NoneplaceholderProps) {
   return (
-    <Card>
+    <Card className='gap-2'>
       <CardHeader className="text-center">
         <div className="text-4xl">{headerEmoji}</div>
       </CardHeader>
