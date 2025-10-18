@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button'
 import {
   Card,
+  CardAction,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -20,14 +22,14 @@ export function CurrentBudget({
 }: CurrentBudgetProps) {
   return (
     <Card>
-      <CardHeader className="flex items-start justify-between">
-        <div>
-          <CardTitle>Current Budget</CardTitle>
-          <p className="text-muted-foreground text-sm">{budgetName}</p>
-        </div>
-        <Button variant="link" className="text-sm" asChild>
-          <LinkProvider>View</LinkProvider>
-        </Button>
+      <CardHeader>
+        <CardTitle>Current Budget</CardTitle>
+        <CardDescription>{budgetName}</CardDescription>
+        <CardAction>
+          <Button variant="link" asChild>
+            <LinkProvider>View</LinkProvider>
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col items-center">
         <Button variant="ghost" onClick={onClick}>
