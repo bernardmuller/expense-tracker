@@ -1,5 +1,5 @@
-import { BudgetBreakdownItem } from './BudgetBreakdownItem'
-import type { BudgetBreakdownItemProps } from './types'
+import * as BudgetBreakdownItem from './BudgetBreakdownItem'
+import type { BudgetBreakdownItemProps } from './BudgetBreakdownItem.types'
 
 export default function UnplannedBudgetBreakdownItem({
   name,
@@ -7,16 +7,16 @@ export default function UnplannedBudgetBreakdownItem({
   spentAmount,
 }: BudgetBreakdownItemProps) {
   return (
-    <BudgetBreakdownItem>
+    <BudgetBreakdownItem.Root>
       <BudgetBreakdownItem.Header name={name} icon={icon}>
-        <BudgetBreakdownItem.Unplanned />
+        <BudgetBreakdownItem.UnplannedBadge />
       </BudgetBreakdownItem.Header>
       <BudgetBreakdownItem.Stats>
-        <BudgetBreakdownItem.DisabledProgress />
+        <BudgetBreakdownItem.DisabledProgressBar />
         <BudgetBreakdownItem.ReverseRow>
           <BudgetBreakdownItem.Spent amount={spentAmount} />
         </BudgetBreakdownItem.ReverseRow>
       </BudgetBreakdownItem.Stats>
-    </BudgetBreakdownItem>
+    </BudgetBreakdownItem.Root>
   )
 }

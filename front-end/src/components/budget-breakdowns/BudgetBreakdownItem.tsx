@@ -4,22 +4,11 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
-export function BudgetBreakdownItem({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <Card
-      data-testid="budgetBreakdownItem"
-      className="border-border/50 cursor-pointer p-4"
-    >
-      {children}
-    </Card>
-  )
+export function Root({ children }: { children: React.ReactNode }) {
+  return <Card className="border-border/50 cursor-pointer p-4">{children}</Card>
 }
 
-BudgetBreakdownItem.Link = function LinkProvider({
+export function LinkTrigger({
   children,
   url,
   params,
@@ -37,7 +26,7 @@ BudgetBreakdownItem.Link = function LinkProvider({
   )
 }
 
-BudgetBreakdownItem.Header = function Header({
+export function Header({
   name,
   icon,
   children,
@@ -47,10 +36,7 @@ BudgetBreakdownItem.Header = function Header({
   children?: React.ReactNode
 }) {
   return (
-    <div
-      data-testid="headerRootDivider"
-      className="flex items-center justify-between"
-    >
+    <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         <span className="text-lg">{icon}</span>
         <h3 className="text-foreground text-lg font-semibold">{name}</h3>
@@ -60,55 +46,31 @@ BudgetBreakdownItem.Header = function Header({
   )
 }
 
-BudgetBreakdownItem.OverBudget = function OverBudget() {
-  return (
-    <Badge data-testid="overBudgetBadge" variant="destructive">
-      Over budget
-    </Badge>
-  )
+export function OverBudgetBadge() {
+  return <Badge variant="destructive">Over budget</Badge>
 }
 
-BudgetBreakdownItem.Unplanned = function Unplanned() {
-  return (
-    <Badge data-testid="unplannedBudgetBadge" variant="outline">
-      Unplanned
-    </Badge>
-  )
+export function UnplannedBadge() {
+  return <Badge variant="outline">Unplanned</Badge>
 }
 
-BudgetBreakdownItem.Progress = function ProgressBar({
-  percentage,
-}: {
-  percentage: number
-}) {
-  return <Progress data-testid="progress" value={percentage} className="h-1" />
+export function ProgressBar({ percentage }: { percentage: number }) {
+  return <Progress value={percentage} className="h-1" />
 }
 
-BudgetBreakdownItem.DisabledProgress = function DisabledProgressBar() {
-  return (
-    <Progress data-testid="progressDisabled" className="bg-primary/10 h-1" />
-  )
+export function DisabledProgressBar() {
+  return <Progress className="bg-primary/10 h-1" />
 }
 
-BudgetBreakdownItem.OverBudgetProgress = function OverBudgetProgressBar() {
-  return (
-    <Progress data-testid="progressOverBudget" className="h-1 bg-red-500/50" />
-  )
+export function OverBudgetProgressBar() {
+  return <Progress className="h-1 bg-red-500/50" />
 }
 
-BudgetBreakdownItem.Stats = function Stats({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <div data-testid="statsContainer" className="space-y-2">
-      {children}
-    </div>
-  )
+export function Stats({ children }: { children: React.ReactNode }) {
+  return <div className="space-y-2">{children}</div>
 }
 
-BudgetBreakdownItem.Planned = function Planned({ amount }: { amount: string }) {
+export function Planned({ amount }: { amount: string }) {
   return (
     <div className="text-muted-foreground flex gap-1">
       <span>Planned:</span>
@@ -117,7 +79,7 @@ BudgetBreakdownItem.Planned = function Planned({ amount }: { amount: string }) {
   )
 }
 
-BudgetBreakdownItem.Spent = function Spent({ amount }: { amount: string }) {
+export function Spent({ amount }: { amount: string }) {
   return (
     <div className="text-muted-foreground font-sm flex gap-1">
       <span>Spent:</span>
@@ -126,13 +88,9 @@ BudgetBreakdownItem.Spent = function Spent({ amount }: { amount: string }) {
   )
 }
 
-BudgetBreakdownItem.ReverseRow = function ReverseRow({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export function ReverseRow({ children }: { children: React.ReactNode }) {
   return (
-    <div data-testid="reverseRowContainer" className="flex flex-row-reverse justify-between text-sm">
+    <div className="flex flex-row-reverse justify-between text-sm">
       {children}
     </div>
   )
