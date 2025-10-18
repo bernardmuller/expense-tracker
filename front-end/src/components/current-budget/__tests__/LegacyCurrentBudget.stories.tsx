@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { LegacyCurrentBudget } from './LegacyCurrentBudget'
+import { LegacyCurrentBudget } from '../LegacyCurrentBudget'
 
 const meta = {
   title: 'Legacy Current Budget',
