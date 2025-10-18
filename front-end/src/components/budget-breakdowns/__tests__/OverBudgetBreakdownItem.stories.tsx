@@ -10,8 +10,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-const overBudgetBreakdownItemProps =
-  generateOverBudgetBreakdownItemProps()
+const overBudgetBreakdownItemProps = generateOverBudgetBreakdownItemProps()
 
 export const Over: Story = {
   args: {

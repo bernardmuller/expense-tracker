@@ -1,7 +1,7 @@
 import {
   budgetBreakDownItemProps,
-  plannedBudgetBreakDownItemProps,
   overBudgetBreakDownItemProps,
+  plannedBudgetBreakDownItemProps,
 } from './budgetBreakDownItemProps.factory'
 import type {
   BudgetBreakdownItemProps,

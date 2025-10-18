@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { screen, render, fireEvent } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import Filter from '../Filter'
 import { generateFilterProps } from '../__mocks__/filterProps.mock'
 

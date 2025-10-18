@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react'
 import {
   Header,
   OverBudgetBadge,
-  UnplannedBadge,
   Planned,
   Spent,
-} from '../BudgetBreakdownItem'
+  UnplannedBadge,
+} from '../BudgetBreakdownItem.compound'
 import {
   generateBudgetBreakdownItemProps,
   generatePlannedBudgetBreakdownItemProps,
