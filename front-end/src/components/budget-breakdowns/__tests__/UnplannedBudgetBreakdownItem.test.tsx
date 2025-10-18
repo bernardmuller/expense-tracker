@@ -1,4 +1,4 @@
-import { screen, render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { generateBudgetBreakdownItemProps } from '../__mocks__/budgetBreakDownItemProps.mock'
 import UnplannedBudgetBreakdownItem from '../UnplannedBudgetBreakdownItem'
 
