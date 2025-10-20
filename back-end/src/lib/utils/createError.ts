@@ -14,6 +14,11 @@ type Metadata = {
 export function createError<Tag extends string, Param = string>(
   tag: Tag,
   messageBuilder: (param: Param) => string,
+  options: {
+    code: string;
+    error: string;
+    statusCode: number;
+  },
 ) {
   return class extends Error {
     readonly _tag = tag;

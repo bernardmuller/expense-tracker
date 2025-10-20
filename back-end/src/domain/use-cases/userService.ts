@@ -2,9 +2,7 @@ import type { CreateUserParams, User } from "@/domain/entities/user";
 import type { UserValidationError } from "@/domain/entities/user/userErrors";
 import type {
   EntityCreateError,
-  EntityNotFoundError,
   EntityReadError,
-  EntityUpdateError,
   RepositoryErrorType,
 } from "@/lib/errors/repositoryErrors";
 import type { ResultAsync } from "neverthrow";
