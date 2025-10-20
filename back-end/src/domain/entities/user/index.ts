@@ -4,14 +4,17 @@ import {
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./userErrors";
+import z from "zod";
 
-export type User = {
-  readonly id: string;
-  name: string;
-  email: string;
-  emailVerified: boolean;
-  onboarded: boolean;
-};
+export const userSchema = z.object({
+  id: z.uuid().readonly(),
+  name: z.string(),
+  email: z.email(),
+  emailVerified: z.boolean(),
+  onboarded: z.boolean(),
+});
+
+export type User = z.infer<typeof userSchema>;
 
 export type CreateUserParams = Omit<User, "id" | "emailVerified" | "onboarded">;
 
