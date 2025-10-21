@@ -60,7 +60,7 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Bug Title</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
                     <Input
                       id={field.name}
                       name={field.name}
@@ -68,7 +68,7 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
-                      placeholder="Login button not working on mobile"
+                      placeholder="Describe your expense"
                       autoComplete="off"
                     />
                     {isInvalid && (
@@ -85,7 +85,7 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Bug Title</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
                     <Input
                       id={field.name}
                       name={field.name}
@@ -96,7 +96,6 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                         field.handleChange(Number(e.target.value))
                       }
                       aria-invalid={isInvalid}
-                      placeholder="Login button not working on mobile"
                       autoComplete="off"
                     />
                     {isInvalid && (
@@ -143,7 +142,7 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
               className="w-full"
               isDisabled={!canSubmit}
               isLoading={isSubmitting}
-              disabledText="Complete the form to submit"
+              disabledText="Enter your expense details"
               buttonProps={{ type: 'submit', form: 'add-expense-form' }}
             />
           )}
