@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from '../ui/card'
 import { SpinnerButton } from '../spinner-button/SpinnerButton'
+import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field'
+import { Input } from '../ui/input'
 
 type AddExpenseFormProps = {
   onSubmit: (value: AddExpenseFormSchema) => void
@@ -32,27 +34,121 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
       category: '',
     },
     validators: {
-      onSubmit: addExpenseFormSchema,
+      onBlur: addExpenseFormSchema,
+      onMount: addExpenseFormSchema,
     },
     onSubmit: async ({ value }) => props.onSubmit(value),
   })
   return (
     <Card>
-      <form
-        id="add-expense-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          form.handleSubmit()
-        }}
-      >
-        <CardHeader>
-          <CardTitle>Add Expense</CardTitle>
-        </CardHeader>
-        <CardContent></CardContent>
-        <CardFooter>
-          <SpinnerButton enabledText="Submit" onClick={() => {}} />
-        </CardFooter>
-      </form>
+      <CardHeader>
+        <CardTitle>Add Expense</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form
+          id="add-expense-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+          }}
+        >
+          <FieldGroup>
+            <form.Field
+              name="description"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Bug Title</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="Login button not working on mobile"
+                      autoComplete="off"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+            <form.Field
+              name="amount"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Bug Title</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      type="number"
+                      onChange={(e) =>
+                        field.handleChange(Number(e.target.value))
+                      }
+                      aria-invalid={isInvalid}
+                      placeholder="Login button not working on mobile"
+                      autoComplete="off"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+            <form.Field
+              name="category"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="e.g., Food, Transport"
+                      autoComplete="off"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                )
+              }}
+            />
+          </FieldGroup>
+        </form>
+      </CardContent>
+      <CardFooter>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+          children={([canSubmit, isSubmitting]) => (
+            <SpinnerButton
+              enabledText="Submit"
+              className="w-full"
+              isDisabled={!canSubmit}
+              isLoading={isSubmitting}
+              disabledText="Complete the form to submit"
+              buttonProps={{ type: 'submit', form: 'add-expense-form' }}
+            />
+          )}
+        />
+      </CardFooter>
     </Card>
   )
 }
