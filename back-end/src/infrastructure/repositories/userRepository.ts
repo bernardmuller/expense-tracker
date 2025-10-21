@@ -53,6 +53,19 @@ const findById = (id: string) =>
     (error) => new EntityReadError("User", error),
   );
 
+const findByEmail = (email: string) =>
+  ResultAsync.fromPromise(
+    (async () => {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email));
+      if (!user) throw new EntityNotFoundError(email);
+      return user;
+    })(),
+    (error) => new EntityReadError("User", error),
+  );
+
 const update = (user: Partial<DbUser> & { id: string }) =>
   ResultAsync.fromPromise(
     (async () => {
@@ -86,6 +99,7 @@ export const userRepositoryLive: UserRepository = {
   create,
   read,
   findById,
+  findByEmail,
   update,
   delete: deleteUser,
 };
