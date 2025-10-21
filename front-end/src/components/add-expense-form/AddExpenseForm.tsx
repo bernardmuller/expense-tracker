@@ -1,6 +1,13 @@
 import { useForm } from '@tanstack/react-form'
 import * as z from 'zod'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../ui/card'
+import { SpinnerButton } from '../spinner-button/SpinnerButton'
 
 type AddExpenseFormProps = {
   onSubmit: (value: AddExpenseFormSchema) => void
@@ -43,7 +50,7 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
         </CardHeader>
         <CardContent></CardContent>
         <CardFooter>
-
+          <SpinnerButton enabledText="Submit" onClick={() => {}} />
         </CardFooter>
       </form>
     </Card>
