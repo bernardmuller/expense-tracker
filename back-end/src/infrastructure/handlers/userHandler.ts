@@ -1,8 +1,13 @@
-import type { Context } from "hono";
 import type { CreateUserParams } from "@/domain/entities/user";
 import { createUserService } from "@/application/use-cases/userService";
 import { userRepositoryLive } from "@/infrastructure/repositories/userRepository";
 import { mapErrorToHttpResponse } from "@/infrastructure/http/errorMapper";
+import type { AppRouteHandler } from "@/infrastructure/http/types";
+import type {
+  createUser,
+  getAllUsers,
+} from "@/infrastructure/routes/users/users.routes";
+import type { Context } from "hono";
 
 const userService = createUserService(userRepositoryLive);
 
@@ -10,7 +15,7 @@ export const createUserHandler = async (c: Context) => {
   const body = await c.req.json<CreateUserParams>();
   const result = await userService.createUser(body);
   return result.match(
-    (user) => c.json(user, 201),
+    (user) => c.json(user, 200),
     (error) => mapErrorToHttpResponse(error, c),
   );
 };
