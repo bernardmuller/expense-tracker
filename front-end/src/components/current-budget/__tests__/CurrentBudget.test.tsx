@@ -77,12 +77,12 @@ describe('CurrentBudget', async () => {
   })
   describe('SpentAmount', () => {
     it('should render an amount', () => {
-      expect(screen.getByText(spentAmount)).toBeInTheDocument()
+      expect(screen.getByText(`Spent: ${spentAmount}`)).toBeInTheDocument()
     })
   })
   describe('SpentPercentage', () => {
     it('should render a percentage', () => {
-      expect(screen.getByText(`%${spentPercentage}`)).toBeInTheDocument()
+      expect(screen.getByText(`25.0%`)).toBeInTheDocument()
     })
   })
 })
