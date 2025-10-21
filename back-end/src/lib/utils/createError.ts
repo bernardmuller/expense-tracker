@@ -1,9 +1,9 @@
-import type { ContentfulStatusCode } from "hono/utils/http-status";
+import type { StatusCode } from "hono/utils/http-status";
 
 type ErrorOptions = {
   code: string;
   error: string;
-  statusCode: ContentfulStatusCode;
+  statusCode: StatusCode;
 };
 
 function getDefaultOptions<Tag extends string>(tag: Tag): ErrorOptions {
