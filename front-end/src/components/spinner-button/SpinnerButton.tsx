@@ -29,6 +29,7 @@ export function SpinnerButton(props: SpinnerButtonProps) {
       size="sm"
       onClick={onClick}
       className={className}
+      {...props.buttonProps}
     >
       {props.isDisabled && props.isLoading && <Spinner />}
       {text}
