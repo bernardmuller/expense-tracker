@@ -1,17 +1,18 @@
-import { Data } from "effect";
+import { createError } from "@/lib/utils/createError";
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class InvalidAllocatedAmountError extends Data.TaggedError(
+export const InvalidAllocatedAmountError = createError<
   "InvalidAllocatedAmountError",
-)<{
-  amount: number;
-}> {}
+  number
+>(
+  "InvalidAllocatedAmountError",
+  (amount) => `Invalid allocated amount: ${amount}`,
+  {
+    code: "INVALID_ALLOCATED_AMOUNT",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
-export type CategoryBudgetValidationError =
-  | MissingRequiredFieldsError
-  | InvalidAllocatedAmountError;
+export type CategoryBudgetError = InstanceType<
+  typeof InvalidAllocatedAmountError
+>;

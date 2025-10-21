@@ -1,24 +1,25 @@
-import { Data } from "effect";
+import { createError } from "@/lib/utils/createError";
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class UserAlreadyOnboardedError extends Data.TaggedError(
+export const UserAlreadyOnboardedError = createError(
   "UserAlreadyOnboardedError",
-)<{
-  userId: string;
-}> {}
+  (userId: string) => `User ${userId} is already onboarded`,
+  {
+    code: "USER_ALREADY_ONBOARDED",
+    error: "Conflict",
+    statusCode: 409,
+  },
+);
 
-export class UserAlreadyVerifiedError extends Data.TaggedError(
+export const UserAlreadyVerifiedError = createError(
   "UserAlreadyVerifiedError",
-)<{
-  userId: string;
-}> {}
+  (userId: string) => `User ${userId} is already verified`,
+  {
+    code: "USER_ALREADY_VERIFIED",
+    error: "Conflict",
+    statusCode: 409,
+  },
+);
 
 export type UserValidationError =
-  | MissingRequiredFieldsError
-  | UserAlreadyOnboardedError
-  | UserAlreadyVerifiedError;
+  | InstanceType<typeof UserAlreadyOnboardedError>
+  | InstanceType<typeof UserAlreadyVerifiedError>;

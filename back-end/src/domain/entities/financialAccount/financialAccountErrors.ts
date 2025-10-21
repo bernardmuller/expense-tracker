@@ -1,45 +1,67 @@
-import { Data } from "effect";
+import { createError } from "@/lib/utils/createError";
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class InvalidFinancialAccountNameError extends Data.TaggedError(
+export const InvalidFinancialAccountNameError = createError(
   "InvalidFinancialAccountNameError",
-)<{
-  name: string;
-}> {}
+  (accountName: string) => `Invalid financial account name: ${accountName}`,
+  {
+    code: "INVALID_FINANCIAL_ACCOUNT_NAME",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
-export class InvalidCurrentAmountError extends Data.TaggedError(
+export const InvalidCurrentAmountError = createError<
   "InvalidCurrentAmountError",
-)<{
-  amount: number;
-}> {}
+  number
+>(
+  "InvalidCurrentAmountError",
+  (amount) => `Invalid current amount: ${amount}`,
+  {
+    code: "INVALID_CURRENT_AMOUNT",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
-export class FinancialAccountTypeAlreadySetError extends Data.TaggedError(
+export const FinancialAccountTypeAlreadySetError = createError(
   "FinancialAccountTypeAlreadySetError",
-)<{
-  type: string;
-}> {}
+  (type: string) => `Financial account type is already set: ${type}`,
+  {
+    code: "FINANCIAL_ACCOUNT_TYPE_ALREADY_SET",
+    error: "Conflict",
+    statusCode: 409,
+  },
+);
 
-export class InvalidSubtractionAmountError extends Data.TaggedError(
+export const InvalidSubtractionAmountError = createError<
   "InvalidSubtractionAmountError",
-)<{
-  amount: number;
-}> {}
+  number
+>(
+  "InvalidSubtractionAmountError",
+  (amount) => `Invalid subtraction amount: ${amount}`,
+  {
+    code: "INVALID_SUBTRACTION_AMOUNT",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
-export class InvalidAdditionAmountError extends Data.TaggedError(
+export const InvalidAdditionAmountError = createError<
   "InvalidAdditionAmountError",
-)<{
-  amount: number;
-}> {}
+  number
+>(
+  "InvalidAdditionAmountError",
+  (amount) => `Invalid addition amount: ${amount}`,
+  {
+    code: "INVALID_ADDITION_AMOUNT",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
 export type FinancialAccountValidationError =
-  | MissingRequiredFieldsError
-  | InvalidFinancialAccountNameError
-  | FinancialAccountTypeAlreadySetError
-  | InvalidAdditionAmountError
-  | InvalidSubtractionAmountError
-  | InvalidCurrentAmountError;
+  | InstanceType<typeof InvalidFinancialAccountNameError>
+  | InstanceType<typeof FinancialAccountTypeAlreadySetError>
+  | InstanceType<typeof InvalidAdditionAmountError>
+  | InstanceType<typeof InvalidSubtractionAmountError>
+  | InstanceType<typeof InvalidCurrentAmountError>;

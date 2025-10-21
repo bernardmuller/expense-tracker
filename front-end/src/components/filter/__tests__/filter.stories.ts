@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import Filter from '../Filter'
 import { generateFilterProps } from '../__mocks__/filterProps.mock'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 
 const { filterItems, handleValueChange, placeHolder } = generateFilterProps()
 
