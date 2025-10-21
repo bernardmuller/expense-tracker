@@ -5,6 +5,12 @@ import { jsonContent } from "stoker/openapi/helpers";
 
 const tags = ["Users", "List", "Create", "Patch", "Delete"];
 
+const errorResponseSchema = z.object({
+  error: z.string(),
+  message: z.string(),
+  code: z.string(),
+});
+
 export const getAllUsers = createRoute({
   path: "/users",
   method: "get",
@@ -13,6 +19,10 @@ export const getAllUsers = createRoute({
     [HttpStatusCodes.OK]: jsonContent(
       z.array(userSchema),
       "Returns a list of users",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
     ),
   },
 });
@@ -31,7 +41,11 @@ export const createUser = createRoute({
   method: "post",
   tags,
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(userSchema, "Creates a user"),
+    [HttpStatusCodes.CREATED]: jsonContent(userSchema, "Creates a user"),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
   },
 });
 
