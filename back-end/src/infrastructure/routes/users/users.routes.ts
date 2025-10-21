@@ -33,6 +33,10 @@ export const getUserById = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(userSchema, "Returns a user"),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
   },
 });
 
@@ -41,10 +45,10 @@ export const createUser = createRoute({
   method: "post",
   tags,
   responses: {
-    [HttpStatusCodes.CREATED]: jsonContent(userSchema, "Creates a user"),
+    [HttpStatusCodes.OK]: jsonContent(userSchema, "Creates a user"),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema,
-      "Internal server error",
+      "Internal Server Error",
     ),
   },
 });

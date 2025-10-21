@@ -14,11 +14,16 @@ const client = testClient(createTestApp(router));
 
 describe("Users route", () => {
   it("get /users should return a list of users", async () => {
-    const response = await client.users.$get();
-    expect(response.status).toBe(200);
-    if (response.status === 200) {
-      const json = await response.json();
-      expect(json).toBeInstanceOf(Array<User>);
+    const response = await client.users?.$get({
+      param: {},
+    });
+    expect(response).toBeTruthy();
+    if (response) {
+      expect(response.status).toBe(200);
+      if (response.status === 200) {
+        const json = await response.json();
+        expect(json).toBeInstanceOf(Array<User>);
+      }
     }
   });
 });
