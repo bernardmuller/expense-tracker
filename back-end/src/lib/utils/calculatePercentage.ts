@@ -1,25 +1,16 @@
-import { Data, Effect } from "effect";
+import { err, ok } from "neverthrow";
+import {
+  DivideByZeroError,
+  PercentageCalculationError,
+} from "../errors/utilityErrors";
 
-export class DivideByZeroError extends Data.TaggedError(
-  "DivideByZeroError",
-)<{}> {}
-
-export class PercentageCalculationError extends Data.TaggedError(
-  "PercentageCalculationError",
-)<{
-  cause: unknown;
-  message: string;
-}> {}
-
-export const calculatePercentage = (value: number, target: number) =>
-  Effect.try({
-    try: () => {
-      if (target === 0) throw new DivideByZeroError();
-      return ((value / target) * 100).toFixed(1);
-    },
-    catch: (error) =>
-      new PercentageCalculationError({
-        cause: error,
-        message: "Failed to calculate percentage",
-      }),
-  });
+export const calculatePercentage = (value: number, target: number) => {
+  try {
+    if (target === 0) return err(new DivideByZeroError());
+    return ok(((value / target) * 100).toFixed(1));
+  } catch (error) {
+    return err(
+      new PercentageCalculationError("Failed to calculate percentage"),
+    );
+  }
+};

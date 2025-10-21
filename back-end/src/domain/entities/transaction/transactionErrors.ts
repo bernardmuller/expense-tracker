@@ -1,17 +1,15 @@
-import { Data } from "effect";
+import { createError } from "@/lib/utils/createError";
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class InvalidTransactionUpdateError extends Data.TaggedError(
+export const InvalidTransactionUpdateError = createError(
   "InvalidTransactionUpdateError",
-)<{
-  reason: string;
-}> {}
+  (reason: string) => `Invalid transaction update: ${reason}`,
+  {
+    code: "INVALID_TRANSACTION_UPDATE",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
-export type TransactionValidationError =
-  | MissingRequiredFieldsError
-  | InvalidTransactionUpdateError;
+export type TransactionError = InstanceType<
+  typeof InvalidTransactionUpdateError
+>;

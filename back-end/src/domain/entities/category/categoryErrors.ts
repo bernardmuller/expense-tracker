@@ -1,32 +1,25 @@
-import { Data } from "effect";
-import type { Category } from ".";
+import { createError } from "@/lib/utils/createError";
 
-export class MissingRequiredFieldsError extends Data.TaggedError(
-  "MissingRequiredFieldsError",
-)<{
-  fields: string[];
-}> {}
-
-export class InvalidCategoryUpdateError extends Data.TaggedError(
-  "InvalidCategoryUpdateError",
-)<{
-  reason: string;
-}> {}
-
-export class InvalidCategoryLabelError extends Data.TaggedError(
+export const InvalidCategoryLabelError = createError(
   "InvalidCategoryLabelError",
-)<{
-  label: string;
-}> {}
+  (label: string) => `Invalid category label: ${label}`,
+  {
+    code: "INVALID_CATEGORY_LABEL",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
-export class InvalidCategoryKeyError extends Data.TaggedError(
+export const InvalidCategoryKeyError = createError(
   "InvalidCategoryKeyError",
-)<{
-  key: string;
-}> {}
+  (key: string) => `Invalid category key: ${key}`,
+  {
+    code: "INVALID_CATEGORY_KEY",
+    error: "Bad Request",
+    statusCode: 400,
+  },
+);
 
 export type CategoryValidationError =
-  | MissingRequiredFieldsError
-  | InvalidCategoryUpdateError
-  | InvalidCategoryLabelError
-  | InvalidCategoryKeyError;
+  | InstanceType<typeof InvalidCategoryLabelError>
+  | InstanceType<typeof InvalidCategoryKeyError>;

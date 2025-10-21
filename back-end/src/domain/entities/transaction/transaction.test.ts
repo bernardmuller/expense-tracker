@@ -1,17 +1,18 @@
-import { describe, expect, beforeEach } from "vitest";
-import { it as effectIt } from "@effect/vitest";
-import { Effect, Exit } from "effect";
+import { generateUuid } from "@/lib/utils/generateUuid";
+import { faker } from "@faker-js/faker";
+import { beforeEach, describe, expect, it } from "vitest";
+import {
+  generateMockTransaction,
+  mockExpenseTransactions,
+} from "../__mocks__/transaction.mock";
+import { transactionType } from "../enums/transactionType";
 import {
   createTransaction,
-  softDeleteTransaction,
+  isExpenseTransaction,
   updateTransaction,
   type CreateTransactionParams,
   type Transaction,
 } from "./index.js";
-import { transactionType } from "../enums/transactionType";
-import { faker } from "@faker-js/faker";
-import { generateUuid } from "@/lib/utils/generateUuid";
-import { mockExpenseTransactions } from "../__mocks__/transaction.mock";
 
 describe("createTransaction", () => {
   let mock: CreateTransactionParams;
@@ -26,30 +27,33 @@ describe("createTransaction", () => {
     };
   });
 
-  effectIt.effect("should create an expense with the provided type", () =>
-    Effect.gen(function* () {
-      const result = yield* createTransaction(mock);
-      expect(result.type).toBe(mock.type);
-    }),
-  );
+  it("should create an expense with the provided type", () => {
+    const result = createTransaction(mock);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.type).toBe(mock.type);
+    }
+  });
 
-  effectIt.effect("should create an expense with the provided properties", () =>
-    Effect.gen(function* () {
-      const result = yield* createTransaction(mock);
-      expect(result.type).toBe(mock.type);
-      expect(result.description).toBe(mock.description);
-      expect(result.amount).toBe(mock.amount);
-      expect(result.budgetId).toBe(mock.budgetId);
-      expect(result.categoryId).toBe(mock.categoryId);
-    }),
-  );
+  it("should create an expense with the provided properties", () => {
+    const result = createTransaction(mock);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.type).toBe(mock.type);
+      expect(result.value.description).toBe(mock.description);
+      expect(result.value.amount).toBe(mock.amount);
+      expect(result.value.budgetId).toBe(mock.budgetId);
+      expect(result.value.categoryId).toBe(mock.categoryId);
+    }
+  });
 
-  effectIt.effect("should create an expense with an id", () =>
-    Effect.gen(function* () {
-      const result = yield* createTransaction(mock);
-      expect(result.id).toBeTruthy();
-    }),
-  );
+  it("should create an expense with an id", () => {
+    const result = createTransaction(mock);
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.id).toBeTruthy();
+    }
+  });
 });
 
 describe("updateTransaction", () => {
@@ -66,91 +70,101 @@ describe("updateTransaction", () => {
     };
   });
 
-  effectIt.effect("should update the amount of a transaction", () =>
-    Effect.gen(function* () {
-      const transactions = mockExpenseTransactions();
-      for (const t of transactions) {
-        const randomAmount = faker.number.float({
-          max: 10000,
-          fractionDigits: 1,
-        });
-        const update = {
-          ...t,
-          amount: randomAmount,
-        };
-        const result = yield* updateTransaction(t, update);
-        expect(result.amount).toBe(randomAmount);
-      }
-    }),
-  );
-
-  effectIt.effect(
-    "should error when trying to update the budget or category",
-    () =>
-      Effect.gen(function* () {
-        const update = {
-          ...mock,
-          budgetId: faker.string.uuid(),
-          categoryId: faker.string.uuid(),
-        };
-        const result = yield* Effect.exit(updateTransaction(mock, update));
-        expect(Exit.isFailure(result)).toBe(true);
-      }),
-  );
-
-  effectIt.effect("should error when trying to update the transaction ID", () =>
-    Effect.gen(function* () {
+  it("should update the amount of a transaction", () => {
+    const transactions = mockExpenseTransactions();
+    for (const t of transactions) {
+      const randomAmount = faker.number.float({
+        max: 10000,
+        fractionDigits: 1,
+      });
       const update = {
-        ...mock,
-        id: faker.string.uuid(),
+        ...t,
+        amount: randomAmount,
       };
-      const result = yield* Effect.exit(updateTransaction(mock, update));
-      expect(Exit.isFailure(result)).toBe(true);
-    }),
-  );
+      const result = updateTransaction(t, update);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.amount).toBe(randomAmount);
+      }
+    }
+  });
 
-  effectIt.effect("should error when trying to update the transaction ID", () =>
-    Effect.gen(function* () {
+  it("should error when trying to update the budget or category", () => {
+    const update = {
+      ...mock,
+      budgetId: faker.string.uuid(),
+      categoryId: faker.string.uuid(),
+    };
+    const result = updateTransaction(mock, update);
+    expect(result.isErr()).toBe(true);
+  });
+
+  it("should error when trying to update the transaction ID", () => {
+    const update = {
+      ...mock,
+      id: faker.string.uuid(),
+    };
+    const result = updateTransaction(mock, update);
+    expect(result.isErr()).toBe(true);
+  });
+
+  it("should update the type of a transaction", () => {
+    const transactions = mockExpenseTransactions();
+    for (const t of transactions) {
+      const randomBit = faker.number.binary();
+      const randomType =
+        randomBit === "1" ? transactionType.expense : transactionType.income;
       const update = {
-        ...mock,
-        id: faker.string.uuid(),
+        ...t,
+        type: randomType,
       };
-      const result = yield* Effect.exit(updateTransaction(mock, update));
-      expect(Exit.isFailure(result)).toBe(true);
-    }),
-  );
-
-  effectIt.effect("should update the type of a transaction", () =>
-    Effect.gen(function* () {
-      const transactions = mockExpenseTransactions();
-      for (const t of transactions) {
-        const randomBit = faker.number.binary();
-        const randomType =
-          randomBit === "1" ? transactionType.expense : transactionType.income;
-        const update = {
-          ...t,
-          type: randomType,
-        };
-        const result = yield* updateTransaction(t, update);
-        expect(result.type).toBe(randomType);
+      const result = updateTransaction(t, update);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.type).toBe(randomType);
       }
-    }),
-  );
+    }
+  });
 
-  effectIt.effect("should update the description of a transaction", () =>
-    Effect.gen(function* () {
-      const transactions = mockExpenseTransactions();
-      for (const t of transactions) {
-        const randomString = faker.lorem.words(
-          faker.number.int({ min: 1, max: 10 }),
-        );
-        const update = {
-          ...t,
-          description: randomString,
-        };
-        const result = yield* updateTransaction(t, update);
-        expect(result.description).toBe(randomString);
+  it("should update the description of a transaction", () => {
+    const transactions = mockExpenseTransactions();
+    for (const t of transactions) {
+      const randomString = faker.lorem.words(
+        faker.number.int({ min: 1, max: 10 }),
+      );
+      const update = {
+        ...t,
+        description: randomString,
+      };
+      const result = updateTransaction(t, update);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.description).toBe(randomString);
       }
-    }),
-  );
+    }
+  });
+});
+
+describe("isExpenseTransaction", () => {
+  let mock: Transaction;
+  beforeEach(() => {
+    mock = generateMockTransaction("expense");
+  });
+  it("should return true for expense transaction type", () => {
+    mock.type = "expense";
+    const result = isExpenseTransaction(mock);
+    expect(result).toBe(true);
+  });
+
+  it("should return false for income transaction type", () => {
+    mock.type = "income";
+    const result = isExpenseTransaction(mock);
+    expect(result).toBe(false);
+  });
+
+  it("should return false for transfer transaction type", () => {
+    mock.type = "transfer";
+    const result = isExpenseTransaction(mock);
+    expect(result).toBe(false);
+  });
 });
