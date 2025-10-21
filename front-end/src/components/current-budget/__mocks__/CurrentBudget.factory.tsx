@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import type { CurrentBudgetProps } from '../CurrentBudget.types'
-import { formatCurrency } from '@/lib/utils/formatCurrency'
+import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
+import { calculateSpentPercentage } from '@/lib/utils/calculations/calculateSpentPercentage'
 
 const startingAmount = faker.number.int({ min: 9000, max: 199999 })
 const spentAmount = faker.number.int({ min: 0, max: startingAmount })
@@ -10,7 +11,7 @@ export const currentBudgetProps: CurrentBudgetProps = {
   budgetName: faker.lorem.words(2),
   startingAmount: formatCurrency(startingAmount, 'za'),
   spentAmount: formatCurrency(spentAmount, 'za'),
-  spentPercentage: Math.floor((currentAmount / startingAmount) * 100),
+  spentPercentage: calculateSpentPercentage(startingAmount, spentAmount),
   currentAmount: formatCurrency(currentAmount, 'za'),
   onClick: () => {
     console.log()
