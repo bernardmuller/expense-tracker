@@ -24,7 +24,7 @@ describe('SpinnerButton', () => {
     render(
       <SpinnerButton
         enabledText="Add Expense "
-        disabled={true}
+        isDisabled={true}
         disabledText="Submitting"
         onClick={handleClick}
       />,
@@ -36,7 +36,7 @@ describe('SpinnerButton', () => {
     render(
       <SpinnerButton
         enabledText="Add Expense "
-        disabled={true}
+        isDisabled={true}
         disabledText="Submitting"
         onClick={handleClick}
       />,

@@ -7,26 +7,27 @@ type SpinnerButtonProps = {
   className?: string
 } & (
   | {
-      disabled?: false
+      isDisabled?: false
     }
   | {
-      disabled: true
+      isLoading?: boolean
+      isDisabled: true
       disabledText: string
     }
 )
 
 export function SpinnerButton(props: SpinnerButtonProps) {
   const { enabledText, onClick, className } = props
-  const text = props.disabled ? props.disabledText : enabledText
+  const text = props.isDisabled ? props.disabledText : enabledText
 
   return (
     <Button
-      disabled={props.disabled}
+      disabled={props.isDisabled}
       size="sm"
       onClick={onClick}
       className={className}
     >
-      {props.disabled && <Spinner />}
+      {props.isDisabled && props.isLoading && <Spinner />}
       {text}
     </Button>
   )
