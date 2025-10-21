@@ -13,7 +13,8 @@ export const Default: Story = {
   args: {
     enabledText: 'Add Expense',
     onClick: () => {},
-    disabled: true,
+    isDisabled: true,
+    isLoading: true,
     disabledText: 'Submitting',
     className: 'min-w-30',
   },
