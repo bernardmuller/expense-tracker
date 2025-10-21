@@ -142,7 +142,9 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
               className="w-full"
               isDisabled={!canSubmit}
               isLoading={isSubmitting}
-              disabledText="Enter your expense details"
+              disabledText={
+                isSubmitting ? 'Submitting' : 'Enter your expense details'
+              }
               buttonProps={{ type: 'submit', form: 'add-expense-form' }}
             />
           )}
