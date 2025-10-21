@@ -3,7 +3,7 @@ import { Spinner } from '@/components/ui/spinner'
 
 type SpinnerButtonProps = {
   enabledText: string
-  onClick: () => void
+  onClick?: () => void
   className?: string
   buttonProps?: React.ComponentProps<'button'>
 } & (
