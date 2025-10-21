@@ -21,61 +21,6 @@ import {
 } from "@/domain/entities/budget/budgetErrors";
 
 export function mapErrorToHttpResponse(error: unknown, c: HonoContext) {
-  if (error instanceof EntityNotFoundError) {
-    return c.json(
-      {
-        error: "Not Found",
-        message: error.message,
-        code: "ENTITY_NOT_FOUND",
-      },
-      404,
-    );
-  }
-
-  if (error instanceof EntityCreateError) {
-    return c.json(
-      {
-        error: "Failed to Create",
-        message: error.message,
-        code: "ENTITY_CREATE_ERROR",
-      },
-      500,
-    );
-  }
-
-  if (error instanceof EntityUpdateError) {
-    return c.json(
-      {
-        error: "Failed to Update",
-        message: error.message,
-        code: "ENTITY_UPDATE_ERROR",
-      },
-      500,
-    );
-  }
-
-  if (error instanceof EntityDeleteError) {
-    return c.json(
-      {
-        error: "Failed to Delete",
-        message: error.message,
-        code: "ENTITY_DELETE_ERROR",
-      },
-      500,
-    );
-  }
-
-  if (error instanceof EntityReadError) {
-    return c.json(
-      {
-        error: "Failed to Read",
-        message: error.message,
-        code: "ENTITY_READ_ERROR",
-      },
-      500,
-    );
-  }
-
   if (error instanceof UserAlreadyOnboardedError) {
     return c.json(
       {
