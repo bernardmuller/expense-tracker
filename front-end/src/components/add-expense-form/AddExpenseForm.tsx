@@ -41,7 +41,6 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
     },
     validators: {
       onBlur: addExpenseFormSchema,
-      onMount: addExpenseFormSchema,
     },
     onSubmit: async ({ value }) => props.onSubmit(value),
   })
