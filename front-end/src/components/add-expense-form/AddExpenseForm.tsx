@@ -10,8 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card'
-import { SpinnerButton } from '../spinner-button/SpinnerButton'
-import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field'
+import { Field, FieldError, FieldGroup } from '../ui/field'
 import { Input } from '../ui/input'
 
 type AddExpenseFormProps = {
@@ -66,7 +65,7 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                    {/*<FieldLabel htmlFor={field.name}>Description</FieldLabel>*/}
                     <Input
                       id={field.name}
                       name={field.name}
@@ -74,7 +73,7 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={isInvalid}
-                      placeholder="Describe your expense"
+                      placeholder="Expense name"
                       autoComplete="off"
                     />
                     {isInvalid && (
@@ -91,13 +90,14 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+                    {/*<FieldLabel htmlFor={field.name}>Amount</FieldLabel>*/}
                     <Input
                       id={field.name}
                       name={field.name}
-                      value={field.state.value}
+                      value={field.state.value === 0 ? '' : field.state.value}
                       onBlur={field.handleBlur}
                       type="number"
+                      placeholder="Amount"
                       onChange={(e) =>
                         field.handleChange(Number(e.target.value))
                       }
