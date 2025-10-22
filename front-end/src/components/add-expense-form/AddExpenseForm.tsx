@@ -1,5 +1,8 @@
 import { useForm } from '@tanstack/react-form'
 import * as z from 'zod'
+import { generateFilterProps } from '../filter/__mocks__/filterProps.mock'
+import Filter from '../filter/Filter'
+import { SpinnerButton } from '../spinner-button/SpinnerButton'
 import {
   Card,
   CardContent,
@@ -15,13 +18,17 @@ type AddExpenseFormProps = {
   onSubmit: (value: AddExpenseFormSchema) => void
 }
 
+const { filterItems } = generateFilterProps()
+
 const addExpenseFormSchema = z.object({
   description: z
     .string()
     .min(1, 'You must provide a description')
     .max(30, "Description can't exceed 30 characters"),
   amount: z.number().min(1, 'You must provide the amount'),
-  category: z.string().min(1, 'You must specify a category'),
+  category: z.string().refine((val) => val !== '', {
+    message: 'You must specify a category',
+  }),
 })
 
 type AddExpenseFormSchema = z.infer<typeof addExpenseFormSchema>
@@ -111,16 +118,11 @@ export default function AddExpenseForm(props: AddExpenseFormProps) {
                   field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Category</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="e.g., Food, Transport"
-                      autoComplete="off"
+                    {/*<FieldLabel htmlFor={field.name}>Category</FieldLabel>*/}
+                    <Filter
+                      filterItems={filterItems}
+                      handleValueChange={field.handleChange}
+                      placeHolder="Categories"
                     />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
