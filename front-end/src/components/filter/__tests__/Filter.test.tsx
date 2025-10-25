@@ -1,16 +1,16 @@
+import setupUserEvent from '@/lib/utils/testing/setupUserEvent'
+import { render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
 import Filter from '../Filter'
 import { generateFilterProps } from '../__mocks__/filterProps.mock'
 
 describe('Filter', () => {
   describe('default state', () => {
-    const { filterItems, handleValueChange, placeHolder } = generateFilterProps(
-      {
-        handleValueChange: vi.fn(),
-      },
-    )
-    beforeEach(() => {
+    it('should render a placeholder', () => {
+      const { filterItems, handleValueChange, placeHolder } =
+        generateFilterProps({
+          handleValueChange: vi.fn(),
+        })
       render(
         <Filter
           placeHolder={placeHolder}
@@ -18,37 +18,67 @@ describe('Filter', () => {
           handleValueChange={handleValueChange}
         />,
       )
-    })
-
-    it('should render a placeholder', () => {
       expect(screen.getByText(placeHolder)).toBeInTheDocument()
     })
     it('should display the correct amount of options', async () => {
+      const { filterItems, handleValueChange, placeHolder } =
+        generateFilterProps({
+          handleValueChange: vi.fn(),
+        })
+      const { user } = setupUserEvent(
+        <Filter
+          placeHolder={placeHolder}
+          filterItems={filterItems}
+          handleValueChange={handleValueChange}
+        />,
+      )
       const selectButtonElement = screen.getByRole('combobox')
-      fireEvent.click(selectButtonElement)
+      await user.click(selectButtonElement)
       for (const item of filterItems) {
         expect(screen.getByText(item.name)).toBeInTheDocument()
       }
     })
-    it('should call a function when the value is changed', () => {
+    it('should call a function when the value is changed', async () => {
+      const { filterItems, handleValueChange, placeHolder } =
+        generateFilterProps({
+          handleValueChange: vi.fn(),
+        })
+      const { user } = setupUserEvent(
+        <Filter
+          placeHolder={placeHolder}
+          filterItems={filterItems}
+          handleValueChange={handleValueChange}
+        />,
+      )
       const selectButtonElement = screen.getByRole('combobox')
-      fireEvent.click(selectButtonElement)
+      await user.click(selectButtonElement)
       const firstItem = screen.getByText(filterItems[0].name)
-      fireEvent.click(firstItem)
+      await user.click(firstItem)
       expect(handleValueChange).toHaveBeenCalled()
     })
-    it('should pass the new value into the function when an option is selected', () => {
+    it('should pass the new value into the function when an option is selected', async () => {
+      const { filterItems, handleValueChange, placeHolder } =
+        generateFilterProps({
+          handleValueChange: vi.fn(),
+        })
+      const { user } = setupUserEvent(
+        <Filter
+          placeHolder={placeHolder}
+          filterItems={filterItems}
+          handleValueChange={handleValueChange}
+        />,
+      )
       const selectButtonElement = screen.getByRole('combobox')
-      fireEvent.click(selectButtonElement)
+      await user.click(selectButtonElement)
       const firstItem = screen.getByText(filterItems[0].name)
-      fireEvent.click(firstItem)
+      await user.click(firstItem)
       expect(handleValueChange).toHaveBeenCalledWith(filterItems[0].value)
     })
   })
   describe('disabled state', () => {
-    const { filterItems, placeHolder } = generateFilterProps()
     it('should not show options when clicked', () => {
-      render(
+      const { filterItems, placeHolder } = generateFilterProps()
+      const { user } = setupUserEvent(
         <Filter
           placeHolder={placeHolder}
           filterItems={filterItems}
@@ -57,7 +87,7 @@ describe('Filter', () => {
         />,
       )
       const selectButtonElement = screen.getByRole('combobox')
-      fireEvent.click(selectButtonElement)
+      user.click(selectButtonElement)
       const firstItem = screen.queryByText(filterItems[0].name)
       expect(firstItem).not.toBeInTheDocument()
     })
