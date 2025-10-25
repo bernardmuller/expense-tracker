@@ -1,5 +1,6 @@
-import { screen, render, fireEvent } from '@testing-library/react'
-import { SpinnerButton } from '../SpinnerButton'
+import setupUserEvent from '@/lib/utils/testing/setupUserEvent'
+import { render, screen, waitFor } from '@testing-library/react'
+import { SpinnerButton } from '@/components/spinner-button/SpinnerButton'
 
 describe('SpinnerButton', () => {
   it('render default text', () => {
@@ -12,12 +13,16 @@ describe('SpinnerButton', () => {
     render(<SpinnerButton enabledText="Add Expense" onClick={handleClick} />)
     expect(screen.getByRole('button')).toBeInTheDocument()
   })
-  it('should call a function on click', () => {
+  it('should call a function on click', async () => {
     const handleClick = vi.fn()
-    render(<SpinnerButton enabledText="Add Expense" onClick={handleClick} />)
+    const { user } = setupUserEvent(
+      <SpinnerButton enabledText="Add Expense" onClick={handleClick} />,
+    )
     const button = screen.getByRole('button')
-    fireEvent.click(button)
-    expect(handleClick).toHaveBeenCalled()
+    user.click(button)
+    await waitFor(() => {
+      expect(handleClick).toHaveBeenCalled()
+    })
   })
   it('should render disabled text if disabled', () => {
     const handleClick = vi.fn()
@@ -31,18 +36,18 @@ describe('SpinnerButton', () => {
     )
     expect(screen.getByText('Submitting')).toBeInTheDocument()
   })
-  it('should not be clickable if disabled', () => {
+  it('should not be clickable if disabled', async () => {
     const handleClick = vi.fn()
-    render(
+    const { user } = setupUserEvent(
       <SpinnerButton
-        enabledText="Add Expense "
         isDisabled={true}
-        disabledText="Submitting"
+        disabledText="it is disabled"
+        enabledText="Add Expense"
         onClick={handleClick}
       />,
     )
     const button = screen.getByRole('button')
-    fireEvent.click(button)
+    await user.click(button)
     expect(handleClick).not.toHaveBeenCalled()
   })
 })
