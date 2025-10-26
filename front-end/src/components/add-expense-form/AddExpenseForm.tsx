@@ -1,5 +1,3 @@
-import { useForm } from '@tanstack/react-form'
-import * as z from 'zod'
 import { generateFilterProps } from '../filter/__mocks__/filterProps.mock'
 import Filter from '../filter/Filter'
 import { SpinnerButton } from '../spinner-button/SpinnerButton'
@@ -12,38 +10,13 @@ import {
 } from '../ui/card'
 import { Field, FieldError, FieldGroup } from '../ui/field'
 import { Input } from '../ui/input'
-
-type AddExpenseFormProps = {
-  onSubmit: (value: AddExpenseFormSchema) => void
-}
+import { useMyFormContext } from './AddExpenseForm.compound'
 
 const { filterItems } = generateFilterProps()
 
-const addExpenseFormSchema = z.object({
-  description: z
-    .string()
-    .min(1, 'You must provide a description')
-    .max(30, "Description can't exceed 30 characters"),
-  amount: z.number().min(1, 'You must provide the amount'),
-  category: z.string().refine((val) => val !== '', {
-    message: 'You must specify a category',
-  }),
-})
+export default function AddExpenseForm() {
+  const form = useMyFormContext()
 
-type AddExpenseFormSchema = z.infer<typeof addExpenseFormSchema>
-
-export default function AddExpenseForm(props: AddExpenseFormProps) {
-  const form = useForm({
-    defaultValues: {
-      description: '',
-      amount: 0,
-      category: '',
-    },
-    validators: {
-      onSubmit: addExpenseFormSchema,
-    },
-    onSubmit: async ({ value }) => props.onSubmit(value),
-  })
   return (
     <Card>
       <CardHeader>
