@@ -1,6 +1,6 @@
-import setupUserEvent from '@/lib/utils/testing/setupUserEvent'
-import { render, screen, waitFor } from '@testing-library/react'
 import { SpinnerButton } from '@/components/spinner-button/SpinnerButton'
+import setupUserEvent from '@/lib/utils/testing/setupUserEvent'
+import { render, screen } from '@testing-library/react'
 
 describe('SpinnerButton', () => {
   it('render default text', () => {
@@ -19,10 +19,8 @@ describe('SpinnerButton', () => {
       <SpinnerButton enabledText="Add Expense" onClick={handleClick} />,
     )
     const button = screen.getByRole('button')
-    user.click(button)
-    await waitFor(() => {
-      expect(handleClick).toHaveBeenCalled()
-    })
+    await user.click(button)
+    expect(handleClick).toHaveBeenCalled()
   })
   it('should render disabled text if disabled', () => {
     const handleClick = vi.fn()
