@@ -1,6 +1,5 @@
 import setupUserEvent from '@/lib/utils/testing/setupUserEvent'
 import { render, screen } from '@testing-library/react'
-import { vi } from 'vitest'
 import Filter from '../Filter'
 import { generateFilterProps } from '../__mocks__/filterProps.mock'
 
