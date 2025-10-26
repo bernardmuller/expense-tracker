@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import AddExpenseForm from '../AddExpenseForm'
-import { FormProvider } from '../AddExpenseForm.context'
+import { FormProvider } from '../AddExpenseForm.compound'
 
 describe('AddExpenseForm', () => {
   it('should render header text', () => {

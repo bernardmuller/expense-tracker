@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { formatCurrency } from '@/lib/utils/formatCurrency'
+import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { supportedLocales } from '@/lib/constants/supportedLocales'
 
-describe('Format Currency Util', () => {
+describe('formatCurrency', () => {
   it('should take a number and za locale and return a formatted currency', () => {
     const number = 10000
     const formattedCurrency = formatCurrency(

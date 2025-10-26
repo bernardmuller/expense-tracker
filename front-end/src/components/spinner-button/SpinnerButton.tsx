@@ -11,9 +11,11 @@ type SpinnerButtonProps = {
       isDisabled?: false
     }
   | {
+      disabledText: string
       isLoading?: boolean
       isDisabled: true
-      disabledText: string
+      onClick: () => void
+      className?: string
     }
 )
 
