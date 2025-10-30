@@ -1,18 +1,58 @@
-import configureOpenAPI from "@/infrastructure/http/openapi";
-import createApi from "@/infrastructure/http/createApi";
-import index from "@/infrastructure/routes/index";
-import health from "./infrastructure/routes/health";
-import users from "./infrastructure/routes/users";
+import configureOpenAPI from "@/http/openapi";
+import createApi from "@/http/createApi";
+import index from "@/routes/index";
+import { healthRouter as health } from "./health/http";
+import { authRouter as auth } from "./auth/http";
+import { userRouter as users } from "./users/http";
+import { budgetRouter as budgets } from "./budgets/http";
+import { categoryRouter as categories } from "./categories/http";
+import { transactionRouter as transactions } from "./transactions/http";
+import { categoryBudgetRouter as categoryBudgets } from "./category-budgets/http";
+import { userCategoryRouter as userCategories } from "./user-categories/http";
+import { cors } from "hono/cors";
+import env from "./env";
 
 const app = createApi();
 
 configureOpenAPI(app);
 
-const routes = [index, users, health] as const;
+const routes = [index, auth, users, budgets, categories, transactions, categoryBudgets, userCategories, health] as const;
 
-routes.forEach((route) => {
-  app.route("/", route);
+app.use(
+  "*", // or replace with "*" to enable cors for all routes
+  cors({
+    origin: env.BETTER_AUTH_URL,
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["POST", "GET", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
+    credentials: true,
+  }),
+);
+
+app.use("*", async (c, next) => {
+  // add custom getSession function
+  // const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  // if (!session) {
+  //   c.set("user", null);
+  //   c.set("session", null);
+  //   await next();
+  //   return;
+  // }
+  // c.set("user", session.user);
+  // c.set("session", session.session);
+  await next();
 });
+
+app.route("/", index);
+app.route("/auth", auth);
+app.route("/", users);
+app.route("/", budgets);
+app.route("/", categories);
+app.route("/", transactions);
+app.route("/", categoryBudgets);
+app.route("/", userCategories);
+app.route("/", health);
 
 export type AppType = (typeof routes)[number];
 
