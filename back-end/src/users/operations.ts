@@ -8,13 +8,13 @@ import type {
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./types";
-import { UserEmailAlreadyInUseError } from "./types";
 import {
   EntityCreateError,
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
-} from "@/lib/errors/repositoryErrors";
+} from "@/lib/errors/actionErrors";
+import { UserEmailAlreadyInUseError } from "@/lib/errors/applicationErrors";
 
 export const createUser = (
   params: CreateUserParams,
@@ -26,9 +26,7 @@ export const createUser = (
   | InstanceType<typeof EntityReadError>
 > =>
   UserQueries.findByEmail(params.email, ctx)
-    .andThen(() =>
-      errAsync(new UserEmailAlreadyInUseError(params.email)),
-    )
+    .andThen(() => errAsync(new UserEmailAlreadyInUseError(params.email)))
     .orElse((error) =>
       error instanceof EntityNotFoundError
         ? UserDomain.createUser(params).asyncAndThen((user) =>

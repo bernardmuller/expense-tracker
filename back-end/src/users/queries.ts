@@ -7,7 +7,7 @@ import {
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
-} from "@/lib/errors/repositoryErrors";
+} from "@/lib/errors/actionErrors";
 import { eq } from "drizzle-orm";
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { User } from "./types";

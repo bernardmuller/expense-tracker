@@ -1,11 +1,8 @@
 import { describe, test, expect } from "vitest";
 import { withTestTransaction } from "@/db/testUtils";
 import * as UserOperations from "./operations";
-import {
-  UserEmailAlreadyInUseError,
-  UserAlreadyOnboardedError,
-  UserAlreadyVerifiedError,
-} from "./types";
+import { UserAlreadyOnboardedError, UserAlreadyVerifiedError } from "./types";
+import { UserEmailAlreadyInUseError } from "@/lib/errors/applicationErrors";
 
 describe("User Operations", () => {
   describe("createUser", () => {

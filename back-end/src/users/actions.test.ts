@@ -9,6 +9,7 @@ import type { CreateUserParams, User } from "./types";
 import { UserAlreadyOnboardedError, UserAlreadyVerifiedError } from "./types";
 import { beforeEach, describe, expect, it } from "vitest";
 import { generateMockUser, mockUsers } from "@/test/mocks/user.mock";
+import { faker } from "@faker-js/faker/locale/en";
 
 describe("createUser", () => {
   it("should create a user", () => {
@@ -85,6 +86,9 @@ describe("updateUser", () => {
       email: "john@email.com",
       emailVerified: false,
       onboarded: true,
+      image: null,
+      createdAt: faker.date.anytime(),
+      updatedAt: faker.date.anytime(),
     };
   });
 
