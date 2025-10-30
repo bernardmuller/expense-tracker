@@ -1,6 +1,4 @@
-import { generateUuid } from "@/lib/utils/generateUuid";
 import { createError } from "@/lib/utils/createError";
-import { err, ok, type Result } from "neverthrow";
 import z from "zod";
 import { createInsertSchema } from "drizzle-zod";
 import { users } from "@/db/schema";
@@ -80,56 +78,3 @@ export type UserValidationError =
   | InstanceType<typeof UserAlreadyExistsError>
   | InstanceType<typeof UserAlreadyVerifiedError>
   | InstanceType<typeof UserEmailAlreadyInUseError>;
-
-// --------------------------------
-// Domain Functions
-// --------------------------------
-
-export const createUser = (params: CreateUserParams): Result<User, never> => {
-  const uuid = generateUuid();
-  return ok({
-    id: uuid,
-    ...params,
-    emailVerified: false,
-    onboarded: false,
-  });
-};
-
-export const markUserAsOnboarded = (
-  user: User,
-): Result<User, InstanceType<typeof UserAlreadyOnboardedError>> => {
-  if (user.onboarded) {
-    return err(new UserAlreadyOnboardedError(user.id));
-  }
-
-  return ok({
-    ...user,
-    onboarded: true,
-  });
-};
-
-export const markUserAsVerified = (
-  user: User,
-): Result<User, InstanceType<typeof UserAlreadyVerifiedError>> => {
-  if (user.emailVerified) {
-    return err(new UserAlreadyVerifiedError(user.id));
-  }
-
-  return ok({
-    ...user,
-    emailVerified: true,
-  });
-};
-
-export const updateUser = (
-  user: User,
-  updates: Partial<User>,
-): Result<User, never> => {
-  return ok({
-    ...user,
-    ...updates,
-  });
-};
-
-export const isUserFullySetup = (user: User): boolean =>
-  user.onboarded && user.emailVerified;
