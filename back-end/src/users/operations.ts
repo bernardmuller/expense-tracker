@@ -1,14 +1,14 @@
 import { errAsync, ok, type ResultAsync } from "neverthrow";
 import type { AppContext } from "@/db/context";
 import * as UserQueries from "./queries";
-import * as UserDomain from "./types";
+import * as UserDomain from "./actions";
 import type {
   CreateUserParams,
   User,
-  UserEmailAlreadyInUseError,
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
 } from "./types";
+import { UserEmailAlreadyInUseError } from "./types";
 import {
   EntityCreateError,
   EntityNotFoundError,
@@ -27,7 +27,7 @@ export const createUser = (
 > =>
   UserQueries.findByEmail(params.email, ctx)
     .andThen(() =>
-      errAsync(new UserDomain.UserEmailAlreadyInUseError(params.email)),
+      errAsync(new UserEmailAlreadyInUseError(params.email)),
     )
     .orElse((error) =>
       error instanceof EntityNotFoundError
