@@ -1,10 +1,8 @@
-import type { BudgetError, BudgetValidationError } from "@/domain/entities/budget/budgetErrors";
-import type { CategoryValidationError } from "@/domain/entities/category/categoryErrors";
-import type { CategoryBudgetError } from "@/domain/entities/categoryBudget/categoryBudgetErrors";
-import type { FinancialAccountValidationError } from "@/domain/entities/financialAccount/financialAccountErrors";
-import type { TransactionError } from "@/domain/entities/transaction/transactionErrors";
-import type { UserValidationError } from "@/domain/entities/user/userErrors";
-import type { UserCategoryError } from "@/domain/entities/userCategory/userCategoryErrors";
+import type { BudgetError, BudgetValidationError } from "@/budgets/types";
+import type { CategoryValidationError } from "@/categories/types";
+import type { CategoryBudgetError } from "@/category-budgets/types";
+import type { TransactionError } from "@/transactions/types";
+import type { UserValidationError } from "@/users/types";
 import type { RepositoryErrorType } from "./repositoryErrors";
 import {
   DivideByZeroError,
@@ -28,11 +26,9 @@ export type ApplicationError =
   | BudgetValidationError
   | BudgetError
   | CategoryValidationError
-  | FinancialAccountValidationError
   | CategoryBudgetError
   | UserValidationError
   | TransactionError
-  | UserCategoryError
   | RepositoryErrorType
   | InstanceType<typeof InvalidDecimalNumberStringError>
   | InstanceType<typeof DivideByZeroError>
