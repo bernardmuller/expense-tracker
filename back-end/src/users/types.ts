@@ -1,7 +1,9 @@
 import { createError } from "@/lib/utils/createError";
-import z from "zod";
+import z, { email } from "zod";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { users } from "@/db/schema";
+import { validateEmail } from "@/lib/validations/emailValidator";
+import { validateName } from "@/lib/validations/nameValidator";
 
 // --------------------------------
 // Schemas & Types
@@ -12,10 +14,19 @@ export const userSchema = createSelectSchema(users);
 
 export type User = z.infer<typeof userSchema>;
 
-export const createUserSchema = userSchema.pick({
-  name: true,
-  email: true,
-});
+export const createUserSchema = userSchema
+  .pick({
+    name: true,
+    email: true,
+  })
+  .refine((val) => validateEmail(val.email), {
+    message: "Invalid email",
+    path: ["email"],
+  })
+  .refine((val) => validateName(val.name), {
+    message: "Invalid name",
+    path: ["name"],
+  });
 
 export type CreateUserParams = z.infer<typeof createUserSchema>;
 

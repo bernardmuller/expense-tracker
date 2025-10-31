@@ -8,6 +8,13 @@
       "when": 1761810258607,
       "tag": "0000_short_magik",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1761830247548,
+      "tag": "0001_graceful_ronan",
+      "breakpoints": true
     }
   ]
 }
