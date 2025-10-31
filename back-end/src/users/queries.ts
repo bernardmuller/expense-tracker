@@ -1,5 +1,4 @@
 import type { AppContext } from "@/db/context";
-import type { User as DbUser } from "@/db/schema";
 import { users } from "@/db/schema";
 import {
   EntityCreateError,
@@ -12,7 +11,7 @@ import { eq } from "drizzle-orm";
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { User } from "./types";
 
-export const create = (user: Partial<DbUser>, ctx: AppContext) =>
+export const create = (user: Partial<User>, ctx: AppContext) =>
   ResultAsync.fromPromise(
     (async () => {
       if (!user.id || !user.name || !user.email) {
