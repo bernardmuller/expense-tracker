@@ -1,14 +1,24 @@
+import { createContext } from "@/db/context";
 import { createRouter } from "@/http/createApi";
+import { mapErrorToResponse } from "@/http/errorMapper";
+import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
+import { userSchema } from "@/users/types";
 import { createRoute, z } from "@hono/zod-openapi";
+import type { Context } from "hono";
+import { Ok } from "neverthrow";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
-import type { Context } from "hono";
-import { createContext } from "@/db/context";
-import { createUser } from "@/users/operations";
-import { createUserSchema, userSchema } from "@/users/types";
-import type { CreateUserParams } from "@/users/types";
-import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
-import { mapErrorToResponse } from "@/http/errorMapper";
+import { login, register } from "./operations";
+import {
+  loginResponseSchema,
+  registerUserAndAccountSchema,
+  type RegisterUserAndAccountParams,
+} from "./types";
+
+const loginSchema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
 
 const tags = ["Auth"];
 
@@ -21,7 +31,10 @@ const registerRoute = createRoute({
   method: "post",
   tags,
   request: {
-    body: jsonContentRequired(createUserSchema, "Register a new user"),
+    body: jsonContentRequired(
+      registerUserAndAccountSchema,
+      "Register a new user",
+    ),
   },
   responses: {
     [HttpStatusCodes.CREATED]: jsonContent(
@@ -39,17 +52,54 @@ const registerRoute = createRoute({
   },
 });
 
+const loginRoute = createRoute({
+  path: "/login",
+  method: "post",
+  tags,
+  request: {
+    body: jsonContentRequired(loginSchema, "Register a new user"),
+  },
+  responses: {
+    [HttpStatusCodes.CREATED]: jsonContent(
+      loginResponseSchema,
+      "Logs a user in",
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+      errorResponseSchema,
+      "Validation error - email and/or password incorrect",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
 // --------------------------------
 // Handlers
 // --------------------------------
 
 const registerHandler = async (c: Context) => {
-  const body = await c.req.json<CreateUserParams>();
+  const body = await c.req.json<RegisterUserAndAccountParams>();
   const ctx = createContext();
-  const result = await createUser(body, ctx);
+  const result = await register(body, ctx);
 
   return result.match(
     (user) => c.json(user, 201),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
+const loginHandler = async (c: Context) => {
+  const body = await c.req.json<{
+    email: string;
+    password: string;
+  }>();
+  const ctx = createContext();
+  const result = await login(body, ctx);
+
+  return result.match(
+    (token) => c.json(token, 201),
     (error) => mapErrorToResponse(error, c),
   );
 };
@@ -58,7 +108,6 @@ const registerHandler = async (c: Context) => {
 // Router
 // --------------------------------
 
-export const authRouter = createRouter().openapi(
-  registerRoute,
-  registerHandler,
-);
+export const authRouter = createRouter()
+  .openapi(registerRoute, registerHandler)
+  .openapi(loginRoute, loginHandler);

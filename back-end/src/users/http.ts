@@ -1,10 +1,3 @@
-/**
- * User HTTP Layer
- *
- * Handles HTTP requests and routes for user operations.
- * Combines handlers and route definitions in one place.
- */
-
 import { createRouter } from "@/http/createApi";
 import { createRoute, z } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
@@ -64,7 +57,10 @@ const createUserRoute = createRoute({
     body: jsonContent(createUserSchema, "User creation data"),
   },
   responses: {
-    [HttpStatusCodes.CREATED]: jsonContent(userSchema, "User created successfully"),
+    [HttpStatusCodes.CREATED]: jsonContent(
+      userSchema,
+      "User created successfully",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       errorResponseSchema,
       "Validation error - email already in use",

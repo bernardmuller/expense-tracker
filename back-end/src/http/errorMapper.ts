@@ -15,6 +15,10 @@ export function mapErrorToResponse(error: unknown, c: Context) {
       error: string;
     };
 
+    console.log({
+      ...typedError,
+    });
+
     return c.json(
       {
         error: typedError.error || "Error",
