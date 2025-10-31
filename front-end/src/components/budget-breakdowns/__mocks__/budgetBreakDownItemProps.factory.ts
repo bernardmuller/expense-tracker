@@ -5,7 +5,7 @@ import type {
   PlannedBudgetBreakdownItemProps,
 } from '../BudgetBreakdownItem.types'
 import { supportedLocales } from '@/lib/constants/supportedLocales'
-import { formatCurrency } from '@/lib/utils/formatCurrency'
+import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 
 const BUDGET_NAMES = [
   'Groceries',

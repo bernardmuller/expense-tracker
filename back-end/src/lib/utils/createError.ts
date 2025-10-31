@@ -25,22 +25,6 @@ function getDefaultOptions<Tag extends string>(tag: Tag): ErrorOptions {
   };
 }
 
-/**
- * Creates a custom error class with a tag and message builder.
- * @example
- * const NotFoundError = createError(
- *   "NotFoundError",
- *   (id: string) => `Not found: ${id}`
- * );
- * const error = new NotFoundError("123", underlyingError);
- *
- * @example
- * const ValidationError = createError(
- *   "ValidationError",
- *   (msg: string) => msg,
- *   { code: "VALIDATION_ERROR", error: "Bad Request", statusCode: 400 }
- * );
- */
 export function createError<Tag extends string, Param = string>(
   tag: Tag,
   messageBuilder: (param: Param) => string,
