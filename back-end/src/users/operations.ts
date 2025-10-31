@@ -44,6 +44,15 @@ export const getUserById = (
   | InstanceType<typeof EntityReadError>
 > => UserQueries.findById(id, ctx);
 
+export const getUserByEmail = (
+  email: string,
+  ctx: AppContext,
+): ResultAsync<
+  User,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> => UserQueries.findByEmail(email, ctx);
+
 export const getAllUsers = (
   ctx: AppContext,
 ): ResultAsync<User[], InstanceType<typeof EntityReadError>> =>
