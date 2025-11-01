@@ -4,6 +4,7 @@ import {
   InvalidDecimalNumberStringError,
   PercentageCalculationError,
 } from "./utilityErrors";
+import { EmailSendError } from "./smtpErrors";
 
 export class UnexpectedError extends Error {
   constructor(
@@ -22,4 +23,5 @@ export type ApplicationError =
   | InstanceType<typeof InvalidDecimalNumberStringError>
   | InstanceType<typeof DivideByZeroError>
   | InstanceType<typeof PercentageCalculationError>
+  | InstanceType<typeof EmailSendError>
   | TUnexpectedError;
