@@ -28,6 +28,7 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string(),
   BETTER_AUTH_URL: z.url(),
   BETTER_AUTH_SECRET: z.string(),
+  RESEND_KEY: z.string(),
 });
 
 export type env = z.infer<typeof EnvSchema>;
