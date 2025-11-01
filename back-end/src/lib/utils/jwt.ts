@@ -1,11 +1,19 @@
 import jwt from "jsonwebtoken";
 import { ResultAsync } from "neverthrow";
-import { JwtGenerationError } from "@/auth/types";
+import { JwtGenerationError, RefreshTokenDecodeError, ExpiredRefreshTokenError } from "@/auth/types";
 
 type TokenPayload = {
   userId: string;
   email: string;
   name: string;
+};
+
+type DecodedTokenPayload = {
+  userId: string;
+  email: string;
+  name: string;
+  iat: number;
+  exp: number;
 };
 
 const getJwtSecret = (): string => {
@@ -42,4 +50,51 @@ export const generateRefreshToken = (
       return jwt.sign(payload, secret, { expiresIn: "7d" });
     })(),
     (error) => new JwtGenerationError(String(error)),
+  );
+
+export const generateVerificationToken = (
+  userId: string,
+  verificationId: string,
+): ResultAsync<string, InstanceType<typeof JwtGenerationError>> =>
+  ResultAsync.fromPromise(
+    (async () => {
+      const payload = { userId, verificationId };
+      const secret = getJwtSecret();
+      return jwt.sign(payload, secret, { expiresIn: "15m" });
+    })(),
+    (error) => new JwtGenerationError(String(error)),
+  );
+
+export const decodeRefreshToken = (
+  token: string,
+): ResultAsync<
+  TokenPayload,
+  | InstanceType<typeof RefreshTokenDecodeError>
+  | InstanceType<typeof ExpiredRefreshTokenError>
+> =>
+  ResultAsync.fromPromise(
+    (async () => {
+      const secret = getJwtSecret();
+      const decoded = jwt.verify(token, secret) as DecodedTokenPayload;
+
+      if (!decoded.userId || !decoded.email || !decoded.name) {
+        throw new Error("Invalid token payload: missing userId, email, or name");
+      }
+
+      return {
+        userId: decoded.userId,
+        email: decoded.email,
+        name: decoded.name,
+      };
+    })(),
+    (error) => {
+      const errorMessage = String(error);
+
+      // Check if it's an expiration error
+      if (errorMessage.includes("jwt expired") || errorMessage.includes("TokenExpiredError")) {
+        return new ExpiredRefreshTokenError();
+      }
+
+      return new RefreshTokenDecodeError(errorMessage);
+    },
   );

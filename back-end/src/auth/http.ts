@@ -8,17 +8,18 @@ import type { Context } from "hono";
 import { Ok } from "neverthrow";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
-import { login, register } from "./operations";
+import { loginEmailAndPassword, loginRequest, loginAttempt, register, refreshTokens } from "./operations";
 import {
   loginResponseSchema,
+  loginRequestResponseSchema,
   registerUserAndAccountSchema,
   type RegisterUserAndAccountParams,
+  loginEmailAndPasswordSchema,
+  loginRequestSchema,
+  loginAttemptSchema,
+  MissingAuthorizationHeaderError,
+  InvalidAuthorizationHeaderError,
 } from "./types";
-
-const loginSchema = z.object({
-  email: z.string(),
-  password: z.string(),
-});
 
 const tags = ["Auth"];
 
@@ -52,21 +53,111 @@ const registerRoute = createRoute({
   },
 });
 
-const loginRoute = createRoute({
+const loginEmailAndPasswordRoute = createRoute({
   path: "/login",
   method: "post",
   tags,
   request: {
-    body: jsonContentRequired(loginSchema, "Register a new user"),
+    body: jsonContentRequired(loginEmailAndPasswordSchema, "Login with email and password"),
   },
   responses: {
-    [HttpStatusCodes.CREATED]: jsonContent(
+    [HttpStatusCodes.OK]: jsonContent(
       loginResponseSchema,
-      "Logs a user in",
+      "User logged in successfully",
     ),
-    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
       errorResponseSchema,
-      "Validation error - email and/or password incorrect",
+      "Invalid email and/or password",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+const loginRequestRoute = createRoute({
+  path: "/login/request",
+  method: "post",
+  tags,
+  request: {
+    body: jsonContentRequired(loginRequestSchema, "Request magic link login with email"),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      loginRequestResponseSchema,
+      "OTP sent successfully, returns verification token",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "User not found",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+const loginAttemptRoute = createRoute({
+  path: "/login/verify",
+  method: "post",
+  tags,
+  security: [{ Bearer: [] }],
+  request: {
+    body: jsonContentRequired(loginAttemptSchema, "Verify OTP and get access tokens"),
+    headers: z.object({
+      authorization: z
+        .string()
+        .regex(/^Bearer .+$/)
+        .describe("Verification token in format: Bearer <token>"),
+    }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      loginResponseSchema,
+      "OTP verified successfully, user logged in",
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorResponseSchema,
+      "Missing/invalid authorization header, invalid or expired OTP",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "Verification not found",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+const refreshRoute = createRoute({
+  path: "/refresh",
+  method: "post",
+  tags,
+  security: [{ Bearer: [] }],
+  request: {
+    headers: z.object({
+      authorization: z
+        .string()
+        .regex(/^Bearer .+$/)
+        .describe("Refresh token in format: Bearer <token>"),
+    }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      loginResponseSchema,
+      "Tokens refreshed successfully, returns new access and refresh tokens",
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorResponseSchema,
+      "Missing/invalid authorization header, expired or invalid refresh token",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "User not found",
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema,
@@ -90,16 +181,97 @@ const registerHandler = async (c: Context) => {
   );
 };
 
-const loginHandler = async (c: Context) => {
+const loginEmailAndPasswordHandler = async (c: Context) => {
   const body = await c.req.json<{
     email: string;
     password: string;
   }>();
   const ctx = createContext();
-  const result = await login(body, ctx);
+  const result = await loginEmailAndPassword(body, ctx);
 
   return result.match(
-    (token) => c.json(token, 201),
+    (tokens) => c.json(tokens, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
+const loginRequestHandler = async (c: Context) => {
+  const body = await c.req.json<{
+    email: string;
+  }>();
+  const ctx = createContext();
+  const result = await loginRequest(body, ctx);
+
+  return result.match(
+    (token) => c.json({ token }, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
+const loginAttemptHandler = async (c: Context) => {
+  const body = await c.req.json<{
+    otp: string;
+  }>();
+
+  // Extract Authorization header
+  const authHeader = c.req.header("Authorization");
+
+  if (!authHeader) {
+    const error = new MissingAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  // Validate format: Bearer <token>
+  if (!authHeader.startsWith("Bearer ")) {
+    const error = new InvalidAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  // Extract token
+  const token = authHeader.substring(7); // Remove "Bearer " prefix
+
+  if (!token) {
+    const error = new InvalidAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  const ctx = createContext();
+  const result = await loginAttempt({ otp: body.otp, token }, ctx);
+
+  return result.match(
+    (tokens) => c.json(tokens, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
+const refreshHandler = async (c: Context) => {
+  // Extract Authorization header
+  const authHeader = c.req.header("Authorization");
+
+  if (!authHeader) {
+    const error = new MissingAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  // Validate format: Bearer <token>
+  if (!authHeader.startsWith("Bearer ")) {
+    const error = new InvalidAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  // Extract refresh token
+  const refreshToken = authHeader.substring(7); // Remove "Bearer " prefix
+
+  if (!refreshToken) {
+    const error = new InvalidAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  const ctx = createContext();
+  const result = await refreshTokens(refreshToken, ctx);
+
+  return result.match(
+    (tokens) => c.json(tokens, 200),
     (error) => mapErrorToResponse(error, c),
   );
 };
@@ -110,4 +282,7 @@ const loginHandler = async (c: Context) => {
 
 export const authRouter = createRouter()
   .openapi(registerRoute, registerHandler)
-  .openapi(loginRoute, loginHandler);
+  .openapi(loginEmailAndPasswordRoute, loginEmailAndPasswordHandler)
+  .openapi(loginRequestRoute, loginRequestHandler)
+  .openapi(loginAttemptRoute, loginAttemptHandler)
+  .openapi(refreshRoute, refreshHandler);
