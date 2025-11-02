@@ -83,7 +83,7 @@ export default function AddExpenseForm({
       <CardFooter>
         <form.AppForm>
           <form.FormButton
-            enabledText="Submit"
+            enabledText="Create Transaction"
             loadingText="Submitting"
             disabledText="Enter your new expense details"
             formId="add-expense-form"
