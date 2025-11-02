@@ -21,7 +21,7 @@ const preview: Preview = {
     },
   },
   initialGlobals: {
-    viewport: { value: 'iPhone 13', isRotated: false },
+    viewport: { value: 'iphone13', isRotated: false },
   },
   decorators: [
     withThemeByClassName({
@@ -29,7 +29,7 @@ const preview: Preview = {
         light: 'light',
         dark: 'dark',
       },
-      defaultTheme: 'light',
+      defaultTheme: 'dark',
     }),
   ],
 }
