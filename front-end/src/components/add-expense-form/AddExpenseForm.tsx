@@ -1,21 +1,48 @@
-import { generateFilterProps } from '../filter/__mocks__/filterProps.mock'
-import Filter from '../filter/Filter'
-import { SpinnerButton } from '../spinner-button/SpinnerButton'
+import { useAppForm } from '@/hooks/form'
+import z from 'zod'
+import type { FilterItems } from '../filter/Filter.types'
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from '../ui/card'
-import { Field, FieldError, FieldGroup } from '../ui/field'
-import { Input } from '../ui/input'
-import { useMyFormContext } from './AddExpenseForm.compound'
+import { FieldGroup } from '../ui/field'
 
-const { filterItems } = generateFilterProps()
+const addExpenseSchema = z.object({
+  description: z
+    .string()
+    .min(1, 'You must provide a description')
+    .max(30, "Description can't exceed 30 characters"),
+  amount: z.number().positive('You must provide the amount'),
+  category: z.string().refine((val) => val !== '', {
+    message: 'You must specify a category',
+  }),
+})
 
-export default function AddExpenseForm() {
-  const form = useMyFormContext()
+type AddExpenseFormValues = z.infer<typeof addExpenseSchema>
+
+export default function AddExpenseForm({
+  onSubmit,
+  categories,
+}: {
+  onSubmit: (value: AddExpenseFormValues) => void
+  categories: FilterItems
+}) {
+  const form = useAppForm({
+    defaultValues: {
+      description: '',
+      amount: 0,
+      category: '',
+    },
+    validators: {
+      onSubmit: addExpenseSchema,
+    },
+    onSubmit: ({ value }) => {
+      onSubmit(value)
+    },
+  })
 
   return (
     <Card>
@@ -31,98 +58,37 @@ export default function AddExpenseForm() {
           }}
         >
           <FieldGroup>
-            <form.Field
+            <form.AppField
               name="description"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    {/*<FieldLabel htmlFor={field.name}>Description</FieldLabel>*/}
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="Expense name"
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
+              children={(field) => (
+                <field.TextField placeholder="Expense name" />
+              )}
             />
-            <form.Field
+            <form.AppField
               name="amount"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    {/*<FieldLabel htmlFor={field.name}>Amount</FieldLabel>*/}
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value === 0 ? '' : field.state.value}
-                      onBlur={field.handleBlur}
-                      type="number"
-                      placeholder="Amount"
-                      onChange={(e) =>
-                        field.handleChange(Number(e.target.value))
-                      }
-                      aria-invalid={isInvalid}
-                      autoComplete="off"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
+              children={(field) => <field.NumberField placeholder="Amount" />}
             />
-            <form.Field
+            <form.AppField
               name="category"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid
-                return (
-                  <Field data-invalid={isInvalid}>
-                    {/*<FieldLabel htmlFor={field.name}>Category</FieldLabel>*/}
-                    <Filter
-                      filterItems={filterItems}
-                      handleValueChange={field.handleChange}
-                      placeHolder="Categories"
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                )
-              }}
+              children={(field) => (
+                <field.SelectField
+                  filterItems={categories}
+                  placeHolder="Categories"
+                />
+              )}
             />
           </FieldGroup>
         </form>
       </CardContent>
       <CardFooter>
-        <form.Subscribe
-          selector={(state) => [state.canSubmit, state.isSubmitting]}
-          children={([canSubmit, isSubmitting]) => (
-            <SpinnerButton
-              enabledText="Submit"
-              className="w-full"
-              isDisabled={!canSubmit}
-              isLoading={isSubmitting}
-              disabledText={
-                isSubmitting ? 'Submitting' : 'Enter your expense details'
-              }
-              buttonProps={{ type: 'submit', form: 'add-expense-form' }}
-            />
-          )}
-        />
+        <form.AppForm>
+          <form.FormButton
+            enabledText="Submit"
+            loadingText="Submitting"
+            disabledText="Enter your new expense details"
+            formId="add-expense-form"
+          />
+        </form.AppForm>
       </CardFooter>
     </Card>
   )
