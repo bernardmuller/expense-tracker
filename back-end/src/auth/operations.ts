@@ -7,7 +7,6 @@ import type {
   LoginParams,
   RegisterUserAndAccountParams,
   LoginResponse,
-  LoginRequestParams,
   LoginAttemptParams,
   LoginEmailAndPasswordParams,
 } from "./types";
@@ -99,6 +98,7 @@ export const register = (
       return error;
     });
 
+// NOTE: NOT IN USE
 export const loginEmailAndPassword = (
   params: LoginEmailAndPasswordParams,
   ctx: AppContext,

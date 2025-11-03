@@ -57,7 +57,6 @@ export type RegisterUserAndAccountParams = z.infer<
   typeof registerUserAndAccountSchema
 >;
 
-// Magic link login - only email required
 export const loginRequestSchema = userInsertSchema
   .pick({
     email: true,
@@ -69,7 +68,6 @@ export const loginRequestSchema = userInsertSchema
 
 export type LoginRequestParams = z.infer<typeof loginRequestSchema>;
 
-// Traditional email and password login
 export const loginEmailAndPasswordSchema = userInsertSchema
   .pick({
     email: true,
@@ -82,9 +80,10 @@ export const loginEmailAndPasswordSchema = userInsertSchema
     path: ["email"],
   });
 
-export type LoginEmailAndPasswordParams = z.infer<typeof loginEmailAndPasswordSchema>;
+export type LoginEmailAndPasswordParams = z.infer<
+  typeof loginEmailAndPasswordSchema
+>;
 
-// Alias for LoginRequestParams to match operation naming
 export type LoginParams = LoginRequestParams;
 
 export const loginAttemptSchema = z.object({
@@ -287,6 +286,36 @@ export const RefreshTokenDecodeError = createError(
   (message: string) => `Failed to decode refresh token: ${message}`,
   {
     code: "REFRESH_TOKEN_DECODE_FAILED",
+    error: "Unauthorized",
+    statusCode: 401,
+  },
+);
+
+export const ExpiredAccessTokenError = createError(
+  "ExpiredAccessTokenError",
+  () => "Access token has expired",
+  {
+    code: "EXPIRED_ACCESS_TOKEN",
+    error: "Unauthorized",
+    statusCode: 401,
+  },
+);
+
+export const InvalidAccessTokenError = createError(
+  "InvalidAccessTokenError",
+  () => "Access token is invalid or malformed",
+  {
+    code: "INVALID_ACCESS_TOKEN",
+    error: "Unauthorized",
+    statusCode: 401,
+  },
+);
+
+export const AccessTokenDecodeError = createError(
+  "AccessTokenDecodeError",
+  (message: string) => `Failed to decode access token: ${message}`,
+  {
+    code: "ACCESS_TOKEN_DECODE_FAILED",
     error: "Unauthorized",
     statusCode: 401,
   },

@@ -26,8 +26,8 @@ const EnvSchema = z.object({
     "silent",
   ]),
   DATABASE_URL: z.string(),
-  BETTER_AUTH_URL: z.url(),
-  BETTER_AUTH_SECRET: z.string(),
+  AUTH_URL: z.url(),
+  AUTH_SECRET: z.string(),
   RESEND_KEY: z.string(),
 });
 

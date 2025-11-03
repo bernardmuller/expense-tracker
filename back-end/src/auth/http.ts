@@ -8,7 +8,13 @@ import type { Context } from "hono";
 import { Ok } from "neverthrow";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
-import { loginEmailAndPassword, loginRequest, loginAttempt, register, refreshTokens } from "./operations";
+import {
+  loginEmailAndPassword,
+  loginRequest,
+  loginAttempt,
+  register,
+  refreshTokens,
+} from "./operations";
 import {
   loginResponseSchema,
   loginRequestResponseSchema,
@@ -53,35 +59,15 @@ const registerRoute = createRoute({
   },
 });
 
-const loginEmailAndPasswordRoute = createRoute({
-  path: "/login",
-  method: "post",
-  tags,
-  request: {
-    body: jsonContentRequired(loginEmailAndPasswordSchema, "Login with email and password"),
-  },
-  responses: {
-    [HttpStatusCodes.OK]: jsonContent(
-      loginResponseSchema,
-      "User logged in successfully",
-    ),
-    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
-      errorResponseSchema,
-      "Invalid email and/or password",
-    ),
-    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      errorResponseSchema,
-      "Internal server error",
-    ),
-  },
-});
-
 const loginRequestRoute = createRoute({
   path: "/login/request",
   method: "post",
   tags,
   request: {
-    body: jsonContentRequired(loginRequestSchema, "Request magic link login with email"),
+    body: jsonContentRequired(
+      loginRequestSchema,
+      "Request magic link login with email",
+    ),
   },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
@@ -105,7 +91,10 @@ const loginAttemptRoute = createRoute({
   tags,
   security: [{ Bearer: [] }],
   request: {
-    body: jsonContentRequired(loginAttemptSchema, "Verify OTP and get access tokens"),
+    body: jsonContentRequired(
+      loginAttemptSchema,
+      "Verify OTP and get access tokens",
+    ),
     headers: z.object({
       authorization: z
         .string()
@@ -213,7 +202,6 @@ const loginAttemptHandler = async (c: Context) => {
     otp: string;
   }>();
 
-  // Extract Authorization header
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader) {
@@ -221,14 +209,12 @@ const loginAttemptHandler = async (c: Context) => {
     return mapErrorToResponse(error, c);
   }
 
-  // Validate format: Bearer <token>
   if (!authHeader.startsWith("Bearer ")) {
     const error = new InvalidAuthorizationHeaderError();
     return mapErrorToResponse(error, c);
   }
 
-  // Extract token
-  const token = authHeader.substring(7); // Remove "Bearer " prefix
+  const token = authHeader.substring(7);
 
   if (!token) {
     const error = new InvalidAuthorizationHeaderError();
@@ -245,7 +231,6 @@ const loginAttemptHandler = async (c: Context) => {
 };
 
 const refreshHandler = async (c: Context) => {
-  // Extract Authorization header
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader) {
@@ -253,15 +238,12 @@ const refreshHandler = async (c: Context) => {
     return mapErrorToResponse(error, c);
   }
 
-  // Validate format: Bearer <token>
   if (!authHeader.startsWith("Bearer ")) {
     const error = new InvalidAuthorizationHeaderError();
     return mapErrorToResponse(error, c);
   }
 
-  // Extract refresh token
-  const refreshToken = authHeader.substring(7); // Remove "Bearer " prefix
-
+  const refreshToken = authHeader.substring(7);
   if (!refreshToken) {
     const error = new InvalidAuthorizationHeaderError();
     return mapErrorToResponse(error, c);
@@ -282,7 +264,6 @@ const refreshHandler = async (c: Context) => {
 
 export const authRouter = createRouter()
   .openapi(registerRoute, registerHandler)
-  .openapi(loginEmailAndPasswordRoute, loginEmailAndPasswordHandler)
   .openapi(loginRequestRoute, loginRequestHandler)
   .openapi(loginAttemptRoute, loginAttemptHandler)
   .openapi(refreshRoute, refreshHandler);

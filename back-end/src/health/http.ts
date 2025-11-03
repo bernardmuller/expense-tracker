@@ -1,9 +1,3 @@
-/**
- * Health Check HTTP Layer
- *
- * Simple health check endpoint to verify server is running.
- */
-
 import { createRouter } from "@/http/createApi";
 import { createRoute, z } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
