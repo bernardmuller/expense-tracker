@@ -8,9 +8,9 @@ type VerificationTokenPayload = {
 };
 
 const getJwtSecret = (): string => {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.AUTH_SECRET;
   if (!secret) {
-    throw new Error("JWT_SECRET is not defined in environment variables");
+    throw new Error("AUTH_SECRET is not defined in environment variables");
   }
   return secret;
 };
@@ -27,7 +27,9 @@ export const decodeVerificationToken = (
       const decoded = jwt.verify(token, secret) as VerificationTokenPayload;
 
       if (!decoded.userId || !decoded.verificationId) {
-        throw new Error("Invalid token payload: missing userId or verificationId");
+        throw new Error(
+          "Invalid token payload: missing userId or verificationId",
+        );
       }
 
       return decoded;
