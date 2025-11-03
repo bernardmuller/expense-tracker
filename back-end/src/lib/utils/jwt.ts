@@ -1,6 +1,12 @@
 import jwt from "jsonwebtoken";
 import { ResultAsync } from "neverthrow";
-import { JwtGenerationError, RefreshTokenDecodeError, ExpiredRefreshTokenError } from "@/auth/types";
+import {
+  JwtGenerationError,
+  RefreshTokenDecodeError,
+  ExpiredRefreshTokenError,
+  AccessTokenDecodeError,
+  ExpiredAccessTokenError,
+} from "@/auth/types";
 
 type TokenPayload = {
   userId: string;
@@ -17,9 +23,9 @@ type DecodedTokenPayload = {
 };
 
 const getJwtSecret = (): string => {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.AUTH_SECRET;
   if (!secret) {
-    throw new Error("JWT_SECRET is not defined in environment variables");
+    throw new Error("AUTH_SECRET is not defined in environment variables");
   }
   return secret;
 };
@@ -78,7 +84,9 @@ export const decodeRefreshToken = (
       const decoded = jwt.verify(token, secret) as DecodedTokenPayload;
 
       if (!decoded.userId || !decoded.email || !decoded.name) {
-        throw new Error("Invalid token payload: missing userId, email, or name");
+        throw new Error(
+          "Invalid token payload: missing userId, email, or name",
+        );
       }
 
       return {
@@ -91,10 +99,52 @@ export const decodeRefreshToken = (
       const errorMessage = String(error);
 
       // Check if it's an expiration error
-      if (errorMessage.includes("jwt expired") || errorMessage.includes("TokenExpiredError")) {
+      if (
+        errorMessage.includes("jwt expired") ||
+        errorMessage.includes("TokenExpiredError")
+      ) {
         return new ExpiredRefreshTokenError();
       }
 
       return new RefreshTokenDecodeError(errorMessage);
+    },
+  );
+
+export const decodeAccessToken = (
+  token: string,
+): ResultAsync<
+  TokenPayload,
+  | InstanceType<typeof AccessTokenDecodeError>
+  | InstanceType<typeof ExpiredAccessTokenError>
+> =>
+  ResultAsync.fromPromise(
+    (async () => {
+      const secret = getJwtSecret();
+      const decoded = jwt.verify(token, secret) as DecodedTokenPayload;
+
+      if (!decoded.userId || !decoded.email || !decoded.name) {
+        throw new Error(
+          "Invalid token payload: missing userId, email, or name",
+        );
+      }
+
+      return {
+        userId: decoded.userId,
+        email: decoded.email,
+        name: decoded.name,
+      };
+    })(),
+    (error) => {
+      const errorMessage = String(error);
+
+      // Check if it's an expiration error
+      if (
+        errorMessage.includes("jwt expired") ||
+        errorMessage.includes("TokenExpiredError")
+      ) {
+        return new ExpiredAccessTokenError();
+      }
+
+      return new AccessTokenDecodeError(errorMessage);
     },
   );
