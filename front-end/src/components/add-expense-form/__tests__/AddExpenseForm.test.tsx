@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import AddExpenseForm from '../AddExpenseForm'
-import { FormProvider } from '../AddExpenseForm.context'
+import { generateFilterProps } from '@/components/filter/__mocks__/filterProps.mock'
+import setupUserEvent from '@/lib/utils/testing/setupUserEvent'
 
 describe('AddExpenseForm', () => {
   it('should render header text', () => {
