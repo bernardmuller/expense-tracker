@@ -1,18 +1,12 @@
-import z, { email } from "zod";
-import { createInsertSchema } from "drizzle-zod";
-import { users, accounts } from "@/db/schema";
+import { accounts, users } from "@/db/schema";
+import { createError } from "@/lib/utils/createError";
 import { validateEmail } from "@/lib/validations/emailValidator";
 import { validateName } from "@/lib/validations/nameValidator";
-import {
-  validatePasswordLength,
-  validatePasswordHasUppercase,
-  validatePasswordHasLowercase,
-  validatePasswordHasSpecialChar,
-  validatePasswordHasNumber,
-} from "@/lib/validations/passwordValidator";
-import { createError } from "@/lib/utils/createError";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import z from "zod";
 
 export const userInsertSchema = createInsertSchema(users);
+export const userSelectSchema = createSelectSchema(users);
 export const accountInsertSchema = createInsertSchema(accounts);
 
 const userSchemaBase = userInsertSchema.pick({
@@ -20,9 +14,10 @@ const userSchemaBase = userInsertSchema.pick({
   email: true,
 });
 
-export const registerUserAndAccountSchema = userSchemaBase
-  .extend({
-    password: accountInsertSchema.shape.password,
+export const registerRequestSchema = userInsertSchema
+  .pick({
+    name: true,
+    email: true,
   })
   .refine((val) => validateEmail(val.email), {
     message: "Invalid email",
@@ -31,31 +26,17 @@ export const registerUserAndAccountSchema = userSchemaBase
   .refine((val) => validateName(val.name), {
     message: "Invalid name",
     path: ["name"],
-  })
-  .refine((val) => validatePasswordLength(val.password), {
-    message: "Password must be at least 12 characters",
-    path: ["password"],
-  })
-  .refine((val) => validatePasswordHasUppercase(val.password), {
-    message: "Password must contain at least one uppercase letter",
-    path: ["password"],
-  })
-  .refine((val) => validatePasswordHasNumber(val.password), {
-    message: "Password must contain at least one number",
-    path: ["password"],
-  })
-  .refine((val) => validatePasswordHasLowercase(val.password), {
-    message: "Password must contain at least one lowercase letter",
-    path: ["password"],
-  })
-  .refine((val) => validatePasswordHasSpecialChar(val.password), {
-    message: "Password must contain at least one special character",
-    path: ["password"],
   });
 
-export type RegisterUserAndAccountParams = z.infer<
-  typeof registerUserAndAccountSchema
->;
+export type RegisterRequestParams = z.infer<typeof registerRequestSchema>;
+
+export const registerVerifySchema = userSelectSchema;
+
+export const registerVerifyParamsSchema = z.object({
+  otp: z.string(),
+});
+
+export type RegisterVerifyParams = z.infer<typeof registerVerifyParamsSchema>;
 
 export const loginRequestSchema = userInsertSchema
   .pick({
@@ -67,22 +48,6 @@ export const loginRequestSchema = userInsertSchema
   });
 
 export type LoginRequestParams = z.infer<typeof loginRequestSchema>;
-
-export const loginEmailAndPasswordSchema = userInsertSchema
-  .pick({
-    email: true,
-  })
-  .extend({
-    password: accountInsertSchema.shape.password,
-  })
-  .refine((val) => validateEmail(val.email), {
-    message: "Invalid email",
-    path: ["email"],
-  });
-
-export type LoginEmailAndPasswordParams = z.infer<
-  typeof loginEmailAndPasswordSchema
->;
 
 export type LoginParams = LoginRequestParams;
 
@@ -111,16 +76,6 @@ export type LoginRequestResponse = z.infer<typeof loginRequestResponseSchema>;
 // Errors
 // --------------------------------
 
-export const PasswordHashError = createError(
-  "PasswordHashError",
-  (message: string) => `Failed to hash password: ${message}`,
-  {
-    code: "PASSWORD_HASH_FAILED",
-    error: "Internal Server Error",
-    statusCode: 500,
-  },
-);
-
 export const OTPHashError = createError(
   "OTPHashError",
   (message: string) => `Failed to hash otp: ${message}`,
@@ -128,26 +83,6 @@ export const OTPHashError = createError(
     code: "OTP_HASH_FAILED",
     error: "Internal Server Error",
     statusCode: 500,
-  },
-);
-
-export const PasswordCompareError = createError(
-  "PasswordCompareError",
-  (message: string) => `Failed to compare password: ${message}`,
-  {
-    code: "PASSWORD_COMPARE_FAILED",
-    error: "Internal Server Error",
-    statusCode: 500,
-  },
-);
-
-export const IncorrectPasswordError = createError(
-  "IncorrectPasswordError",
-  () => "The email or password is incorrect",
-  {
-    code: "INCORRECT_PASSWORD",
-    error: "Unauthorized",
-    statusCode: 401,
   },
 );
 

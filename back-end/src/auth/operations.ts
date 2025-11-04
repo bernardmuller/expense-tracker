@@ -4,151 +4,46 @@ import type { AppContext } from "@/db/context";
 import * as UserOperations from "@/users/operations";
 import { type ResultAsync, errAsync } from "neverthrow";
 import type {
-  LoginParams,
-  RegisterUserAndAccountParams,
-  LoginResponse,
   LoginAttemptParams,
-  LoginEmailAndPasswordParams,
+  LoginParams,
+  LoginResponse,
+  RegisterRequestParams,
+  RegisterVerifyParams,
 } from "./types";
 
+import { pinoInstance as logger } from "@/http/middleware/logger";
 import {
   EntityCreateError,
   EntityNotFoundError,
   EntityReadError,
 } from "@/lib/errors/actionErrors";
 import { UserEmailAlreadyInUseError } from "@/lib/errors/applicationErrors";
-import { hashPassword } from "@/lib/utils/hashPassword";
-import { comparePassword } from "@/lib/utils/comparePassword";
+import { compareOTP } from "@/lib/utils/compareOTP";
+import { decodeVerificationToken } from "@/lib/utils/decodeVerificationToken";
+import { generateOTP } from "@/lib/utils/generateOTP";
+import { hashOTP } from "@/lib/utils/hashOTP";
 import {
+  decodeRefreshToken,
   generateAccessToken,
   generateRefreshToken,
   generateVerificationToken,
-  decodeRefreshToken,
 } from "@/lib/utils/jwt";
-import { generateOTP } from "@/lib/utils/generateOTP";
-import { hashOTP } from "@/lib/utils/hashOTP";
-import { compareOTP } from "@/lib/utils/compareOTP";
-import { decodeVerificationToken } from "@/lib/utils/decodeVerificationToken";
-import {
-  PasswordHashError,
-  IncorrectPasswordError,
-  PasswordCompareError,
-  JwtGenerationError,
-  InvalidEmailAndOrPasswordError,
-  OTPGenerationError,
-  OTPHashError,
-  VerificationCreationError,
-  OTPCompareError,
-  InvalidOTPError,
-  VerificationExpiredError,
-  InvalidVerificationTokenError,
-  VerificationNotFoundError,
-  ExpiredRefreshTokenError,
-  RefreshTokenDecodeError,
-} from "./types";
-import type { User } from "@/users/types";
-import { pinoInstance as logger } from "@/http/middleware/logger";
 import { sendEmail } from "@/smtp/send";
 import * as VerificationOperations from "@/verifications/operations";
-
-export const register = (
-  params: RegisterUserAndAccountParams,
-  ctx: AppContext,
-): ResultAsync<
-  User,
-  | InstanceType<typeof UserEmailAlreadyInUseError>
-  | InstanceType<typeof AccountAlreadyExistsError>
-  | InstanceType<typeof EntityCreateError>
-  | InstanceType<typeof EntityReadError>
-  | InstanceType<typeof PasswordHashError>
-  | Error
-> =>
-  UserOperations.createUser(
-    {
-      name: params.name,
-      email: params.email,
-    },
-    ctx,
-  )
-    .andThen((user) =>
-      hashPassword(params.password).map((hashedPassword) => ({
-        user,
-        hashedPassword,
-      })),
-    )
-    .andThen(({ user, hashedPassword }) =>
-      AccountOperations.createAccount(
-        {
-          userId: user.id,
-          password: hashedPassword,
-        },
-        ctx,
-      ).map(() => user),
-    )
-    .mapErr((error) => {
-      logger.error(
-        {
-          code: error.code,
-          message: error.message,
-          email: params.email,
-          name: params.name,
-        },
-        "Registration failed",
-      );
-      return error;
-    });
-
-// NOTE: NOT IN USE
-export const loginEmailAndPassword = (
-  params: LoginEmailAndPasswordParams,
-  ctx: AppContext,
-): ResultAsync<
-  LoginResponse,
-  | InstanceType<typeof EntityNotFoundError>
-  | InstanceType<typeof EntityReadError>
-  | InstanceType<typeof IncorrectPasswordError>
-  | InstanceType<typeof PasswordCompareError>
-  | InstanceType<typeof JwtGenerationError>
-  | InstanceType<typeof InvalidEmailAndOrPasswordError>
-> =>
-  UserOperations.getUserByEmail(params.email, ctx)
-    .andThen((user) =>
-      AccountOperations.getAccountByUserId(user.id, ctx).map((account) => ({
-        user,
-        account,
-      })),
-    )
-    .andThen(({ user, account }) =>
-      comparePassword(params.password, account.password).andThen((isMatch) =>
-        isMatch
-          ? generateAccessToken(user.id, user.email, user.name).andThen(
-              (accessToken) =>
-                generateRefreshToken(user.id, user.email, user.name).map(
-                  (refreshToken) => ({
-                    accessToken,
-                    refreshToken,
-                  }),
-                ),
-            )
-          : errAsync(new IncorrectPasswordError()),
-      ),
-    )
-    .orElse((error) =>
-      error instanceof EntityNotFoundError || IncorrectPasswordError
-        ? errAsync(new InvalidEmailAndOrPasswordError())
-        : errAsync(error),
-    )
-    .mapErr((error) => {
-      logger.error(
-        {
-          code: error.code,
-          message: error.message,
-          email: params.email,
-        },
-        "Login with email and password failed",
-      );
-      return error;
-    });
+import {
+  ExpiredRefreshTokenError,
+  InvalidOTPError,
+  InvalidVerificationTokenError,
+  JwtGenerationError,
+  OTPCompareError,
+  OTPGenerationError,
+  OTPHashError,
+  RefreshTokenDecodeError,
+  VerificationCreationError,
+  VerificationExpiredError,
+  VerificationNotFoundError,
+} from "./types";
+import type { User } from "@/users/types";
 
 export const loginRequest = (
   params: LoginParams,
@@ -318,6 +213,136 @@ export const refreshTokens = (
           message: error.message,
         },
         "Token refresh failed",
+      );
+      return error;
+    });
+
+export const registerRequest = (
+  params: RegisterRequestParams,
+  ctx: AppContext,
+): ResultAsync<
+  string,
+  | InstanceType<typeof UserEmailAlreadyInUseError>
+  | InstanceType<typeof OTPGenerationError>
+  | InstanceType<typeof OTPHashError>
+  | InstanceType<typeof VerificationCreationError>
+  | InstanceType<typeof JwtGenerationError>
+  | InstanceType<typeof EntityReadError>
+  | Error
+> =>
+  UserOperations.getUserByEmail(params.email, ctx)
+    .andThen(() => errAsync(new UserEmailAlreadyInUseError(params.email)))
+    .orElse((error) =>
+      error instanceof EntityNotFoundError ? generateOTP() : errAsync(error),
+    )
+    .andThen((otp) =>
+      hashOTP(otp).map((hashedOTP) => ({
+        otp,
+        hashedOTP,
+      })),
+    )
+    .andThen(({ otp, hashedOTP }) => {
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+      return VerificationOperations.createVerification(
+        {
+          identifier: JSON.stringify({
+            email: params.email,
+            name: params.name,
+          }),
+          value: hashedOTP,
+          expiresAt,
+        },
+        ctx,
+      ).map((verification) => ({
+        otp,
+        verification,
+      }));
+    })
+    .andThen(({ otp, verification }) =>
+      generateVerificationToken("pending", verification.id).map((token) => ({
+        otp,
+        token,
+      })),
+    )
+    .andThen(({ otp, token }) => sendEmail(otp).map(() => token))
+    .mapErr((error) => {
+      logger.error(
+        {
+          code: error.code,
+          message: error.message,
+          email: params.email,
+        },
+        "Registration request failed",
+      );
+      return error;
+    });
+
+export const registerVerify = (
+  params: RegisterVerifyParams & { token: string },
+  ctx: AppContext,
+): ResultAsync<
+  User,
+  | InstanceType<typeof InvalidVerificationTokenError>
+  | InstanceType<typeof VerificationNotFoundError>
+  | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof VerificationExpiredError>
+  | InstanceType<typeof OTPCompareError>
+  | InstanceType<typeof InvalidOTPError>
+  | InstanceType<typeof EntityCreateError>
+  | InstanceType<typeof UserEmailAlreadyInUseError>
+  | InstanceType<typeof AccountAlreadyExistsError>
+  | InstanceType<typeof JwtGenerationError>
+  | Error
+> =>
+  decodeVerificationToken(params.token)
+    .andThen(({ verificationId }) =>
+      VerificationOperations.getVerificationById(verificationId, ctx),
+    )
+    .andThen((verification) => {
+      const now = new Date();
+      if (verification.expiresAt < now) {
+        return errAsync(new VerificationExpiredError());
+      }
+
+      let userData: { email: string; name: string };
+      try {
+        userData = JSON.parse(verification.identifier);
+      } catch {
+        return errAsync(
+          new InvalidVerificationTokenError("Invalid verification data"),
+        );
+      }
+
+      return compareOTP(params.otp, verification.value).map((isMatch) => ({
+        isMatch,
+        email: userData.email,
+        name: userData.name,
+      }));
+    })
+    .andThen(({ isMatch, email, name }) =>
+      isMatch
+        ? UserOperations.createUser({ name, email }, ctx).map((user) => user)
+        : errAsync(new InvalidOTPError()),
+    )
+    .andThen((user) =>
+      AccountOperations.createAccount(
+        {
+          userId: user.id,
+        },
+        ctx,
+      ).map(() => user),
+    )
+    .andThen((user) => UserOperations.markUserAsVerified(user.id, ctx))
+    .mapErr((error) => {
+      logger.error(
+        {
+          code: error.code,
+          message: error.message,
+        },
+        "Registration verification failed",
       );
       return error;
     });

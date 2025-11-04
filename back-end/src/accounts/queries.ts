@@ -18,8 +18,8 @@ export const create = (
 ) =>
   ResultAsync.fromPromise(
     (async () => {
-      if (!account.userId || !account.password) {
-        throw new Error("Missing required fields: userId, or password");
+      if (!account.userId) {
+        throw new Error("Missing required field: userId");
       }
       const now = new Date();
       const [createdAccount] = await ctx.db
@@ -27,7 +27,6 @@ export const create = (
         .values({
           id: generateUuid(),
           userId: account.userId,
-          password: account.password,
           accessToken: null,
           refreshToken: null,
           idToken: null,
