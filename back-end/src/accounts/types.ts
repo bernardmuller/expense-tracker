@@ -14,7 +14,6 @@ export type Account = z.infer<typeof accountSchema>;
 
 export const createAccountSchema = accountSchema.pick({
   userId: true,
-  password: true,
 });
 
 export type CreateAccountParams = z.infer<typeof createAccountSchema>;

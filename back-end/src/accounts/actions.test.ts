@@ -8,13 +8,11 @@ describe("createAccount", () => {
   it("should create an account", () => {
     const mockParams: CreateAccountParams = {
       userId: generateUuid(),
-      password: "hashed_password_123",
     };
     const result = createAccount(mockParams);
     expect(result.isOk()).toBeTruthy();
     if (result.isOk()) {
       expect(result.value.userId).toBe(mockParams.userId);
-      expect(result.value.password).toBe(mockParams.password);
       expect(result.value.accessToken).toBe(null);
       expect(result.value.refreshToken).toBe(null);
       expect(result.value.idToken).toBe(null);
@@ -30,17 +28,6 @@ describe("updateAccount", () => {
     mockAccount = generateMockAccount();
   });
 
-  it("should update account password", () => {
-    const newPassword = "new_hashed_password";
-    const result = updateAccount(mockAccount, { password: newPassword });
-
-    expect(result.isOk()).toBe(true);
-    if (result.isOk()) {
-      expect(result.value.password).toEqual(newPassword);
-      expect(result.value.userId).toEqual(mockAccount.userId);
-    }
-  });
-
   it("should update account access token", () => {
     const newAccessToken = "new_access_token";
     const result = updateAccount(mockAccount, {
@@ -50,7 +37,6 @@ describe("updateAccount", () => {
     expect(result.isOk()).toBe(true);
     if (result.isOk()) {
       expect(result.value.accessToken).toEqual(newAccessToken);
-      expect(result.value.password).toEqual(mockAccount.password);
     }
   });
 
@@ -85,7 +71,6 @@ describe("updateAccount", () => {
       expect(result.value.refreshToken).toEqual(updates.refreshToken);
       expect(result.value.idToken).toEqual(updates.idToken);
       expect(result.value.scope).toEqual(updates.scope);
-      expect(result.value.password).toEqual(mockAccount.password);
       expect(result.value.userId).toEqual(mockAccount.userId);
     }
   });
@@ -114,43 +99,6 @@ describe("updateAccount", () => {
     expect(result.isOk()).toBe(true);
     if (result.isOk()) {
       expect(result.value.accessToken).toBe(null);
-    }
-  });
-});
-
-describe("updatePassword", () => {
-  let mockAccount: Account;
-
-  beforeEach(() => {
-    mockAccount = generateMockAccount();
-  });
-
-  it("should update account password", () => {
-    const newPassword = "new_hashed_password_456";
-    const result = updatePassword(mockAccount, newPassword);
-
-    expect(result.isOk()).toBe(true);
-    if (result.isOk()) {
-      expect(result.value.password).toEqual(newPassword);
-    }
-  });
-
-  it("should not modify other fields", () => {
-    mockAccount.accessToken = "some_token";
-    mockAccount.refreshToken = "some_refresh";
-    const originalAccessToken = mockAccount.accessToken;
-    const originalRefreshToken = mockAccount.refreshToken;
-
-    const newPassword = "new_hashed_password_789";
-    const result = updatePassword(mockAccount, newPassword);
-
-    expect(result.isOk()).toBe(true);
-    if (result.isOk()) {
-      expect(result.value.password).toEqual(newPassword);
-      expect(result.value.accessToken).toEqual(originalAccessToken);
-      expect(result.value.refreshToken).toEqual(originalRefreshToken);
-      expect(result.value.userId).toEqual(mockAccount.userId);
-      expect(result.value.id).toEqual(mockAccount.id);
     }
   });
 });
