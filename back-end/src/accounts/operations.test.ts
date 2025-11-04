@@ -21,7 +21,6 @@ describe("Account Operations", () => {
         const result = await AccountOperations.createAccount(
           {
             userId,
-            password: "hashed_password_123",
           },
           ctx,
         );
@@ -30,7 +29,6 @@ describe("Account Operations", () => {
         if (result.isOk()) {
           const account = result.value;
           expect(account.userId).toBe(userId);
-          expect(account.password).toBe("hashed_password_123");
           expect(account.accessToken).toBe(null);
           expect(account.refreshToken).toBe(null);
           expect(account.id).toBeTruthy();
@@ -52,7 +50,6 @@ describe("Account Operations", () => {
         const firstResult = await AccountOperations.createAccount(
           {
             userId,
-            password: "password1",
           },
           ctx,
         );
@@ -61,7 +58,6 @@ describe("Account Operations", () => {
         const secondResult = await AccountOperations.createAccount(
           {
             userId,
-            password: "password2",
           },
           ctx,
         );
@@ -89,7 +85,6 @@ describe("Account Operations", () => {
         const createResult = await AccountOperations.createAccount(
           {
             userId,
-            password: "password",
           },
           ctx,
         );
@@ -132,7 +127,6 @@ describe("Account Operations", () => {
         await AccountOperations.createAccount(
           {
             userId,
-            password: "password",
           },
           ctx,
         );
@@ -184,14 +178,12 @@ describe("Account Operations", () => {
         await AccountOperations.createAccount(
           {
             userId: user1Result._unsafeUnwrap().id,
-            password: "password1",
           },
           ctx,
         );
         await AccountOperations.createAccount(
           {
             userId: user2Result._unsafeUnwrap().id,
-            password: "password2",
           },
           ctx,
         );
@@ -214,33 +206,6 @@ describe("Account Operations", () => {
   });
 
   describe("updateAccount", () => {
-    test("should update account password successfully", async () => {
-      await withTestTransaction(async (ctx) => {
-        const userResult = await UserOperations.createUser(
-          { name: "John Doe", email: "john@example.com" },
-          ctx,
-        );
-        const userId = userResult._unsafeUnwrap().id;
-        const createResult = await AccountOperations.createAccount(
-          { userId, password: "old_password" },
-          ctx,
-        );
-        const accountId = createResult._unsafeUnwrap().id;
-
-        const updateResult = await AccountOperations.updateAccount(
-          accountId,
-          { password: "new_password" },
-          ctx,
-        );
-
-        expect(updateResult.isOk()).toBe(true);
-        if (updateResult.isOk()) {
-          expect(updateResult.value.password).toBe("new_password");
-          expect(updateResult.value.userId).toBe(userId);
-        }
-      });
-    });
-
     test("should update account tokens successfully", async () => {
       await withTestTransaction(async (ctx) => {
         const userResult = await UserOperations.createUser(
@@ -249,7 +214,7 @@ describe("Account Operations", () => {
         );
         const userId = userResult._unsafeUnwrap().id;
         const createResult = await AccountOperations.createAccount(
-          { userId, password: "password" },
+          { userId },
           ctx,
         );
         const accountId = createResult._unsafeUnwrap().id;
@@ -276,35 +241,6 @@ describe("Account Operations", () => {
     });
   });
 
-  describe("updatePassword", () => {
-    test("should update password specifically", async () => {
-      await withTestTransaction(async (ctx) => {
-        const userResult = await UserOperations.createUser(
-          { name: "Test User", email: "test@example.com" },
-          ctx,
-        );
-        const userId = userResult._unsafeUnwrap().id;
-        const createResult = await AccountOperations.createAccount(
-          { userId, password: "old_password" },
-          ctx,
-        );
-        const accountId = createResult._unsafeUnwrap().id;
-
-        const updateResult = await AccountOperations.updatePassword(
-          accountId,
-          "super_secure_password",
-          ctx,
-        );
-
-        expect(updateResult.isOk()).toBe(true);
-        if (updateResult.isOk()) {
-          expect(updateResult.value.password).toBe("super_secure_password");
-          expect(updateResult.value.userId).toBe(userId);
-        }
-      });
-    });
-  });
-
   describe("deleteAccount", () => {
     test("should delete account successfully", async () => {
       await withTestTransaction(async (ctx) => {
@@ -314,7 +250,7 @@ describe("Account Operations", () => {
         );
         const userId = userResult._unsafeUnwrap().id;
         const createResult = await AccountOperations.createAccount(
-          { userId, password: "password" },
+          { userId },
           ctx,
         );
         const accountId = createResult._unsafeUnwrap().id;

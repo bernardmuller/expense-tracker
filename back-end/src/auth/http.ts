@@ -2,29 +2,27 @@ import { createContext } from "@/db/context";
 import { createRouter } from "@/http/createApi";
 import { mapErrorToResponse } from "@/http/errorMapper";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
-import { userSchema } from "@/users/types";
 import { createRoute, z } from "@hono/zod-openapi";
 import type { Context } from "hono";
-import { Ok } from "neverthrow";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import {
-  loginEmailAndPassword,
-  loginRequest,
   loginAttempt,
-  register,
+  loginRequest,
   refreshTokens,
+  registerRequest,
+  registerVerify,
 } from "./operations";
 import {
-  loginResponseSchema,
-  loginRequestResponseSchema,
-  registerUserAndAccountSchema,
-  type RegisterUserAndAccountParams,
-  loginEmailAndPasswordSchema,
-  loginRequestSchema,
-  loginAttemptSchema,
-  MissingAuthorizationHeaderError,
   InvalidAuthorizationHeaderError,
+  loginAttemptSchema,
+  loginRequestResponseSchema,
+  loginRequestSchema,
+  loginResponseSchema,
+  MissingAuthorizationHeaderError,
+  registerRequestSchema,
+  registerVerifyParamsSchema,
+  registerVerifySchema,
 } from "./types";
 
 const tags = ["Auth"];
@@ -33,24 +31,61 @@ const tags = ["Auth"];
 // Route Definitions
 // --------------------------------
 
-const registerRoute = createRoute({
-  path: "/register",
+const registerRequestRoute = createRoute({
+  path: "/register/request",
   method: "post",
   tags,
   request: {
     body: jsonContentRequired(
-      registerUserAndAccountSchema,
-      "Register a new user",
+      registerRequestSchema,
+      "Request registration with email and name",
     ),
   },
   responses: {
-    [HttpStatusCodes.CREATED]: jsonContent(
-      userSchema,
-      "User registered successfully",
+    [HttpStatusCodes.OK]: jsonContent(
+      loginRequestResponseSchema,
+      "OTP sent successfully, returns verification token",
     ),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+    [HttpStatusCodes.CONFLICT]: jsonContent(
       errorResponseSchema,
-      "Validation error - email already in use",
+      "Email already in use",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+const registerVerifyRoute = createRoute({
+  path: "/register/verify",
+  method: "post",
+  tags,
+  security: [{ Bearer: [] }],
+  request: {
+    body: jsonContentRequired(
+      registerVerifyParamsSchema,
+      "Verify OTP and complete registration",
+    ),
+    headers: z.object({
+      authorization: z
+        .string()
+        .regex(/^Bearer .+$/)
+        .describe("Verification token in format: Bearer <token>"),
+    }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      registerVerifySchema,
+      "Registration completed successfully, user logged in",
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      errorResponseSchema,
+      "Missing/invalid authorization header, invalid or expired OTP",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "Verification not found",
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema,
@@ -159,27 +194,49 @@ const refreshRoute = createRoute({
 // Handlers
 // --------------------------------
 
-const registerHandler = async (c: Context) => {
-  const body = await c.req.json<RegisterUserAndAccountParams>();
+const registerRequestHandler = async (c: Context) => {
+  const body = await c.req.json<{
+    name: string;
+    email: string;
+  }>();
   const ctx = createContext();
-  const result = await register(body, ctx);
+  const result = await registerRequest(body, ctx);
 
   return result.match(
-    (user) => c.json(user, 201),
+    (token) => c.json({ token }, 200),
     (error) => mapErrorToResponse(error, c),
   );
 };
 
-const loginEmailAndPasswordHandler = async (c: Context) => {
+const registerVerifyHandler = async (c: Context) => {
   const body = await c.req.json<{
-    email: string;
-    password: string;
+    otp: string;
   }>();
+
+  const authHeader = c.req.header("Authorization");
+
+  if (!authHeader) {
+    const error = new MissingAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  if (!authHeader.startsWith("Bearer ")) {
+    const error = new InvalidAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
+  const token = authHeader.substring(7);
+
+  if (!token) {
+    const error = new InvalidAuthorizationHeaderError();
+    return mapErrorToResponse(error, c);
+  }
+
   const ctx = createContext();
-  const result = await loginEmailAndPassword(body, ctx);
+  const result = await registerVerify({ otp: body.otp, token: token }, ctx);
 
   return result.match(
-    (tokens) => c.json(tokens, 200),
+    (user) => c.json(user, 200),
     (error) => mapErrorToResponse(error, c),
   );
 };
@@ -263,7 +320,8 @@ const refreshHandler = async (c: Context) => {
 // --------------------------------
 
 export const authRouter = createRouter()
-  .openapi(registerRoute, registerHandler)
+  .openapi(registerRequestRoute, registerRequestHandler)
+  .openapi(registerVerifyRoute, registerVerifyHandler)
   .openapi(loginRequestRoute, loginRequestHandler)
   .openapi(loginAttemptRoute, loginAttemptHandler)
   .openapi(refreshRoute, refreshHandler);

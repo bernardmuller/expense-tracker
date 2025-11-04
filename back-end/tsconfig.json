@@ -2,9 +2,8 @@
   "compilerOptions": {
     "lib": ["ESNext"],
     "target": "ESNext",
-    "module": "Preserve",
+    "module": "ESNext",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
     "outDir": "./dist",
     "allowJs": true,
     "moduleResolution": "bundler",
@@ -17,9 +16,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
+    "types": ["node"],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "jsxImportSource": "react"
+    }
   }
 }

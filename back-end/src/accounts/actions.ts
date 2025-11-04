@@ -11,7 +11,7 @@ export const createAccount = (
     ...params,
     id: uuid,
     userId: params.userId,
-    password: params.password,
+    password: null,
     idToken: null,
     accessToken: null,
     refreshToken: null,
@@ -29,7 +29,6 @@ export const updateAccount = (
 ): Result<Account, never> => {
   return ok({
     ...account,
-    password: updates.password ?? account.password,
     accessToken:
       updates.accessToken !== undefined
         ? updates.accessToken
