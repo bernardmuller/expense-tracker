@@ -5,3 +5,5 @@ LOG_LEVEL=debug
 BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=http://localhost:8080
 DATABASE_URL=
+RESEND_KEY=
+JWT_SECRET=your-super-secret-key-here
