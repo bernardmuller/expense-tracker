@@ -29,6 +29,7 @@ const EnvSchema = z.object({
   AUTH_URL: z.url(),
   AUTH_SECRET: z.string(),
   RESEND_KEY: z.string(),
+  MAIL_ADDRESS: z.string(),
 });
 
 export type env = z.infer<typeof EnvSchema>;
