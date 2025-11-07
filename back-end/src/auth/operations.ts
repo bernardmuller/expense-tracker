@@ -28,7 +28,7 @@ import {
   generateRefreshToken,
   generateVerificationToken,
 } from "@/lib/utils/jwt";
-import { sendEmail } from "@/smtp/send";
+import { sendOtpEmail } from "@/smtp/sendOtpEmail";
 import * as VerificationOperations from "@/verifications/operations";
 import {
   ExpiredRefreshTokenError,
@@ -97,7 +97,7 @@ export const loginRequest = (
       })),
     )
     .andThen(({ user, otp, token }) =>
-      sendEmail(otp).map(() => ({
+      sendOtpEmail([user.email], "Login Request: OTP", otp).map(() => ({
         user,
         otp,
         token,
@@ -266,7 +266,11 @@ export const registerRequest = (
         token,
       })),
     )
-    .andThen(({ otp, token }) => sendEmail(otp).map(() => token))
+    .andThen(({ otp, token }) =>
+      sendOtpEmail([params.email], "Registration Request: OTP", otp).map(
+        () => token,
+      ),
+    )
     .mapErr((error) => {
       logger.error(
         {
