@@ -6,10 +6,7 @@ import { z } from "zod";
 
 expand(
   config({
-    path: path.resolve(
-      process.cwd(),
-      process.env.NODE_ENV === "test" ? ".env.test" : ".env",
-    ),
+    path: path.resolve(process.cwd(), ".env"),
   }),
 );
 

@@ -1,12 +1,12 @@
-import configureOpenAPI from "@/http/openapi";
-import createApi from "@/http/createApi";
-import index from "@/routes/index";
-import { healthRouter as health } from "./health/http";
-import { authRouter as auth } from "./auth/http";
-import { userRouter as users } from "./users/http";
+import configureOpenAPI from "@/lib/http/openapi";
+import createApi from "@/lib/http/createApi";
+import index from "@/lib/http/routes/index";
+import { healthRouter as health } from "./features/health/http";
+import { authRouter as auth } from "./features/auth/http";
+import { userRouter as users } from "./features/users/http";
 import { cors } from "hono/cors";
 import env from "./env";
-import { authMiddleware } from "./http/middleware/auth";
+import { authMiddleware } from "@/lib/http/middleware/auth";
 
 const app = createApi();
 

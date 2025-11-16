@@ -6,7 +6,7 @@ import {
   ExpiredRefreshTokenError,
   AccessTokenDecodeError,
   ExpiredAccessTokenError,
-} from "@/auth/types";
+} from "@/features/auth/types";
 
 type TokenPayload = {
   userId: string;

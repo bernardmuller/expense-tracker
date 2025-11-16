@@ -1,5 +1,5 @@
 import { generateUuid } from "@/lib/utils/generateUuid";
-import type { User } from "@/users/types";
+import type { User } from "@/features/users/types";
 
 export const generateMockUser = (): User => {
   const uuid = generateUuid();

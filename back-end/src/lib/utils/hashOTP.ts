@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { ResultAsync } from "neverthrow";
-import { OTPHashError } from "@/auth/types";
+import { OTPHashError } from "@/features/auth/types";
 
 const SALT_ROUNDS = 10;
 
