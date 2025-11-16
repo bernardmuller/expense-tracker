@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { ResultAsync } from "neverthrow";
-import { OTPCompareError } from "@/auth/types";
+import { OTPCompareError } from "@/features/auth/types";
 
 export const compareOTP = (
   plainOTP: string,
