@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { ResultAsync } from "neverthrow";
-import { InvalidVerificationTokenError } from "@/auth/types";
+import { InvalidVerificationTokenError } from "@/features/auth/types";
 
 type VerificationTokenPayload = {
   userId: string;

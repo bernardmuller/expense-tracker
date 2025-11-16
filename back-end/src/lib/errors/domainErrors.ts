@@ -1,4 +1,4 @@
-import type { UserValidationError } from "@/users/types";
+import type { UserValidationError } from "@/features/users/types";
 import {
   DivideByZeroError,
   InvalidDecimalNumberStringError,
