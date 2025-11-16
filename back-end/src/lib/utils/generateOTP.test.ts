@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { generateOTP } from "./generateOTP";
 
 describe("generateOTP", () => {
-  it("should return a number", () => {
+  it("should return a number", async () => {
     const otp = generateOTP();
     expect(typeof otp).toBe("number");
   });
