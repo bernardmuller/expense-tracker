@@ -9,7 +9,7 @@ const MockLinkProvider = ({ children }: { children: React.ReactNode }) => (
 describe('LoginForm', () => {
   it('should render header text', () => {
     render(<LoginForm onSubmit={vi.fn()} linkProvider={MockLinkProvider} />)
-    expect(screen.getByText(/Log in/i)).toBeInTheDocument()
+    expect(screen.getByText(/Login/i)).toBeInTheDocument()
   })
   it('should render email field placeholder text', () => {
     render(<LoginForm onSubmit={vi.fn()} linkProvider={MockLinkProvider} />)
