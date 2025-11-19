@@ -51,9 +51,11 @@ function OtpFieldComponent() {
 }
 
 export default function OtpForm({
+  title,
   onSubmit,
   linkProvider: LinkProvider,
 }: {
+  title: string
   onSubmit: (value: OtpFormValues) => void
   linkProvider: React.ComponentType<{ children: React.ReactNode }>
 }) {
@@ -97,7 +99,7 @@ export default function OtpForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Verify Login</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <form

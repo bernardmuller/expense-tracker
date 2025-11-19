@@ -10,20 +10,44 @@ const MockLinkProvider = ({ children }: { children: React.ReactNode }) => (
 describe('OtpForm', () => {
   describe('Rendering', () => {
     it('should render the card title', () => {
-      render(<OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />)
-      expect(screen.getByText('Verify Login')).toBeInTheDocument()
+      render(
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
+      )
+      expect(screen.getByText('Verify OTP')).toBeInTheDocument()
     })
     it('should render the OTP input label', () => {
-      render(<OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />)
+      render(
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
+      )
       expect(screen.getByText('One-Time Password')).toBeInTheDocument()
     })
     it('should render 6 OTP input slots', () => {
-      render(<OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />)
+      render(
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
+      )
       const otpSlots = screen.getAllByRole('textbox')
       expect(otpSlots).toHaveLength(1)
     })
     it('should render the submit button', () => {
-      render(<OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />)
+      render(
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
+      )
       expect(
         screen.getByRole('button', {
           name: /enter the 6-digit code|submit/i,
@@ -31,7 +55,13 @@ describe('OtpForm', () => {
       ).toBeInTheDocument()
     })
     it('should render the back link', () => {
-      render(<OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />)
+      render(
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
+      )
       expect(screen.getByText('Back')).toBeInTheDocument()
     })
   })
@@ -39,7 +69,11 @@ describe('OtpForm', () => {
   describe('Validation', () => {
     it('should show error when submitted with less than 6 digits', async () => {
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const otpInput = screen.getAllByRole('textbox')[0]
       await user.type(otpInput, '123')
@@ -52,7 +86,11 @@ describe('OtpForm', () => {
     })
     it('should show error when submitted with empty OTP', async () => {
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const button = screen.getByRole('button', {
         name: /enter the 6-digit code|submit/i,
@@ -67,7 +105,11 @@ describe('OtpForm', () => {
     it('should accept valid 6-digit numeric OTP', async () => {
       const onSubmit = vi.fn()
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={onSubmit} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={onSubmit}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const otpInput = screen.getAllByRole('textbox')[0]
       await user.type(otpInput, '123456')
@@ -80,7 +122,11 @@ describe('OtpForm', () => {
   describe('User Interactions', () => {
     it('should allow user to type in OTP field', async () => {
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const otpInput = screen.getAllByRole('textbox')[0] as HTMLInputElement
       await user.type(otpInput, '123')
@@ -89,7 +135,11 @@ describe('OtpForm', () => {
     it('should auto-submit when all 6 digits are entered', async () => {
       const onSubmit = vi.fn()
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={onSubmit} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={onSubmit}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const otpInput = screen.getAllByRole('textbox')[0]
       await user.type(otpInput, '123456')
@@ -100,7 +150,11 @@ describe('OtpForm', () => {
     it('should not auto-submit with incomplete OTP', async () => {
       const onSubmit = vi.fn()
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={onSubmit} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={onSubmit}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const otpInput = screen.getAllByRole('textbox')[0]
       await user.type(otpInput, '123')
@@ -111,7 +165,11 @@ describe('OtpForm', () => {
     it('should call onSubmit with correct values when form is submitted', async () => {
       const onSubmit = vi.fn()
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={onSubmit} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={onSubmit}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const otpInput = screen.getAllByRole('textbox')[0]
       await user.type(otpInput, '987654')
@@ -124,7 +182,11 @@ describe('OtpForm', () => {
   describe('Accessibility', () => {
     it('should have proper aria attributes when invalid', async () => {
       const { user } = setupUserEvent(
-        <OtpForm onSubmit={() => {}} linkProvider={MockLinkProvider} />,
+        <OtpForm
+          title="Verify OTP"
+          onSubmit={() => {}}
+          linkProvider={MockLinkProvider}
+        />,
       )
       const otpInput = screen.getAllByRole('textbox')[0]
       await user.type(otpInput, '12')
