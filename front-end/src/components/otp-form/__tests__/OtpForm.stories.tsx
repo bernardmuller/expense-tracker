@@ -11,6 +11,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
+    title: 'Verify OTP',
     linkProvider: ({ children }) => <a href="/">{children}</a>,
     onSubmit: (val) => console.log('Submitted:', val),
   },
