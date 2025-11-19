@@ -4,6 +4,7 @@ import NumberField from '@/components/form/NumberField'
 import TextField from '@/components/form/TextField'
 import FormButton from '@/components/form/FormButton'
 import SelectField from '@/components/form/SelectField'
+import OtpField from '@/components/form/OtpField'
 
 export const { useAppForm } = createFormHook({
   fieldContext,
@@ -12,6 +13,7 @@ export const { useAppForm } = createFormHook({
     NumberField,
     TextField,
     SelectField,
+    OtpField
   },
   formComponents: {
     FormButton,
