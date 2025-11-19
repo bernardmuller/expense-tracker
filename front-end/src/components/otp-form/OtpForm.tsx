@@ -1,5 +1,4 @@
 import { useAppForm } from '@/hooks/form'
-import { useEffect, useRef } from 'react'
 import z from 'zod'
 import {
   Card,
@@ -8,10 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card'
-import { useFieldContext } from '@/hooks/form-context'
-import { Field, FieldError, FieldLabel } from '../ui/field'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp'
-import { useStore } from '@tanstack/react-form'
+import { useEffect, useRef } from 'react'
 
 const otpSchema = z.object({
   otp: z
@@ -22,34 +18,6 @@ const otpSchema = z.object({
 
 type OtpFormValues = z.infer<typeof otpSchema>
 
-function OtpFieldComponent() {
-  const field = useFieldContext<string>()
-  const isInvalid = useStore(field.store, (state) => !state.meta.isValid)
-
-  return (
-    <Field data-invalid={isInvalid} className="items-center">
-      <FieldLabel htmlFor={field.name}>One-Time Password</FieldLabel>
-      <InputOTP
-        id={field.name}
-        maxLength={6}
-        value={field.state.value}
-        onChange={(value) => field.handleChange(value)}
-        onBlur={field.handleBlur}
-      >
-        <InputOTPGroup>
-          <InputOTPSlot index={0} />
-          <InputOTPSlot index={1} />
-          <InputOTPSlot index={2} />
-          <InputOTPSlot index={3} />
-          <InputOTPSlot index={4} />
-          <InputOTPSlot index={5} />
-        </InputOTPGroup>
-      </InputOTP>
-      {isInvalid && <FieldError errors={field.state.meta.errors} />}
-    </Field>
-  )
-}
-
 export default function OtpForm({
   title,
   onSubmit,
@@ -59,8 +27,6 @@ export default function OtpForm({
   onSubmit: (value: OtpFormValues) => void
   linkProvider: React.ComponentType<{ children: React.ReactNode }>
 }) {
-  const autoSubmittedRef = useRef(false)
-
   const form = useAppForm({
     defaultValues: {
       otp: '',
@@ -72,6 +38,8 @@ export default function OtpForm({
       onSubmit(value)
     },
   })
+
+  const autoSubmittedRef = useRef(false)
 
   useEffect(() => {
     const subscription = form.store.subscribe(() => {
@@ -108,9 +76,9 @@ export default function OtpForm({
             e.preventDefault()
             form.handleSubmit()
           }}
-          className="grid gap-3"
+          className="flex flex-col items-center gap-3"
         >
-          <form.AppField name="otp" children={() => <OtpFieldComponent />} />
+          <form.AppField name="otp" children={(field) => <field.OtpField label='One-Time Password'/>} />
           <span className="text-sm">
             Please enter the one-time password sent to your email address.
           </span>
