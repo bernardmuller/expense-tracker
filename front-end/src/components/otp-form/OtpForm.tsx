@@ -46,18 +46,11 @@ export default function OtpForm({
       const state = form.store.state
       const otpValue = state.values.otp
 
-      if (
-        otpValue &&
-        otpValue.length === 6 &&
-        !autoSubmittedRef.current &&
-        !state.isSubmitting
-      ) {
+      if (otpValue?.length === 6 && !autoSubmittedRef.current && !state.isSubmitting) {
         autoSubmittedRef.current = true
-        setTimeout(() => {
-          form.handleSubmit()
-        }, 0)
-      } else if (otpValue && otpValue.length < 6) {
-        autoSubmittedRef.current = false
+        setTimeout(() => form.handleSubmit(), 0)
+      } else {
+        autoSubmittedRef.current = otpValue?.length === 6
       }
     })
 
