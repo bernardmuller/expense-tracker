@@ -46,6 +46,6 @@ app.route("/", index);
 app.route("/auth", auth);
 app.route("/", users);
 
-export type AppType = (typeof routes)[number];
+export type AppType = typeof app;
 
 export default app;
