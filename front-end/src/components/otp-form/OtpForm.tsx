@@ -1,11 +1,11 @@
 import { useAppForm } from '@/hooks/form'
 import z from 'zod'
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from '../ui/card'
 
 const otpSchema = z.object({
@@ -54,6 +54,7 @@ export default function OtpForm({
         >
           <form.AppField
             listeners={{
+              onChangeDebounceMs: 100,
               onChange: ({ value, fieldApi }) => {
                 if (value.length === 6) {
                   fieldApi.form.handleSubmit()
