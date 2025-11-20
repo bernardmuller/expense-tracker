@@ -1,13 +1,12 @@
 import { useAppForm } from '@/hooks/form'
 import z from 'zod'
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from '../ui/card'
-import { useEffect, useRef } from 'react'
 
 const otpSchema = z.object({
   otp: z
@@ -39,24 +38,6 @@ export default function OtpForm({
     },
   })
 
-  const autoSubmittedRef = useRef(false)
-
-  useEffect(() => {
-    const subscription = form.store.subscribe(() => {
-      const state = form.store.state
-      const otpValue = state.values.otp
-
-      if (otpValue?.length === 6 && !autoSubmittedRef.current && !state.isSubmitting) {
-        autoSubmittedRef.current = true
-        setTimeout(() => form.handleSubmit(), 0)
-      } else {
-        autoSubmittedRef.current = otpValue?.length === 6
-      }
-    })
-
-    return () => subscription()
-  }, [])
-
   return (
     <Card>
       <CardHeader>
@@ -71,7 +52,17 @@ export default function OtpForm({
           }}
           className="flex flex-col items-center gap-3"
         >
-          <form.AppField name="otp" children={(field) => <field.OtpField label='One-Time Password'/>} />
+          <form.AppField
+            listeners={{
+              onChange: ({ value, fieldApi }) => {
+                if (value.length === 6) {
+                  fieldApi.form.handleSubmit()
+                }
+              },
+            }}
+            name="otp"
+            children={(field) => <field.OtpField label="One-Time Password" />}
+          />
           <span className="text-sm">
             Please enter the one-time password sent to your email address.
           </span>
