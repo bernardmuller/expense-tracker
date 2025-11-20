@@ -1,11 +1,10 @@
 import { hc } from 'hono/client'
 import type { AppType } from '../../../../back-end/src/app'
 
-const client = hc<AppType>('http://localhost:8787/', {
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787'
+
+export const client = hc<AppType>(API_URL, {
   init: {
-    credentials: 'include', // Required for sending cookies cross-origin
+    credentials: 'include',
   },
 })
-
-// Now your client requests will include credentials
-const response = await client.someProtectedEndpoint.$get()
