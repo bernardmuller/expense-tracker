@@ -1,12 +1,7 @@
 import { useAppForm } from '@/hooks/form'
 import z from 'zod'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../ui/card'
+import { Card, CardContent, CardFooter } from '../ui/card'
+import { Button } from '../ui/button'
 
 const otpSchema = z.object({
   otp: z
@@ -36,13 +31,21 @@ export default function OtpForm({
     onSubmit: ({ value }) => {
       onSubmit(value)
     },
+    listeners: {
+      onChangeDebounceMs: 100,
+      onChange: ({ fieldApi, formApi }) => {
+        if (fieldApi.state.value.length === 6) {
+          formApi.handleSubmit()
+        }
+      },
+    },
   })
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
+      <span className="flex w-full justify-center text-lg font-semibold">
+        {title}
+      </span>
       <CardContent>
         <form
           id="otp-form"
@@ -50,39 +53,25 @@ export default function OtpForm({
             e.preventDefault()
             form.handleSubmit()
           }}
-          className="flex flex-col items-center gap-3"
+          className="flex flex-col items-center space-y-3"
         >
-          <form.AppField
-            listeners={{
-              onChangeDebounceMs: 100,
-              onChange: ({ value, fieldApi }) => {
-                if (value.length === 6) {
-                  fieldApi.form.handleSubmit()
-                }
-              },
-            }}
-            name="otp"
-            children={(field) => <field.OtpField label="One-Time Password" />}
-          />
-          <span className="text-sm">
+          <div className="flex items-center">
+            <form.AppField
+              name="otp"
+              children={(field) => <field.OtpField label="One-Time Password" />}
+            />
+          </div>
+          <span className="text-center text-sm">
             Please enter the one-time password sent to your email address.
           </span>
         </form>
       </CardContent>
-      <CardFooter className="flex flex-col gap-4">
-        <form.AppForm>
-          <form.FormButton
-            enabledText="Submit"
-            loadingText="Verifying"
-            disabledText="Enter the 6-digit code"
-            formId="otp-form"
-          />
-        </form.AppForm>
-        <div className="text-muted-foreground text-center text-sm">
+      <CardFooter className="flex justify-center">
+        <Button asChild>
           <LinkProvider>
-            <span className="text-primary">Back</span>
+            <span className="text-primary text-sm">Back</span>
           </LinkProvider>
-        </div>
+        </Button>
       </CardFooter>
     </Card>
   )
