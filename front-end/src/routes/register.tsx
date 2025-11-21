@@ -2,59 +2,87 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import RegisterForm from '@/components/register-form/RegisterForm'
 import OtpForm from '@/components/otp-form/OtpForm'
-import { client } from '@/lib/auth-client'
+import { useRegisterRequest } from '@/lib/http/hooks/use-register-request'
+import { useRegisterVerify } from '@/lib/http/hooks/use-register-verify'
 
 export const Route = createFileRoute('/register')({
   component: RegisterPage,
 })
 
-const VERIFICATION_TOKEN_KEY = 'verification_token'
-
 type Step = 'register' | 'verify'
 
 function RegisterPage() {
   const navigate = useNavigate()
+  const [step, setStep] = useState<Step>('register')
+  const [userData, setUserData] = useState<{
+    name: string
+    email: string
+  } | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const registerMutation = useRegisterRequest()
+  const verifyMutation = useRegisterVerify()
 
   const handleRegisterSubmit = async (value: {
     name: string
     email: string
   }) => {
-    try {
-      const response = await client.auth.register.request.$post({
-        json: value,
-      })
+    setError(null)
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        if (response.status === 409) {
-          setError('An account with this email already exists')
+    registerMutation.mutate(value, {
+      onSuccess: (result) => {
+        if (result.isOk()) {
+          // Save user data and advance to OTP step
+          setUserData(value)
+          setStep('verify')
         } else {
-          setError((errorData as any).message || 'Registration failed')
+          // Handle error from Result
+          const errorData = result.error
+          if (errorData.status === 409) {
+            setError('An account with this email already exists')
+          } else {
+            setError(errorData.body?.message || 'Registration failed')
+          }
         }
-        return
-      }
-
-      const data = await response.json()
-
-      // Store verification token in sessionStorage
-      sessionStorage.setItem(VERIFICATION_TOKEN_KEY, data.token)
-
-      // Save user data and advance to OTP step
-      setUserData(value)
-      setStep('verify')
-    } catch (err) {
-      setError('Network error. Please try again.')
-      console.error('Registration error:', err)
-    }
+      },
+      onError: () => {
+        setError('Network error. Please try again.')
+      },
+    })
   }
 
   const handleOtpSubmit = async (value: { otp: string }) => {
-    console.log(value)
+    setError(null)
+
+    verifyMutation.mutate(value, {
+      onSuccess: (result) => {
+        if (result.isOk()) {
+          // Navigate to login on successful verification
+          navigate({ to: '/login' })
+        } else {
+          // Handle error from Result
+          const errorData = result.error
+          if (errorData.status === 401) {
+            setError('Invalid or expired OTP. Please try again.')
+          } else if (errorData.status === 404) {
+            setError(
+              'Verification token expired. Please start registration again.',
+            )
+            setStep('register')
+          } else {
+            setError(errorData.body?.message || 'Verification failed')
+          }
+        }
+      },
+      onError: () => {
+        setError('Network error. Please try again.')
+      },
+    })
   }
 
   const handleBackToRegister = () => {
-    console.log()
+    setStep('register')
+    setError(null)
   }
 
   return (
@@ -67,7 +95,17 @@ function RegisterPage() {
             {error}
           </div>
         )}
-        {step !== 'register' ? (
+
+        {step === 'register' ? (
+          <RegisterForm
+            onSubmit={handleRegisterSubmit}
+            linkProvider={({ children }) => (
+              <Link to="/login" className="cursor-pointer">
+                {children}
+              </Link>
+            )}
+          />
+        ) : (
           <OtpForm
             title="Verify Your Email"
             onSubmit={handleOtpSubmit}
@@ -75,15 +113,6 @@ function RegisterPage() {
               <span onClick={handleBackToRegister} className="cursor-pointer">
                 {children}
               </span>
-            )}
-          />
-        ) : (
-          <RegisterForm
-            onSubmit={handleRegisterSubmit}
-            linkProvider={({ children }) => (
-              <Link to="/login" className="cursor-pointer">
-                {children}
-              </Link>
             )}
           />
         )}
