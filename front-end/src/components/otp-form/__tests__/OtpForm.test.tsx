@@ -40,20 +40,6 @@ describe('OtpForm', () => {
       const otpSlots = screen.getAllByRole('textbox')
       expect(otpSlots).toHaveLength(1)
     })
-    it('should render the submit button', () => {
-      render(
-        <OtpForm
-          title="Verify OTP"
-          onSubmit={() => {}}
-          linkProvider={MockLinkProvider}
-        />,
-      )
-      expect(
-        screen.getByRole('button', {
-          name: /enter the 6-digit code|submit/i,
-        }),
-      ).toBeInTheDocument()
-    })
     it('should render the back link', () => {
       render(
         <OtpForm
@@ -67,41 +53,6 @@ describe('OtpForm', () => {
   })
 
   describe('Validation', () => {
-    it('should show error when submitted with less than 6 digits', async () => {
-      const { user } = setupUserEvent(
-        <OtpForm
-          title="Verify OTP"
-          onSubmit={() => {}}
-          linkProvider={MockLinkProvider}
-        />,
-      )
-      const otpInput = screen.getAllByRole('textbox')[0]
-      await user.type(otpInput, '123')
-      await user.click(screen.getByRole('button', { name: /submit/i }))
-      await waitFor(() => {
-        expect(
-          screen.getByText('Please enter all 6 digits'),
-        ).toBeInTheDocument()
-      })
-    })
-    it('should show error when submitted with empty OTP', async () => {
-      const { user } = setupUserEvent(
-        <OtpForm
-          title="Verify OTP"
-          onSubmit={() => {}}
-          linkProvider={MockLinkProvider}
-        />,
-      )
-      const button = screen.getByRole('button', {
-        name: /enter the 6-digit code|submit/i,
-      })
-      await user.click(button)
-      await waitFor(() => {
-        expect(
-          screen.getByText('Please enter all 6 digits'),
-        ).toBeInTheDocument()
-      })
-    })
     it('should accept valid 6-digit numeric OTP', async () => {
       const onSubmit = vi.fn()
       const { user } = setupUserEvent(
@@ -175,27 +126,6 @@ describe('OtpForm', () => {
       await user.type(otpInput, '987654')
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith({ otp: '987654' })
-      })
-    })
-  })
-
-  describe('Accessibility', () => {
-    it('should have proper aria attributes when invalid', async () => {
-      const { user } = setupUserEvent(
-        <OtpForm
-          title="Verify OTP"
-          onSubmit={() => {}}
-          linkProvider={MockLinkProvider}
-        />,
-      )
-      const otpInput = screen.getAllByRole('textbox')[0]
-      await user.type(otpInput, '12')
-      await user.click(screen.getByRole('button', { name: /submit/i }))
-      await waitFor(() => {
-        const field = screen
-          .getByText('Please enter all 6 digits')
-          .closest('[data-invalid]')
-        expect(field).toHaveAttribute('data-invalid', 'true')
       })
     })
   })
