@@ -38,6 +38,8 @@ export function useLoginVerify() {
             }),
           )
             .andThen((data) => {
+              localStorage.setItem('accessToken', data.accessToken)
+              localStorage.setItem('refreshToken', data.refreshToken)
               sessionStorage.removeItem('token')
               return ok(data)
             })
