@@ -12,7 +12,8 @@
     "format": "prettier",
     "check": "prettier --write . && eslint --fix",
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "gen:types": "tsx scripts/build-api-types.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
@@ -59,11 +60,12 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
-    "effect": "^3.18.1",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.544.0",
+    "neverthrow": "^8.2.0",
     "next-themes": "^0.4.6",
+    "openapi-fetch": "^0.15.0",
     "react": "^19.0.0",
     "react-day-picker": "^9.11.1",
     "react-dom": "^19.0.0",
@@ -92,6 +94,7 @@
     "@vitejs/plugin-react": "^5.0.4",
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "^27.0.0",
+    "openapi-typescript": "^7.4.4",
     "prettier": "^3.5.3",
     "prettier-plugin-classnames": "^0.8.4",
     "prettier-plugin-merge": "^0.8.0",
