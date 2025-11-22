@@ -23,7 +23,7 @@ export function useLoginRequest() {
     ): Promise<Result<LoginRequestSuccess, LoginRequestError>> =>
       toResult(client.POST('/auth/login/request', { body }))
         .andThen((data) => {
-          sessionStorage.setItem('verification_token', data.token)
+          sessionStorage.setItem('token', data.token)
           return ok(data)
         })
         .mapErr((error) => {
