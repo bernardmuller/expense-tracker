@@ -1,0 +1,966 @@
+{
+  "openapi": "3.0.0",
+  "info": { "version": "1.0.0", "title": "Budget API" },
+  "components": { "schemas": {}, "parameters": {} },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["Index"],
+        "responses": {
+          "200": {
+            "description": "Budget API Index",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } },
+                  "required": ["message"],
+                  "example": { "message": "Budget API" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register/request": {
+      "post": {
+        "tags": ["Auth"],
+        "requestBody": {
+          "description": "Request registration with email and name",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" }
+                },
+                "required": ["name", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully, returns verification token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "token": { "type": "string" } },
+                  "required": ["token"]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register/verify": {
+      "post": {
+        "tags": ["Auth"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^Bearer .+$",
+              "description": "Verification token in format: Bearer \u003Ctoken\u003E"
+            },
+            "required": true,
+            "description": "Verification token in format: Bearer \u003Ctoken\u003E",
+            "name": "authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "description": "Verify OTP and complete registration",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "otp": { "type": "string" } },
+                "required": ["otp"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration completed successfully, user logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "emailVerified": { "type": "boolean" },
+                    "image": { "type": "string", "nullable": true },
+                    "onboarded": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date" },
+                    "updatedAt": { "type": "string", "format": "date" }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "emailVerified",
+                    "image",
+                    "onboarded",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authorization header, invalid or expired OTP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Verification not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login/request": {
+      "post": {
+        "tags": ["Auth"],
+        "requestBody": {
+          "description": "Request magic link login with email",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "email": { "type": "string" } },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully, returns verification token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "token": { "type": "string" } },
+                  "required": ["token"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login/verify": {
+      "post": {
+        "tags": ["Auth"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^Bearer .+$",
+              "description": "Verification token in format: Bearer \u003Ctoken\u003E"
+            },
+            "required": true,
+            "description": "Verification token in format: Bearer \u003Ctoken\u003E",
+            "name": "authorization",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "description": "Verify OTP and get access tokens",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "otp": { "type": "string" } },
+                "required": ["otp"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP verified successfully, user logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": { "type": "string" },
+                    "refreshToken": { "type": "string" }
+                  },
+                  "required": ["accessToken", "refreshToken"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authorization header, invalid or expired OTP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Verification not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^Bearer .+$",
+              "description": "Refresh token in format: Bearer \u003Ctoken\u003E"
+            },
+            "required": true,
+            "description": "Refresh token in format: Bearer \u003Ctoken\u003E",
+            "name": "authorization",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tokens refreshed successfully, returns new access and refresh tokens",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": { "type": "string" },
+                    "refreshToken": { "type": "string" }
+                  },
+                  "required": ["accessToken", "refreshToken"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid authorization header, expired or invalid refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Returns a list of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "format": "uuid" },
+                      "name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "emailVerified": { "type": "boolean" },
+                      "image": { "type": "string", "nullable": true },
+                      "onboarded": { "type": "boolean" },
+                      "createdAt": { "type": "string", "format": "date" },
+                      "updatedAt": { "type": "string", "format": "date" }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "email",
+                      "emailVerified",
+                      "image",
+                      "onboarded",
+                      "createdAt",
+                      "updatedAt"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "requestBody": {
+          "description": "User creation data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" }
+                },
+                "required": ["name", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "emailVerified": { "type": "boolean" },
+                    "image": { "type": "string", "nullable": true },
+                    "onboarded": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date" },
+                    "updatedAt": { "type": "string", "format": "date" }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "emailVerified",
+                    "image",
+                    "onboarded",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error - email already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Return a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "emailVerified": { "type": "boolean" },
+                    "image": { "type": "string", "nullable": true },
+                    "onboarded": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date" },
+                    "updatedAt": { "type": "string", "format": "date" }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "emailVerified",
+                    "image",
+                    "onboarded",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "schema": { "type": "string", "format": "uuid" },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "User update data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "emailVerified": { "type": "boolean" },
+                  "image": { "type": "string", "nullable": true },
+                  "onboarded": { "type": "boolean" },
+                  "createdAt": { "type": "string", "format": "date" },
+                  "updatedAt": { "type": "string", "format": "date" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "emailVerified": { "type": "boolean" },
+                    "image": { "type": "string", "nullable": true },
+                    "onboarded": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date" },
+                    "updatedAt": { "type": "string", "format": "date" }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "emailVerified",
+                    "image",
+                    "onboarded",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}/onboard": {
+      "patch": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "schema": { "type": "string", "format": "uuid" },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User marked as onboarded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "emailVerified": { "type": "boolean" },
+                    "image": { "type": "string", "nullable": true },
+                    "onboarded": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date" },
+                    "updatedAt": { "type": "string", "format": "date" }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "emailVerified",
+                    "image",
+                    "onboarded",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already onboarded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}/verify": {
+      "patch": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "schema": { "type": "string", "format": "uuid" },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User marked as verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "emailVerified": { "type": "boolean" },
+                    "image": { "type": "string", "nullable": true },
+                    "onboarded": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date" },
+                    "updatedAt": { "type": "string", "format": "date" }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "emailVerified",
+                    "image",
+                    "onboarded",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}/setup-status": {
+      "get": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "schema": { "type": "string", "format": "uuid" },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User setup status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "isFullySetup": { "type": "boolean" } },
+                  "required": ["isFullySetup"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  },
+                  "required": ["error", "message", "code"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

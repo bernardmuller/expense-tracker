@@ -327,6 +327,14 @@ export const registerVerify = (
         ? UserOperations.createUser({ name, email }, ctx).map((user) => user)
         : errAsync(new InvalidOTPError()),
     )
+    // .andThen((user) =>
+    //   AccountOperations.createAccount(
+    //     {
+    //       userId: user.id,
+    //     },
+    //     ctx,
+    //   ).map(() => user),
+    // )
     .andThen((user) => UserOperations.markUserAsVerified(user.id, ctx))
     .mapErr((error) => {
       logger.error(
