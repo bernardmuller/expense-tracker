@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FieldGroup } from '@/components/ui/field'
+import { Progress } from '@/components/ui/progress'
 import {
   Stepper,
   StepperContent,
@@ -19,7 +20,7 @@ import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Check, LoaderCircleIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import z from 'zod'
 
 const onboardingFormSchema = z.object({
@@ -42,12 +43,28 @@ export const Route = createFileRoute('/onboarding')({
   component: OnboardingPage,
 })
 
+const StepHeader = ({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) => {
+  return (
+    <div>
+      <h3>{title}</h3>
+      <p className="text-muted-foreground text-sm">{description}</p>
+    </div>
+  )
+}
+
 function OnboardingPage() {
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(0)
 
   const categories = [
     {
+      icon: '🦚',
       value: 'thing',
       name: 'thing',
     },
@@ -97,6 +114,21 @@ function OnboardingPage() {
     )
   }
 
+  // Calculate total allocated amount
+  const totalAllocated = useMemo(() => {
+    return form.state.values.categories.reduce((sum, category) => {
+      return sum + (category.amount || 0)
+    }, 0)
+  }, [form.state.values.categories])
+
+  // Format currency helper
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('en-ZA', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
+
   if (currentStep === 0) {
     return (
       <OnboardingLayout>
@@ -143,49 +175,52 @@ function OnboardingPage() {
             value={1}
             className="flex flex-1 items-center justify-center"
           >
-            <FieldGroup>
-              <form.AppField
-                name="name"
-                children={(field) => (
-                  <field.TextField placeholder="Budget name (e.g., Monthly Budget)" />
-                )}
+            <div className="w-full space-y-4">
+              <StepHeader
+                title="Setup your Budget"
+                description={onboardingSteps[currentStep - 1].description}
               />
-              <form.AppField
-                name="startAmount"
-                children={(field) => (
-                  <field.NumberField placeholder="Total budget amount" />
-                )}
-              />
-            </FieldGroup>
+              <FieldGroup>
+                <form.AppField
+                  name="name"
+                  children={(field) => (
+                    <field.TextField placeholder="Budget name (e.g., Monthly Budget)" />
+                  )}
+                />
+                <form.AppField
+                  name="startAmount"
+                  children={(field) => (
+                    <field.NumberField placeholder="Total budget amount" />
+                  )}
+                />
+              </FieldGroup>
+            </div>
           </StepperContent>
           <StepperContent
             value={2}
             className="flex flex-1 items-center justify-center"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>Select Your Categories</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-muted-foreground text-sm">
-                    Choose the expense categories you want to track in your
-                    budget.
-                  </p>
-                  <div className="grid gap-3">
-                    {categories.map((category) => {
-                      const isChecked = form.state.values.categories.some(
-                        (cat) => cat.categoryId === category.value,
-                      )
-                      return (
+            <div className="w-full space-y-4">
+              <StepHeader
+                title="Select Your Categories"
+                description={onboardingSteps[currentStep - 1].description}
+              />
+              <div className="grid gap-3">
+                {categories.map((category) => {
+                  const isChecked = form.state.values.categories.some(
+                    (cat) => cat.categoryId === category.value,
+                  )
+                  return (
+                    <Card>
+                      <CardContent>
                         <label
                           key={category.value}
-                          className="hover:bg-muted/50 flex cursor-pointer
-                            items-center gap-3 rounded-md border p-3"
+                          className="flex cursor-pointer items-center gap-3"
                         >
-                          <span className="flex-1 font-medium">
-                            {category.name}
-                          </span>
+                          <div className="flex flex-1 gap-1 font-medium">
+                            <span>{category.icon}</span>
+                            <span>{category.name}</span>
+                          </div>
                           <Checkbox
                             checked={isChecked}
                             onCheckedChange={() =>
@@ -193,43 +228,73 @@ function OnboardingPage() {
                             }
                           />
                         </label>
-                      )
-                    })}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
+            </div>
           </StepperContent>
           <StepperContent
             value={3}
-            className="flex flex-1 items-center justify-center"
+            className="flex flex-1 flex-col items-center justify-center
+              space-y-4"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>Allocate Your Budget</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-muted-foreground text-sm">
-                    Set a budget amount for each category you selected.
-                  </p>
-                  <FieldGroup>
-                    {form.state.values.categories.map((category, index) => (
-                      <form.AppField
-                        key={category.categoryId}
-                        name={`categories[${index}].amount`}
-                        children={(field) => (
-                          <field.NumberField
-                            label={getCategoryName(category.categoryId)}
-                            placeholder="Enter amount"
+            <div className="w-full max-w-2xl space-y-4">
+              <StepHeader
+                title="Allocate Your Categories"
+                description={onboardingSteps[currentStep - 1].description}
+              />
+              <Card>
+                <CardContent>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex w-full gap-3">
+                      <span className="text-lg font-semibold">
+                        R{formatCurrency(totalAllocated)}
+                      </span>
+                      <span className="text-muted-foreground text-lg">of</span>
+                      <span className="text-lg font-semibold">
+                        R{formatCurrency(form.state.values.startAmount)}
+                      </span>
+                    </div>
+                    <Progress
+                      value={
+                        (totalAllocated / form.state.values.startAmount) * 100
+                      }
+                    />
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      Allocate an amount you plan on spending on each category
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="space-y-3">
+                {form.state.values.categories.map((category, index) => (
+                  <Card key={category.categoryId}>
+                    <CardContent>
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <p className="font-medium">
+                            {getCategoryName(category.categoryId)}
+                          </p>
+                        </div>
+                        <div className="w-36">
+                          <form.AppField
+                            name={`categories[${index}].amount`}
+                            children={(field) => (
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm text-gray-400">R</span>
+                                <field.NumberField placeholder="0" />
+                              </div>
+                            )}
                           />
-                        )}
-                      />
-                    ))}
-                  </FieldGroup>
-                </div>
-              </CardContent>
-            </Card>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </StepperContent>
         </StepperPanel>
       </Stepper>
@@ -237,16 +302,31 @@ function OnboardingPage() {
         <Button
           variant="outline"
           onClick={() => setCurrentStep((prev) => prev - 1)}
-          disabled={currentStep === 1}
         >
           Previous
         </Button>
-        <Button
-          onClick={() => setCurrentStep((prev) => prev + 1)}
-          disabled={currentStep === onboardingSteps.length}
-        >
-          Next
-        </Button>
+        {currentStep !== onboardingSteps.length ? (
+          <Button
+            onClick={() => setCurrentStep((prev) => prev + 1)}
+            disabled={currentStep === onboardingSteps.length}
+          >
+            Next
+          </Button>
+        ) : (
+          <Button
+            onClick={() => form.handleSubmit()}
+            disabled={form.state.isSubmitting}
+          >
+            {form.state.isSubmitting ? (
+              <>
+                <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
+                Creating Budget...
+              </>
+            ) : (
+              'Create Budget'
+            )}
+          </Button>
+        )}
       </div>
     </OnboardingLayout>
   )
