@@ -1,11 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { requireAuth } from '@/lib/auth/route-guard'
 import logo from '../logo.svg'
+import { useAuth } from '@/lib/auth/auth-provider'
 
 export const Route = createFileRoute('/')({
+  beforeLoad: () => {
+    requireAuth()
+  },
   component: App,
 })
 
 function App() {
+  const auth = useAuth()
+
+  if (auth.isLoading) return 'loading...'
   return (
     <div className="text-center">
       <header
