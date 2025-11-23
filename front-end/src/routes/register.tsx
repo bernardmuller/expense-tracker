@@ -1,11 +1,22 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  redirect,
+} from '@tanstack/react-router'
 import { useState } from 'react'
 import RegisterForm from '@/components/register-form/RegisterForm'
 import OtpForm from '@/components/otp-form/OtpForm'
 import { useRegisterRequest } from '@/lib/http/hooks/use-register-request'
 import { useRegisterVerify } from '@/lib/http/hooks/use-register-verify'
+import { hasTokens } from '@/lib/auth/token-storage'
 
 export const Route = createFileRoute('/register')({
+  beforeLoad: () => {
+    if (hasTokens()) {
+      throw redirect({ to: '/' })
+    }
+  },
   component: RegisterPage,
 })
 
@@ -25,7 +36,6 @@ function RegisterPage() {
 
   const handleOtpSubmit = async (value: { otp: string }) =>
     verifyMutation.mutate(value, {
-      // @ts-ignore: will be fixed once the login route exists
       onSuccess: (result) => result.isOk() && navigate({ to: '/login' }),
     })
 
@@ -38,7 +48,6 @@ function RegisterPage() {
           <RegisterForm
             onSubmit={handleRegisterSubmit}
             linkProvider={({ children }) => (
-              // @ts-ignore: will be fixed once the login route exists
               <Link to="/login" className="cursor-pointer">
                 {children}
               </Link>
