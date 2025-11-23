@@ -1,11 +1,23 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  redirect,
+} from '@tanstack/react-router'
 import { useState } from 'react'
 import LoginForm from '@/components/login-form/LoginForm'
 import OtpForm from '@/components/otp-form/OtpForm'
 import { useLoginRequest } from '@/lib/http/hooks/use-login-request'
 import { useLoginVerify } from '@/lib/http/hooks/use-login-verify'
+import { useAuth } from '@/lib/auth/auth-provider'
+import { hasTokens } from '@/lib/auth/token-storage'
 
 export const Route = createFileRoute('/login')({
+  beforeLoad: () => {
+    if (hasTokens()) {
+      throw redirect({ to: '/' })
+    }
+  },
   component: LoginPage,
 })
 
@@ -13,6 +25,7 @@ type Step = 'login' | 'verify'
 
 function LoginPage() {
   const navigate = useNavigate()
+  const auth = useAuth()
   const [step, setStep] = useState<Step>('login')
 
   const loginMutation = useLoginRequest()
@@ -25,7 +38,12 @@ function LoginPage() {
 
   const handleOtpSubmit = async (value: { otp: string }) =>
     verifyMutation.mutate(value, {
-      onSuccess: (result) => result.isOk() && navigate({ to: '/' }),
+      onSuccess: (result) => {
+        if (result.isOk()) {
+          auth.login()
+          navigate({ to: '/' })
+        }
+      },
     })
 
   return (
@@ -47,10 +65,7 @@ function LoginPage() {
             title="Verify Your Login"
             onSubmit={handleOtpSubmit}
             linkProvider={({ children }) => (
-              <span
-                onClick={() => setStep('login')}
-                className="cursor-pointer"
-              >
+              <span onClick={() => setStep('login')} className="cursor-pointer">
                 {children}
               </span>
             )}
