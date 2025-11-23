@@ -14,4 +14,8 @@ export const queryKeys = {
     },
     refresh: () => ['auth', 'refresh'] as const,
   },
+  users: {
+    all: ['users'] as const,
+    onboard: () => ['users', 'onboard'] as const,
+  },
 } as const
