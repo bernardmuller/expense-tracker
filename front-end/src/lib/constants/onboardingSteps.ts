@@ -4,7 +4,7 @@ export const onboardingSteps: Array<{
 }> = [
   {
     title: 'Budget',
-    description: 'Set your budget for the period',
+    description: 'Set your budget name and start amount for the period',
   },
   {
     title: 'Categories',
@@ -12,6 +12,6 @@ export const onboardingSteps: Array<{
   },
   {
     title: 'Allocate',
-    description: 'Distribute your budget across spending categories',
+    description: 'Distribute your budget across the spending categories',
   },
 ]
