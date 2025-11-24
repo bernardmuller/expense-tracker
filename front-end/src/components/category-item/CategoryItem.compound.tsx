@@ -1,17 +1,15 @@
-import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils/cn'
 import type { ComponentProps, ReactNode } from 'react'
+import { Label } from '../ui/label'
 
-type RootProps = ComponentProps<typeof Card> & {
+type RootProps = ComponentProps<typeof Label> & {
   children: ReactNode
 }
 
 export function Root({ children, className, ...props }: RootProps) {
   return (
-    <label>
-      <Card className={cn('cursor-pointer', className)} {...props}>
-        {children}
-      </Card>
+    <label className={cn('w-full cursor-pointer', className)} {...props}>
+      {children}
     </label>
   )
 }
@@ -23,9 +21,7 @@ type ContentProps = {
 
 export function Content({ children, className }: ContentProps) {
   return (
-    <CardContent>
-      <div className={cn('flex items-center gap-3', className)}>{children}</div>
-    </CardContent>
+    <div className={cn('flex items-center gap-3', className)}>{children}</div>
   )
 }
 
