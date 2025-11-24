@@ -24,8 +24,6 @@ import { Check, LoaderCircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import z from 'zod'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { Label } from '@/components/ui/label'
-import { FormField } from '@/components/ui/form'
 
 const categorySchema = z.object({
   id: z.string(),
@@ -34,20 +32,38 @@ const categorySchema = z.object({
 })
 
 const userCategorySchema = categorySchema.extend({
-  amount: z.number().positive('Amount must be greater than 0'),
+  amount: z.number().positive('Amount must be greater than 0').optional(),
 })
 
 type Category = Omit<z.infer<typeof categorySchema>, 'amount'>
 type UserCategory = z.infer<typeof userCategorySchema>
 
-const onboardingFormSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'You must provide a budget name')
-    .max(50, "Budget name can't exceed 50 characters"),
-  startAmount: z.number().positive('You must provide a budget amount'),
-  categories: z.array(userCategorySchema),
-})
+const onboardingFormSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, 'You must provide a budget name')
+      .max(50, "Budget name can't exceed 50 characters"),
+    startAmount: z
+      .number()
+      .positive('You must provide a budget amount')
+      .optional(),
+    categories: z.array(userCategorySchema),
+  })
+  .refine((data) => data.startAmount !== undefined && data.startAmount > 0, {
+    message: 'You must provide a budget amount',
+    path: ['startAmount'],
+  })
+  .refine(
+    (data) =>
+      data.categories.every(
+        (cat) => cat.amount !== undefined && cat.amount > 0,
+      ),
+    {
+      message: 'All categories must have amounts greater than 0',
+      path: ['categories'],
+    },
+  )
 
 export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
 
@@ -85,7 +101,7 @@ function OnboardingPage() {
   const form = useAppForm<OnboardingFormValues>({
     defaultValues: {
       name: '',
-      startAmount: 0,
+      startAmount: undefined,
       categories: [],
     },
     validators: {
@@ -112,7 +128,7 @@ function OnboardingPage() {
     } else {
       form.setFieldValue('categories', [
         ...currentCategories,
-        { ...category, amount: 0 },
+        { ...category, amount: undefined },
       ])
     }
   }
@@ -265,7 +281,7 @@ function OnboardingPage() {
                               </span>
                               <span className="text-lg font-semibold">
                                 {formatCurrency(
-                                  form.state.values.startAmount,
+                                  form.state.values.startAmount ?? 0,
                                   'za',
                                 )}
                               </span>
@@ -273,7 +289,8 @@ function OnboardingPage() {
                           </div>
                           <Progress
                             value={
-                              (totalAllocated / form.state.values.startAmount) *
+                              (totalAllocated /
+                                (form.state.values.startAmount ?? 0)) *
                               100
                             }
                           />
