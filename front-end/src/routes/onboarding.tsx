@@ -64,7 +64,7 @@ const StepHeader = ({
 }) => {
   return (
     <div>
-      <h3>{title}</h3>
+      <h3 className="text-lg">{title}</h3>
       <p className="text-muted-foreground text-sm">{description}</p>
     </div>
   )
@@ -212,12 +212,16 @@ function OnboardingPage() {
                         (cat) => cat.id === category.id,
                       )
                       return (
-                        <SelectableCategoryItem
-                          key={category.id}
-                          {...category}
-                          checked={isChecked}
-                          onCheckedChange={() => toggleCategory(category)}
-                        />
+                        <Card>
+                          <CardContent>
+                            <SelectableCategoryItem
+                              key={category.id}
+                              {...category}
+                              checked={isChecked}
+                              onCheckedChange={() => toggleCategory(category)}
+                            />
+                          </CardContent>
+                        </Card>
                       )
                     })}
                   </div>
@@ -244,21 +248,28 @@ function OnboardingPage() {
                   )
                   return (
                     <Card>
-                      <CardContent>
+                      <CardContent className="space-y-4">
                         <div className="flex flex-col gap-2">
-                          <div className="flex w-full gap-3">
-                            <span className="text-lg font-semibold">
-                              {formatCurrency(totalAllocated, 'za')}
-                            </span>
-                            <span className="text-muted-foreground text-lg">
-                              of
-                            </span>
-                            <span className="text-lg font-semibold">
-                              {formatCurrency(
-                                form.state.values.startAmount,
-                                'za',
-                              )}
-                            </span>
+                          <div
+                            className="flex w-full items-center justify-between"
+                          >
+                            <h3 className="text-muted-foreground text-lg">
+                              Total Allocated
+                            </h3>
+                            <div className="flex gap-3">
+                              <span className="text-lg font-semibold">
+                                {formatCurrency(totalAllocated, 'za')}
+                              </span>
+                              <span className="text-muted-foreground text-lg">
+                                of
+                              </span>
+                              <span className="text-lg font-semibold">
+                                {formatCurrency(
+                                  form.state.values.startAmount,
+                                  'za',
+                                )}
+                              </span>
+                            </div>
                           </div>
                           <Progress
                             value={
@@ -267,31 +278,37 @@ function OnboardingPage() {
                             }
                           />
                         </div>
+                        <div>
+                          {form.state.values.categories.map(
+                            (category, index) => (
+                              <AllocatableCategoryItem
+                                key={category.id}
+                                id={category.id}
+                                icon={category.icon}
+                                name={category.name}
+                              >
+                                <form.AppField
+                                  name={`categories[${index}].amount`}
+                                  children={(field) => (
+                                    <div
+                                      className="flex w-28 items-center gap-1"
+                                    >
+                                      <span className="text-md text-gray-400">
+                                        R
+                                      </span>
+                                      <field.NumberField placeholder="0" />
+                                    </div>
+                                  )}
+                                />
+                              </AllocatableCategoryItem>
+                            ),
+                          )}
+                        </div>
                       </CardContent>
                     </Card>
                   )
                 }}
               />
-              <div className="space-y-3">
-                {form.state.values.categories.map((category, index) => (
-                  <AllocatableCategoryItem
-                    key={category.id}
-                    id={category.id}
-                    icon={category.icon}
-                    name={category.name}
-                  >
-                    <form.AppField
-                      name={`categories[${index}].amount`}
-                      children={(field) => (
-                        <div className="flex w-28 items-center gap-1">
-                          <span className="text-md text-gray-400">R</span>
-                          <field.NumberField placeholder="0" />
-                        </div>
-                      )}
-                    />
-                  </AllocatableCategoryItem>
-                ))}
-              </div>
             </div>
           </StepperContent>
         </StepperPanel>
