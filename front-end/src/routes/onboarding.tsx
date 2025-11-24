@@ -79,11 +79,56 @@ const StepHeader = ({
   description: string
 }) => {
   return (
-    <div>
+    <div className="w-full">
       <h3 className="text-lg">{title}</h3>
       <p className="text-muted-foreground text-sm">{description}</p>
     </div>
   )
+}
+
+const getStepWithError = (
+  fieldMeta: Record<string, { errors?: unknown[] }>,
+): number | null => {
+  // Step 1: Check name and startAmount fields
+  if (
+    (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
+    (fieldMeta['startAmount']?.errors &&
+      fieldMeta['startAmount'].errors.length > 0)
+  ) {
+    return 1
+  }
+
+  // Step 2: Check categories field (selection validation)
+  // The refine for category amounts sets error path to 'categories'
+  if (
+    fieldMeta['categories']?.errors &&
+    fieldMeta['categories'].errors.length > 0
+  ) {
+    // Check if this is about amounts (step 3) or selection (step 2)
+    // If any categories exist, assume it's about amounts (step 3)
+    // Otherwise it's about selection (step 2)
+    const hasCategoryAmountError = Object.keys(fieldMeta).some(
+      (key) =>
+        key.match(/^categories\[\d+\]\.amount$/) &&
+        fieldMeta[key]?.errors &&
+        fieldMeta[key].errors!.length > 0,
+    )
+    return hasCategoryAmountError ? 3 : 2
+  }
+
+  // Step 3: Check individual category amounts
+  const hasCategoryAmountError = Object.keys(fieldMeta).some(
+    (key) =>
+      key.match(/^categories\[\d+\]\.amount$/) &&
+      fieldMeta[key]?.errors &&
+      fieldMeta[key].errors!.length > 0,
+  )
+
+  if (hasCategoryAmountError) {
+    return 3
+  }
+
+  return null
 }
 
 function OnboardingPage() {
@@ -113,6 +158,12 @@ function OnboardingPage() {
       // TODO: Save to backend and mark user as onboarded
       // TODO: Get userId from auth context
       navigate({ to: '/' })
+    },
+    onSubmitInvalid: ({ formApi }) => {
+      const stepWithError = getStepWithError(formApi.state.fieldMeta)
+      if (stepWithError !== null) {
+        setCurrentStep(stepWithError)
+      }
     },
   })
 
@@ -179,71 +230,73 @@ function OnboardingPage() {
             value={1}
             className="flex flex-1 items-center justify-center"
           >
-            <div className="w-full space-y-4">
-              <StepHeader
-                title="Setup your Budget"
-                description={onboardingSteps[currentStep - 1].description}
-              />
-              <FieldGroup>
-                <Card>
-                  <CardContent className="flex flex-col gap-6">
-                    <form.AppField
-                      name="name"
-                      children={(field) => (
-                        <field.TextField
-                          label="Budget name"
-                          placeholder="Enter budget name"
-                        />
-                      )}
-                    />
-                    <form.AppField
-                      name="startAmount"
-                      children={(field) => (
-                        <field.NumberField
-                          label="Start Amount"
-                          placeholder="Total budget amount"
-                        />
-                      )}
-                    />
-                  </CardContent>
-                </Card>
-              </FieldGroup>
-            </div>
+            <FieldGroup>
+              <Card className="w-full">
+                <CardHeader className="w-full">
+                  <StepHeader
+                    title="Setup your Budget"
+                    description={onboardingSteps[currentStep - 1].description}
+                  />
+                </CardHeader>
+                <CardContent className="flex flex-col gap-6">
+                  <form.AppField
+                    name="name"
+                    children={(field) => (
+                      <field.TextField
+                        label="Budget name"
+                        placeholder="Enter budget name"
+                      />
+                    )}
+                  />
+                  <form.AppField
+                    name="startAmount"
+                    children={(field) => (
+                      <field.NumberField
+                        label="Start Amount"
+                        placeholder="Total budget amount"
+                      />
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </FieldGroup>
           </StepperContent>
           <StepperContent
             value={2}
             className="flex flex-1 items-center justify-center"
           >
-            <div className="w-full space-y-4">
-              <StepHeader
-                title="Select Your Categories"
-                description={onboardingSteps[currentStep - 1].description}
-              />
-              <form.AppField
-                name="categories"
-                children={(field) => (
-                  <div className="grid gap-3">
-                    {categories.map((category) => {
-                      const isChecked = field.state.value.some(
-                        (cat) => cat.id === category.id,
-                      )
-                      return (
-                        <Card>
-                          <CardContent>
+            <Card className="w-full">
+              <CardHeader>
+                <StepHeader
+                  title="Select Your Categories"
+                  description={onboardingSteps[currentStep - 1].description}
+                />
+              </CardHeader>
+              <CardContent>
+                <div className="w-full space-y-4">
+                  <form.AppField
+                    name="categories"
+                    children={(field) => (
+                      <div className="grid gap-3">
+                        {categories.map((category) => {
+                          const isChecked = field.state.value.some(
+                            (cat) => cat.id === category.id,
+                          )
+                          return (
                             <SelectableCategoryItem
                               key={category.id}
                               {...category}
                               checked={isChecked}
                               onCheckedChange={() => toggleCategory(category)}
                             />
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
-                )}
-              />
-            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </StepperContent>
           <StepperContent
             value={3}
@@ -251,10 +304,6 @@ function OnboardingPage() {
               space-y-4"
           >
             <div className="w-full max-w-2xl space-y-4">
-              <StepHeader
-                title="Allocate Your Categories"
-                description={onboardingSteps[currentStep - 1].description}
-              />
               <form.Subscribe
                 selector={(state) => state.values.categories}
                 children={(categories) => {
@@ -264,6 +313,14 @@ function OnboardingPage() {
                   )
                   return (
                     <Card>
+                      <CardHeader>
+                        <StepHeader
+                          title="Allocate Your Categories"
+                          description={
+                            onboardingSteps[currentStep - 1].description
+                          }
+                        />
+                      </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="flex flex-col gap-2">
                           <div
