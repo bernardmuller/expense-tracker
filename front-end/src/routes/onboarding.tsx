@@ -18,10 +18,24 @@ import {
 } from '@/components/ui/stepper'
 import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
+import { cn } from '@/lib/utils/cn'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Check, LoaderCircleIcon } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import z from 'zod'
+
+const categorySchema = z.object({
+  id: z.string(),
+  icon: z.string(),
+  name: z.string(),
+})
+
+const userCategorySchema = categorySchema.extend({
+  amount: z.number().positive('Amount must be greater than 0'),
+})
+
+type Category = Omit<z.infer<typeof categorySchema>, 'amount'>
+type UserCategory = z.infer<typeof userCategorySchema>
 
 const onboardingFormSchema = z.object({
   name: z
@@ -29,12 +43,7 @@ const onboardingFormSchema = z.object({
     .min(1, 'You must provide a budget name')
     .max(50, "Budget name can't exceed 50 characters"),
   startAmount: z.number().positive('You must provide a budget amount'),
-  categories: z.array(
-    z.object({
-      categoryId: z.string(),
-      amount: z.number().positive('Amount must be greater than 0'),
-    }),
-  ),
+  categories: z.array(userCategorySchema),
 })
 
 export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
@@ -62,10 +71,10 @@ function OnboardingPage() {
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(0)
 
-  const categories = [
+  const categories: Array<Category> = [
     {
       icon: '🦚',
-      value: 'thing',
+      id: 'thing',
       name: 'thing',
     },
   ]
@@ -88,40 +97,27 @@ function OnboardingPage() {
     },
   })
 
-  const toggleCategory = (categoryId: string) => {
+  const toggleCategory = (category: Category) => {
     const currentCategories = form.state.values.categories
-    const isSelected = currentCategories.some(
-      (cat) => cat.categoryId === categoryId,
-    )
+    const isSelected = currentCategories.some((cat) => cat.id === category.id)
 
     if (isSelected) {
       form.setFieldValue(
         'categories',
-        currentCategories.filter((cat) => cat.categoryId !== categoryId),
+        currentCategories.filter((cat) => cat.id !== category.id),
       )
     } else {
       form.setFieldValue('categories', [
         ...currentCategories,
-        { categoryId, amount: 0 },
+        { ...category, amount: 0 },
       ])
     }
   }
 
-  // Helper to get category name from value
   const getCategoryName = (categoryId: string) => {
-    return (
-      categories.find((cat) => cat.value === categoryId)?.name || categoryId
-    )
+    return categories.find((cat) => cat.id === categoryId)?.name || categoryId
   }
 
-  // Calculate total allocated amount
-  const totalAllocated = useMemo(() => {
-    return form.state.values.categories.reduce((sum, category) => {
-      return sum + (category.amount || 0)
-    }, 0)
-  }, [form.state.values.categories])
-
-  // Format currency helper
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString('en-ZA', {
       minimumFractionDigits: 2,
@@ -181,18 +177,31 @@ function OnboardingPage() {
                 description={onboardingSteps[currentStep - 1].description}
               />
               <FieldGroup>
-                <form.AppField
-                  name="name"
-                  children={(field) => (
-                    <field.TextField placeholder="Budget name (e.g., Monthly Budget)" />
-                  )}
-                />
-                <form.AppField
-                  name="startAmount"
-                  children={(field) => (
-                    <field.NumberField placeholder="Total budget amount" />
-                  )}
-                />
+                <Card>
+                  <CardContent className="flex flex-col gap-4">
+                    <div>
+                      <label>Budget Name</label>
+                      <form.AppField
+                        name="name"
+                        children={(field) => (
+                          <field.TextField placeholder="Budget name (e.g., Monthly Budget)" />
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <label>Start Amount</label>
+                      <div className="flex items-center gap-2">
+                        <span>R</span>
+                        <form.AppField
+                          name="startAmount"
+                          children={(field) => (
+                            <field.NumberField placeholder="Total budget amount" />
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </FieldGroup>
             </div>
           </StepperContent>
@@ -205,34 +214,46 @@ function OnboardingPage() {
                 title="Select Your Categories"
                 description={onboardingSteps[currentStep - 1].description}
               />
-              <div className="grid gap-3">
-                {categories.map((category) => {
-                  const isChecked = form.state.values.categories.some(
-                    (cat) => cat.categoryId === category.value,
-                  )
-                  return (
-                    <Card>
-                      <CardContent>
-                        <label
-                          key={category.value}
-                          className="flex cursor-pointer items-center gap-3"
-                        >
-                          <div className="flex flex-1 gap-1 font-medium">
-                            <span>{category.icon}</span>
-                            <span>{category.name}</span>
-                          </div>
-                          <Checkbox
-                            checked={isChecked}
-                            onCheckedChange={() =>
-                              toggleCategory(category.value)
-                            }
-                          />
+              <form.AppField
+                name="categories"
+                children={(field) => (
+                  <div className="grid gap-3">
+                    {categories.map((category) => {
+                      const isChecked = field.state.value.some(
+                        (cat) => cat.id === category.id,
+                      )
+                      return (
+                        <label>
+                          <Card
+                            key={category.id}
+                            className={cn('cursor-pointer', {
+                              'border-primary': isChecked,
+                            })}
+                          >
+                            <CardContent>
+                              <div
+                                className="flex cursor-pointer items-center
+                                  gap-3"
+                              >
+                                <div className="flex flex-1 gap-1 font-medium">
+                                  <span>{category.icon}</span>
+                                  <span>{category.name}</span>
+                                </div>
+                                <Checkbox
+                                  checked={isChecked}
+                                  onCheckedChange={() =>
+                                    toggleCategory(category)
+                                  }
+                                />
+                              </div>
+                            </CardContent>
+                          </Card>
                         </label>
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-              </div>
+                      )
+                    })}
+                  </div>
+                )}
+              />
             </div>
           </StepperContent>
           <StepperContent
@@ -245,37 +266,49 @@ function OnboardingPage() {
                 title="Allocate Your Categories"
                 description={onboardingSteps[currentStep - 1].description}
               />
-              <Card>
-                <CardContent>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex w-full gap-3">
-                      <span className="text-lg font-semibold">
-                        R{formatCurrency(totalAllocated)}
-                      </span>
-                      <span className="text-muted-foreground text-lg">of</span>
-                      <span className="text-lg font-semibold">
-                        R{formatCurrency(form.state.values.startAmount)}
-                      </span>
-                    </div>
-                    <Progress
-                      value={
-                        (totalAllocated / form.state.values.startAmount) * 100
-                      }
-                    />
-                    <p className="text-muted-foreground mt-1 text-sm">
-                      Allocate an amount you plan on spending on each category
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <form.Subscribe
+                selector={(state) => state.values.categories}
+                children={(categories) => {
+                  const totalAllocated = categories.reduce(
+                    (sum, category) => sum + (category.amount || 0),
+                    0,
+                  )
+                  return (
+                    <Card>
+                      <CardContent>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex w-full gap-3">
+                            <span className="text-lg font-semibold">
+                              R{formatCurrency(totalAllocated)}
+                            </span>
+                            <span className="text-muted-foreground text-lg">
+                              of
+                            </span>
+                            <span className="text-lg font-semibold">
+                              R{formatCurrency(form.state.values.startAmount)}
+                            </span>
+                          </div>
+                          <Progress
+                            value={
+                              (totalAllocated / form.state.values.startAmount) *
+                              100
+                            }
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                }}
+              />
               <div className="space-y-3">
                 {form.state.values.categories.map((category, index) => (
-                  <Card key={category.categoryId}>
+                  <Card key={category.id}>
                     <CardContent>
                       <div className="flex items-center gap-3">
-                        <div className="flex-1">
+                        <div className="flex flex-1">
+                          <span>{category.icon}</span>
                           <p className="font-medium">
-                            {getCategoryName(category.categoryId)}
+                            {getCategoryName(category.id)}
                           </p>
                         </div>
                         <div className="w-36">
