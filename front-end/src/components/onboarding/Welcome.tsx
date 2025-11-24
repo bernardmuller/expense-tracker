@@ -31,7 +31,7 @@ export default function Welcome({ onGetStarted }: WelcomeProps) {
           <CardContent className="py-2">
             <div className="space-y-6">
               {onboardingSteps.map((step, index) => (
-                <div className="flex items-center gap-3">
+                <div key={step.title} className="flex items-center gap-3">
                   <div
                     className="bg-primary/10 flex min-h-8 min-w-8 items-center
                       justify-center rounded-full"

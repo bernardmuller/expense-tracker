@@ -47,11 +47,10 @@ const onboardingFormSchema = z
       .max(50, "Budget name can't exceed 50 characters"),
     startAmount: z
       .number()
-      .positive('You must provide a budget amount')
-      .optional(),
+      .positive('You must provide a budget amount'),
     categories: z.array(userCategorySchema),
   })
-  .refine((data) => data.startAmount !== undefined && data.startAmount > 0, {
+  .refine((data) => data.startAmount > 0, {
     message: 'You must provide a budget amount',
     path: ['startAmount'],
   })
@@ -160,7 +159,7 @@ function OnboardingPage() {
     } else {
       form.setFieldValue('categories', [
         ...currentCategories,
-        { ...category, amount: undefined },
+        { ...category, amount: 0 },
       ])
     }
   }
@@ -225,7 +224,7 @@ function OnboardingPage() {
                     children={(field) => (
                       <field.TextField
                         label="Budget name"
-                        placeholder="Enter budget name"
+                        placeholder="eg. Monthly Budget"
                       />
                     )}
                   />
@@ -234,7 +233,7 @@ function OnboardingPage() {
                     children={(field) => (
                       <field.NumberField
                         label="Start Amount"
-                        placeholder="Total budget amount"
+                        placeholder="eg. 10 000"
                       />
                     )}
                   />
