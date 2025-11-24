@@ -1,8 +1,9 @@
+import AllocatableCategoryItem from '@/components/category-item/AllocatableCategoryItem'
+import SelectableCategoryItem from '@/components/category-item/SelectableCategoryItem'
 import OnboardingLayout from '@/components/onboarding/OnboardingLayout'
 import Welcome from '@/components/onboarding/Welcome'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import { FieldGroup } from '@/components/ui/field'
 import { Progress } from '@/components/ui/progress'
 import {
@@ -18,7 +19,6 @@ import {
 } from '@/components/ui/stepper'
 import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
-import { cn } from '@/lib/utils/cn'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Check, LoaderCircleIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -223,32 +223,12 @@ function OnboardingPage() {
                         (cat) => cat.id === category.id,
                       )
                       return (
-                        <label>
-                          <Card
-                            key={category.id}
-                            className={cn('cursor-pointer', {
-                              'border-primary': isChecked,
-                            })}
-                          >
-                            <CardContent>
-                              <div
-                                className="flex cursor-pointer items-center
-                                  gap-3"
-                              >
-                                <div className="flex flex-1 gap-1 font-medium">
-                                  <span>{category.icon}</span>
-                                  <span>{category.name}</span>
-                                </div>
-                                <Checkbox
-                                  checked={isChecked}
-                                  onCheckedChange={() =>
-                                    toggleCategory(category)
-                                  }
-                                />
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </label>
+                        <SelectableCategoryItem
+                          key={category.id}
+                          {...category}
+                          checked={isChecked}
+                          onCheckedChange={() => toggleCategory(category)}
+                        />
                       )
                     })}
                   </div>
@@ -302,29 +282,22 @@ function OnboardingPage() {
               />
               <div className="space-y-3">
                 {form.state.values.categories.map((category, index) => (
-                  <Card key={category.id}>
-                    <CardContent>
-                      <div className="flex items-center gap-3">
-                        <div className="flex flex-1">
-                          <span>{category.icon}</span>
-                          <p className="font-medium">
-                            {getCategoryName(category.id)}
-                          </p>
+                  <AllocatableCategoryItem
+                    key={category.id}
+                    id={category.id}
+                    icon={category.icon}
+                    name={getCategoryName(category.id)}
+                  >
+                    <form.AppField
+                      name={`categories[${index}].amount`}
+                      children={(field) => (
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-gray-400">R</span>
+                          <field.NumberField placeholder="0" />
                         </div>
-                        <div className="w-36">
-                          <form.AppField
-                            name={`categories[${index}].amount`}
-                            children={(field) => (
-                              <div className="flex items-center gap-1">
-                                <span className="text-sm text-gray-400">R</span>
-                                <field.NumberField placeholder="0" />
-                              </div>
-                            )}
-                          />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      )}
+                    />
+                  </AllocatableCategoryItem>
                 ))}
               </div>
             </div>
