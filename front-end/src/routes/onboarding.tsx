@@ -24,6 +24,7 @@ import { Check, LoaderCircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import z from 'zod'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
+import { toast } from 'sonner'
 
 const categorySchema = z.object({
   id: z.string(),
@@ -137,12 +138,12 @@ function OnboardingPage() {
     },
   ]
 
-  const form = useAppForm<OnboardingFormValues>({
+  const form = useAppForm({
     defaultValues: {
       name: '',
       startAmount: undefined,
       categories: [],
-    },
+    } as OnboardingFormValues,
     validators: {
       onSubmit: onboardingFormSchema,
     },
@@ -160,6 +161,13 @@ function OnboardingPage() {
       )
       if (stepWithError !== null) {
         setCurrentStep(stepWithError)
+        switch (stepWithError) {
+          case 1:
+            toast.error('Please provide the budget name and start amount')
+            break
+          case 2:
+            toast.error('Please select your spending categories')
+        }
       }
     },
   })
