@@ -33,7 +33,7 @@ const categorySchema = z.object({
 })
 
 const userCategorySchema = categorySchema.extend({
-  amount: z.number().positive('Amount must be greater than 0').optional(),
+  amount: z.number().optional(),
 })
 
 type Category = Omit<z.infer<typeof categorySchema>, 'amount'>
@@ -59,16 +59,6 @@ const onboardingFormSchema = z
     message: 'You must select at least one category',
     path: ['categories'],
   })
-  .refine(
-    (data) =>
-      data.categories.every(
-        (cat) => cat.amount !== undefined && cat.amount > 0,
-      ),
-    {
-      message: 'All categories must have amounts greater than 0',
-      path: ['categories'],
-    },
-  )
 
 export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
 
@@ -99,29 +89,15 @@ const getStepWithError = (
     (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
     (fieldMeta['startAmount']?.errors &&
       fieldMeta['startAmount'].errors.length > 0)
-  ) {
+  )
     return 1
-  }
+
   if (
     fieldMeta['categories']?.errors &&
-    fieldMeta['categories'].errors.length > 0
-  ) {
-    if (formValues.categories.length === 0) {
-      return 2
-    }
-    return 3
-  }
-
-  const hasCategoryAmountError = Object.keys(fieldMeta).some(
-    (key) =>
-      key.match(/^categories\[\d+\]\.amount$/) &&
-      fieldMeta[key]?.errors &&
-      fieldMeta[key].errors!.length > 0,
+    fieldMeta['categories'].errors.length > 0 &&
+    formValues.categories.length === 0
   )
-
-  if (hasCategoryAmountError) {
-    return 3
-  }
+    return 2
 
   return null
 }
@@ -141,7 +117,7 @@ function OnboardingPage() {
   const form = useAppForm({
     defaultValues: {
       name: '',
-      startAmount: undefined,
+      startAmount: 0,
       categories: [],
     } as OnboardingFormValues,
     validators: {
@@ -411,14 +387,10 @@ function OnboardingPage() {
             onClick={() => form.handleSubmit()}
             disabled={form.state.isSubmitting}
           >
-            {form.state.isSubmitting ? (
-              <>
-                <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
-                Finish
-              </>
-            ) : (
-              'Finish'
+            {form.state.isSubmitting && (
+              <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
+            Finish
           </Button>
         )}
       </div>
