@@ -54,6 +54,10 @@ const onboardingFormSchema = z
     message: 'You must provide a budget amount',
     path: ['startAmount'],
   })
+  .refine((data) => data.categories.length > 0, {
+    message: 'You must select at least one category',
+    path: ['categories'],
+  })
   .refine(
     (data) =>
       data.categories.every(
@@ -88,8 +92,8 @@ const StepHeader = ({
 
 const getStepWithError = (
   fieldMeta: Record<string, { errors?: unknown[] }>,
+  formValues: OnboardingFormValues,
 ): number | null => {
-  // Step 1: Check name and startAmount fields
   if (
     (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
     (fieldMeta['startAmount']?.errors &&
@@ -97,26 +101,16 @@ const getStepWithError = (
   ) {
     return 1
   }
-
-  // Step 2: Check categories field (selection validation)
-  // The refine for category amounts sets error path to 'categories'
   if (
     fieldMeta['categories']?.errors &&
     fieldMeta['categories'].errors.length > 0
   ) {
-    // Check if this is about amounts (step 3) or selection (step 2)
-    // If any categories exist, assume it's about amounts (step 3)
-    // Otherwise it's about selection (step 2)
-    const hasCategoryAmountError = Object.keys(fieldMeta).some(
-      (key) =>
-        key.match(/^categories\[\d+\]\.amount$/) &&
-        fieldMeta[key]?.errors &&
-        fieldMeta[key].errors!.length > 0,
-    )
-    return hasCategoryAmountError ? 3 : 2
+    if (formValues.categories.length === 0) {
+      return 2
+    }
+    return 3
   }
 
-  // Step 3: Check individual category amounts
   const hasCategoryAmountError = Object.keys(fieldMeta).some(
     (key) =>
       key.match(/^categories\[\d+\]\.amount$/) &&
@@ -160,7 +154,10 @@ function OnboardingPage() {
       navigate({ to: '/' })
     },
     onSubmitInvalid: ({ formApi }) => {
-      const stepWithError = getStepWithError(formApi.state.fieldMeta)
+      const stepWithError = getStepWithError(
+        formApi.state.fieldMeta,
+        formApi.state.values,
+      )
       if (stepWithError !== null) {
         setCurrentStep(stepWithError)
       }
@@ -409,7 +406,7 @@ function OnboardingPage() {
             {form.state.isSubmitting ? (
               <>
                 <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
-                Creating Budget...
+                Finish
               </>
             ) : (
               'Finish'
