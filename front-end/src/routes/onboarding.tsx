@@ -24,6 +24,8 @@ import { Check, LoaderCircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import z from 'zod'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
+import { Label } from '@/components/ui/label'
+import { FormField } from '@/components/ui/form'
 
 const categorySchema = z.object({
   id: z.string(),
@@ -168,28 +170,25 @@ function OnboardingPage() {
               />
               <FieldGroup>
                 <Card>
-                  <CardContent className="flex flex-col gap-4">
-                    <div>
-                      <label>Budget Name</label>
-                      <form.AppField
-                        name="name"
-                        children={(field) => (
-                          <field.TextField placeholder="Budget name (e.g., Monthly Budget)" />
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <label>Start Amount</label>
-                      <div className="flex items-center gap-2">
-                        <span>R</span>
-                        <form.AppField
-                          name="startAmount"
-                          children={(field) => (
-                            <field.NumberField placeholder="Total budget amount" />
-                          )}
+                  <CardContent className="flex flex-col gap-6">
+                    <form.AppField
+                      name="name"
+                      children={(field) => (
+                        <field.TextField
+                          label="Budget name"
+                          placeholder="Enter budget name"
                         />
-                      </div>
-                    </div>
+                      )}
+                    />
+                    <form.AppField
+                      name="startAmount"
+                      children={(field) => (
+                        <field.NumberField
+                          label="Start Amount"
+                          placeholder="Total budget amount"
+                        />
+                      )}
+                    />
                   </CardContent>
                 </Card>
               </FieldGroup>
@@ -285,7 +284,7 @@ function OnboardingPage() {
                       name={`categories[${index}].amount`}
                       children={(field) => (
                         <div className="flex w-28 items-center gap-1">
-                          <span className="text-sm text-gray-400">R</span>
+                          <span className="text-md text-gray-400">R</span>
                           <field.NumberField placeholder="0" />
                         </div>
                       )}
