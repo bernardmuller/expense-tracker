@@ -21,7 +21,17 @@ export default function NumberField({
         id={field.name}
         name={field.name}
         value={field.state.value}
-        onBlur={field.handleBlur}
+        onFocus={(e) => {
+          if (field.state.value === 0) {
+            e.target.select()
+          }
+        }}
+        onBlur={() => {
+          if (isNaN(field.state.value)) {
+            field.handleChange(0)
+          }
+          field.handleBlur()
+        }}
         type="number"
         placeholder={placeholder}
         onChange={(e) => field.handleChange(e.target.valueAsNumber)}
