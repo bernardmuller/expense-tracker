@@ -23,6 +23,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Check, LoaderCircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import z from 'zod'
+import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 
 const categorySchema = z.object({
   id: z.string(),
@@ -112,17 +113,6 @@ function OnboardingPage() {
         { ...category, amount: 0 },
       ])
     }
-  }
-
-  const getCategoryName = (categoryId: string) => {
-    return categories.find((cat) => cat.id === categoryId)?.name || categoryId
-  }
-
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('en-ZA', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
   }
 
   if (currentStep === 0) {
@@ -259,13 +249,16 @@ function OnboardingPage() {
                         <div className="flex flex-col gap-2">
                           <div className="flex w-full gap-3">
                             <span className="text-lg font-semibold">
-                              R{formatCurrency(totalAllocated)}
+                              {formatCurrency(totalAllocated, 'za')}
                             </span>
                             <span className="text-muted-foreground text-lg">
                               of
                             </span>
                             <span className="text-lg font-semibold">
-                              R{formatCurrency(form.state.values.startAmount)}
+                              {formatCurrency(
+                                form.state.values.startAmount,
+                                'za',
+                              )}
                             </span>
                           </div>
                           <Progress
@@ -286,12 +279,12 @@ function OnboardingPage() {
                     key={category.id}
                     id={category.id}
                     icon={category.icon}
-                    name={getCategoryName(category.id)}
+                    name={category.name}
                   >
                     <form.AppField
                       name={`categories[${index}].amount`}
                       children={(field) => (
-                        <div className="flex items-center gap-1">
+                        <div className="flex w-28 items-center gap-1">
                           <span className="text-sm text-gray-400">R</span>
                           <field.NumberField placeholder="0" />
                         </div>
@@ -329,7 +322,7 @@ function OnboardingPage() {
                 Creating Budget...
               </>
             ) : (
-              'Create Budget'
+              'Finish'
             )}
           </Button>
         )}
