@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FieldGroup } from '@/components/ui/field'
 import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
 import {
   Stepper,
   StepperContent,
@@ -21,22 +22,19 @@ import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Check, LoaderCircleIcon } from 'lucide-react'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import z from 'zod'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { toast } from 'sonner'
+import { useCategories, type Category } from '@/lib/http/hooks/use-categories'
 
-const categorySchema = z.object({
+const userCategorySchema = z.object({
   id: z.string(),
   icon: z.string(),
-  name: z.string(),
-})
-
-const userCategorySchema = categorySchema.extend({
+  label: z.string(),
   amount: z.number().optional(),
 })
 
-type Category = Omit<z.infer<typeof categorySchema>, 'amount'>
 type UserCategory = z.infer<typeof userCategorySchema>
 
 const onboardingFormSchema = z
@@ -45,9 +43,7 @@ const onboardingFormSchema = z
       .string()
       .min(1, 'You must provide a budget name')
       .max(50, "Budget name can't exceed 50 characters"),
-    startAmount: z
-      .number()
-      .positive('You must provide a budget amount'),
+    startAmount: z.number().positive('You must provide a budget amount'),
     categories: z.array(userCategorySchema),
   })
   .refine((data) => data.startAmount > 0, {
@@ -105,13 +101,11 @@ function OnboardingPage() {
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(0)
 
-  const categories: Array<Category> = [
-    {
-      icon: '🦚',
-      id: 'thing',
-      name: 'thing',
-    },
-  ]
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useCategories()
 
   const form = useAppForm({
     defaultValues: {
@@ -181,7 +175,7 @@ function OnboardingPage() {
           completed: <Check className="size-4" />,
           loading: <LoaderCircleIcon className="size-4 animate-spin" />,
         }}
-        className="flex h-full flex-col space-y-8"
+        className="flex flex-1 flex-col space-y-8"
       >
         <StepperNav>
           {onboardingSteps.map((step, index) => (
@@ -205,7 +199,7 @@ function OnboardingPage() {
             </StepperItem>
           ))}
         </StepperNav>
-        <StepperPanel className="h-full flex-1 text-sm">
+        <StepperPanel className="min-h-0 flex-1 overflow-y-auto text-sm">
           <StepperContent
             value={1}
             className="flex flex-1 items-center justify-center"
@@ -254,26 +248,46 @@ function OnboardingPage() {
               </CardHeader>
               <CardContent>
                 <div className="w-full space-y-4">
-                  <form.AppField
-                    name="categories"
-                    children={(field) => (
-                      <div className="grid gap-3">
-                        {categories.map((category) => {
-                          const isChecked = field.state.value.some(
-                            (cat) => cat.id === category.id,
-                          )
-                          return (
-                            <SelectableCategoryItem
-                              key={category.id}
-                              {...category}
-                              checked={isChecked}
-                              onCheckedChange={() => toggleCategory(category)}
-                            />
-                          )
-                        })}
-                      </div>
-                    )}
-                  />
+                  {categoriesLoading ? (
+                    <div className="flex items-center justify-center p-8">
+                      <LoaderCircleIcon className="h-8 w-8 animate-spin" />
+                    </div>
+                  ) : categoriesError ? (
+                    <div className="text-destructive p-8 text-center">
+                      Failed to load categories. Please try again.
+                    </div>
+                  ) : !categories || categories.length === 0 ? (
+                    <div className="text-muted-foreground p-8 text-center">
+                      No categories available
+                    </div>
+                  ) : (
+                    <form.AppField
+                      name="categories"
+                      children={(field) => (
+                        <div className="flex flex-col">
+                          {categories.map((category, index) => {
+                            const isChecked = field.state.value.some(
+                              (cat) => cat.id === category.id,
+                            )
+                            return (
+                              <Fragment key={category.id}>
+                                <SelectableCategoryItem
+                                  {...category}
+                                  checked={isChecked}
+                                  onCheckedChange={() =>
+                                    toggleCategory(category)
+                                  }
+                                />
+                                {index < categories.length - 1 && (
+                                  <Separator className="my-2" />
+                                )}
+                              </Fragment>
+                            )
+                          })}
+                        </div>
+                      )}
+                    />
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -332,29 +346,34 @@ function OnboardingPage() {
                             }
                           />
                         </div>
-                        <div>
+                        <div className="flex flex-col">
                           {form.state.values.categories.map(
                             (category, index) => (
-                              <AllocatableCategoryItem
-                                key={category.id}
-                                id={category.id}
-                                icon={category.icon}
-                                name={category.name}
-                              >
-                                <form.AppField
-                                  name={`categories[${index}].amount`}
-                                  children={(field) => (
-                                    <div
-                                      className="flex w-28 items-center gap-1"
-                                    >
-                                      <span className="text-md text-gray-400">
-                                        R
-                                      </span>
-                                      <field.NumberField placeholder="0" />
-                                    </div>
-                                  )}
-                                />
-                              </AllocatableCategoryItem>
+                              <Fragment key={category.id}>
+                                <AllocatableCategoryItem
+                                  id={category.id}
+                                  icon={category.icon}
+                                  label={category.label}
+                                >
+                                  <form.AppField
+                                    name={`categories[${index}].amount`}
+                                    children={(field) => (
+                                      <div
+                                        className="flex w-28 items-center gap-1"
+                                      >
+                                        <span className="text-md text-gray-400">
+                                          R
+                                        </span>
+                                        <field.NumberField placeholder="0" />
+                                      </div>
+                                    )}
+                                  />
+                                </AllocatableCategoryItem>
+                                {index <
+                                  form.state.values.categories.length - 1 && (
+                                  <Separator className="my-2" />
+                                )}
+                              </Fragment>
                             ),
                           )}
                         </div>
@@ -367,7 +386,7 @@ function OnboardingPage() {
           </StepperContent>
         </StepperPanel>
       </Stepper>
-      <div className="flex items-center justify-between gap-2.5">
+      <div className="flex items-center justify-between gap-2.5 py-4">
         <Button
           variant="outline"
           onClick={() => setCurrentStep((prev) => prev - 1)}

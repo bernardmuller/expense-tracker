@@ -8,14 +8,14 @@ type AllocatableCategoryItemProps = CategoryItemProps & {
 
 export default function AllocatableCategoryItem({
   icon,
-  name,
+  label,
   id,
   children,
 }: AllocatableCategoryItemProps) {
   return (
     <CategoryItem.Root data-testid={`allocatable-category-${id}`}>
       <CategoryItem.Content>
-        <CategoryItem.IconName icon={icon} name={name} />
+        <CategoryItem.IconName icon={icon} name={label} />
         <div className="">{children}</div>
       </CategoryItem.Content>
     </CategoryItem.Root>

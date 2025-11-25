@@ -34,7 +34,7 @@ type IconNameProps = {
 export function IconName({ icon, name, className }: IconNameProps) {
   return (
     <div className={cn('flex flex-1 items-center gap-2', className)}>
-      <span className="text-2xl">{icon}</span>
+      <span className="text-xl">{icon}</span>
       <span className="text-md font-semibold">{name}</span>
     </div>
   )
