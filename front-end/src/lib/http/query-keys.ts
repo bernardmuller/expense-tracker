@@ -18,4 +18,7 @@ export const queryKeys = {
     all: ['users'] as const,
     onboard: () => ['users', 'onboard'] as const,
   },
+  categories: {
+    all: ['categories'] as const,
+  },
 } as const
