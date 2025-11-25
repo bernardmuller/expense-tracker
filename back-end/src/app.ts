@@ -4,6 +4,7 @@ import index from "@/lib/http/routes/index";
 import { healthRouter as health } from "./features/health/http";
 import { authRouter as auth } from "./features/auth/http";
 import { userRouter as users } from "./features/users/http";
+import { categoryRouter as categories } from "./features/categories/http";
 import { cors } from "hono/cors";
 import env from "./env";
 import { authMiddleware } from "@/lib/http/middleware/auth";
@@ -12,7 +13,7 @@ const app = createApi();
 
 configureOpenAPI(app);
 
-const routes = [index, auth, users, health] as const;
+const routes = [index, auth, users, categories, health] as const;
 
 app.use(
   "*",
@@ -45,6 +46,7 @@ app.use("*", async (c, next) => {
 app.route("/", index);
 app.route("/auth", auth);
 app.route("/", users);
+app.route("/", categories);
 
 export type AppType = typeof app;
 
