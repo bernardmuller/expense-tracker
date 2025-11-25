@@ -5,7 +5,7 @@ import type { SelectableCategoryItemProps } from './CategoryItem.types'
 
 export default function SelectableCategoryItem({
   icon,
-  name,
+  label,
   id,
   checked,
   onCheckedChange,
@@ -17,7 +17,7 @@ export default function SelectableCategoryItem({
         data-testid={`selectable-category-${id}`}
       >
         <CategoryItem.Content>
-          <CategoryItem.IconName icon={icon} name={name} />
+          <CategoryItem.IconName icon={icon} name={label} />
           <Checkbox checked={checked} onCheckedChange={onCheckedChange} />
         </CategoryItem.Content>
       </CategoryItem.Root>

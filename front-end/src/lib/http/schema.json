@@ -1,11 +1,19 @@
 {
   "openapi": "3.0.0",
-  "info": { "version": "1.0.0", "title": "Budget API" },
-  "components": { "schemas": {}, "parameters": {} },
+  "info": {
+    "version": "1.0.0",
+    "title": "Budget API"
+  },
+  "components": {
+    "schemas": {},
+    "parameters": {}
+  },
   "paths": {
     "/": {
       "get": {
-        "tags": ["Index"],
+        "tags": [
+          "Index"
+        ],
         "responses": {
           "200": {
             "description": "Budget API Index",
@@ -13,9 +21,17 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "message": { "type": "string" } },
-                  "required": ["message"],
-                  "example": { "message": "Budget API" }
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "example": {
+                    "message": "Budget API"
+                  }
                 }
               }
             }
@@ -25,7 +41,9 @@
     },
     "/auth/register/request": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "description": "Request registration with email and name",
           "required": true,
@@ -34,10 +52,17 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "email": { "type": "string" }
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
                 },
-                "required": ["name", "email"]
+                "required": [
+                  "name",
+                  "email"
+                ]
               }
             }
           }
@@ -49,8 +74,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "token": { "type": "string" } },
-                  "required": ["token"]
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "token"
+                  ]
                 }
               }
             }
@@ -62,11 +93,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -78,11 +119,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -92,17 +143,23 @@
     },
     "/auth/register/verify": {
       "post": {
-        "tags": ["Auth"],
-        "security": [{ "Bearer": [] }],
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
               "type": "string",
               "pattern": "^Bearer .+$",
-              "description": "Verification token in format: Bearer \u003Ctoken\u003E"
+              "description": "Verification token in format: Bearer <token>"
             },
             "required": true,
-            "description": "Verification token in format: Bearer \u003Ctoken\u003E",
+            "description": "Verification token in format: Bearer <token>",
             "name": "authorization",
             "in": "header"
           }
@@ -114,8 +171,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": { "otp": { "type": "string" } },
-                "required": ["otp"]
+                "properties": {
+                  "otp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "otp"
+                ]
               }
             }
           }
@@ -128,14 +191,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -158,11 +241,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -174,11 +267,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -190,11 +293,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -204,7 +317,9 @@
     },
     "/auth/login/request": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "description": "Request magic link login with email",
           "required": true,
@@ -212,8 +327,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": { "email": { "type": "string" } },
-                "required": ["email"]
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -225,8 +346,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "token": { "type": "string" } },
-                  "required": ["token"]
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "token"
+                  ]
                 }
               }
             }
@@ -238,11 +365,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -254,11 +391,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -268,17 +415,23 @@
     },
     "/auth/login/verify": {
       "post": {
-        "tags": ["Auth"],
-        "security": [{ "Bearer": [] }],
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
               "type": "string",
               "pattern": "^Bearer .+$",
-              "description": "Verification token in format: Bearer \u003Ctoken\u003E"
+              "description": "Verification token in format: Bearer <token>"
             },
             "required": true,
-            "description": "Verification token in format: Bearer \u003Ctoken\u003E",
+            "description": "Verification token in format: Bearer <token>",
             "name": "authorization",
             "in": "header"
           }
@@ -290,8 +443,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": { "otp": { "type": "string" } },
-                "required": ["otp"]
+                "properties": {
+                  "otp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "otp"
+                ]
               }
             }
           }
@@ -304,10 +463,17 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "accessToken": { "type": "string" },
-                    "refreshToken": { "type": "string" }
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["accessToken", "refreshToken"]
+                  "required": [
+                    "accessToken",
+                    "refreshToken"
+                  ]
                 }
               }
             }
@@ -319,11 +485,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -335,11 +511,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -351,11 +537,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -365,17 +561,23 @@
     },
     "/auth/refresh": {
       "post": {
-        "tags": ["Auth"],
-        "security": [{ "Bearer": [] }],
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
               "type": "string",
               "pattern": "^Bearer .+$",
-              "description": "Refresh token in format: Bearer \u003Ctoken\u003E"
+              "description": "Refresh token in format: Bearer <token>"
             },
             "required": true,
-            "description": "Refresh token in format: Bearer \u003Ctoken\u003E",
+            "description": "Refresh token in format: Bearer <token>",
             "name": "authorization",
             "in": "header"
           }
@@ -388,10 +590,17 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "accessToken": { "type": "string" },
-                    "refreshToken": { "type": "string" }
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["accessToken", "refreshToken"]
+                  "required": [
+                    "accessToken",
+                    "refreshToken"
+                  ]
                 }
               }
             }
@@ -403,11 +612,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -419,11 +638,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -435,11 +664,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -449,7 +688,9 @@
     },
     "/users": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "Returns a list of users",
@@ -460,14 +701,34 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "id": { "type": "string", "format": "uuid" },
-                      "name": { "type": "string" },
-                      "email": { "type": "string" },
-                      "emailVerified": { "type": "boolean" },
-                      "image": { "type": "string", "nullable": true },
-                      "onboarded": { "type": "boolean" },
-                      "createdAt": { "type": "string", "format": "date" },
-                      "updatedAt": { "type": "string", "format": "date" }
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "emailVerified": {
+                        "type": "boolean"
+                      },
+                      "image": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "onboarded": {
+                        "type": "boolean"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date"
+                      }
                     },
                     "required": [
                       "id",
@@ -491,11 +752,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -503,7 +774,9 @@
         }
       },
       "post": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "description": "User creation data",
           "content": {
@@ -511,10 +784,17 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "email": { "type": "string" }
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
                 },
-                "required": ["name", "email"]
+                "required": [
+                  "name",
+                  "email"
+                ]
               }
             }
           }
@@ -527,14 +807,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -557,11 +857,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -573,11 +883,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -587,7 +907,9 @@
     },
     "/users/{id}": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "Return a user",
@@ -596,14 +918,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -626,11 +968,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -642,11 +994,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -654,10 +1016,15 @@
         }
       },
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -670,14 +1037,34 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "id": { "type": "string", "format": "uuid" },
-                  "name": { "type": "string" },
-                  "email": { "type": "string" },
-                  "emailVerified": { "type": "boolean" },
-                  "image": { "type": "string", "nullable": true },
-                  "onboarded": { "type": "boolean" },
-                  "createdAt": { "type": "string", "format": "date" },
-                  "updatedAt": { "type": "string", "format": "date" }
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "emailVerified": {
+                    "type": "boolean"
+                  },
+                  "image": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "onboarded": {
+                    "type": "boolean"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date"
+                  }
                 }
               }
             }
@@ -691,14 +1078,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -721,11 +1128,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -737,11 +1154,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -751,10 +1178,15 @@
     },
     "/users/{id}/onboard": {
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -768,14 +1200,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -798,11 +1250,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -814,11 +1276,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -828,10 +1300,15 @@
     },
     "/users/{id}/verify": {
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -845,14 +1322,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -875,11 +1372,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -891,11 +1398,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -905,10 +1422,15 @@
     },
     "/users/{id}/setup-status": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -921,8 +1443,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "isFullySetup": { "type": "boolean" } },
-                  "required": ["isFullySetup"]
+                  "properties": {
+                    "isFullySetup": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "isFullySetup"
+                  ]
                 }
               }
             }
@@ -934,11 +1462,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -950,11 +1488,93 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "key": {
+                        "type": "string",
+                        "maxLength": 50
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 100
+                      },
+                      "icon": {
+                        "type": "string",
+                        "maxLength": 10
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "key",
+                      "label",
+                      "icon"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }

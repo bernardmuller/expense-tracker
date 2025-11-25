@@ -1,13 +1,13 @@
+import { createContext } from "@/lib/db/context";
+import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 import { createRouter } from "@/lib/http/createApi";
+import { mapErrorToResponse } from "@/lib/http/errorMapper";
 import { createRoute, z } from "@hono/zod-openapi";
+import type { Context } from "hono";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
-import type { Context } from "hono";
-import { createContext } from "@/lib/db/context";
 import * as CategoryOperations from "./operations";
-import { categorySchema } from "./types";
-import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
-import { mapErrorToResponse } from "@/lib/http/errorMapper";
+import { categoryWithoutMetadataSchema } from "./types";
 
 const tags = ["Categories"];
 
@@ -21,7 +21,7 @@ const getAllCategoriesRoute = createRoute({
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      z.array(categorySchema),
+      z.array(categoryWithoutMetadataSchema),
       "Returns a list of categories",
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
@@ -49,5 +49,7 @@ const getAllCategoriesHandler = async (c: Context) => {
 // Router
 // --------------------------------
 
-export const categoryRouter = createRouter()
-  .openapi(getAllCategoriesRoute, getAllCategoriesHandler);
+export const categoryRouter = createRouter().openapi(
+  getAllCategoriesRoute,
+  getAllCategoriesHandler,
+);
