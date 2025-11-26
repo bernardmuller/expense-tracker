@@ -27,6 +27,7 @@ import z from 'zod'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { toast } from 'sonner'
 import { useCategories, type Category } from '@/lib/http/hooks/use-categories'
+import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -107,6 +108,8 @@ function OnboardingPage() {
     error: categoriesError,
   } = useCategories()
 
+  const onboardMutation = useOnboardRequest()
+
   const form = useAppForm({
     defaultValues: {
       name: '',
@@ -117,11 +120,24 @@ function OnboardingPage() {
       onSubmit: onboardingFormSchema,
     },
     onSubmit: ({ value }) => {
-      // Final submission - save to backend
-      console.log('Final onboarding data:', value)
-      // TODO: Save to backend and mark user as onboarded
-      // TODO: Get userId from auth context
-      navigate({ to: '/' })
+      const transformedCategories = value.categories.map((cat) => ({
+        id: cat.id,
+        icon: cat.icon,
+        label: cat.label,
+        amount: cat.amount || 0,
+      }))
+
+      const onboardingData = {
+        name: value.name,
+        startAmount: value.startAmount,
+        categories: transformedCategories,
+      }
+
+      onboardMutation.mutate(onboardingData, {
+        onSuccess: () => {
+          navigate({ to: '/' })
+        },
+      })
     },
     onSubmitInvalid: ({ formApi }) => {
       const stepWithError = getStepWithError(
@@ -403,9 +419,9 @@ function OnboardingPage() {
         ) : (
           <Button
             onClick={() => form.handleSubmit()}
-            disabled={form.state.isSubmitting}
+            disabled={form.state.isSubmitting || onboardMutation.isPending}
           >
-            {form.state.isSubmitting && (
+            {(form.state.isSubmitting || onboardMutation.isPending) && (
               <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
             Finish
