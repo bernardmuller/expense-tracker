@@ -6,6 +6,7 @@ import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import * as UserOperations from "./operations";
 import { createUserSchema, userSchema } from "./types";
+import { onboardingSchema } from "./types";
 import type { CreateUserParams } from "./types";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
@@ -71,6 +72,33 @@ const createUserRoute = createRoute({
     ),
   },
 });
+
+const onboardUserRoute = createRoute({
+  path: "/users/{id}/onboard",
+  method: "post",
+  tags,
+  request: {
+    params: z.object({
+      id: z.uuid(),
+    }),
+    body: jsonContent(onboardingSchema, "Onboarding data"),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      userSchema,
+      "User onboarded successfully",
+    ),
+    [HttpStatusCodes.CONFLICT]: jsonContent(
+      errorResponseSchema,
+      "User already onboarded",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
 
 const markUserAsOnboardedRoute = createRoute({
   path: "/users/{id}/onboard",
@@ -206,6 +234,18 @@ const createUserHandler = async (c: Context) => {
   );
 };
 
+const onboardUserHandler = async (c: Context) => {
+  const user = c.get("user") as { userId: string };
+  const body = await c.req.json();
+  const ctx = createContext();
+  const result = await UserOperations.onboardUser(user.userId, body, ctx);
+
+  return result.match(
+    (user) => c.json(user, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
 const markUserAsOnboardedHandler = async (c: Context) => {
   const userId = c.req.param("id");
   const ctx = createContext();
@@ -260,6 +300,7 @@ export const userRouter = createRouter()
   .openapi(getUserByIdRoute, getUserByIdHandler)
   .openapi(createUserRoute, createUserHandler)
   .openapi(markUserAsOnboardedRoute, markUserAsOnboardedHandler)
+.openapi(onboardUserRoute, onboardUserHandler)
   .openapi(markUserAsVerifiedRoute, markUserAsVerifiedHandler)
   .openapi(updateUserRoute, updateUserHandler)
   .openapi(isUserFullySetupRoute, isUserFullySetupHandler);

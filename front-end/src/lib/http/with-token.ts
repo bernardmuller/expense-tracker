@@ -18,7 +18,24 @@ export function withToken<TSuccess, TError extends ErrorWithMessage>(
 
     if (!token) {
       const error = createError()
-      toast.error((error).message || 'No token found')
+      toast.error(error.message || 'No token found')
+      return errAsync(error)
+    }
+
+    return fn({ token })
+  }
+}
+
+export function withAccessToken<TSuccess, TError extends ErrorWithMessage>(
+  fn: (context: TokenContext) => ResultAsync<TSuccess, TError>,
+  createError: () => TError,
+): () => ResultAsync<TSuccess, TError> {
+  return (): ResultAsync<TSuccess, TError> => {
+    const token = localStorage.getItem('accessToken')
+
+    if (!token) {
+      const error = createError()
+      toast.error(error.message || 'No accessToken token found')
       return errAsync(error)
     }
 
