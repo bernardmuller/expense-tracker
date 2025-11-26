@@ -33,26 +33,24 @@ function decodeJwt(token: string): Result<TokenPayload, string> {
   }
 }
 
-/**
- * Gets the current user's information from the access token
- */
-export function getCurrentUser(): Result<
+
+export const getCurrentUser = (): Result<
   { userId: string; email: string; name: string },
   string
-> {
-  return getAccessToken()
-    .mapErr(() => 'No access token found')
-    .andThen((token) => decodeJwt(token))
-    .map((payload) => ({
-      userId: payload.userId,
-      email: payload.email,
-      name: payload.name,
-    }))
-}
+> =>
+  getAccessToken().match(
+    (token) =>
+      decodeJwt(token).match(
+        (res) =>
+          ok({
+            userId: res.userId,
+            email: res.email,
+            name: res.name,
+          }),
+        (error) => err(error),
+      ),
+    () => err('No access token found'),
+  )
 
-/**
- * Gets the current user's ID from the access token
- */
-export function getUserId(): Result<string, string> {
-  return getCurrentUser().map((user) => user.userId)
-}
+export const getUserIdFromAccessToken = (): Result<string, string> =>
+  getCurrentUser().map((user) => user.userId)
