@@ -1,5 +1,7 @@
 import { errAsync, ok, type ResultAsync } from "neverthrow";
 import type { AppContext } from "@/lib/db/context";
+import { generateUuid } from "@/lib/utils/generateUuid";
+import { budgets, userCategories, categoryBudgets } from "@/lib/db/schema";
 import * as UserQueries from "./queries";
 import * as UserDomain from "./actions";
 import type {
@@ -7,6 +9,7 @@ import type {
   User,
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
+  OnboardingParams,
 } from "./types";
 import {
   EntityCreateError,
@@ -103,6 +106,24 @@ export const updateUser = (
   getUserById(userId, ctx).andThen((user: User) =>
     UserDomain.updateUser(user, updates).asyncAndThen((user) =>
       UserQueries.update(user, ctx),
+    ),
+  );
+
+export const onboardUser = (
+  userId: string,
+  params: OnboardingParams,
+  ctx: AppContext,
+): ResultAsync<
+  User,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof UserAlreadyOnboardedError>
+  | InstanceType<typeof EntityCreateError>
+  | InstanceType<typeof EntityUpdateError>
+> =>
+  getUserById(userId, ctx).andThen((user: User) =>
+    UserDomain.markUserAsOnboarded(user).asyncAndThen(() =>
+      UserQueries.onboardUser(userId, params, ctx),
     ),
   );
 

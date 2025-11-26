@@ -30,13 +30,28 @@ export const createUserSchema = userSchema
 
 export type CreateUserParams = z.infer<typeof createUserSchema>;
 
+export const onboardingCategorySchema = z.object({
+  id: z.string().uuid(),
+  icon: z.string(),
+  label: z.string(),
+  amount: z.number().positive(),
+});
+
+export const onboardingSchema = z.object({
+  name: z.string().min(1).max(50),
+  startAmount: z.number().positive(),
+  categories: z.array(onboardingCategorySchema).min(1),
+});
+
+export type OnboardingParams = z.infer<typeof onboardingSchema>;
+
 // --------------------------------
 // Errors
 // --------------------------------
 
 export const UserAlreadyOnboardedError = createError(
   "UserAlreadyOnboardedError",
-  (userId: string) => `User ${userId} is already onboarded`,
+  (userId: string) => `User is already onboarded`,
   {
     code: "USER_ALREADY_ONBOARDED",
     error: "Conflict",
