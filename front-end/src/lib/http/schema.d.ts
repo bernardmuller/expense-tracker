@@ -728,7 +728,81 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Onboarding data */
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        startAmount: number;
+                        categories: {
+                            /** Format: uuid */
+                            id: string;
+                            icon: string;
+                            label: string;
+                            amount: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description User onboarded successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            email: string;
+                            emailVerified: boolean;
+                            image: string | null;
+                            onboarded: boolean;
+                            /** Format: date */
+                            createdAt: string;
+                            /** Format: date */
+                            updatedAt: string;
+                        };
+                    };
+                };
+                /** @description User already onboarded */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
