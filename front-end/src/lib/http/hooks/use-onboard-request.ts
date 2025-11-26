@@ -4,10 +4,11 @@ import { toast } from 'sonner'
 import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'
 import type { paths } from '../schema'
-import { getUserId } from '@/lib/auth/decode-token'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { withAccessToken } from '../with-token'
 
 type OnboardRequestBody =
+  //@ts-ignore: content does exist
   paths['/users/{id}/onboard']['post']['requestBody']['content']['application/json']
 
 type OnboardRequestSuccess =
@@ -25,7 +26,7 @@ export function useOnboardRequest() {
     ): Promise<Result<OnboardRequestSuccess, OnboardRequestError>> =>
       withAccessToken(
         (ctx) => {
-          const userIdResult = getUserId()
+          const userIdResult = getUserIdFromAccessToken()
 
           if (userIdResult.isErr()) {
             toast.error('Unable to get user information')
@@ -38,7 +39,6 @@ export function useOnboardRequest() {
 
           const userId = userIdResult.value
 
-          console.log('before => ', ctx.token)
           return toResult(
             client.POST('/users/{id}/onboard', {
               params: {
