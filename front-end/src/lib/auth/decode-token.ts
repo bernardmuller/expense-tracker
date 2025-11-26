@@ -9,30 +9,31 @@ interface TokenPayload {
   exp: number
 }
 
-/**
- * Decodes a JWT token without verification (client-side)
- * Note: This only decodes the payload, it does NOT verify the signature
- */
-function decodeJwt(token: string): Result<TokenPayload, string> {
+const splitToken = (token: string): Result<string[], string> => {
+  const parts = token.split('.')
+  return parts.length === 3 ? ok(parts) : err('Invalid token format')
+}
+
+const parsePayload = (parts: string[]): Result<TokenPayload, string> => {
   try {
-    const parts = token.split('.')
-    if (parts.length !== 3) {
-      return err('Invalid token format')
-    }
-
-    const payload = parts[1]
-    const decoded = JSON.parse(atob(payload)) as TokenPayload
-
-    if (!decoded.userId || !decoded.email || !decoded.name) {
-      return err('Invalid token payload: missing required fields')
-    }
-
+    const decoded = JSON.parse(atob(parts[1])) as TokenPayload
     return ok(decoded)
   } catch (error) {
     return err(`Failed to decode token: ${String(error)}`)
   }
 }
 
+const validatePayload = (
+  payload: TokenPayload,
+): Result<TokenPayload, string> => {
+  return payload.userId && payload.email && payload.name
+    ? ok(payload)
+    : err('Invalid token payload: missing required fields')
+}
+
+function decodeJwt(token: string): Result<TokenPayload, string> {
+  return splitToken(token).andThen(parsePayload).andThen(validatePayload)
+}
 
 export const getCurrentUser = (): Result<
   { userId: string; email: string; name: string },
