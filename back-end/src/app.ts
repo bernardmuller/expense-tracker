@@ -18,7 +18,7 @@ const routes = [index, auth, users, categories, health] as const;
 app.use(
   "*",
   cors({
-    origin: env.AUTH_URL,
+    origin: ["http://localhost:3000"],
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
