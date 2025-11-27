@@ -124,7 +124,6 @@ export const onboardUser = (
         const budgetId = generateUuid();
         const now = new Date();
 
-        // Create budget
         const [budget] = await tx
           .insert(budgets)
           .values({
@@ -143,7 +142,6 @@ export const onboardUser = (
 
         if (!budget) throw new EntityCreateError("Budget");
 
-        // Create user categories
         const userCategoryInserts = params.categories.map((cat) => ({
           id: generateUuid(),
           userId,
@@ -152,7 +150,7 @@ export const onboardUser = (
           updatedAt: now,
         }));
 
-        await tx.insert(userCategories).values(userCategoryInserts);
+        await tx.insert(userCategories).values(userCategoryInserts).onConflictDoNothing();
 
         console.log("user categories");
 
