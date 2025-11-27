@@ -1,11 +1,29 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { requireAuth } from '@/lib/auth/route-guard'
 import logo from '../logo.svg'
 import { useAuth } from '@/lib/auth/auth-provider'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
+import { getUserById } from '@/lib/http/api/users'
 
 export const Route = createFileRoute('/')({
-  beforeLoad: () => {
+  beforeLoad: async () => {
     requireAuth()
+
+    const result = await getUserIdFromAccessToken().asyncAndThen((userId) =>
+      getUserById(userId)(),
+    )
+
+    if (result.isErr()) {
+      const error = result.error
+      console.error('Failed to get user ID:', error)
+      const errorMessage = typeof error === 'string' ? error : error.message
+      throw new Error(errorMessage)
+    }
+
+    const user = result.value
+    if (!user.onboarded) {
+      throw redirect({ to: '/onboarding' })
+    }
   },
   component: App,
 })
