@@ -1,6 +1,6 @@
 export type CategoryItemProps = {
   icon: string
-  name: string
+  label: string
   id: string
 }
 
