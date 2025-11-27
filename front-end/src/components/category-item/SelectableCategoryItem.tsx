@@ -1,7 +1,7 @@
-import { Checkbox } from '@/components/ui/checkbox'
-import { cn } from '@/lib/utils/cn'
 import * as CategoryItem from './CategoryItem.compound'
 import type { SelectableCategoryItemProps } from './CategoryItem.types'
+import { cn } from '@/lib/utils/cn'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export default function SelectableCategoryItem({
   icon,
