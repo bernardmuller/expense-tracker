@@ -37,6 +37,9 @@ const getUserByIdRoute = createRoute({
   path: "/users/{id}",
   method: "get",
   tags,
+  request: {
+    params: z.object({ id: z.uuid() }),
+  },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(userSchema, "Return a user"),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
@@ -98,7 +101,6 @@ const onboardUserRoute = createRoute({
     ),
   },
 });
-
 
 const markUserAsOnboardedRoute = createRoute({
   path: "/users/{id}/onboard",
@@ -300,7 +302,7 @@ export const userRouter = createRouter()
   .openapi(getUserByIdRoute, getUserByIdHandler)
   .openapi(createUserRoute, createUserHandler)
   .openapi(markUserAsOnboardedRoute, markUserAsOnboardedHandler)
-.openapi(onboardUserRoute, onboardUserHandler)
+  .openapi(onboardUserRoute, onboardUserHandler)
   .openapi(markUserAsVerifiedRoute, markUserAsVerifiedHandler)
   .openapi(updateUserRoute, updateUserHandler)
   .openapi(isUserFullySetupRoute, isUserFullySetupHandler);
