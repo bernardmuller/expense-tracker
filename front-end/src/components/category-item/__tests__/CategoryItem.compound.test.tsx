@@ -46,6 +46,6 @@ describe('CategoryItem.IconName', () => {
       <CategoryItem.IconName icon="🛒" name="Groceries" />,
     )
     const wrapper = container.firstChild as HTMLElement
-    expect(wrapper).toHaveClass('flex', 'flex-1', 'gap-1', 'font-medium')
+    expect(wrapper).toHaveClass('flex', 'flex-1', 'items-center', 'gap-2')
   })
 })

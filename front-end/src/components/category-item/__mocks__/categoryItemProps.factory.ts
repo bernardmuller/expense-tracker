@@ -9,7 +9,7 @@ export function createCategoryItemProps(
   return {
     id: 'groceries',
     icon: '🛒',
-    name: 'Groceries',
+    label: 'Groceries',
     ...overrides,
   }
 }
