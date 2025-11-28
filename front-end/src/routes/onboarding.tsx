@@ -38,10 +38,8 @@ const userCategorySchema = z.object({
   id: z.string(),
   icon: z.string(),
   label: z.string(),
-  amount: z.number().optional(),
+  amount: z.number().positive('Amount must be greater than 0'),
 })
-
-type UserCategory = z.infer<typeof userCategorySchema>
 
 const onboardingFormSchema = z
   .object({
@@ -103,6 +101,14 @@ const getStepWithError = (
   )
     return 2
 
+  if (
+    fieldMeta['categories'].errors &&
+    fieldMeta['categories'].errors.length > 0 &&
+    formValues.categories.length > 0
+  ) {
+    return 3
+  }
+
   return null
 }
 
@@ -110,7 +116,6 @@ function OnboardingPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(0)
-  const userId = getUserIdFromAccessToken().safeUnwrap()
 
   const {
     data: categories,
@@ -145,7 +150,6 @@ function OnboardingPage() {
 
       onboardMutation.mutate(onboardingData, {
         onSuccess: async () => {
-          // Prefetch dashboard data before navigation for instant loading
           await Promise.all([
             queryClient.prefetchQuery(getActiveBudgetQueryOptions()),
             queryClient.prefetchQuery(getCategoriesQueryOptions()),
@@ -167,6 +171,10 @@ function OnboardingPage() {
             break
           case 2:
             toast.error('Please select your spending categories')
+            break
+          case 3:
+            toast.error('Please allocate amounts to all categories')
+            break
         }
       }
     },

@@ -72,4 +72,20 @@ describe('AddExpenseForm', () => {
       description: 'Mackers',
     })
   })
+  it('should use capitalized category name as description when no description is provided', async () => {
+    const mockFunction = vi.fn()
+    const { filterItems } = generateFilterProps()
+    const { user } = setupUserEvent(
+      <AddExpenseForm onSubmit={mockFunction} categories={filterItems} />,
+    )
+    await user.type(screen.getByPlaceholderText('Amount'), '500')
+    await user.click(screen.getByRole('combobox'))
+    await user.click(screen.getAllByText('Housing')[1])
+    await user.click(screen.getByRole('button'))
+    expect(mockFunction).toHaveBeenCalledWith({
+      amount: 500,
+      category: 'housing',
+      description: 'Housing',
+    })
+  })
 })
