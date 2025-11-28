@@ -155,7 +155,6 @@ export const categoryBudgets = pgTable("category_budgets", {
   deletedAt: timestamp("deleted_at"),
 });
 
-// Expenses table
 export const expenses = pgTable("expenses", {
   id: uuid("id").primaryKey(),
   budgetId: uuid("budget_id")
@@ -163,7 +162,9 @@ export const expenses = pgTable("expenses", {
     .references(() => budgets.id, { onDelete: "cascade" }),
   description: varchar("description", { length: 255 }).notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
-  category: varchar("category", { length: 50 }).notNull(),
+  categoryId: uuid("category_id")
+    .notNull()
+    .references(() => categories.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),
@@ -193,11 +194,16 @@ export const expenseRelations = relations(expenses, ({ one }) => ({
     fields: [expenses.budgetId],
     references: [budgets.id],
   }),
+  category: one(categories, {
+    fields: [expenses.categoryId],
+    references: [categories.id],
+  }),
 }));
 
 export const categoryRelations = relations(categories, ({ many }) => ({
   userCategories: many(userCategories),
   categoryBudgets: many(categoryBudgets),
+  expenses: many(expenses),
 }));
 
 export const userCategoryRelations = relations(userCategories, ({ one }) => ({
@@ -238,4 +244,3 @@ export type NewUserCategory = typeof userCategories.$inferInsert;
 export type CategoryBudget = typeof categoryBudgets.$inferSelect;
 export type NewCategoryBudget = typeof categoryBudgets.$inferInsert;
 
-export type ExpenseCategory = string;
