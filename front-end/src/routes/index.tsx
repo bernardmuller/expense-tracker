@@ -29,7 +29,7 @@ export const Route = createFileRoute('/')({
     // This ensures instant loading when user lands on dashboard
     await Promise.all([
       context.queryClient.prefetchQuery(getActiveBudgetQueryOptions()),
-      context.queryClient.prefetchQuery(getUserCategoriesQueryOptions(user.id)),
+      context.queryClient.prefetchQuery(getUserCategoriesQueryOptions()),
     ])
 
     throw redirect({ to: '/dashboard' })

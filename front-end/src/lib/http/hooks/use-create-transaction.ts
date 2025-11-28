@@ -8,7 +8,7 @@ import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { withAccessToken } from '../with-token'
 
 type CreateTransactionBody =
-  paths['/budgets/{id}/transactions']['post']['requestBody']['content']['application/json']
+  NonNullable<paths['/budgets/{id}/transactions']['post']['requestBody']>['content']['application/json']
 
 type CreateTransactionSuccess =
   paths['/budgets/{id}/transactions']['post']['responses']['201']['content']['application/json']
