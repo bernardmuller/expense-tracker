@@ -22,12 +22,17 @@ import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
 import { useCategories, type Category } from '@/lib/http/hooks/use-categories'
 import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
+import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
+import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { Check, LoaderCircleIcon } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { toast } from 'sonner'
 import z from 'zod'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
+import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -59,6 +64,9 @@ const onboardingFormSchema = z
 export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
 
 export const Route = createFileRoute('/onboarding')({
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(getCategoriesQueryOptions())
+  },
   component: OnboardingPage,
 })
 
@@ -100,7 +108,9 @@ const getStepWithError = (
 
 function OnboardingPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(0)
+  const userId = getUserIdFromAccessToken().safeUnwrap()
 
   const {
     data: categories,
@@ -134,7 +144,12 @@ function OnboardingPage() {
       }
 
       onboardMutation.mutate(onboardingData, {
-        onSuccess: () => {
+        onSuccess: async () => {
+          // Prefetch dashboard data before navigation for instant loading
+          await Promise.all([
+            queryClient.prefetchQuery(getActiveBudgetQueryOptions()),
+            queryClient.prefetchQuery(getCategoriesQueryOptions()),
+          ])
           navigate({ to: '/dashboard' })
         },
       })
@@ -264,6 +279,7 @@ function OnboardingPage() {
               </CardHeader>
               <CardContent>
                 <div className="w-full space-y-4">
+                  {/* Show spinner only if no cached data exists */}
                   {categoriesLoading ? (
                     <div className="flex items-center justify-center p-8">
                       <LoaderCircleIcon className="h-8 w-8 animate-spin" />
@@ -356,8 +372,11 @@ function OnboardingPage() {
                           </div>
                           <Progress
                             value={
-                              (totalAllocated / form.state.values.startAmount) *
-                              100
+                              totalAllocated > form.state.values.startAmount
+                                ? 100
+                                : (totalAllocated /
+                                    form.state.values.startAmount) *
+                                  100
                             }
                           />
                         </div>

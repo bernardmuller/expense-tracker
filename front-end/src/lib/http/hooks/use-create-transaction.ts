@@ -26,19 +26,6 @@ export function useCreateTransaction(budgetId: string) {
     mutationFn: async (
       body: CreateTransactionBody,
     ): Promise<Result<CreateTransactionSuccess, CreateTransactionError>> => {
-      const userIdResult = getUserIdFromAccessToken()
-
-      if (userIdResult.isErr()) {
-        toast.error('Unable to get user information')
-        return err({
-          error: 'Unauthorized',
-          message: 'Unable to get user information',
-          code: 'MISSING_USER_ID',
-        } as CreateTransactionError)
-      }
-
-      const userId = userIdResult.value
-
       return withAccessToken(
         (ctx) => {
           return toResult(
@@ -88,9 +75,31 @@ export function useCreateTransaction(budgetId: string) {
         const currentAmount = parseFloat(old.currentAmount)
         const newAmount = currentAmount - newTransaction.amount
 
+        const category = old.categories?.find(
+          (cat: any) => cat.id === newTransaction.categoryId,
+        )
+
+        const optimisticTransaction = {
+          id: `temp-${Date.now()}`,
+          description: newTransaction.description,
+          amount: newTransaction.amount.toString(),
+          category: category || {
+            id: newTransaction.categoryId,
+            label: 'Unknown',
+            icon: '💸',
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          budgetId: old.id,
+          categoryId: newTransaction.categoryId,
+        }
+
+        const updatedExpenses = [optimisticTransaction, ...(old.expenses || [])]
+
         return {
           ...old,
           currentAmount: newAmount.toString(),
+          expenses: updatedExpenses,
         }
       })
 
