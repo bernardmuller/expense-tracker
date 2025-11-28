@@ -2,19 +2,16 @@ import { useAppForm } from '@/hooks/form'
 import z from 'zod'
 import type { FilterItems } from '../filter/Filter.types'
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from '../ui/card'
 import { FieldGroup } from '../ui/field'
 
 const addExpenseSchema = z.object({
-  description: z
-    .string()
-    .min(1, 'You must provide a description')
-    .max(30, "Description can't exceed 30 characters"),
+  description: z.string().default(''),
   amount: z.number().positive('You must provide the amount'),
   category: z.string().refine((val) => val !== '', {
     message: 'You must specify a category',
@@ -40,7 +37,14 @@ export default function AddExpenseForm({
       onSubmit: addExpenseSchema,
     },
     onSubmit: ({ value }) => {
-      onSubmit(value)
+      const description =
+        !value.description || value.description === ''
+          ? categories.find((c) => c.value === value.category)?.name
+          : value.description
+      onSubmit({
+        ...value,
+        description,
+      })
     },
   })
 
