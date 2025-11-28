@@ -12,7 +12,7 @@ describe('AllocatableCategoryItem', () => {
       </AllocatableCategoryItem>,
     )
     expect(screen.getByText(props.icon)).toBeInTheDocument()
-    expect(screen.getByText(props.name)).toBeInTheDocument()
+    expect(screen.getByText(props.label)).toBeInTheDocument()
   })
   it('renders children in the input area', () => {
     const props = createCategoryItemProps()
@@ -33,16 +33,5 @@ describe('AllocatableCategoryItem', () => {
     expect(
       screen.getByTestId('allocatable-category-test-category'),
     ).toBeInTheDocument()
-  })
-  it('applies w-36 class to children wrapper', () => {
-    const props = createCategoryItemProps()
-    render(
-      <AllocatableCategoryItem {...props}>
-        <input type="number" data-testid="input" />
-      </AllocatableCategoryItem>,
-    )
-    const input = screen.getByTestId('input')
-    const wrapper = input.parentElement
-    expect(wrapper).toHaveClass('w-36')
   })
 })

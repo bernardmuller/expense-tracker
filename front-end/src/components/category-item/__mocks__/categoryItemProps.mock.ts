@@ -1,35 +1,35 @@
 import type { CategoryItemProps } from '../CategoryItem.types'
 
-export const mockCategories: CategoryItemProps[] = [
+export const mockCategories: Array<CategoryItemProps> = [
   {
     id: 'groceries',
     icon: '🛒',
-    name: 'Groceries',
+    label: 'Groceries',
   },
   {
     id: 'transport',
     icon: '🚗',
-    name: 'Transport',
+    label: 'Transport',
   },
   {
     id: 'entertainment',
     icon: '🎬',
-    name: 'Entertainment',
+    label: 'Entertainment',
   },
   {
     id: 'utilities',
     icon: '💡',
-    name: 'Utilities',
+    label: 'Utilities',
   },
   {
     id: 'dining',
     icon: '🍽️',
-    name: 'Dining Out',
+    label: 'Dining Out',
   },
   {
     id: 'healthcare',
     icon: '🏥',
-    name: 'Healthcare',
+    label: 'Healthcare',
   },
 ]
 
