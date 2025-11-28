@@ -10,7 +10,7 @@ describe('SelectableCategoryItem', () => {
     render(<SelectableCategoryItem {...props} />)
 
     expect(screen.getByText(props.icon)).toBeInTheDocument()
-    expect(screen.getByText(props.name)).toBeInTheDocument()
+    expect(screen.getByText(props.label)).toBeInTheDocument()
   })
 
   it('renders unchecked checkbox by default', () => {
