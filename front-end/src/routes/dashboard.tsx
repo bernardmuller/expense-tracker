@@ -5,8 +5,12 @@ import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getUserById } from '@/lib/http/api/users'
 import { useActiveBudget } from '@/lib/http/hooks/use-active-budget'
+import { useCategories } from '@/lib/http/hooks/use-categories'
 import { useCreateTransaction } from '@/lib/http/hooks/use-create-transaction'
 import { useUserCategories } from '@/lib/http/hooks/use-user-categories'
+import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
+import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
+import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { LoaderCircleIcon } from 'lucide-react'
@@ -30,6 +34,17 @@ export const Route = createFileRoute('/dashboard')({
       throw redirect({ to: '/onboarding' })
     }
   },
+  loader: async ({ context }) => {
+    // Prefetch dashboard data before component renders
+    // This eliminates the waterfall effect and shows cached data instantly
+    const promises = [
+      context.queryClient.ensureQueryData(getActiveBudgetQueryOptions()),
+      context.queryClient.ensureQueryData(getCategoriesQueryOptions()),
+    ]
+
+    // Wait for all prefetch operations to complete
+    await Promise.all(promises)
+  },
   component: DashboardPage,
 })
 
@@ -37,18 +52,25 @@ function DashboardPage() {
   const {
     data: budget,
     isLoading: budgetLoading,
+    isFetching: budgetFetching,
     error: budgetError,
   } = useActiveBudget()
 
   const {
     data: categories,
     isLoading: categoriesLoading,
+    isFetching: categoriesFetching,
     error: categoriesError,
-  } = useUserCategories()
+  } = useCategories()
 
   const createTransactionMutation = useCreateTransaction(budget?.id ?? '')
 
-  if (budgetLoading || categoriesLoading) {
+  const isInitialLoading =
+    (budgetLoading || categoriesLoading) && (!budget || !categories)
+  const isRefreshing =
+    (budgetFetching || categoriesFetching) && budget && categories
+
+  if (isInitialLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <LoaderCircleIcon className="h-8 w-8 animate-spin" />
@@ -108,6 +130,18 @@ function DashboardPage() {
     <div
       className="flex min-h-screen items-center justify-center bg-gray-50 p-4"
     >
+      {/* Subtle refresh indicator */}
+      {isRefreshing && (
+        <div className="fixed top-4 right-4 z-50">
+          <div
+            className="flex items-center gap-2 rounded-lg bg-white px-3 py-2
+              text-sm shadow-md"
+          >
+            <LoaderCircleIcon className="h-4 w-4 animate-spin text-gray-500" />
+            <span className="text-gray-600">Updating...</span>
+          </div>
+        </div>
+      )}
       <div className="w-full max-w-md space-y-4">
         <CurrentBudget
           budgetName={budget.name}
