@@ -7,12 +7,10 @@ import { getUserById } from '@/lib/http/api/users'
 import { useActiveBudget } from '@/lib/http/hooks/use-active-budget'
 import { useCategories } from '@/lib/http/hooks/use-categories'
 import { useCreateTransaction } from '@/lib/http/hooks/use-create-transaction'
-import { useUserCategories } from '@/lib/http/hooks/use-user-categories'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
-import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { LoaderCircleIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/dashboard')({
@@ -151,9 +149,9 @@ function DashboardPage() {
           spentPercentage={spentPercentage}
           onClick={() => {}}
           linkProvider={({ children }) => (
-            <Link to="/budget" className="cursor-pointer">
+            <span className="cursor-pointer">
               {children}
-            </Link>
+            </span>
           )}
         />
 
@@ -167,9 +165,9 @@ function DashboardPage() {
 
         <RecentExpenses
           linkProvider={({ children }) => (
-            <Link to="/expenses" className="cursor-pointer">
+            <span className="cursor-pointer">
               {children}
-            </Link>
+            </span>
           )}
         >
           {budget.expenses.length === 0 ? (

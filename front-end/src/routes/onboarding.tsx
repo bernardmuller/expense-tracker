@@ -31,8 +31,6 @@ import { Check, LoaderCircleIcon } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { toast } from 'sonner'
 import z from 'zod'
-import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
-import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -84,25 +82,29 @@ const StepHeader = ({
 }
 
 const getStepWithError = (
-  fieldMeta: Record<string, { errors?: Array<unknown> }> | undefined,
+  fieldMeta:
+    | Partial<Record<string, { errors?: Array<unknown> } | undefined>>
+    | undefined,
   formValues: OnboardingFormValues,
 ): number | null => {
+  if (!fieldMeta) return null
+
   if (
-    (fieldMeta['name'].errors && fieldMeta['name'].errors.length > 0) ||
-    (fieldMeta['startAmount'].errors &&
+    (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
+    (fieldMeta['startAmount']?.errors &&
       fieldMeta['startAmount'].errors.length > 0)
   )
     return 1
 
   if (
-    fieldMeta['categories'].errors &&
+    fieldMeta['categories']?.errors &&
     fieldMeta['categories'].errors.length > 0 &&
     formValues.categories.length === 0
   )
     return 2
 
   if (
-    fieldMeta['categories'].errors &&
+    fieldMeta['categories']?.errors &&
     fieldMeta['categories'].errors.length > 0 &&
     formValues.categories.length > 0
   ) {

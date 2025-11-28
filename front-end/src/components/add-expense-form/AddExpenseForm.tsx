@@ -11,7 +11,7 @@ import {
 import { FieldGroup } from '../ui/field'
 
 const addExpenseSchema = z.object({
-  description: z.string().default(''),
+  description: z.string(),
   amount: z.number().positive('You must provide the amount'),
   category: z.string().refine((val) => val !== '', {
     message: 'You must specify a category',
@@ -37,9 +37,10 @@ export default function AddExpenseForm({
       onSubmit: addExpenseSchema,
     },
     onSubmit: ({ value }) => {
+      const cat = categories.find((c) => c.value === value.category)?.name
       const description =
         !value.description || value.description === ''
-          ? categories.find((c) => c.value === value.category)?.name
+          ? cat!
           : value.description
       onSubmit({
         ...value,
