@@ -110,67 +110,6 @@ export async function seedDatabase() {
       },
     ];
 
-    const expensesData: Array<
-      Omit<NewExpense, "createdAt" | "updatedAt" | "deletedAt">
-    > = [
-      {
-        id: EXPENSE_IDS[0]!,
-        budgetId: BUDGET_ID,
-        description: "Rent",
-        amount: "10000.00",
-        category: "rent",
-      },
-      {
-        id: EXPENSE_IDS[1]!,
-        budgetId: BUDGET_ID,
-        description: "Entertainment",
-        amount: "200.00",
-        category: "entertainment",
-      },
-      {
-        id: EXPENSE_IDS[2]!,
-        budgetId: BUDGET_ID,
-        description: "Eat-out-takeaways",
-        amount: "250.00",
-        category: "eat-out-takeaways",
-      },
-      {
-        id: EXPENSE_IDS[3]!,
-        budgetId: BUDGET_ID,
-        description: "Groceries",
-        amount: "1250.00",
-        category: "groceries",
-      },
-      {
-        id: EXPENSE_IDS[4]!,
-        budgetId: BUDGET_ID,
-        description: "Entertainment",
-        amount: "600.00",
-        category: "entertainment",
-      },
-      {
-        id: EXPENSE_IDS[5]!,
-        budgetId: BUDGET_ID,
-        description: "Savings",
-        amount: "1000.00",
-        category: "savings",
-      },
-      {
-        id: EXPENSE_IDS[6]!,
-        budgetId: BUDGET_ID,
-        description: "Investments",
-        amount: "2000.00",
-        category: "savings",
-      },
-      {
-        id: EXPENSE_IDS[7]!,
-        budgetId: BUDGET_ID,
-        description: "Vacation",
-        amount: "1000.00",
-        category: "savings",
-      },
-    ];
-
     const userData = {
       id: USER_ID,
       name: "Developer",
@@ -281,53 +220,6 @@ export async function seedDatabase() {
         .onConflictDoNothing();
     }
 
-    for (const expense of expensesData) {
-      await db
-        .insert(expenses)
-        .values({
-          ...expense,
-          createdAt: new Date(
-            expense.description === "Rent"
-              ? "2025-09-23 21:43:32.306"
-              : expense.description === "Entertainment" &&
-                  expense.amount === "200.00"
-                ? "2025-09-23 21:43:40.633"
-                : expense.description === "Eat-out-takeaways"
-                  ? "2025-09-23 21:43:45.649"
-                  : expense.description === "Groceries"
-                    ? "2025-09-23 21:43:52.687"
-                    : expense.description === "Entertainment" &&
-                        expense.amount === "600.00"
-                      ? "2025-09-23 21:44:01.429"
-                      : expense.description === "Savings"
-                        ? "2025-09-23 21:44:24.679"
-                        : expense.description === "Investments"
-                          ? "2025-09-23 21:44:35.256"
-                          : "2025-09-23 21:44:45.152",
-          ),
-          updatedAt: new Date(
-            expense.description === "Rent"
-              ? "2025-09-23 21:43:32.306"
-              : expense.description === "Entertainment" &&
-                  expense.amount === "200.00"
-                ? "2025-09-23 21:43:40.633"
-                : expense.description === "Eat-out-takeaways"
-                  ? "2025-09-23 21:43:45.649"
-                  : expense.description === "Groceries"
-                    ? "2025-09-23 21:43:52.687"
-                    : expense.description === "Entertainment" &&
-                        expense.amount === "600.00"
-                      ? "2025-09-23 21:44:01.429"
-                      : expense.description === "Savings"
-                        ? "2025-09-23 21:44:24.679"
-                        : expense.description === "Investments"
-                          ? "2025-09-23 21:44:35.256"
-                          : "2025-09-23 21:44:45.152",
-          ),
-        })
-        .onConflictDoNothing();
-    }
-
     console.table([
       {
         Entity: "Categories",
@@ -347,7 +239,6 @@ export async function seedDatabase() {
         Count: categoryBudgetsData.length,
         Status: "✓ Seeded",
       },
-      { Entity: "Expenses", Count: expensesData.length, Status: "✓ Seeded" },
     ]);
   } catch (error) {
     console.error("Error seeding database:", error);

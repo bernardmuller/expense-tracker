@@ -21,4 +21,12 @@ export const queryKeys = {
   categories: {
     all: ['categories'] as const,
   },
+  budgets: {
+    all: ['budgets'] as const,
+    active: (userId: string) => ['budgets', 'active', userId] as const,
+  },
+  transactions: {
+    all: ['transactions'] as const,
+    create: () => ['transactions', 'create'] as const,
+  },
 } as const

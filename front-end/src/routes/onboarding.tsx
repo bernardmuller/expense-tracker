@@ -3,7 +3,7 @@ import SelectableCategoryItem from '@/components/category-item/SelectableCategor
 import OnboardingLayout from '@/components/onboarding/OnboardingLayout'
 import Welcome from '@/components/onboarding/Welcome'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { FieldGroup } from '@/components/ui/field'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
@@ -20,14 +20,14 @@ import {
 } from '@/components/ui/stepper'
 import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
+import { useCategories, type Category } from '@/lib/http/hooks/use-categories'
+import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
+import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Check, LoaderCircleIcon } from 'lucide-react'
 import { Fragment, useState } from 'react'
-import z from 'zod'
-import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { toast } from 'sonner'
-import { useCategories, type Category } from '@/lib/http/hooks/use-categories'
-import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
+import z from 'zod'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -78,18 +78,18 @@ const StepHeader = ({
 }
 
 const getStepWithError = (
-  fieldMeta: Record<string, { errors?: unknown[] }>,
+  fieldMeta: Record<string, { errors?: Array<unknown> }> | undefined,
   formValues: OnboardingFormValues,
 ): number | null => {
   if (
-    (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
-    (fieldMeta['startAmount']?.errors &&
+    (fieldMeta['name'].errors && fieldMeta['name'].errors.length > 0) ||
+    (fieldMeta['startAmount'].errors &&
       fieldMeta['startAmount'].errors.length > 0)
   )
     return 1
 
   if (
-    fieldMeta['categories']?.errors &&
+    fieldMeta['categories'].errors &&
     fieldMeta['categories'].errors.length > 0 &&
     formValues.categories.length === 0
   )
@@ -135,7 +135,7 @@ function OnboardingPage() {
 
       onboardMutation.mutate(onboardingData, {
         onSuccess: () => {
-          navigate({ to: '/' })
+          navigate({ to: '/dashboard' })
         },
       })
     },
@@ -348,7 +348,7 @@ function OnboardingPage() {
                               </span>
                               <span className="text-lg font-semibold">
                                 {formatCurrency(
-                                  form.state.values.startAmount ?? 0,
+                                  form.state.values.startAmount,
                                   'za',
                                 )}
                               </span>
@@ -356,8 +356,7 @@ function OnboardingPage() {
                           </div>
                           <Progress
                             value={
-                              (totalAllocated /
-                                (form.state.values.startAmount ?? 0)) *
+                              (totalAllocated / form.state.values.startAmount) *
                               100
                             }
                           />
