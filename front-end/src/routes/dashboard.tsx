@@ -1,3 +1,4 @@
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import AddExpenseForm from '@/components/add-expense-form/AddExpenseForm'
 import { CurrentBudget } from '@/components/current-budget/CurrentBudget'
 import RecentExpenses from '@/components/recent-expenses/RecentExpenses'
@@ -10,7 +11,6 @@ import { useCreateTransaction } from '@/lib/http/hooks/use-create-transaction'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { createFileRoute, redirect } from '@tanstack/react-router'
 import { LoaderCircleIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/dashboard')({
@@ -33,14 +33,11 @@ export const Route = createFileRoute('/dashboard')({
     }
   },
   loader: async ({ context }) => {
-    // Prefetch dashboard data before component renders
-    // This eliminates the waterfall effect and shows cached data instantly
     const promises = [
       context.queryClient.ensureQueryData(getActiveBudgetQueryOptions()),
       context.queryClient.ensureQueryData(getCategoriesQueryOptions()),
     ]
 
-    // Wait for all prefetch operations to complete
     await Promise.all(promises)
   },
   component: DashboardPage,
@@ -149,9 +146,7 @@ function DashboardPage() {
           spentPercentage={spentPercentage}
           onClick={() => {}}
           linkProvider={({ children }) => (
-            <span className="cursor-pointer">
-              {children}
-            </span>
+            <span className="cursor-pointer">{children}</span>
           )}
         />
 
@@ -165,9 +160,7 @@ function DashboardPage() {
 
         <RecentExpenses
           linkProvider={({ children }) => (
-            <span className="cursor-pointer">
-              {children}
-            </span>
+            <span className="cursor-pointer">{children}</span>
           )}
         >
           {budget.expenses.length === 0 ? (
