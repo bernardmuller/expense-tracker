@@ -1,4 +1,5 @@
-import { err, ok, type Result } from 'neverthrow'
+import { err, ok } from 'neverthrow'
+import type { Result } from 'neverthrow'
 import { getAccessToken } from './token-storage'
 
 interface TokenPayload {
@@ -9,12 +10,12 @@ interface TokenPayload {
   exp: number
 }
 
-const splitToken = (token: string): Result<string[], string> => {
+const splitToken = (token: string): Result<Array<string>, string> => {
   const parts = token.split('.')
   return parts.length === 3 ? ok(parts) : err('Invalid token format')
 }
 
-const parsePayload = (parts: string[]): Result<TokenPayload, string> => {
+const parsePayload = (parts: Array<string>): Result<TokenPayload, string> => {
   try {
     const decoded = JSON.parse(atob(parts[1])) as TokenPayload
     return ok(decoded)

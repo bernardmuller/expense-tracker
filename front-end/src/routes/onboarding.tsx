@@ -20,13 +20,14 @@ import {
 } from '@/components/ui/stepper'
 import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
-import { useCategories, type Category } from '@/lib/http/hooks/use-categories'
+import type { Category } from '@/lib/http/hooks/use-categories'
+import { useCategories } from '@/lib/http/hooks/use-categories'
 import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Check, LoaderCircleIcon } from 'lucide-react'
 import { Fragment, useState } from 'react'
 import { toast } from 'sonner'
@@ -342,8 +343,8 @@ function OnboardingPage() {
             <div className="w-full max-w-2xl space-y-4">
               <form.Subscribe
                 selector={(state) => state.values.categories}
-                children={(categories) => {
-                  const totalAllocated = categories.reduce(
+                children={(cs) => {
+                  const totalAllocated = cs.reduce(
                     (sum, category) => sum + (category.amount || 0),
                     0,
                   )

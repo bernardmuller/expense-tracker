@@ -1,4 +1,5 @@
-import { ResultAsync, errAsync } from 'neverthrow'
+import { errAsync } from 'neverthrow'
+import type { ResultAsync } from 'neverthrow'
 import { toast } from 'sonner'
 
 export type TokenContext = {

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Result, ok, err } from 'neverthrow'
+import { ok, err } from 'neverthrow'
+import type { Result } from 'neverthrow'
 import { toast } from 'sonner'
 import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'
@@ -7,8 +8,9 @@ import type { paths } from '../schema'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { withAccessToken } from '../with-token'
 
-type CreateTransactionBody =
-  NonNullable<paths['/budgets/{id}/transactions']['post']['requestBody']>['content']['application/json']
+type CreateTransactionBody = NonNullable<
+  paths['/budgets/{id}/transactions']['post']['requestBody']
+>['content']['application/json']
 
 type CreateTransactionSuccess =
   paths['/budgets/{id}/transactions']['post']['responses']['201']['content']['application/json']
