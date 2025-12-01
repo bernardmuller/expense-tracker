@@ -1,9 +1,9 @@
 import { toast } from 'sonner'
+import { withAccessToken } from '../with-token'
 import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'
 import type { paths } from '../schema'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
-import { withAccessToken } from '../with-token'
 
 type ActiveBudgetSuccess =
   paths['/users/{id}/budgets/active']['get']['responses']['200']['content']['application/json']
