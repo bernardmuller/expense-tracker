@@ -1,12 +1,14 @@
+import { err, ok } from 'neverthrow'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ok, err } from 'neverthrow'
-import type { Result } from 'neverthrow'
 import { toast } from 'sonner'
 import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'
-import type { paths } from '../schema'
-import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { withAccessToken } from '../with-token'
+import type { Result } from 'neverthrow'
+import type { paths } from '../schema'
+import type { ActiveBudgetSuccess } from '../queries/budget'
+import type { CategoriesRequestSuccess } from './use-categories'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 
 type CreateTransactionBody = NonNullable<
   paths['/budgets/{id}/transactions']['post']['requestBody']
@@ -71,39 +73,47 @@ export function useCreateTransaction(budgetId: string) {
 
       const previousBudget = queryClient.getQueryData(queryKey)
 
-      queryClient.setQueryData(queryKey, (old: any) => {
-        if (!old) return old
+      queryClient.setQueryData(
+        queryKey,
+        (old: ActiveBudgetSuccess | undefined) => {
+          if (!old) return old
 
-        const currentAmount = parseFloat(old.currentAmount)
-        const newAmount = currentAmount - newTransaction.amount
+          const currentAmount = parseFloat(old.currentAmount)
+          const newAmount = currentAmount - newTransaction.amount
 
-        const category = old.categories?.find(
-          (cat: any) => cat.id === newTransaction.categoryId,
-        )
+          const categories = queryClient.getQueryData<CategoriesRequestSuccess>(
+            queryKeys.categories.all,
+          )
+          const category = categories?.find(
+            (cat) => cat.id === newTransaction.categoryId,
+          )
 
-        const optimisticTransaction = {
-          id: `temp-${Date.now()}`,
-          description: newTransaction.description,
-          amount: newTransaction.amount.toString(),
-          category: category || {
-            id: newTransaction.categoryId,
-            label: 'Unknown',
-            icon: '💸',
-          },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          budgetId: old.id,
-          categoryId: newTransaction.categoryId,
-        }
+          if (!category) return old
 
-        const updatedExpenses = [optimisticTransaction, ...(old.expenses || [])]
+          const optimisticTransaction = {
+            id: `temp-${Date.now()}`,
+            description: newTransaction.description,
+            amount: newTransaction.amount.toString(),
+            category: category,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            deletedAt: null,
+            budgetId: old.id,
+            categoryId: newTransaction.categoryId,
+          }
 
-        return {
-          ...old,
-          currentAmount: newAmount.toString(),
-          expenses: updatedExpenses,
-        }
-      })
+          const updatedExpenses = [
+            optimisticTransaction,
+            ...old.expenses.slice(0, -1),
+          ]
+
+          return {
+            ...old,
+            currentAmount: newAmount.toString(),
+            expenses: updatedExpenses,
+          }
+        },
+      )
 
       return { previousBudget, queryKey }
     },

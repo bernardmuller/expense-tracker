@@ -22,6 +22,7 @@ export default function SelectField({
       <Filter
         filterItems={filterItems}
         handleValueChange={field.handleChange}
+        value={field.state.value}
         placeHolder={placeHolder}
       />
       {isInvalid && <FieldError errors={field.state.meta.errors} />}
