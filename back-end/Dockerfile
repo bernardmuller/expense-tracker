@@ -13,13 +13,12 @@ COPY package.json pnpm-lock.yaml ./
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source files
+# Copy source and config files
 COPY tsconfig.json ./
 COPY src ./src
 
-# Build the application
-RUN pnpm run build && \
-    pnpm prune --prod
+# Prune dev dependencies
+RUN pnpm prune --prod
 
 FROM base AS runner
 WORKDIR /app
@@ -27,12 +26,13 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 hono
 
-# Copy built files from builder
+# Copy dependencies, source, and config from builder
 COPY --from=builder --chown=hono:nodejs /app/node_modules /app/node_modules
-COPY --from=builder --chown=hono:nodejs /app/dist /app/dist
+COPY --from=builder --chown=hono:nodejs /app/src /app/src
+COPY --from=builder --chown=hono:nodejs /app/tsconfig.json /app/tsconfig.json
 COPY --from=builder --chown=hono:nodejs /app/package.json /app/package.json
 
 USER hono
 EXPOSE 3000
 
-CMD ["node", "/app/dist/index.js"]
+CMD ["node_modules/.bin/tsx", "src/index.ts"]

@@ -71,6 +71,9 @@ importers:
       stoker:
         specifier: ^2.0.1
         version: 2.0.1(@asteasolutions/zod-to-openapi@8.1.0(zod@4.1.12))(@hono/zod-openapi@1.1.4(hono@4.10.4)(zod@4.1.12))(hono@4.10.4)(openapi3-ts@4.5.0)
+      tsx:
+        specifier: ^4.20.6
+        version: 4.20.6
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -105,9 +108,6 @@ importers:
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16
-      tsx:
-        specifier: ^4.20.6
-        version: 4.20.6
       typescript:
         specifier: ^5.8.3
         version: 5.9.3
