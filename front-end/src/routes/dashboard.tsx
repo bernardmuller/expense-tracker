@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { LoaderCircleIcon } from 'lucide-react'
 import AddExpenseForm from '@/components/add-expense-form/AddExpenseForm'
 import { CurrentBudget } from '@/components/current-budget/CurrentBudget'
 import RecentExpenses from '@/components/recent-expenses/RecentExpenses'
@@ -11,7 +12,6 @@ import { useCreateTransaction } from '@/lib/http/hooks/use-create-transaction'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { LoaderCircleIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
@@ -125,7 +125,6 @@ function DashboardPage() {
     <div
       className="flex min-h-screen items-center justify-center bg-gray-50 p-4"
     >
-      {/* Subtle refresh indicator */}
       {isRefreshing && (
         <div className="fixed top-4 right-4 z-50">
           <div
@@ -152,10 +151,12 @@ function DashboardPage() {
 
         <AddExpenseForm
           onSubmit={handleExpenseSubmit}
-          categories={categoryFilterItems.map((c) => ({
-            name: c.label,
-            value: c.value,
-          }))}
+          categories={categoryFilterItems
+            .map((c) => ({
+              name: c.label,
+              value: c.value,
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name))}
         />
 
         <RecentExpenses

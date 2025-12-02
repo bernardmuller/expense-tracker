@@ -9,9 +9,9 @@ import {
 import type { FilterProps } from './Filter.types'
 
 export default function Filter(props: FilterProps) {
-  const { placeHolder, filterItems, handleValueChange, rootClassName } = props
+  const { placeHolder, filterItems, handleValueChange, rootClassName, value } = props
   return (
-    <Select onValueChange={handleValueChange} disabled={props.isDisabled}>
+    <Select onValueChange={handleValueChange} value={value} disabled={props.isDisabled}>
       <SelectTrigger className={rootClassName}>
         <SelectValue placeholder={placeHolder} />
       </SelectTrigger>
