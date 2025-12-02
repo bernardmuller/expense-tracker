@@ -1,6 +1,4 @@
-import { useAppForm } from '@/hooks/form'
 import z from 'zod'
-import type { FilterItems } from '../filter/Filter.types'
 import {
   Card,
   CardContent,
@@ -9,6 +7,8 @@ import {
   CardTitle,
 } from '../ui/card'
 import { FieldGroup } from '../ui/field'
+import type { FilterItems } from '../filter/Filter.types'
+import { useAppForm } from '@/hooks/form'
 
 const addExpenseSchema = z.object({
   description: z.string(),
@@ -46,6 +46,8 @@ export default function AddExpenseForm({
         ...value,
         description,
       })
+      form.reset()
+      form.setFieldValue('category', '')
     },
   })
 

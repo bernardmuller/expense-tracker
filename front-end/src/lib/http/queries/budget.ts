@@ -5,7 +5,7 @@ import { queryKeys } from '../query-keys'
 import type { paths } from '../schema'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 
-type ActiveBudgetSuccess =
+export type ActiveBudgetSuccess =
   paths['/users/{id}/budgets/active']['get']['responses']['200']['content']['application/json']
 
 type ActiveBudgetError =

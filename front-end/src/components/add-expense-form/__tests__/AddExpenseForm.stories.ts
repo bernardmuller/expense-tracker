@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
 import AddExpenseForm from '../AddExpenseForm'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { generateFilterProps } from '@/components/filter/__mocks__/filterProps.mock'
 
 const meta = {

@@ -9,6 +9,7 @@ export type FilterProps = {
   filterItems: FilterItems
   placeHolder: string
   handleValueChange: (value: string) => void
+  value?: string
   rootClassName?: HTMLProps<HTMLElement>['className']
   isDisabled?: boolean
 }
