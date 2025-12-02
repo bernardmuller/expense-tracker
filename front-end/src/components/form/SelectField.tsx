@@ -13,7 +13,7 @@ export default function SelectField({
   placeHolder: string
   filterItems: FilterItems
 }) {
-  const field = useFieldContext()
+  const field = useFieldContext<string>()
   const isInvalid = useStore(field.store, (state) => !state.meta.isValid)
 
   return (
