@@ -17,7 +17,7 @@ export const generateMockCategory = (
   ];
 
   const randomCategory =
-    categoryNames[Math.floor(Math.random() * categoryNames.length)];
+    categoryNames[Math.floor(Math.random() * categoryNames.length)]!;
 
   return {
     id: uuid,
