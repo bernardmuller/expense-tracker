@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host --port 3000",
-    "start": "vite --host --port 3000",
-    "build": "vite build && tsc",
+    "build": "vite build",
     "serve": "vite preview",
     "test:watch": "vitest",
     "lint": "eslint",
