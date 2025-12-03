@@ -19,7 +19,7 @@ const routes = [index, auth, users, categories, transactions, health] as const;
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:3000"],
+    origin: [env.AUTH_URL],
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
