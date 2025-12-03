@@ -16,7 +16,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     <>
       <Outlet />
       <Toaster />
-      {process.env.NODE_ENV !== 'production' && (
+      {process.env.VITE_NODE_ENV !== 'production' && (
         <TanStackDevtools
           config={{
             position: 'bottom-left',
