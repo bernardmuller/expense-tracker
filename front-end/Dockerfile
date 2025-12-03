@@ -21,15 +21,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nodejs
+    adduser --system --uid 1001 nodejs && \
+    npm install -g serve
 
-RUN mkdir -p /app/data && \
-    chown -R nodejs:nodejs /app/data
-
-COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
 USER nodejs
 
-CMD ["node", ".output/server/index.mjs"]
+CMD ["serve", "-s", "dist", "-l", "3000"]
