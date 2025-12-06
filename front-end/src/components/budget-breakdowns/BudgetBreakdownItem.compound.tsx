@@ -4,7 +4,7 @@ import { Progress } from '@/components/ui/progress'
 
 export function Root({ children }: { children: React.ReactNode }) {
   return (
-    <Card className="border-border/50 cursor-pointer gap-2 p-4">
+    <Card className="border-border/50 cursor-pointer gap-2 p-6">
       {children}
     </Card>
   )
