@@ -5,9 +5,10 @@ export default function UnplannedBudgetBreakdownItem({
   name,
   icon,
   spentAmount,
+  onClick,
 }: BudgetBreakdownItemProps) {
   return (
-    <BudgetBreakdownItem.Root>
+    <BudgetBreakdownItem.Root onClick={onClick}>
       <BudgetBreakdownItem.Header name={name} icon={icon}>
         <BudgetBreakdownItem.UnplannedBadge />
       </BudgetBreakdownItem.Header>

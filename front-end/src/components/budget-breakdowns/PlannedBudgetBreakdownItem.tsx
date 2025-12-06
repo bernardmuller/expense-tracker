@@ -7,9 +7,10 @@ export default function PlannedBudgetBreakdownItem({
   percentage,
   plannedAmount,
   spentAmount,
+  onClick,
 }: PlannedBudgetBreakdownItemProps) {
   return (
-    <BudgetBreakdownItem.Root>
+    <BudgetBreakdownItem.Root onClick={onClick}>
       <BudgetBreakdownItem.Header name={name} icon={icon} />
       <BudgetBreakdownItem.Stats>
         <BudgetBreakdownItem.ProgressBar percentage={percentage} />

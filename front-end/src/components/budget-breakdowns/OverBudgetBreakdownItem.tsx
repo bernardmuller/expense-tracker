@@ -6,9 +6,10 @@ export default function OverBudgetBreakdownItem({
   icon,
   plannedAmount,
   spentAmount,
+  onClick,
 }: OverBudgetBreakdownItemProps) {
   return (
-    <BudgetBreakdownItem.Root>
+    <BudgetBreakdownItem.Root onClick={onClick}>
       <BudgetBreakdownItem.Header name={name} icon={icon}>
         <BudgetBreakdownItem.OverBudgetBadge />
       </BudgetBreakdownItem.Header>

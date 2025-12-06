@@ -37,7 +37,7 @@ export default function AddExpenseForm({
       onSubmit: addExpenseSchema,
     },
     onSubmit: ({ value }) => {
-      const cat = categories.find((c) => c.value === value.category)?.name
+      const cat = categories.find((c) => c.value === value.category)?.label
       const description =
         !value.description || value.description === ''
           ? cat!
@@ -90,7 +90,7 @@ export default function AddExpenseForm({
       <CardFooter>
         <form.AppForm>
           <form.FormButton
-            enabledText="Create Transaction"
+            enabledText="Create Expense"
             loadingText="Submitting"
             disabledText="Enter your new expense details"
             formId="add-expense-form"

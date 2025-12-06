@@ -2,6 +2,7 @@ export type BudgetBreakdownItemProps = {
   name: string
   icon: string
   spentAmount: string
+  onClick?: () => void
 }
 
 export type OverBudgetBreakdownItemProps = BudgetBreakdownItemProps & {

@@ -2,9 +2,18 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
-export function Root({ children }: { children: React.ReactNode }) {
+export function Root({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+}) {
   return (
-    <Card className="border-border/50 cursor-pointer gap-2 p-6">
+    <Card
+      className="border-border/50 cursor-pointer gap-2 p-6"
+      onClick={onClick}
+    >
       {children}
     </Card>
   )
