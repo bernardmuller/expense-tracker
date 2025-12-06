@@ -3,35 +3,13 @@ import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getUserById } from '@/lib/http/api/users'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
-import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users'
+import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users/getUserCatgories'
 
 export const Route = createFileRoute('/')({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: ({ context }) => {
     requireAuth()
-
-    const result = await getUserIdFromAccessToken().asyncAndThen((userId) =>
-      getUserById(userId)(),
-    )
-
-    if (result.isErr()) {
-      const error = result.error
-      console.error('Failed to get user ID:', error)
-      const errorMessage = typeof error === 'string' ? error : error.message
-      throw new Error(errorMessage)
-    }
-
-    const user = result.value
-    if (!user.onboarded) {
-      throw redirect({ to: '/onboarding' })
-    }
-
-    // Prefetch dashboard data before redirecting
-    // This ensures instant loading when user lands on dashboard
-    await Promise.all([
-      context.queryClient.prefetchQuery(getActiveBudgetQueryOptions()),
-      context.queryClient.prefetchQuery(getUserCategoriesQueryOptions()),
-    ])
-
+    context.queryClient.prefetchQuery(getActiveBudgetQueryOptions())
+    context.queryClient.prefetchQuery(getUserCategoriesQueryOptions())
     throw redirect({ to: '/dashboard' })
   },
   component: App,

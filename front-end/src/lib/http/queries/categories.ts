@@ -1,8 +1,8 @@
 import { toast } from 'sonner'
 import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'
-import type { paths } from '../schema'
 import { withAccessToken } from '../with-token'
+import type { paths } from '../schema'
 
 type CategoriesSuccess =
   paths['/categories']['get']['responses']['200']['content']['application/json']

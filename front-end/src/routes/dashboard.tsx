@@ -1,104 +1,57 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { LoaderCircleIcon } from 'lucide-react'
 import AddExpenseForm from '@/components/add-expense-form/AddExpenseForm'
 import { CurrentBudget } from '@/components/current-budget/CurrentBudget'
 import RecentExpenses from '@/components/recent-expenses/RecentExpenses'
-import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { requireAuth } from '@/lib/auth/route-guard'
-import { getUserById } from '@/lib/http/api/users'
-import { useActiveBudget } from '@/lib/http/hooks/use-active-budget'
-import { useCategories } from '@/lib/http/hooks/use-categories'
 import { useCreateTransaction } from '@/lib/http/hooks/use-create-transaction'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
+import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { LoaderCircleIcon } from 'lucide-react'
+import { Suspense } from 'react'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: async () => {
-    requireAuth()
-
-    const result = await getUserIdFromAccessToken().asyncAndThen((userId) =>
-      getUserById(userId)(),
-    )
-
-    if (result.isErr()) {
-      const error = result.error
-      const errorMessage = typeof error === 'string' ? error : error.message
-      throw new Error(errorMessage)
-    }
-
-    const user = result.value
-    if (!user.onboarded) {
-      throw redirect({ to: '/onboarding' })
-    }
-  },
+  beforeLoad: () => requireAuth(),
   loader: async ({ context }) => {
-    const promises = [
-      context.queryClient.ensureQueryData(getActiveBudgetQueryOptions()),
-      context.queryClient.ensureQueryData(getCategoriesQueryOptions()),
-    ]
-
-    await Promise.all(promises)
+    context.queryClient.prefetchQuery(getActiveBudgetQueryOptions())
+    context.queryClient.prefetchQuery(getCategoriesQueryOptions())
+    await context.queryClient.ensureQueryData(getUserByIdQueryOptions())
   },
   component: DashboardPage,
 })
 
 function DashboardPage() {
-  const {
-    data: budget,
-    isLoading: budgetLoading,
-    isFetching: budgetFetching,
-    error: budgetError,
-  } = useActiveBudget()
+  const router = useRouter()
+  const data = useSuspenseQuery(getUserByIdQueryOptions())
 
-  const {
-    data: categories,
-    isLoading: categoriesLoading,
-    isFetching: categoriesFetching,
-    error: categoriesError,
-  } = useCategories()
-
-  const createTransactionMutation = useCreateTransaction(budget?.id ?? '')
-
-  const isInitialLoading =
-    (budgetLoading || categoriesLoading) && (!budget || !categories)
-  const isRefreshing =
-    (budgetFetching || categoriesFetching) && budget && categories
-
-  if (isInitialLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <LoaderCircleIcon className="h-8 w-8 animate-spin" />
-      </div>
-    )
+  if (!data.data.onboarded) {
+    router.navigate({ to: '/onboarding' })
   }
 
-  if (budgetError || categoriesError) {
-    return (
-      <div
-        className="flex min-h-screen items-center justify-center bg-gray-50 p-4"
-      >
-        <div className="text-destructive text-center">
-          {budgetError
-            ? 'Failed to load budget. Please try again.'
-            : 'Failed to load categories. Please try again.'}
+  return (
+    <Suspense
+      fallback={
+        <div className="text-black">
+          <span>Loading...</span>
         </div>
-      </div>
-    )
-  }
+      }
+    >
+      <Dashboard />
+    </Suspense>
+  )
+}
 
-  if (!budget || !categories) {
-    return (
-      <div
-        className="flex min-h-screen items-center justify-center bg-gray-50 p-4"
-      >
-        <div className="text-muted-foreground text-center">
-          No active budget found
-        </div>
-      </div>
-    )
-  }
-
+function Dashboard() {
+  const { data: budget, isFetching: budgetFetching } = useSuspenseQuery(
+    getActiveBudgetQueryOptions(),
+  )
+  const { data: categories, isFetching: categoriesFetching } = useSuspenseQuery(
+    getCategoriesQueryOptions(),
+  )
+  const createTransactionMutation = useCreateTransaction(budget.id)
+  const isRefreshing = (budgetFetching || categoriesFetching) && categories
   const currentAmount = parseFloat(budget.currentAmount)
   const startAmount = parseFloat(budget.startAmount)
   const spentAmount = startAmount - currentAmount
@@ -132,7 +85,7 @@ function DashboardPage() {
               text-sm shadow-md"
           >
             <LoaderCircleIcon className="h-4 w-4 animate-spin text-gray-500" />
-            <span className="text-gray-600">Updating...</span>
+            <span className="text-gray-600">Refreshing...</span>
           </div>
         </div>
       )}
@@ -148,7 +101,6 @@ function DashboardPage() {
             <span className="cursor-pointer">{children}</span>
           )}
         />
-
         <AddExpenseForm
           onSubmit={handleExpenseSubmit}
           categories={categoryFilterItems
@@ -158,7 +110,6 @@ function DashboardPage() {
             }))
             .sort((a, b) => a.name.localeCompare(b.name))}
         />
-
         <RecentExpenses
           linkProvider={({ children }) => (
             <span className="cursor-pointer">{children}</span>

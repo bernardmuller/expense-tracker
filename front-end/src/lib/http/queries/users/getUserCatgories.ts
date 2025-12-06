@@ -1,9 +1,9 @@
 import { toast } from 'sonner'
-import { client, toResult } from '../client'
-import { queryKeys } from '../query-keys'
-import type { paths } from '../schema'
+import { client, toResult } from '../../client'
+import { queryKeys } from '../../query-keys'
+import { withAccessToken } from '../../with-token'
+import type { paths } from '../../schema'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
-import { withAccessToken } from '../with-token'
 
 type UserCategoriesSuccess =
   paths['/users/{id}/categories']['get']['responses']['200']['content']['application/json']

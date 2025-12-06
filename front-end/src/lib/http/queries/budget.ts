@@ -11,10 +11,6 @@ export type ActiveBudgetSuccess =
 type ActiveBudgetError =
   paths['/users/{id}/budgets/active']['get']['responses']['404']['content']['application/json']
 
-/**
- * Query function for fetching the active budget
- * Can be used in both hooks and route loaders
- */
 export async function fetchActiveBudget(): Promise<ActiveBudgetSuccess> {
   const userIdResult = getUserIdFromAccessToken()
 
@@ -54,10 +50,6 @@ export async function fetchActiveBudget(): Promise<ActiveBudgetSuccess> {
   )
 }
 
-/**
- * Get query options for active budget
- * Used in loaders to prefetch data
- */
 export function getActiveBudgetQueryOptions() {
   const userIdResult = getUserIdFromAccessToken()
 
