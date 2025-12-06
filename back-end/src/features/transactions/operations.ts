@@ -89,3 +89,17 @@ export const getUserCategories = (
   Array<{ id: string; key: string; label: string; icon: string }>,
   InstanceType<typeof EntityReadError>
 > => TransactionQueries.getUserCategories(userId, ctx);
+
+export const getBudgetExpenses = (
+  budgetId: string,
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Budget & {
+    expenses: (Transaction & {
+      category: { id: string; key: string; label: string; icon: string };
+    })[];
+  },
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> => TransactionQueries.getBudgetWithExpensesByBudgetId(budgetId, userId, ctx);

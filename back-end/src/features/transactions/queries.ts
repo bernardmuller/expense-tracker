@@ -172,3 +172,33 @@ export const findCategoryById = (
       ? okAsync(category)
       : errAsync(new EntityNotFoundError(`Category: ${categoryId}`)),
   );
+
+export const getBudgetWithExpensesByBudgetId = (
+  budgetId: string,
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Budget & {
+    expenses: (Transaction & { category: { id: string; key: string; label: string; icon: string } })[];
+  },
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> =>
+  ResultAsync.fromPromise(
+    ctx.db.query.budgets.findFirst({
+      where: and(eq(budgets.id, budgetId), eq(budgets.userId, userId)),
+      with: {
+        expenses: {
+          orderBy: desc(expenses.createdAt),
+          with: {
+            category: true,
+          },
+        },
+      },
+    }),
+    (error) => new EntityReadError("Budget", String(error)),
+  ).andThen((budget) =>
+    budget
+      ? okAsync(budget as any)
+      : errAsync(new EntityNotFoundError(`Budget ${budgetId} for user ${userId}`)),
+  );

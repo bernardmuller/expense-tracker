@@ -26,6 +26,8 @@ export const queryKeys = {
   budgets: {
     all: ['budgets'] as const,
     active: (userId: string) => ['budgets', 'active', userId] as const,
+    byId: (budgetId: string) => ['budgets', budgetId] as const,
+    expenses: (budgetId: string) => ['budgets', budgetId, 'expenses'] as const,
   },
   transactions: {
     all: ['transactions'] as const,

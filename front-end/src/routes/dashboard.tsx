@@ -10,7 +10,7 @@ import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { Suspense, useMemo } from 'react'
 import { DashboardSkeleton } from './dashboard.skeleton'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
@@ -89,7 +89,9 @@ function Dashboard() {
         />
         <RecentExpenses
           linkProvider={({ children }) => (
-            <span className="cursor-pointer">{children}</span>
+            <Link to="/budgets/$id/expenses" params={{ id: budget.id }}>
+              {children}
+            </Link>
           )}
         >
           {budget.expenses.length === 0 && (

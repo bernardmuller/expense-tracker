@@ -116,6 +116,61 @@ const getUserCategoriesRoute = createRoute({
   },
 });
 
+const getBudgetExpensesRoute = createRoute({
+  path: "/budgets/{id}/expenses",
+  method: "get",
+  tags: ["Budgets"],
+  request: {
+    params: z.object({ id: z.uuid() }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.object({
+        id: z.uuid(),
+        userId: z.uuid(),
+        name: z.string(),
+        startAmount: z.string(),
+        currentAmount: z.string(),
+        isActive: z.boolean(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+        deletedAt: z.date().nullable(),
+        expenses: z.array(
+          z.object({
+            id: z.uuid(),
+            budgetId: z.uuid(),
+            description: z.string(),
+            amount: z.string(),
+            categoryId: z.uuid(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+            deletedAt: z.date().nullable(),
+            category: z.object({
+              id: z.uuid(),
+              key: z.string(),
+              label: z.string(),
+              icon: z.string(),
+            }),
+          }),
+        ),
+      }),
+      "Budget with all expenses",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "Budget not found",
+    ),
+    [HttpStatusCodes.FORBIDDEN]: jsonContent(
+      errorResponseSchema,
+      "Access denied",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
 const createTransactionHandler = async (c: Context) => {
   const budgetId = c.req.param("id");
   const body = await c.req.json();
@@ -160,7 +215,24 @@ const getUserCategoriesHandler = async (c: Context) => {
   );
 };
 
+const getBudgetExpensesHandler = async (c: Context) => {
+  const budgetId = c.req.param("id");
+  const user = c.get("user") as { userId: string };
+  const ctx = createContext();
+  const result = await TransactionOperations.getBudgetExpenses(
+    budgetId,
+    user.userId,
+    ctx,
+  );
+
+  return result.match(
+    (budget) => c.json(budget, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
 export const transactionRouter = createRouter()
   .openapi(createTransactionRoute, createTransactionHandler)
   .openapi(getActiveBudgetRoute, getActiveBudgetHandler)
-  .openapi(getUserCategoriesRoute, getUserCategoriesHandler);
+  .openapi(getUserCategoriesRoute, getUserCategoriesHandler)
+  .openapi(getBudgetExpensesRoute, getBudgetExpensesHandler);
