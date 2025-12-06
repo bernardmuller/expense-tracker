@@ -4,22 +4,23 @@ export default function RecentExpense({
   description,
   amount,
   emoji,
+  categoryLabel,
 }: RecentExpenseProps) {
   return (
-    <div
-      className="border-border flex items-center justify-between border-b py-2
-        last:border-b-0"
-    >
+    <div className="flex items-center justify-between py-3">
       <div className="flex items-center gap-3">
-        <span
-          className="flex h-6 w-6 items-center justify-center rounded-full
-            text-lg"
+        <div
+          className="flex h-10 w-10 items-center justify-center
+            rounded-full bg-gray-100"
         >
-          {emoji}
-        </span>
-        <span className="font-medium">{description}</span>
+          <span className="text-lg">{emoji}</span>
+        </div>
+        <div>
+          <div className="text-sm font-medium">{description}</div>
+          <div className="text-muted-foreground text-xs">{categoryLabel}</div>
+        </div>
       </div>
-      <span className="font-semibold">{amount}</span>
+      <div className="text-sm font-semibold">{amount}</div>
     </div>
   )
 }

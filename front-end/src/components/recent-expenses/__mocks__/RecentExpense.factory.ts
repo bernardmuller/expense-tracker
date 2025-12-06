@@ -11,4 +11,5 @@ export const recentExpenseProps: RecentExpenseProps = {
   amount: recentExpenseAmount,
   description: faker.lorem.words({ min: 1, max: 3 }),
   emoji: faker.internet.emoji(),
+  categoryLabel: faker.commerce.department(),
 }

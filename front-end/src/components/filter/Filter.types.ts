@@ -1,7 +1,7 @@
 import type { HTMLProps } from 'react'
 
 export type FilterItems = Array<{
-  name: string
+  label: string
   value: string
 }>
 
