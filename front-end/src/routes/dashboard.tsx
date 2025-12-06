@@ -69,7 +69,9 @@ function Dashboard() {
           spentPercentage={spentPercentage}
           onClick={() => {}}
           linkProvider={({ children }) => (
-            <span className="cursor-pointer">{children}</span>
+            <Link to="/budgets/$id" params={{ id: budget.id }}>
+              {children}
+            </Link>
           )}
         />
         <AddExpenseForm

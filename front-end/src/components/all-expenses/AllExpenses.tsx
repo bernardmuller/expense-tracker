@@ -3,6 +3,7 @@ import {
   Card,
   CardAction,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from '../ui/card'
@@ -16,10 +17,11 @@ export default function AllExpenses({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All Expenses - {budgetName}</CardTitle>
+        <CardTitle>All Expenses</CardTitle>
+        <CardDescription>{budgetName}</CardDescription>
         <CardAction>
           <Button variant="link" className="h-auto p-0 text-sm" asChild>
-            <LinkProvider>Back to Dashboard</LinkProvider>
+            <LinkProvider>View Budget</LinkProvider>
           </Button>
         </CardAction>
       </CardHeader>

@@ -153,6 +153,33 @@ const getBudgetExpensesRoute = createRoute({
             }),
           }),
         ),
+        categoryBudgets: z.array(
+          z.object({
+            id: z.uuid(),
+            budgetId: z.uuid(),
+            categoryId: z.uuid(),
+            allocatedAmount: z.string(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+            deletedAt: z.date().nullable(),
+            category: z.object({
+              id: z.uuid(),
+              key: z.string(),
+              label: z.string(),
+              icon: z.string(),
+            }),
+          }),
+        ),
+        categoryBreakdown: z.array(
+          z.object({
+            id: z.uuid(),
+            key: z.string(),
+            label: z.string(),
+            icon: z.string(),
+            spent: z.string(),
+            allocated: z.string().nullable(),
+          }),
+        ),
       }),
       "Budget with all expenses",
     ),

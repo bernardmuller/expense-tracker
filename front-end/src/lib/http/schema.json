@@ -2366,6 +2366,76 @@
                           "category"
                         ]
                       }
+                    },
+                    "categoryBudgets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "budgetId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "categoryId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "allocatedAmount": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "deletedAt": {
+                            "type": "string",
+                            "nullable": true,
+                            "format": "date"
+                          },
+                          "category": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "key": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "key",
+                              "label",
+                              "icon"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "budgetId",
+                          "categoryId",
+                          "allocatedAmount",
+                          "createdAt",
+                          "updatedAt",
+                          "deletedAt",
+                          "category"
+                        ]
+                      }
                     }
                   },
                   "required": [
@@ -2378,7 +2448,8 @@
                     "createdAt",
                     "updatedAt",
                     "deletedAt",
-                    "expenses"
+                    "expenses",
+                    "categoryBudgets"
                   ]
                 }
               }

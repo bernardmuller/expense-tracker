@@ -3,7 +3,11 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
 export function Root({ children }: { children: React.ReactNode }) {
-  return <Card className="border-border/50 cursor-pointer p-4">{children}</Card>
+  return (
+    <Card className="border-border/50 cursor-pointer gap-2 p-4">
+      {children}
+    </Card>
+  )
 }
 
 export function Header({

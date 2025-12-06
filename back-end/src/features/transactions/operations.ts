@@ -90,6 +90,22 @@ export const getUserCategories = (
   InstanceType<typeof EntityReadError>
 > => TransactionQueries.getUserCategories(userId, ctx);
 
+type CategoryBudget = {
+  id: string;
+  budgetId: string;
+  categoryId: string;
+  allocatedAmount: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  category: {
+    id: string;
+    key: string;
+    label: string;
+    icon: string;
+  };
+};
+
 export const getBudgetExpenses = (
   budgetId: string,
   userId: string,
@@ -99,6 +115,15 @@ export const getBudgetExpenses = (
     expenses: (Transaction & {
       category: { id: string; key: string; label: string; icon: string };
     })[];
+    categoryBudgets: CategoryBudget[];
+    categoryBreakdown: Array<{
+      id: string;
+      key: string;
+      label: string;
+      icon: string;
+      spent: string;
+      allocated: string | null;
+    }>;
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
