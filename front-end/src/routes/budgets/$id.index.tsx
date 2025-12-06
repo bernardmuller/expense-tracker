@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth/route-guard'
 import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import { BudgetDetailSkeleton } from './budgets.skeleton'
 import PlannedBudgetBreakdownItem from '@/components/budget-breakdowns/PlannedBudgetBreakdownItem'
@@ -31,6 +31,7 @@ function BudgetDetailPage() {
 
 function BudgetDetail() {
   const { id } = Route.useParams()
+  const navigate = useNavigate()
   const { data: budget } = useSuspenseQuery(getBudgetByIdQueryOptions(id))
 
   const currentAmount = parseFloat(budget.currentAmount)
@@ -40,6 +41,14 @@ function BudgetDetail() {
 
   const categories = budget.categoryBreakdown
 
+  const handleCategoryClick = (categoryLabel: string) => {
+    navigate({
+      to: '/budgets/$id/expenses',
+      params: { id },
+      search: { category: categoryLabel },
+    })
+  }
+
   return (
     <>
       <CurrentBudget
@@ -48,7 +57,6 @@ function BudgetDetail() {
         startingAmount={formatCurrency(startAmount, 'za')}
         spentAmount={formatCurrency(spentAmount, 'za')}
         spentPercentage={spentPercentage}
-        onClick={() => {}}
         linkProvider={({ children }) => <span>{children}</span>}
       />
       <CardTitle>Category Breakdown</CardTitle>
@@ -79,6 +87,7 @@ function BudgetDetail() {
                       name={category.label}
                       icon={category.icon}
                       spentAmount={formatCurrency(spent, 'za')}
+                      onClick={() => handleCategoryClick(category.label)}
                     />
                   )
                 }
@@ -90,6 +99,7 @@ function BudgetDetail() {
                       icon={category.icon}
                       plannedAmount={formatCurrency(allocated, 'za')}
                       spentAmount={formatCurrency(spent, 'za')}
+                      onClick={() => handleCategoryClick(category.label)}
                     />
                   )
                 }
@@ -102,6 +112,7 @@ function BudgetDetail() {
                     percentage={percentage}
                     plannedAmount={formatCurrency(allocated!, 'za')}
                     spentAmount={formatCurrency(spent, 'za')}
+                    onClick={() => handleCategoryClick(category.label)}
                   />
                 )
               })}

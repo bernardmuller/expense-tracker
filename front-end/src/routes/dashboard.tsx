@@ -57,8 +57,6 @@ function Dashboard() {
   const spentAmount = startAmount - currentAmount
   const spentPercentage = (spentAmount / startAmount) * 100
 
-  console.log(categories)
-
   return (
     <>
       <RefreshIndicator isRefreshing={!!isRefreshing} />
@@ -69,7 +67,6 @@ function Dashboard() {
           startingAmount={formatCurrency(startAmount, 'za')}
           spentAmount={formatCurrency(spentAmount, 'za')}
           spentPercentage={spentPercentage}
-          onClick={() => {}}
           linkProvider={({ children }) => (
             <Link to="/budgets/$id" params={{ id: budget.id }}>
               {children}
