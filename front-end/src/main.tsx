@@ -5,6 +5,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
 import { routeTree } from './routeTree.gen'
 import { AuthProvider } from './lib/auth/auth-provider'
+import { ThemeProvider } from './components/providers/ThemeProvider'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
@@ -32,11 +33,13 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </TanStackQueryProvider.Provider>
+      <ThemeProvider>
+        <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </TanStackQueryProvider.Provider>
+      </ThemeProvider>
     </StrictMode>,
   )
 }

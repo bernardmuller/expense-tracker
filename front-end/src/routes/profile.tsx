@@ -1,7 +1,9 @@
 import { Layout } from '@/components/layouts/Layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/lib/auth/auth-provider'
+import { useTheme } from '@/components/providers/ThemeProvider'
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -20,6 +22,13 @@ function ProfilePage() {
   const router = useRouter()
   const { data: user } = useSuspenseQuery(getUserByIdQueryOptions())
   const { logout } = useAuth()
+  const { theme, setTheme } = useTheme()
+
+  const isDarkMode = theme === 'dark'
+
+  const handleThemeToggle = (checked: boolean) => {
+    setTheme(checked ? 'dark' : 'light')
+  }
 
   return (
     <Layout>
@@ -42,6 +51,15 @@ function ProfilePage() {
           <div>
             <p className="text-muted-foreground text-sm">Email</p>
             <p className="text-foreground font-medium">{user.email}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-muted-foreground text-sm">Theme</p>
+              <p className="text-foreground font-medium">
+                {isDarkMode ? 'Dark' : 'Light'}
+              </p>
+            </div>
+            <Switch checked={isDarkMode} onCheckedChange={handleThemeToggle} />
           </div>
         </CardContent>
       </Card>
