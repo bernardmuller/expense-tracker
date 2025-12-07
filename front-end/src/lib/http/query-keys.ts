@@ -33,5 +33,6 @@ export const queryKeys = {
   transactions: {
     all: ['transactions'] as const,
     create: () => ['transactions', 'create'] as const,
+    delete: () => ['transactions', 'delete'] as const,
   },
 } as const

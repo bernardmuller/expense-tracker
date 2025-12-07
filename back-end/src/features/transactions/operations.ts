@@ -11,6 +11,7 @@ import type {
 import type { Budget } from "@/lib/db/schema";
 import {
   EntityCreateError,
+  EntityDeleteError,
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
@@ -128,3 +129,52 @@ export const getBudgetExpenses = (
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
 > => TransactionQueries.getBudgetWithExpensesByBudgetId(budgetId, userId, ctx);
+
+export const deleteTransactionAndUpdateBudget = (
+  userId: string,
+  budgetId: string,
+  expenseId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Transaction,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EntityDeleteError>
+  | InstanceType<typeof EntityUpdateError>
+> =>
+  TransactionQueries.findBudgetById(budgetId, ctx).andThen((budget) =>
+    TransactionQueries.getExpenseById(expenseId, ctx).andThen((expense) =>
+      ResultAsync.fromPromise(
+        ctx.db.transaction(async (tx) => {
+          const transactionContext = { ...ctx, db: tx };
+
+          const deletedExpenseResult = await TransactionQueries.hardDeleteExpense(expenseId, transactionContext);
+          if (deletedExpenseResult.isErr()) {
+            throw deletedExpenseResult.error;
+          }
+          const deletedExpense = deletedExpenseResult.value;
+
+          const budgetUpdateResult = TransactionDomain.updateBudgetAfterDeletion(
+            budget,
+            parseFloat(expense.amount),
+          );
+          if (!budgetUpdateResult.isOk()) {
+            throw new Error("Budget update failed");
+          }
+          const updatedBudget = budgetUpdateResult.value;
+
+          const finalBudgetResult = await TransactionQueries.updateBudget(updatedBudget, transactionContext);
+          if (finalBudgetResult.isErr()) {
+            throw finalBudgetResult.error;
+          }
+
+          return deletedExpense;
+        }),
+        (error) =>
+          error instanceof EntityDeleteError ||
+          error instanceof EntityUpdateError
+            ? error
+            : new EntityDeleteError("Expense", error),
+      ),
+    ),
+  );

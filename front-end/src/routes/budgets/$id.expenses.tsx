@@ -10,6 +10,10 @@ import { Suspense, useState, useEffect } from 'react'
 import { BudgetExpensesSkeleton } from './budgets.expenses.skeleton'
 import { Input } from '@/components/ui/input'
 import { z } from 'zod'
+import { Swiper } from '@/components/swiper'
+import { Trash2 } from 'lucide-react'
+import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 
 const expensesSearchSchema = z.object({
   category: z.string().optional(),
@@ -38,6 +42,10 @@ function BudgetExpenses() {
   const searchParams = Route.useSearch()
   const { data: budget } = useSuspenseQuery(getBudgetExpensesQueryOptions(id))
   const [filterValue, setFilterValue] = useState(searchParams.category ?? '')
+  const deleteExpenseMutation = useDeleteExpense()
+
+  const userIdResult = getUserIdFromAccessToken()
+  const userId = userIdResult.isOk() ? userIdResult.value : ''
 
   const filteredExpenses = budget.expenses.filter((expense) => {
     if (!filterValue.trim()) return true
@@ -83,15 +91,31 @@ function BudgetExpenses() {
         </div>
       )}
       {filteredExpenses.length > 0 && (
-        <div className="divide-border divide-y">
+        <div className="flex flex-col gap-1 py-2">
           {filteredExpenses.map((expense) => (
-            <RecentExpense
+            <Swiper
               key={expense.id}
-              amount={formatCurrency(parseFloat(expense.amount), 'za')}
-              description={expense.description}
-              emoji={expense.category.icon}
-              categoryLabel={expense.category.label}
-            />
+              rightAction={{
+                content: <Trash2 className="h-5 w-5 text-white" />,
+                className: 'p-2 rounded-md',
+                backgroundColor: 'oklch(0.6368 0.2078 25.3313)',
+                width: '80px',
+                onAction: () => {
+                  deleteExpenseMutation.mutate({
+                    userId,
+                    budgetId: id,
+                    expenseId: expense.id,
+                  })
+                },
+              }}
+            >
+              <RecentExpense
+                amount={formatCurrency(parseFloat(expense.amount), 'za')}
+                description={expense.description}
+                emoji={expense.category.icon}
+                categoryLabel={expense.category.label}
+              />
+            </Swiper>
           ))}
         </div>
       )}

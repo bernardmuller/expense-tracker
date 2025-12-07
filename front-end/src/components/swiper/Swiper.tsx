@@ -9,7 +9,7 @@ export const Swiper = ({
   className,
   onSwipeStart,
   onSwipeEnd,
-  swipeThreshold = 110,
+  swipeThreshold = 100,
 }: SwiperProps) => {
   const { swiperRef, handleScroll, resetToCenter } = useSwiper({
     swipeThreshold,
@@ -20,14 +20,8 @@ export const Swiper = ({
     direction: 'left' | 'right',
   ) => {
     onSwipeStart?.(direction)
-
-    // Execute the action
     await action()
-
-    // Reset to center with smooth animation
     resetToCenter()
-
-    // Wait for animation to complete before calling onSwipeEnd
     setTimeout(() => {
       onSwipeEnd?.()
     }, 300)
@@ -38,15 +32,13 @@ export const Swiper = ({
       ref={swiperRef}
       onScroll={handleScroll}
       className={cn(
-        'grid grid-flow-col grid-cols-[auto_1fr_auto] overflow-x-auto',
+        'flex overflow-x-auto',
         'scroll-snap-x scroll-snap-mandatory',
-        '[container-type:inline-size]',
         '[scrollbar-width:none]',
         '[&::-webkit-scrollbar]:hidden',
         className,
       )}
     >
-      {/* Left Action Button */}
       {leftAction && (
         <button
           onClick={() => handleActionClick(leftAction.onAction, 'left')}
@@ -63,15 +55,9 @@ export const Swiper = ({
           {leftAction.content}
         </button>
       )}
-
-      {/* Main Content - Spans full viewport width (100cqw = 100% container query width) */}
-      <div
-        className={cn('scroll-snap-center', 'px-5 py-2.5', '[width:100cqw]')}
-      >
-        {children}
+      <div className={cn('scroll-snap-center', 'shrink-0')}>
+        <div className="">{children}</div>
       </div>
-
-      {/* Right Action Button */}
       {rightAction && (
         <button
           onClick={() => handleActionClick(rightAction.onAction, 'right')}

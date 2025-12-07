@@ -5,6 +5,10 @@ interface UseSwiperOptions {
   swipeThreshold?: number
 }
 
+const getCenterElement = (swiper: HTMLDivElement): HTMLElement | null => {
+  return swiper.querySelector('.scroll-snap-center')
+}
+
 export const useSwiper = (options: UseSwiperOptions = {}): UseSwiperReturn => {
   const { swipeThreshold = 100 } = options
   const swiperRef = useRef<HTMLDivElement>(null)
@@ -14,12 +18,26 @@ export const useSwiper = (options: UseSwiperOptions = {}): UseSwiperReturn => {
     const swiper = swiperRef.current
     if (!swiper) return
 
+    const centerElement = getCenterElement(swiper)
+    if (!centerElement) return
+
+    const updateContentWidth = () => {
+      const containerWidth = swiper.clientWidth
+      centerElement.style.width = `${containerWidth}px`
+    }
+
+    updateContentWidth()
+
     requestAnimationFrame(() => {
-      const centerElement = swiper.children[1] as HTMLElement
-      if (centerElement) {
-        swiper.scrollLeft = centerElement.offsetLeft
-      }
+      swiper.scrollLeft = -centerElement.offsetLeft
     })
+
+    const resizeObserver = new ResizeObserver(updateContentWidth)
+    resizeObserver.observe(swiper)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
   }, [])
 
   useEffect(() => {
@@ -27,10 +45,10 @@ export const useSwiper = (options: UseSwiperOptions = {}): UseSwiperReturn => {
     if (!swiper) return
 
     const handleScrollEnd = () => {
-      const centerElement = swiper.children[1] as HTMLElement
+      const centerElement = getCenterElement(swiper)
       if (!centerElement) return
 
-      const centerPosition = centerElement.offsetLeft
+      const centerPosition = centerElement.offsetLeft * 2.5
       const currentScroll = swiper.scrollLeft
       const distance = Math.abs(currentScroll - centerPosition)
 
@@ -63,7 +81,7 @@ export const useSwiper = (options: UseSwiperOptions = {}): UseSwiperReturn => {
     const swiper = swiperRef.current
     if (!swiper) return
 
-    const centerElement = swiper.children[1] as HTMLElement
+    const centerElement = getCenterElement(swiper)
     if (centerElement) {
       swiper.scrollTo({
         left: centerElement.offsetLeft,

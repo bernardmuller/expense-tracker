@@ -71,17 +71,26 @@ function Dashboard() {
     <>
       <RefreshIndicator isRefreshing={!!isRefreshing} />
       <Layout>
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-background">
+            <div
+              className="bg-background flex h-12 w-12 items-center
+                justify-center rounded-full border"
+            >
               <Wallet className="h-6 w-6" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold">Expense Tracker</span>
-              <span className="text-xs text-muted-foreground">Hi, {user.name}!</span>
+              <span className="text-muted-foreground text-xs">
+                Hi, {user.name}!
+              </span>
             </div>
           </div>
-          <Button variant="outline" asChild className="aspect-square h-12 rounded-full">
+          <Button
+            variant="outline"
+            asChild
+            className="aspect-square h-12 rounded-full"
+          >
             <Link to="/profile">
               <UserCircle />
             </Link>
@@ -133,6 +142,9 @@ function Dashboard() {
                   key={expense.id}
                   rightAction={{
                     content: <Trash2 className="h-5 w-5 text-white" />,
+                    className: 'p-2 rounded-md',
+                    backgroundColor: 'oklch(0.6368 0.2078 25.3313)',
+                    width: '80px',
                     onAction: () => {
                       deleteExpenseMutation.mutate({
                         userId,

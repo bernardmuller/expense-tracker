@@ -34,3 +34,17 @@ export const updateBudgetAfterTransaction = (
     updatedAt: new Date(),
   });
 };
+
+export const updateBudgetAfterDeletion = (
+  budget: Budget,
+  deletedExpenseAmount: number,
+): Result<Budget, never> => {
+  const currentAmount = parseFloat(budget.currentAmount);
+  const newAmount = currentAmount + deletedExpenseAmount;
+
+  return ok({
+    ...budget,
+    currentAmount: newAmount.toString(),
+    updatedAt: new Date(),
+  });
+};

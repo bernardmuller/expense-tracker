@@ -198,6 +198,33 @@ const getBudgetExpensesRoute = createRoute({
   },
 });
 
+const deleteExpenseRoute = createRoute({
+  path: "/users/{userId}/budgets/{budgetId}/expenses/{expenseId}",
+  method: "delete",
+  tags,
+  request: {
+    params: z.object({
+      userId: z.uuid(),
+      budgetId: z.uuid(),
+      expenseId: z.uuid(),
+    }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      transactionSchema,
+      "Expense deleted successfully",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "Expense or budget not found",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
 const createTransactionHandler = async (c: Context) => {
   const budgetId = c.req.param("id");
   const body = await c.req.json();
@@ -258,8 +285,25 @@ const getBudgetExpensesHandler = async (c: Context) => {
   );
 };
 
+const deleteExpenseHandler = async (c: Context) => {
+  const { userId, budgetId, expenseId } = c.req.param();
+  const ctx = createContext();
+  const result = await TransactionOperations.deleteTransactionAndUpdateBudget(
+    userId,
+    budgetId,
+    expenseId,
+    ctx,
+  );
+
+  return result.match(
+    (expense) => c.json(expense, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
 export const transactionRouter = createRouter()
   .openapi(createTransactionRoute, createTransactionHandler)
   .openapi(getActiveBudgetRoute, getActiveBudgetHandler)
   .openapi(getUserCategoriesRoute, getUserCategoriesHandler)
-  .openapi(getBudgetExpensesRoute, getBudgetExpensesHandler);
+  .openapi(getBudgetExpensesRoute, getBudgetExpensesHandler)
+  .openapi(deleteExpenseRoute, deleteExpenseHandler);

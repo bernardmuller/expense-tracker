@@ -2,6 +2,7 @@ import type { AppContext } from "@/lib/db/context";
 import { expenses, budgets, categories, userCategories } from "@/lib/db/schema";
 import {
   EntityCreateError,
+  EntityDeleteError,
   EntityNotFoundError,
   EntityReadError,
   EntityUpdateError,
@@ -316,3 +317,36 @@ export const getBudgetWithExpensesByBudgetId = (
       categoryBreakdown,
     });
   });
+
+export const getExpenseById = (
+  expenseId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Transaction,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> =>
+  ResultAsync.fromPromise(
+    ctx.db.select().from(expenses).where(eq(expenses.id, expenseId)),
+    (error) => new EntityReadError("Expense", String(error)),
+  ).andThen(([expense]) =>
+    expense
+      ? okAsync(expense)
+      : errAsync(new EntityNotFoundError(`Expense: ${expenseId}`)),
+  );
+
+export const hardDeleteExpense = (
+  expenseId: string,
+  ctx: AppContext,
+): ResultAsync<Transaction, InstanceType<typeof EntityDeleteError>> =>
+  ResultAsync.fromPromise(
+    ctx.db
+      .delete(expenses)
+      .where(eq(expenses.id, expenseId))
+      .returning(),
+    (error) => new EntityDeleteError("Expense", error),
+  ).andThen(([deletedExpense]) =>
+    deletedExpense
+      ? okAsync(deletedExpense)
+      : errAsync(new EntityDeleteError("Expense")),
+  );
