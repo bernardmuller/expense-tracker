@@ -11,7 +11,7 @@ export default function RecentExpense({
       <div className="flex items-center gap-3">
         <div
           className="flex h-10 w-10 items-center justify-center rounded-full
-            bg-gray-100"
+            bg-muted"
         >
           <span className="text-lg">{emoji}</span>
         </div>
