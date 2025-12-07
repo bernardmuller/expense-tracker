@@ -27,7 +27,7 @@ import {
 import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
 import { useCategories } from '@/lib/http/hooks/use-categories'
-import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
+import { useCreateBudget } from '@/lib/http/hooks/use-create-budget'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
@@ -35,7 +35,6 @@ import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users/getUserC
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { requireAuth } from '@/lib/auth/route-guard'
 import BudgetInfoBlock from '@/components/budget-info/BudgetInfoBlock'
-import Welcome from '@/components/onboarding/Welcome'
 import CloseBudget from '@/components/close-budget/CloseBudget'
 
 const userCategorySchema = z.object({
@@ -147,7 +146,7 @@ function NewBudgetPage() {
     error: categoriesError,
   } = useCategories()
 
-  const onboardMutation = useOnboardRequest()
+  const createBudgetMutation = useCreateBudget()
 
   const currentAmount = parseFloat(currentBudget.currentAmount)
   const previousStartAmount = parseFloat(currentBudget.startAmount)
@@ -192,12 +191,11 @@ function NewBudgetPage() {
         categories: transformedCategories,
       }
 
-      onboardMutation.mutate(newBudgetData, {
+      createBudgetMutation.mutate(newBudgetData, {
         onSuccess: async () => {
-          await Promise.all([
-            queryClient.prefetchQuery(getActiveBudgetQueryOptions()),
-            queryClient.prefetchQuery(getCategoriesQueryOptions()),
-          ])
+          await queryClient.invalidateQueries({
+            queryKey: ['budgets'],
+          })
           navigate({ to: '/dashboard' })
         },
       })
@@ -510,9 +508,9 @@ function NewBudgetPage() {
         ) : (
           <Button
             onClick={() => form.handleSubmit()}
-            disabled={form.state.isSubmitting || onboardMutation.isPending}
+            disabled={form.state.isSubmitting || createBudgetMutation.isPending}
           >
-            {(form.state.isSubmitting || onboardMutation.isPending) && (
+            {(form.state.isSubmitting || createBudgetMutation.isPending) && (
               <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
             Finish

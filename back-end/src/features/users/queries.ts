@@ -10,9 +10,10 @@ import {
 import { eq } from "drizzle-orm";
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { User } from "./types";
-import type { OnboardingParams } from "./types";
+import type { OnboardingParams, CreateBudgetParams } from "./types";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { budgets, userCategories, categoryBudgets } from "@/lib/db/schema";
+import type { Budget } from "@/lib/db/schema";
 
 export const create = (user: Partial<User>, ctx: AppContext) =>
   ResultAsync.fromPromise(
@@ -188,5 +189,80 @@ export const onboardUser = (
         error instanceof EntityCreateError || error instanceof EntityUpdateError
           ? error
           : new EntityCreateError("Onboarding", error),
+    ),
+  );
+
+export const createNewBudget = (
+  userId: string,
+  params: CreateBudgetParams,
+  ctx: AppContext,
+): ResultAsync<
+  Budget,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EntityCreateError>
+  | InstanceType<typeof EntityUpdateError>
+> =>
+  findById(userId, ctx).andThen(() =>
+    ResultAsync.fromPromise(
+      ctx.db.transaction(async (tx) => {
+        const budgetId = generateUuid();
+        const now = new Date();
+
+        // Deactivate all existing budgets for this user
+        await tx
+          .update(budgets)
+          .set({
+            isActive: false,
+            updatedAt: now,
+          })
+          .where(eq(budgets.userId, userId));
+
+        // Create new budget as active
+        const [budget] = await tx
+          .insert(budgets)
+          .values({
+            id: budgetId,
+            userId,
+            name: params.name,
+            startAmount: params.startAmount.toString(),
+            currentAmount: params.startAmount.toString(),
+            isActive: true,
+            createdAt: now,
+            updatedAt: now,
+          })
+          .returning();
+
+        if (!budget) throw new EntityCreateError("Budget");
+
+        // Insert user categories (with conflict do nothing for existing ones)
+        const userCategoryInserts = params.categories.map((cat) => ({
+          id: generateUuid(),
+          userId,
+          categoryId: cat.id,
+          createdAt: now,
+          updatedAt: now,
+        }));
+
+        await tx.insert(userCategories).values(userCategoryInserts).onConflictDoNothing();
+
+        // Create category budgets for new budget
+        const categoryBudgetInserts = params.categories.map((cat) => ({
+          id: generateUuid(),
+          budgetId,
+          categoryId: cat.id,
+          allocatedAmount: cat.amount.toString(),
+          createdAt: now,
+          updatedAt: now,
+        }));
+
+        await tx.insert(categoryBudgets).values(categoryBudgetInserts);
+
+        return budget;
+      }),
+      (error) =>
+        error instanceof EntityCreateError || error instanceof EntityUpdateError
+          ? error
+          : new EntityCreateError("Budget creation", error),
     ),
   );

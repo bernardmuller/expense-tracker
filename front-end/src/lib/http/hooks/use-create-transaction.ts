@@ -7,6 +7,7 @@ import { withAccessToken } from '../with-token'
 import type { Result } from 'neverthrow'
 import type { paths } from '../schema'
 import type { ActiveBudgetSuccess } from '../queries/budget'
+import type { BudgetDetailSuccess } from '../queries/budget-detail'
 import type { CategoriesRequestSuccess } from './use-categories'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 
@@ -67,40 +68,43 @@ export function useCreateTransaction(budgetId: string) {
       if (userIdResult.isErr()) return
 
       const userId = userIdResult.value
-      const queryKey = queryKeys.budgets.active(userId)
+      const activeBudgetQueryKey = queryKeys.budgets.active(userId)
+      const budgetDetailQueryKey = queryKeys.budgets.detail(budgetId)
 
-      await queryClient.cancelQueries({ queryKey })
+      await queryClient.cancelQueries({ queryKey: activeBudgetQueryKey })
+      await queryClient.cancelQueries({ queryKey: budgetDetailQueryKey })
 
-      const previousBudget = queryClient.getQueryData(queryKey)
+      const previousBudget = queryClient.getQueryData(activeBudgetQueryKey)
+      const previousBudgetDetail = queryClient.getQueryData(budgetDetailQueryKey)
+
+      const categories = queryClient.getQueryData<CategoriesRequestSuccess>(
+        queryKeys.categories.all,
+      )
+      const category = categories?.find(
+        (cat) => cat.id === newTransaction.categoryId,
+      )
+
+      if (!category) return { previousBudget, previousBudgetDetail, activeBudgetQueryKey, budgetDetailQueryKey }
+
+      const optimisticTransaction = {
+        id: `temp-${Date.now()}`,
+        description: newTransaction.description,
+        amount: newTransaction.amount.toString(),
+        category: category,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        deletedAt: null,
+        budgetId: budgetId,
+        categoryId: newTransaction.categoryId,
+      }
 
       queryClient.setQueryData(
-        queryKey,
+        activeBudgetQueryKey,
         (old: ActiveBudgetSuccess | undefined) => {
           if (!old) return old
 
           const currentAmount = parseFloat(old.currentAmount)
           const newAmount = currentAmount - newTransaction.amount
-
-          const categories = queryClient.getQueryData<CategoriesRequestSuccess>(
-            queryKeys.categories.all,
-          )
-          const category = categories?.find(
-            (cat) => cat.id === newTransaction.categoryId,
-          )
-
-          if (!category) return old
-
-          const optimisticTransaction = {
-            id: `temp-${Date.now()}`,
-            description: newTransaction.description,
-            amount: newTransaction.amount.toString(),
-            category: category,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            deletedAt: null,
-            budgetId: old.id,
-            categoryId: newTransaction.categoryId,
-          }
 
           const updatedExpenses = [
             optimisticTransaction,
@@ -115,11 +119,45 @@ export function useCreateTransaction(budgetId: string) {
         },
       )
 
-      return { previousBudget, queryKey }
+      queryClient.setQueryData(
+        budgetDetailQueryKey,
+        (old: BudgetDetailSuccess | undefined) => {
+          if (!old) return old
+
+          const currentAmount = parseFloat(old.currentAmount)
+          const newAmount = currentAmount - newTransaction.amount
+
+          const updatedExpenses = [optimisticTransaction, ...old.expenses]
+
+          const updatedCategoryBreakdown = old.categoryBreakdown.map((cat) => {
+            if (cat.id === newTransaction.categoryId) {
+              const currentSpent = parseFloat(cat.spent)
+              const newSpent = currentSpent + newTransaction.amount
+              return {
+                ...cat,
+                spent: newSpent.toString(),
+              }
+            }
+            return cat
+          })
+
+          return {
+            ...old,
+            currentAmount: newAmount.toString(),
+            expenses: updatedExpenses,
+            categoryBreakdown: updatedCategoryBreakdown,
+          }
+        },
+      )
+
+      return { previousBudget, previousBudgetDetail, activeBudgetQueryKey, budgetDetailQueryKey }
     },
     onError: (_err, _newTransaction, context) => {
       if (context?.previousBudget) {
-        queryClient.setQueryData(context.queryKey, context.previousBudget)
+        queryClient.setQueryData(context.activeBudgetQueryKey, context.previousBudget)
+      }
+      if (context?.previousBudgetDetail) {
+        queryClient.setQueryData(context.budgetDetailQueryKey, context.previousBudgetDetail)
       }
     },
     onSuccess: () => {
@@ -129,6 +167,9 @@ export function useCreateTransaction(budgetId: string) {
           queryKey: queryKeys.budgets.active(userIdResult.value),
         })
       }
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.budgets.all,
+      })
     },
   })
 }

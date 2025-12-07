@@ -45,6 +45,14 @@ export const onboardingSchema = z.object({
 
 export type OnboardingParams = z.infer<typeof onboardingSchema>;
 
+export const createBudgetSchema = z.object({
+  name: z.string().min(1).max(50),
+  startAmount: z.number().positive(),
+  categories: z.array(onboardingCategorySchema).min(1),
+});
+
+export type CreateBudgetParams = z.infer<typeof createBudgetSchema>;
+
 // --------------------------------
 // Errors
 // --------------------------------

@@ -6,8 +6,9 @@ import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import * as UserOperations from "./operations";
 import { createUserSchema, userSchema } from "./types";
-import { onboardingSchema } from "./types";
+import { onboardingSchema, createBudgetSchema } from "./types";
 import type { CreateUserParams } from "./types";
+import { z } from "zod";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
 
@@ -94,6 +95,42 @@ const onboardUserRoute = createRoute({
     [HttpStatusCodes.CONFLICT]: jsonContent(
       errorResponseSchema,
       "User already onboarded",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+const createBudgetRoute = createRoute({
+  path: "/users/{id}/budgets",
+  method: "post",
+  tags,
+  request: {
+    params: z.object({
+      id: z.uuid(),
+    }),
+    body: jsonContent(createBudgetSchema, "Budget creation data"),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.object({
+        id: z.string().uuid(),
+        userId: z.string().uuid(),
+        name: z.string(),
+        startAmount: z.string(),
+        currentAmount: z.string(),
+        isActive: z.boolean(),
+        createdAt: z.string(),
+        updatedAt: z.string(),
+        deletedAt: z.string().nullable(),
+      }),
+      "Budget created successfully",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "User not found",
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema,
@@ -248,6 +285,18 @@ const onboardUserHandler = async (c: Context) => {
   );
 };
 
+const createBudgetHandler = async (c: Context) => {
+  const user = c.get("user") as { userId: string };
+  const body = await c.req.json();
+  const ctx = createContext();
+  const result = await UserOperations.createNewBudget(user.userId, body, ctx);
+
+  return result.match(
+    (budget) => c.json(budget, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
 const markUserAsOnboardedHandler = async (c: Context) => {
   const userId = c.req.param("id");
   const ctx = createContext();
@@ -303,6 +352,7 @@ export const userRouter = createRouter()
   .openapi(createUserRoute, createUserHandler)
   .openapi(markUserAsOnboardedRoute, markUserAsOnboardedHandler)
   .openapi(onboardUserRoute, onboardUserHandler)
+  .openapi(createBudgetRoute, createBudgetHandler)
   .openapi(markUserAsVerifiedRoute, markUserAsVerifiedHandler)
   .openapi(updateUserRoute, updateUserHandler)
   .openapi(isUserFullySetupRoute, isUserFullySetupHandler);

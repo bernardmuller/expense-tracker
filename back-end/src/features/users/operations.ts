@@ -10,7 +10,9 @@ import type {
   UserAlreadyOnboardedError,
   UserAlreadyVerifiedError,
   OnboardingParams,
+  CreateBudgetParams,
 } from "./types";
+import type { Budget } from "@/lib/db/schema";
 import {
   EntityCreateError,
   EntityNotFoundError,
@@ -138,3 +140,15 @@ export const isUserFullySetup = (
   getUserById(userId, ctx).andThen((user: User) =>
     ok(UserDomain.isUserFullySetup(user)),
   );
+
+export const createNewBudget = (
+  userId: string,
+  params: CreateBudgetParams,
+  ctx: AppContext,
+): ResultAsync<
+  Budget,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EntityCreateError>
+  | InstanceType<typeof EntityUpdateError>
+> => UserQueries.createNewBudget(userId, params, ctx);
