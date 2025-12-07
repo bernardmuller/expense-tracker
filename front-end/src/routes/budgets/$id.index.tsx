@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth/route-guard'
 import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import { BudgetDetailSkeleton } from './budgets.skeleton'
 import PlannedBudgetBreakdownItem from '@/components/budget-breakdowns/PlannedBudgetBreakdownItem'
@@ -10,6 +10,7 @@ import OverBudgetBreakdownItem from '@/components/budget-breakdowns/OverBudgetBr
 import UnplannedBudgetBreakdownItem from '@/components/budget-breakdowns/UnplannedBudgetBreakdownItem'
 import { CardTitle } from '@/components/ui/card'
 import { CurrentBudget } from '@/components/current-budget/CurrentBudget'
+import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
@@ -118,6 +119,11 @@ function BudgetDetail() {
               })}
           </div>
         )}
+      </div>
+      <div className="mt-6 w-full">
+        <Button asChild className="w-full" variant="outline">
+          <Link to="/budgets/new">Close Budget</Link>
+        </Button>
       </div>
     </>
   )

@@ -15,6 +15,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BudgetsNewRouteImport } from './routes/budgets/new'
 import { Route as BudgetsIdRouteImport } from './routes/budgets/$id'
 import { Route as BudgetsIdIndexRouteImport } from './routes/budgets/$id.index'
 import { Route as BudgetsIdExpensesRouteImport } from './routes/budgets/$id.expenses'
@@ -49,6 +50,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BudgetsNewRoute = BudgetsNewRouteImport.update({
+  id: '/budgets/new',
+  path: '/budgets/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BudgetsIdRoute = BudgetsIdRouteImport.update({
   id: '/budgets/$id',
   path: '/budgets/$id',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/budgets/$id': typeof BudgetsIdRouteWithChildren
+  '/budgets/new': typeof BudgetsNewRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id/': typeof BudgetsIdIndexRoute
 }
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/budgets/new': typeof BudgetsNewRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id': typeof BudgetsIdIndexRoute
 }
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/budgets/$id': typeof BudgetsIdRouteWithChildren
+  '/budgets/new': typeof BudgetsNewRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id/': typeof BudgetsIdIndexRoute
 }
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/budgets/$id'
+    | '/budgets/new'
     | '/budgets/$id/expenses'
     | '/budgets/$id/'
   fileRoutesByTo: FileRoutesByTo
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/profile'
     | '/register'
+    | '/budgets/new'
     | '/budgets/$id/expenses'
     | '/budgets/$id'
   id:
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/budgets/$id'
+    | '/budgets/new'
     | '/budgets/$id/expenses'
     | '/budgets/$id/'
   fileRoutesById: FileRoutesById
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   BudgetsIdRoute: typeof BudgetsIdRouteWithChildren
+  BudgetsNewRoute: typeof BudgetsNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/budgets/new': {
+      id: '/budgets/new'
+      path: '/budgets/new'
+      fullPath: '/budgets/new'
+      preLoaderRoute: typeof BudgetsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/budgets/$id': {
@@ -233,6 +253,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   BudgetsIdRoute: BudgetsIdRouteWithChildren,
+  BudgetsNewRoute: BudgetsNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
