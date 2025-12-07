@@ -15,7 +15,10 @@ import { Suspense, useMemo } from 'react'
 import { DashboardSkeleton } from './dashboard.skeleton'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
 import { Button } from '@/components/ui/button'
-import { UserCircle } from 'lucide-react'
+import { Trash2, UserCircle, Wallet } from 'lucide-react'
+import { Swiper } from '@/components/swiper'
+import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: () => requireAuth(),
@@ -49,11 +52,16 @@ function Dashboard() {
   const { data: categories, isFetching: categoriesFetching } = useSuspenseQuery(
     getCategoriesQueryOptions(),
   )
+  const { data: user } = useSuspenseQuery(getUserByIdQueryOptions())
   const createTransactionMutation = useCreateTransaction(budget.id)
+  const deleteExpenseMutation = useDeleteExpense()
   const isRefreshing = useMemo(
     () => (budgetFetching || categoriesFetching) && categories,
     [categories, budgetFetching, categoriesFetching],
   )
+
+  const userIdResult = getUserIdFromAccessToken()
+  const userId = userIdResult.isOk() ? userIdResult.value : ''
   const currentAmount = parseFloat(budget.currentAmount)
   const startAmount = parseFloat(budget.startAmount)
   const spentAmount = startAmount - currentAmount
@@ -63,7 +71,16 @@ function Dashboard() {
     <>
       <RefreshIndicator isRefreshing={!!isRefreshing} />
       <Layout>
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border bg-background">
+              <Wallet className="h-6 w-6" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold">Expense Tracker</span>
+              <span className="text-xs text-muted-foreground">Hi, {user.name}!</span>
+            </div>
+          </div>
           <Button variant="outline" asChild className="aspect-square h-12 rounded-full">
             <Link to="/profile">
               <UserCircle />
@@ -110,15 +127,28 @@ function Dashboard() {
             </div>
           )}
           {budget.expenses.length > 0 && (
-            <div className="divide-border divide-y">
+            <div>
               {budget.expenses.map((expense) => (
-                <RecentExpense
+                <Swiper
                   key={expense.id}
-                  amount={formatCurrency(parseFloat(expense.amount), 'za')}
-                  description={expense.description}
-                  emoji={expense.category.icon}
-                  categoryLabel={expense.category.label}
-                />
+                  rightAction={{
+                    content: <Trash2 className="h-5 w-5 text-white" />,
+                    onAction: () => {
+                      deleteExpenseMutation.mutate({
+                        userId,
+                        budgetId: budget.id,
+                        expenseId: expense.id,
+                      })
+                    },
+                  }}
+                >
+                  <RecentExpense
+                    amount={formatCurrency(parseFloat(expense.amount), 'za')}
+                    description={expense.description}
+                    emoji={expense.category.icon}
+                    categoryLabel={expense.category.label}
+                  />
+                </Swiper>
               ))}
             </div>
           )}
