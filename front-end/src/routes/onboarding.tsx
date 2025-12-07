@@ -3,7 +3,7 @@ import { Fragment, useState } from 'react'
 import z from 'zod'
 import { Check, LoaderCircleIcon } from 'lucide-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import type { Category } from '@/lib/http/hooks/use-categories'
 import AllocatableCategoryItem from '@/components/category-item/AllocatableCategoryItem'
 import SelectableCategoryItem from '@/components/category-item/SelectableCategoryItem'
@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/stepper'
 import { useAppForm } from '@/hooks/form'
 import { onboardingSteps } from '@/lib/constants/onboardingSteps'
-import { useCategories } from '@/lib/http/hooks/use-categories'
 import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
@@ -62,7 +61,7 @@ export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
 
 export const Route = createFileRoute('/onboarding')({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(getCategoriesQueryOptions())
+    context.queryClient.prefetchQuery(getCategoriesQueryOptions())
   },
   component: OnboardingPage,
 })
@@ -120,11 +119,7 @@ function OnboardingPage() {
   const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(0)
 
-  const {
-    data: categories,
-    isLoading: categoriesLoading,
-    error: categoriesError,
-  } = useCategories()
+  const { data: categories } = useSuspenseQuery(getCategoriesQueryOptions())
 
   const onboardMutation = useOnboardRequest()
 
@@ -290,47 +285,32 @@ function OnboardingPage() {
               </CardHeader>
               <CardContent>
                 <div className="w-full space-y-4">
-                  {/* Show spinner only if no cached data exists */}
-                  {categoriesLoading ? (
-                    <div className="flex items-center justify-center p-8">
-                      <LoaderCircleIcon className="h-8 w-8 animate-spin" />
-                    </div>
-                  ) : categoriesError ? (
-                    <div className="text-destructive p-8 text-center">
-                      Failed to load categories. Please try again.
-                    </div>
-                  ) : !categories || categories.length === 0 ? (
-                    <div className="text-muted-foreground p-8 text-center">
-                      No categories available
-                    </div>
-                  ) : (
-                    <form.AppField
-                      name="categories"
-                      children={(field) => (
-                        <div className="flex flex-col">
-                          {categories.map((category, index) => {
-                            const isChecked = field.state.value.some(
-                              (cat) => cat.id === category.id,
-                            )
-                            return (
-                              <Fragment key={category.id}>
-                                <SelectableCategoryItem
-                                  {...category}
-                                  checked={isChecked}
-                                  onCheckedChange={() =>
-                                    toggleCategory(category)
-                                  }
-                                />
-                                {index < categories.length - 1 && (
-                                  <Separator className="my-2" />
-                                )}
-                              </Fragment>
-                            )
-                          })}
-                        </div>
-                      )}
-                    />
-                  )}
+                  <form.AppField
+                    name="categories"
+                    children={(field) => (
+                      <div className="flex flex-col">
+                        {categories.map((category, index) => {
+                          const isChecked = field.state.value.some(
+                            (cat) => cat.id === category.id,
+                          )
+                          return (
+                            <Fragment key={category.id}>
+                              <SelectableCategoryItem
+                                {...category}
+                                checked={isChecked}
+                                onCheckedChange={() =>
+                                  toggleCategory(category)
+                                }
+                              />
+                              {index < categories.length - 1 && (
+                                <Separator className="my-2" />
+                              )}
+                            </Fragment>
+                          )
+                        })}
+                      </div>
+                    )}
+                  />
                 </div>
               </CardContent>
             </Card>

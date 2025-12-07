@@ -7,11 +7,10 @@ describe('CurrentBudget', async () => {
   const {
     budgetName,
     currentAmount,
-    onClick,
     spentAmount,
     spentPercentage,
     startingAmount,
-    linkProvider
+    linkProvider,
   } = generateCurrentBudgetProps({
     onClick: vi.fn(),
     spentPercentage: 25,
@@ -27,7 +26,6 @@ describe('CurrentBudget', async () => {
           <CurrentBudget
             budgetName={budgetName}
             currentAmount={currentAmount}
-            onClick={onClick}
             spentAmount={spentAmount}
             spentPercentage={spentPercentage}
             startingAmount={startingAmount}

@@ -120,11 +120,6 @@ function BudgetDetail() {
           </div>
         )}
       </div>
-      <div className="mt-6 w-full">
-        <Button asChild className="w-full" variant="outline">
-          <Link to="/budgets/new">Close Budget</Link>
-        </Button>
-      </div>
     </>
   )
 }

@@ -21,7 +21,6 @@ export function CurrentBudget({
   startingAmount,
   spentAmount,
   spentPercentage,
-  onClick,
   linkProvider: LinkProvider,
 }: CurrentBudgetProps) {
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
@@ -32,7 +31,6 @@ export function CurrentBudget({
 
   const handleClick = () => {
     togglePrivacy()
-    onClick?.()
   }
 
   return (
@@ -42,7 +40,9 @@ export function CurrentBudget({
         <CardDescription>{budgetName}</CardDescription>
         <CardAction>
           <Button variant="link" asChild>
-            <LinkProvider>View</LinkProvider>
+            <LinkProvider>
+              <span className="text-primary">View</span>
+            </LinkProvider>
           </Button>
         </CardAction>
       </CardHeader>
@@ -58,7 +58,9 @@ export function CurrentBudget({
       </CardContent>
       <CardFooter className="flex flex-col gap-1">
         <div className="flex w-full justify-between">
-          <span className="text-muted-foreground">Spent: {displayValue(spentAmount)}</span>
+          <span className="text-muted-foreground">
+            Spent: {displayValue(spentAmount)}
+          </span>
           <span className="text-muted-foreground">
             {formatPercentage(spentPercentage)}
           </span>
