@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect } from 'react'
-
-const PRIVACY_STORAGE_KEY = 'budgetPrivacy'
+import { getItem, setItem } from '../storage/data-store'
+import { STORAGE_KEYS } from '../storage/storage-keys'
 
 export function usePrivacy() {
   const [isPrivacyEnabled, setIsPrivacyEnabled] = useState<boolean>(() => {
     try {
-      const stored = localStorage.getItem(PRIVACY_STORAGE_KEY)
+      const stored = getItem(STORAGE_KEYS.BUDGET_PRIVACY)
       return stored !== null ? stored === 'true' : true
     } catch {
       return true
@@ -14,7 +14,7 @@ export function usePrivacy() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(PRIVACY_STORAGE_KEY, String(isPrivacyEnabled))
+      setItem(STORAGE_KEYS.BUDGET_PRIVACY, String(isPrivacyEnabled))
     } catch {
       // Silent fail
     }

@@ -1,6 +1,8 @@
 import { errAsync } from 'neverthrow'
 import type { ResultAsync } from 'neverthrow'
 import { toast } from 'sonner'
+import * as dataStore from '../storage/data-store'
+import { STORAGE_KEYS } from '../storage/storage-keys'
 
 export type TokenContext = {
   token: string
@@ -32,7 +34,7 @@ export function withAccessToken<TSuccess, TError extends ErrorWithMessage>(
   createError: () => TError,
 ): () => ResultAsync<TSuccess, TError> {
   return (): ResultAsync<TSuccess, TError> => {
-    const token = localStorage.getItem('accessToken')
+    const token = dataStore.getItem(STORAGE_KEYS.ACCESS_TOKEN)
 
     if (!token) {
       const error = createError()
