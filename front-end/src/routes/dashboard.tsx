@@ -14,6 +14,8 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { Suspense, useMemo } from 'react'
 import { DashboardSkeleton } from './dashboard.skeleton'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
+import { Button } from '@/components/ui/button'
+import { UserCircle } from 'lucide-react'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: () => requireAuth(),
@@ -61,6 +63,13 @@ function Dashboard() {
     <>
       <RefreshIndicator isRefreshing={!!isRefreshing} />
       <Layout>
+        <div className="flex justify-end">
+          <Button variant="outline" asChild className="aspect-square h-12 rounded-full">
+            <Link to="/profile">
+              <UserCircle />
+            </Link>
+          </Button>
+        </div>
         <CurrentBudget
           budgetName={budget.name}
           currentAmount={formatCurrency(currentAmount, 'za')}
