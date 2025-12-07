@@ -8,21 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import type { CurrentBudgetProps } from './CurrentBudget.types'
+import type { CurrentBudgetProps, CurrentBudgetBaseProps } from './CurrentBudget.types'
 import { Progress } from '../ui/progress'
 import { formatPercentage } from '@/lib/utils/formatting/formatPercentage'
 import { usePrivacy } from '@/lib/hooks/usePrivacy'
 
 const MASKED_VALUE = '********'
 
-export function CurrentBudget({
+function CurrentBudgetContent({
   budgetName,
   currentAmount,
   startingAmount,
   spentAmount,
   spentPercentage,
-  linkProvider: LinkProvider,
-}: CurrentBudgetProps) {
+}: CurrentBudgetBaseProps) {
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
 
   const displayValue = (value: string) => {
@@ -34,18 +33,7 @@ export function CurrentBudget({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Current Budget</CardTitle>
-        <CardDescription>{budgetName}</CardDescription>
-        <CardAction>
-          <Button variant="link" asChild>
-            <LinkProvider>
-              <span className="text-primary">View</span>
-            </LinkProvider>
-          </Button>
-        </CardAction>
-      </CardHeader>
+    <>
       <CardContent className="flex flex-col items-center">
         <Button variant="ghost" onClick={handleClick}>
           <span className="text-primary pb-1 text-4xl font-bold">
@@ -67,6 +55,62 @@ export function CurrentBudget({
         </div>
         <Progress value={spentPercentage} />
       </CardFooter>
+    </>
+  )
+}
+
+export function CurrentBudget({
+  budgetName,
+  currentAmount,
+  startingAmount,
+  spentAmount,
+  spentPercentage,
+  linkProvider: LinkProvider,
+}: CurrentBudgetProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Current Budget</CardTitle>
+        <CardDescription>{budgetName}</CardDescription>
+        <CardAction>
+          <Button variant="link" asChild>
+            <LinkProvider>
+              <span className="text-primary">View</span>
+            </LinkProvider>
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CurrentBudgetContent
+        budgetName={budgetName}
+        currentAmount={currentAmount}
+        startingAmount={startingAmount}
+        spentAmount={spentAmount}
+        spentPercentage={spentPercentage}
+      />
+    </Card>
+  )
+}
+
+export function CurrentBudgetWithoutAction({
+  budgetName,
+  currentAmount,
+  startingAmount,
+  spentAmount,
+  spentPercentage,
+}: CurrentBudgetBaseProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Current Budget</CardTitle>
+        <CardDescription>{budgetName}</CardDescription>
+      </CardHeader>
+      <CurrentBudgetContent
+        budgetName={budgetName}
+        currentAmount={currentAmount}
+        startingAmount={startingAmount}
+        spentAmount={spentAmount}
+        spentPercentage={spentPercentage}
+      />
     </Card>
   )
 }

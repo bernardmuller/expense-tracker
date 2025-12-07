@@ -14,6 +14,7 @@ import { Swiper } from '@/components/swiper'
 import { Trash2 } from 'lucide-react'
 import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
+import { Separator } from '@/components/ui/separator'
 
 const expensesSearchSchema = z.object({
   category: z.string().optional(),
@@ -67,6 +68,11 @@ function BudgetExpenses() {
     }
   }
 
+  const totalAmount = filteredExpenses.reduce(
+    (sum, expense) => sum + parseFloat(expense.amount),
+    0,
+  )
+
   return (
     <AllExpenses
       budgetName={budget.name}
@@ -91,33 +97,42 @@ function BudgetExpenses() {
         </div>
       )}
       {filteredExpenses.length > 0 && (
-        <div className="flex flex-col gap-1 py-2">
-          {filteredExpenses.map((expense) => (
-            <Swiper
-              key={expense.id}
-              rightAction={{
-                content: <Trash2 className="h-5 w-5 text-white" />,
-                className: 'p-2 rounded-md',
-                backgroundColor: 'oklch(0.6368 0.2078 25.3313)',
-                width: '80px',
-                onAction: () => {
-                  deleteExpenseMutation.mutate({
-                    userId,
-                    budgetId: id,
-                    expenseId: expense.id,
-                  })
-                },
-              }}
-            >
-              <RecentExpense
-                amount={formatCurrency(parseFloat(expense.amount), 'za')}
-                description={expense.description}
-                emoji={expense.category.icon}
-                categoryLabel={expense.category.label}
-              />
-            </Swiper>
-          ))}
-        </div>
+        <>
+          <div className="flex flex-col gap-1 py-2">
+            {filteredExpenses.map((expense) => (
+              <Swiper
+                key={expense.id}
+                rightAction={{
+                  content: <Trash2 className="h-5 w-5 text-white" />,
+                  className: 'p-2 rounded-md',
+                  backgroundColor: 'oklch(0.6368 0.2078 25.3313)',
+                  width: '80px',
+                  onAction: () => {
+                    deleteExpenseMutation.mutate({
+                      userId,
+                      budgetId: id,
+                      expenseId: expense.id,
+                    })
+                  },
+                }}
+              >
+                <RecentExpense
+                  amount={formatCurrency(parseFloat(expense.amount), 'za')}
+                  description={expense.description}
+                  emoji={expense.category.icon}
+                  categoryLabel={expense.category.label}
+                />
+              </Swiper>
+            ))}
+          </div>
+          {/*<Separator className="my-4" />*/}
+          <div className="flex items-center justify-between py-2 pr-3">
+            <span className="text-muted-foreground font-medium">Total</span>
+            <span className="text-foreground font-semibold">
+              {formatCurrency(totalAmount, 'za')}
+            </span>
+          </div>
+        </>
       )}
     </AllExpenses>
   )

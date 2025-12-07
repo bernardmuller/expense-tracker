@@ -15,7 +15,7 @@ import { Suspense, useMemo } from 'react'
 import { DashboardSkeleton } from './dashboard.skeleton'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
 import { Button } from '@/components/ui/button'
-import { Trash2, UserCircle, Wallet } from 'lucide-react'
+import { Trash2, UserCircle } from 'lucide-react'
 import { Swiper } from '@/components/swiper'
 import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
@@ -77,7 +77,7 @@ function Dashboard() {
               className="bg-background flex h-12 w-12 items-center
                 justify-center rounded-full border"
             >
-              <Wallet className="h-6 w-6" />
+              <img src="/favicon.ico" alt="App Icon" className="h-8 w-8" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold">Expense Tracker</span>

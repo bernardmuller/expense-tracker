@@ -21,7 +21,9 @@ export default function AllExpenses({
         <CardDescription>{budgetName}</CardDescription>
         <CardAction>
           <Button variant="link" className="h-auto p-0 text-sm" asChild>
-            <LinkProvider>View Budget</LinkProvider>
+            <LinkProvider>
+              <span className="text-primary">View Budget</span>
+            </LinkProvider>
           </Button>
         </CardAction>
       </CardHeader>

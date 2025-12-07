@@ -9,7 +9,7 @@ import PlannedBudgetBreakdownItem from '@/components/budget-breakdowns/PlannedBu
 import OverBudgetBreakdownItem from '@/components/budget-breakdowns/OverBudgetBreakdownItem'
 import UnplannedBudgetBreakdownItem from '@/components/budget-breakdowns/UnplannedBudgetBreakdownItem'
 import { CardTitle } from '@/components/ui/card'
-import { CurrentBudget } from '@/components/current-budget/CurrentBudget'
+import { CurrentBudgetWithoutAction } from '@/components/current-budget/CurrentBudget'
 import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/budgets/$id/')({
@@ -52,13 +52,12 @@ function BudgetDetail() {
 
   return (
     <>
-      <CurrentBudget
+      <CurrentBudgetWithoutAction
         budgetName={budget.name}
         currentAmount={formatCurrency(currentAmount, 'za')}
         startingAmount={formatCurrency(startAmount, 'za')}
         spentAmount={formatCurrency(spentAmount, 'za')}
         spentPercentage={spentPercentage}
-        linkProvider={({ children }) => <span>{children}</span>}
       />
       <CardTitle>Category Breakdown</CardTitle>
       <div className="flex flex-col gap-4">
