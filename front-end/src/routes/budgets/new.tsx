@@ -29,10 +29,14 @@ import { onboardingSteps } from '@/lib/constants/onboardingSteps'
 import { useCategories } from '@/lib/http/hooks/use-categories'
 import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
+import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
+import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users/getUserCatgories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { requireAuth } from '@/lib/auth/route-guard'
 import BudgetInfoBlock from '@/components/budget-info/BudgetInfoBlock'
+import Welcome from '@/components/onboarding/Welcome'
+import CloseBudget from '@/components/close-budget/CloseBudget'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -64,9 +68,15 @@ export type NewBudgetFormValues = z.infer<typeof newBudgetFormSchema>
 export const Route = createFileRoute('/budgets/new')({
   beforeLoad: () => requireAuth(),
   loader: async ({ context }) => {
+    const activeBudget = await context.queryClient.ensureQueryData(
+      getActiveBudgetQueryOptions(),
+    )
     await Promise.all([
       context.queryClient.ensureQueryData(getCategoriesQueryOptions()),
-      context.queryClient.ensureQueryData(getActiveBudgetQueryOptions()),
+      context.queryClient.ensureQueryData(
+        getBudgetByIdQueryOptions(activeBudget.id),
+      ),
+      context.queryClient.ensureQueryData(getUserCategoriesQueryOptions()),
     ])
   },
   component: NewBudgetPage,
@@ -123,9 +133,14 @@ const getStepWithError = (
 function NewBudgetPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(0)
 
-  const { data: currentBudget } = useSuspenseQuery(getActiveBudgetQueryOptions())
+  const { data: currentBudget } = useSuspenseQuery(
+    getActiveBudgetQueryOptions(),
+  )
+  const { data: budgetDetail } = useSuspenseQuery(
+    getBudgetByIdQueryOptions(currentBudget.id),
+  )
   const {
     data: categories,
     isLoading: categoriesLoading,
@@ -138,11 +153,27 @@ function NewBudgetPage() {
   const previousStartAmount = parseFloat(currentBudget.startAmount)
   const suggestedStartAmount = currentAmount + previousStartAmount
 
+  const initialCategories = categories
+    ? budgetDetail.categoryBudgets
+        .map((cb) => {
+          const category = categories.find((c) => c.id === cb.categoryId)
+          return category
+            ? {
+                id: category.id,
+                icon: category.icon,
+                label: category.label,
+                amount: parseFloat(cb.allocatedAmount),
+              }
+            : null
+        })
+        .filter((c): c is NonNullable<typeof c> => c !== null)
+    : []
+
   const form = useAppForm({
     defaultValues: {
       name: '',
       startAmount: suggestedStartAmount,
-      categories: [],
+      categories: initialCategories,
     } as NewBudgetFormValues,
     validators: {
       onSubmit: newBudgetFormSchema,
@@ -197,6 +228,15 @@ function NewBudgetPage() {
     form.setFieldValue('startAmount', suggestedStartAmount)
   }, [suggestedStartAmount])
 
+  useEffect(() => {
+    if (
+      initialCategories.length > 0 &&
+      form.state.values.categories.length === 0
+    ) {
+      form.setFieldValue('categories', initialCategories)
+    }
+  }, [initialCategories])
+
   const toggleCategory = (category: Category) => {
     const currentCategories = form.state.values.categories
     const isSelected = currentCategories.some((cat) => cat.id === category.id)
@@ -212,6 +252,14 @@ function NewBudgetPage() {
         { ...category, amount: 0 },
       ])
     }
+  }
+
+  if (currentStep === 0) {
+    return (
+      <OnboardingLayout>
+        <CloseBudget onGetStarted={() => setCurrentStep(1)} />
+      </OnboardingLayout>
+    )
   }
 
   return (
