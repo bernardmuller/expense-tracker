@@ -16,7 +16,7 @@ const EXPENSE_CATEGORIES = [
 ] as const
 
 const filterItems = EXPENSE_CATEGORIES.map((item) => {
-  return { name: item, value: item.toLowerCase() }
+  return { label: item, value: item.toLowerCase() }
 })
 
 export const filterProps: FilterProps = {

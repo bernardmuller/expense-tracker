@@ -34,7 +34,7 @@ describe('Filter', () => {
       const selectButtonElement = screen.getByRole('combobox')
       await user.click(selectButtonElement)
       for (const item of filterItems) {
-        expect(screen.getByText(item.name)).toBeInTheDocument()
+        expect(screen.getByText(item.label)).toBeInTheDocument()
       }
     })
     it('should call a function when the value is changed', async () => {
@@ -51,7 +51,7 @@ describe('Filter', () => {
       )
       const selectButtonElement = screen.getByRole('combobox')
       await user.click(selectButtonElement)
-      const firstItem = screen.getByText(filterItems[0].name)
+      const firstItem = screen.getByText(filterItems[0].label)
       await user.click(firstItem)
       expect(handleValueChange).toHaveBeenCalled()
     })
@@ -69,7 +69,7 @@ describe('Filter', () => {
       )
       const selectButtonElement = screen.getByRole('combobox')
       await user.click(selectButtonElement)
-      const firstItem = screen.getByText(filterItems[0].name)
+      const firstItem = screen.getByText(filterItems[0].label)
       await user.click(firstItem)
       expect(handleValueChange).toHaveBeenCalledWith(filterItems[0].value)
     })
@@ -87,7 +87,7 @@ describe('Filter', () => {
       )
       const selectButtonElement = screen.getByRole('combobox')
       user.click(selectButtonElement)
-      const firstItem = screen.queryByText(filterItems[0].name)
+      const firstItem = screen.queryByText(filterItems[0].label)
       expect(firstItem).not.toBeInTheDocument()
     })
   })

@@ -11,6 +11,7 @@ describe('CurrentBudget', async () => {
     spentPercentage,
     startingAmount,
     linkProvider,
+    onClick,
   } = generateCurrentBudgetProps({
     onClick: vi.fn(),
     spentPercentage: 25,
@@ -30,6 +31,7 @@ describe('CurrentBudget', async () => {
             spentPercentage={spentPercentage}
             startingAmount={startingAmount}
             linkProvider={linkProvider}
+            onClick={onClick}
           />,
         ),
       ),
