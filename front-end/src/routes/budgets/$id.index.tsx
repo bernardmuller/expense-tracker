@@ -11,6 +11,8 @@ import UnplannedBudgetBreakdownItem from '@/components/budget-breakdowns/Unplann
 import { CardTitle } from '@/components/ui/card'
 import { CurrentBudgetWithoutAction } from '@/components/current-budget/CurrentBudget'
 import { Button } from '@/components/ui/button'
+import { usePrivacy } from '@/lib/hooks/usePrivacy'
+import { getPrivacyDisplayValue } from '@/lib/utils/formatting/getPrivacyDisplayValue'
 
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
@@ -34,6 +36,7 @@ function BudgetDetail() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
   const { data: budget } = useSuspenseQuery(getBudgetByIdQueryOptions(id))
+  const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
 
   const currentAmount = parseFloat(budget.currentAmount)
   const startAmount = parseFloat(budget.startAmount)
@@ -54,10 +57,20 @@ function BudgetDetail() {
     <>
       <CurrentBudgetWithoutAction
         budgetName={budget.name}
-        currentAmount={formatCurrency(currentAmount, 'za')}
-        startingAmount={formatCurrency(startAmount, 'za')}
-        spentAmount={formatCurrency(spentAmount, 'za')}
+        currentAmount={getPrivacyDisplayValue(
+          formatCurrency(currentAmount, 'za'),
+          isPrivacyEnabled,
+        )}
+        startingAmount={getPrivacyDisplayValue(
+          formatCurrency(startAmount, 'za'),
+          isPrivacyEnabled,
+        )}
+        spentAmount={getPrivacyDisplayValue(
+          formatCurrency(spentAmount, 'za'),
+          isPrivacyEnabled,
+        )}
         spentPercentage={spentPercentage}
+        onClick={togglePrivacy}
       />
       <CardTitle>Category Breakdown</CardTitle>
       <div className="flex flex-col gap-4">

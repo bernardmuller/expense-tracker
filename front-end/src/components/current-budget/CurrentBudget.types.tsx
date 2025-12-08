@@ -4,6 +4,7 @@ export type CurrentBudgetBaseProps = {
   startingAmount: string
   spentAmount: string
   spentPercentage: number
+  onClick?: () => void
 }
 
 export type CurrentBudgetProps = CurrentBudgetBaseProps & {

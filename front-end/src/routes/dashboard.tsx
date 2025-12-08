@@ -19,6 +19,8 @@ import { Trash2, UserCircle } from 'lucide-react'
 import { Swiper } from '@/components/swiper'
 import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
+import { usePrivacy } from '@/lib/hooks/usePrivacy'
+import { getPrivacyDisplayValue } from '@/lib/utils/formatting/getPrivacyDisplayValue'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: () => requireAuth(),
@@ -55,6 +57,7 @@ function Dashboard() {
   const { data: user } = useSuspenseQuery(getUserByIdQueryOptions())
   const createTransactionMutation = useCreateTransaction(budget.id)
   const deleteExpenseMutation = useDeleteExpense()
+  const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
   const isRefreshing = useMemo(
     () => (budgetFetching || categoriesFetching) && categories,
     [categories, budgetFetching, categoriesFetching],
@@ -98,10 +101,20 @@ function Dashboard() {
         </div>
         <CurrentBudget
           budgetName={budget.name}
-          currentAmount={formatCurrency(currentAmount, 'za')}
-          startingAmount={formatCurrency(startAmount, 'za')}
-          spentAmount={formatCurrency(spentAmount, 'za')}
+          currentAmount={getPrivacyDisplayValue(
+            formatCurrency(currentAmount, 'za'),
+            isPrivacyEnabled,
+          )}
+          startingAmount={getPrivacyDisplayValue(
+            formatCurrency(startAmount, 'za'),
+            isPrivacyEnabled,
+          )}
+          spentAmount={getPrivacyDisplayValue(
+            formatCurrency(spentAmount, 'za'),
+            isPrivacyEnabled,
+          )}
           spentPercentage={spentPercentage}
+          onClick={togglePrivacy}
           linkProvider={({ children }) => (
             <Link to="/budgets/$id" params={{ id: budget.id }}>
               {children}

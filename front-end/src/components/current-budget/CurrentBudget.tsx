@@ -11,9 +11,6 @@ import {
 import type { CurrentBudgetProps, CurrentBudgetBaseProps } from './CurrentBudget.types'
 import { Progress } from '../ui/progress'
 import { formatPercentage } from '@/lib/utils/formatting/formatPercentage'
-import { usePrivacy } from '@/lib/hooks/usePrivacy'
-
-const MASKED_VALUE = '********'
 
 function CurrentBudgetContent({
   budgetName,
@@ -21,33 +18,24 @@ function CurrentBudgetContent({
   startingAmount,
   spentAmount,
   spentPercentage,
+  onClick,
 }: CurrentBudgetBaseProps) {
-  const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
-
-  const displayValue = (value: string) => {
-    return isPrivacyEnabled ? MASKED_VALUE : value
-  }
-
-  const handleClick = () => {
-    togglePrivacy()
-  }
-
   return (
     <>
       <CardContent className="flex flex-col items-center">
-        <Button variant="ghost" onClick={handleClick}>
+        <Button variant="ghost" onClick={onClick}>
           <span className="text-primary pb-1 text-4xl font-bold">
-            {displayValue(currentAmount)}
+            {currentAmount}
           </span>
         </Button>
         <span className="text-muted-foreground text-sm">
-          remaining of {displayValue(startingAmount)}
+          remaining of {startingAmount}
         </span>
       </CardContent>
       <CardFooter className="flex flex-col gap-1">
         <div className="flex w-full justify-between">
           <span className="text-muted-foreground">
-            Spent: {displayValue(spentAmount)}
+            Spent: {spentAmount}
           </span>
           <span className="text-muted-foreground">
             {formatPercentage(spentPercentage)}
@@ -66,6 +54,7 @@ export function CurrentBudget({
   spentAmount,
   spentPercentage,
   linkProvider: LinkProvider,
+  onClick,
 }: CurrentBudgetProps) {
   return (
     <Card>
@@ -86,6 +75,7 @@ export function CurrentBudget({
         startingAmount={startingAmount}
         spentAmount={spentAmount}
         spentPercentage={spentPercentage}
+        onClick={onClick}
       />
     </Card>
   )
@@ -97,6 +87,7 @@ export function CurrentBudgetWithoutAction({
   startingAmount,
   spentAmount,
   spentPercentage,
+  onClick,
 }: CurrentBudgetBaseProps) {
   return (
     <Card>
@@ -110,6 +101,7 @@ export function CurrentBudgetWithoutAction({
         startingAmount={startingAmount}
         spentAmount={spentAmount}
         spentPercentage={spentPercentage}
+        onClick={onClick}
       />
     </Card>
   )
