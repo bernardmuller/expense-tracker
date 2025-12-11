@@ -21,6 +21,7 @@ import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { usePrivacy } from '@/lib/hooks/usePrivacy'
 import { getPrivacyDisplayValue } from '@/lib/utils/formatting/getPrivacyDisplayValue'
+import { AppHeader } from '@/components/app-header'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: () => requireAuth(),
@@ -74,31 +75,26 @@ function Dashboard() {
     <>
       <RefreshIndicator isRefreshing={!!isRefreshing} />
       <Layout>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className="bg-background flex h-12 w-12 items-center
-                justify-center rounded-full border"
+        <AppHeader.Root>
+          <AppHeader.Content>
+            <AppHeader.Icon src="/favicon.ico" alt="App Icon" />
+            <AppHeader.Info
+              appName="Expense Tracker"
+              message={`Hi, ${user.name}!`}
+            />
+          </AppHeader.Content>
+          <AppHeader.Action>
+            <Button
+              variant="outline"
+              asChild
+              className="aspect-square h-12 rounded-full"
             >
-              <img src="/favicon.ico" alt="App Icon" className="h-8 w-8" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold">Expense Tracker</span>
-              <span className="text-muted-foreground text-xs">
-                Hi, {user.name}!
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            asChild
-            className="aspect-square h-12 rounded-full"
-          >
-            <Link to="/profile">
-              <UserCircle />
-            </Link>
-          </Button>
-        </div>
+              <Link to="/profile">
+                <UserCircle />
+              </Link>
+            </Button>
+          </AppHeader.Action>
+        </AppHeader.Root>
         <CurrentBudget
           budgetName={budget.name}
           currentAmount={getPrivacyDisplayValue(
