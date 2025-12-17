@@ -2,7 +2,7 @@ import { toast } from 'sonner'
 import { Fragment, useState, useEffect } from 'react'
 import z from 'zod'
 import { Check, LoaderCircleIcon } from 'lucide-react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import type { Category } from '@/lib/http/hooks/use-categories'
 import AllocatableCategoryItem from '@/components/category-item/AllocatableCategoryItem'
@@ -130,6 +130,7 @@ const getStepWithError = (
 }
 
 function NewBudgetPage() {
+  const router = useRouter()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(0)
@@ -381,7 +382,7 @@ function NewBudgetPage() {
                                   }
                                 />
                                 {index < categories.length - 1 && (
-                                  <Separator className="my-2" />
+                                  <Separator className="my-3" />
                                 )}
                               </Fragment>
                             )
@@ -475,7 +476,7 @@ function NewBudgetPage() {
                                 </AllocatableCategoryItem>
                                 {index <
                                   form.state.values.categories.length - 1 && (
-                                  <Separator className="my-2" />
+                                  <Separator className="my-3" />
                                 )}
                               </Fragment>
                             ),
@@ -491,13 +492,18 @@ function NewBudgetPage() {
         </StepperPanel>
       </Stepper>
       <div className="flex items-center justify-between gap-2.5 py-4">
-        <Button
-          variant="outline"
-          onClick={() => setCurrentStep((prev) => prev - 1)}
-          disabled={currentStep === 1}
-        >
-          Previous
-        </Button>
+        {currentStep > 1 && currentStep !== 0 ? (
+          <Button
+            variant="outline"
+            onClick={() => setCurrentStep((prev) => prev - 1)}
+          >
+            Previous
+          </Button>
+        ) : (
+          <Button variant="outline" onClick={() => router.history.back()}>
+            Cancel
+          </Button>
+        )}
         {currentStep !== onboardingSteps.length ? (
           <Button
             onClick={() => setCurrentStep((prev) => prev + 1)}
