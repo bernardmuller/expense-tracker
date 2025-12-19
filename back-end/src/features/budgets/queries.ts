@@ -137,3 +137,55 @@ export const getBudgetWithExpensesByBudgetId = (
       categoryBreakdown,
     });
   });
+
+export const getActiveBudgetByUserId = (
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Budget & {
+    expenses: (Transaction & {
+      category: { id: string; key: string; label: string; icon: string };
+    })[];
+  },
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> =>
+  ResultAsync.fromPromise(
+    ctx.db.query.budgets.findFirst({
+      where: and(eq(budgets.userId, userId), eq(budgets.isActive, true)),
+      with: {
+        expenses: {
+          orderBy: desc(expenses.createdAt),
+          limit: 5,
+          with: {
+            category: true,
+          },
+        },
+        categoryBudgets: {
+          with: {
+            category: true,
+          },
+        },
+      },
+    }),
+    (error) => new EntityReadError("Budget", String(error)),
+  ).andThen((budget) => {
+    if (!budget) {
+      return errAsync(
+        new EntityNotFoundError(`Active budget for user ${userId}`),
+      );
+    }
+
+    return okAsync({
+      id: budget.id,
+      userId: budget.userId,
+      name: budget.name,
+      startAmount: budget.startAmount,
+      currentAmount: budget.currentAmount,
+      isActive: budget.isActive,
+      createdAt: budget.createdAt,
+      updatedAt: budget.updatedAt,
+      deletedAt: budget.deletedAt,
+      expenses: budget.expenses,
+    });
+  });

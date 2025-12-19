@@ -36,25 +36,38 @@ export const createTransaction = (
         ctx.db.transaction(async (tx) => {
           const transactionContext = { ...ctx, db: tx };
 
-          const transactionResult = TransactionDomain.createTransaction(budgetId, params);
+          const transactionResult = TransactionDomain.createTransaction(
+            budgetId,
+            params,
+          );
           if (!transactionResult.isOk()) {
             throw new Error("Transaction creation failed");
           }
           const transaction = transactionResult.value;
 
-          const createdTransactionResult = await TransactionQueries.create(transaction, transactionContext);
+          const createdTransactionResult = await TransactionQueries.create(
+            transaction,
+            transactionContext,
+          );
           if (createdTransactionResult.isErr()) {
             throw createdTransactionResult.error;
           }
           const createdTransaction = createdTransactionResult.value;
 
-          const budgetUpdateResult = TransactionDomain.updateBudgetAfterTransaction(budget, params.amount);
+          const budgetUpdateResult =
+            TransactionDomain.updateBudgetAfterTransaction(
+              budget,
+              params.amount,
+            );
           if (!budgetUpdateResult.isOk()) {
             throw new Error("Budget update failed");
           }
           const updatedBudget = budgetUpdateResult.value;
 
-          const finalBudgetResult = await TransactionQueries.updateBudget(updatedBudget, transactionContext);
+          const finalBudgetResult = await TransactionQueries.updateBudget(
+            updatedBudget,
+            transactionContext,
+          );
           if (finalBudgetResult.isErr()) {
             throw finalBudgetResult.error;
           }
@@ -70,19 +83,6 @@ export const createTransaction = (
     ),
   );
 
-export const getActiveBudgetWithExpenses = (
-  userId: string,
-  ctx: AppContext,
-): ResultAsync<
-  Budget & {
-    expenses: (Transaction & {
-      category: { id: string; key: string; label: string; icon: string };
-    })[];
-  },
-  | InstanceType<typeof EntityNotFoundError>
-  | InstanceType<typeof EntityReadError>
-> => TransactionQueries.getActiveBudgetByUserId(userId, ctx);
-
 export const getUserCategories = (
   userId: string,
   ctx: AppContext,
@@ -90,45 +90,6 @@ export const getUserCategories = (
   Array<{ id: string; key: string; label: string; icon: string }>,
   InstanceType<typeof EntityReadError>
 > => TransactionQueries.getUserCategories(userId, ctx);
-
-type CategoryBudget = {
-  id: string;
-  budgetId: string;
-  categoryId: string;
-  allocatedAmount: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-  category: {
-    id: string;
-    key: string;
-    label: string;
-    icon: string;
-  };
-};
-
-export const getBudgetExpenses = (
-  budgetId: string,
-  userId: string,
-  ctx: AppContext,
-): ResultAsync<
-  Budget & {
-    expenses: (Transaction & {
-      category: { id: string; key: string; label: string; icon: string };
-    })[];
-    categoryBudgets: CategoryBudget[];
-    categoryBreakdown: Array<{
-      id: string;
-      key: string;
-      label: string;
-      icon: string;
-      spent: string;
-      allocated: string | null;
-    }>;
-  },
-  | InstanceType<typeof EntityNotFoundError>
-  | InstanceType<typeof EntityReadError>
-> => TransactionQueries.getBudgetWithExpensesByBudgetId(budgetId, userId, ctx);
 
 export const deleteTransactionAndUpdateBudget = (
   userId: string,
@@ -148,22 +109,30 @@ export const deleteTransactionAndUpdateBudget = (
         ctx.db.transaction(async (tx) => {
           const transactionContext = { ...ctx, db: tx };
 
-          const deletedExpenseResult = await TransactionQueries.hardDeleteExpense(expenseId, transactionContext);
+          const deletedExpenseResult =
+            await TransactionQueries.hardDeleteExpense(
+              expenseId,
+              transactionContext,
+            );
           if (deletedExpenseResult.isErr()) {
             throw deletedExpenseResult.error;
           }
           const deletedExpense = deletedExpenseResult.value;
 
-          const budgetUpdateResult = TransactionDomain.updateBudgetAfterDeletion(
-            budget,
-            parseFloat(expense.amount),
-          );
+          const budgetUpdateResult =
+            TransactionDomain.updateBudgetAfterDeletion(
+              budget,
+              parseFloat(expense.amount),
+            );
           if (!budgetUpdateResult.isOk()) {
             throw new Error("Budget update failed");
           }
           const updatedBudget = budgetUpdateResult.value;
 
-          const finalBudgetResult = await TransactionQueries.updateBudget(updatedBudget, transactionContext);
+          const finalBudgetResult = await TransactionQueries.updateBudget(
+            updatedBudget,
+            transactionContext,
+          );
           if (finalBudgetResult.isErr()) {
             throw finalBudgetResult.error;
           }
