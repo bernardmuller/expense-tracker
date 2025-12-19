@@ -29,3 +29,13 @@ export const PercentageCalculationError = createError(
     statusCode: 400,
   },
 );
+
+export const CoercionError = createError(
+  "CoercionError",
+  (value?: string) => `Unable to coerse value ${value}`,
+  {
+    code: "COERCION_ERROR",
+    error: "Coersion Error",
+    statusCode: 400,
+  },
+);

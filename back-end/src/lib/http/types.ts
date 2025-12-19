@@ -20,3 +20,13 @@ export type AppRouteHandler<R extends RouteConfig> = RouteHandler<
   R,
   AppBindings
 >;
+
+export type SearchQueries<
+  T,
+  F extends Record<string, unknown> = Record<string, unknown>,
+> = {
+  limit?: number;
+  offset?: number;
+  sort?: keyof T & string;
+  order?: "asc" | "desc";
+} & Partial<F>;
