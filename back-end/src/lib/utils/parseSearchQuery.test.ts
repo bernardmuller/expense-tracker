@@ -445,4 +445,121 @@ describe("parseSearchQuery", () => {
       expect(result.value.name).toBe("test");
     }
   });
+
+  // ============================================
+  // Include Parameter
+  // ============================================
+
+  it("should parse single include value as array", () => {
+    const result = parseSearchQuery({
+      rawQuery: { include: "category" },
+      allowedIncludes: ["category", "budget"],
+    });
+
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.include).toEqual(["category"]);
+    }
+  });
+
+  it("should parse multiple include values", () => {
+    const result = parseSearchQuery({
+      rawQuery: { include: ["category", "budget"] },
+      allowedIncludes: ["category", "budget", "user"],
+    });
+
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.include).toEqual(["category", "budget"]);
+    }
+  });
+
+  it("should not include 'include' field when not provided", () => {
+    const result = parseSearchQuery({
+      rawQuery: { limit: "10" },
+    });
+
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.include).toBeUndefined();
+    }
+  });
+
+  it("should validate include values against allowedIncludes", () => {
+    const result = parseSearchQuery({
+      rawQuery: { include: "invalid" },
+      allowedIncludes: ["category", "budget"],
+    });
+
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error.message).toContain("include value 'invalid' is not allowed");
+      expect(result.error.message).toContain("category, budget");
+    }
+  });
+
+  it("should allow any include values when allowedIncludes not specified", () => {
+    const result = parseSearchQuery({
+      rawQuery: { include: ["category", "anything"] },
+    });
+
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.include).toEqual(["category", "anything"]);
+    }
+  });
+
+  it("should reject non-string include values", () => {
+    const result = parseSearchQuery({
+      rawQuery: { include: [123 as any] },
+      allowedIncludes: ["category"],
+    });
+
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error.message).toContain("include values must be strings");
+    }
+  });
+
+  it("should parse include with other query parameters", () => {
+    const result = parseSearchQuery<
+      { createdAt: Date },
+      { status: string }
+    >({
+      rawQuery: {
+        limit: "10",
+        offset: "5",
+        sort: "createdAt",
+        order: "desc",
+        status: "active",
+        include: ["category", "budget"],
+      },
+      allowedSortKeys: ["createdAt"],
+      filterKeys: ["status"],
+      allowedIncludes: ["category", "budget"],
+    });
+
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value).toEqual({
+        limit: 10,
+        offset: 5,
+        sort: "createdAt",
+        order: "desc",
+        status: "active",
+        include: ["category", "budget"],
+      });
+    }
+  });
+
+  it("should handle empty include array", () => {
+    const result = parseSearchQuery({
+      rawQuery: { include: [] },
+    });
+
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
+      expect(result.value.include).toBeUndefined();
+    }
+  });
 });
