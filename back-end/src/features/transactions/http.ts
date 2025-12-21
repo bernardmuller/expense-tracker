@@ -8,6 +8,9 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 import * as TransactionOperations from "./operations";
 import { createTransactionSchema, transactionSchema } from "./types";
+import { parseSearchQuery } from "@/lib/utils/parseSearchQuery";
+import { SearchQueries } from "@/lib/http/types";
+import type { Transaction } from "./types";
 
 const tags = ["Transactions"];
 
@@ -57,6 +60,25 @@ const getUserCategoriesRoute = createRoute({
         }),
       ),
       "User categories",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+const getTransactionsRoute = createRoute({
+  path: "/transactions",
+  method: "get",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.object({
+        transactions: z.array(transactionSchema),
+        count: z.number(),
+      }),
+      "List of transactions",
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema,
@@ -122,6 +144,30 @@ const getUserCategoriesHandler = async (c: Context) => {
   );
 };
 
+const getTransactionsHandler = async (c: Context) => {
+  return parseSearchQuery<
+    Transaction,
+    {
+      budgetId: string;
+      categoryId: string;
+      userId: string;
+      description: string;
+    }
+  >({
+    rawQuery: c.req.query(),
+    allowedSortKeys: ["createdAt"],
+    filterKeys: ["budgetId", "categoryId", "userId", "description"],
+  })
+    .asyncAndThen((search) => {
+      const ctx = createContext();
+      return TransactionOperations.getTransactions(search, ctx);
+    })
+    .match(
+      (transactions) => c.json({ transactions, count: transactions.length }, 200),
+      (error) => mapErrorToResponse(error, c),
+    );
+};
+
 const deleteExpenseHandler = async (c: Context) => {
   const { userId, budgetId, expenseId } = c.req.param();
   const ctx = createContext();
@@ -141,4 +187,5 @@ const deleteExpenseHandler = async (c: Context) => {
 export const transactionRouter = createRouter()
   .openapi(createTransactionRoute, createTransactionHandler)
   .openapi(getUserCategoriesRoute, getUserCategoriesHandler)
+  .openapi(getTransactionsRoute, getTransactionsHandler)
   .openapi(deleteExpenseRoute, deleteExpenseHandler);

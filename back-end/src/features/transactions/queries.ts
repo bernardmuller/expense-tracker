@@ -7,10 +7,13 @@ import {
   EntityReadError,
   EntityUpdateError,
 } from "@/lib/errors/actionErrors";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, like } from "drizzle-orm";
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { Transaction } from "./types";
 import type { Budget } from "@/lib/db/schema";
+import { SearchQueries } from "@/lib/http/types";
+import buildDrizzleQuery from "@/lib/utils/buildDrizzleQuery";
+import { Category, CategoryWithoutMetadata } from "../categories/types";
 
 export const create = (
   transaction: Partial<Transaction>,
@@ -50,10 +53,7 @@ export const findByBudgetId = (
   budgetId: string,
   limit: number,
   ctx: AppContext,
-): ResultAsync<
-  Transaction[],
-  InstanceType<typeof EntityReadError>
-> =>
+): ResultAsync<Transaction[], InstanceType<typeof EntityReadError>> =>
   ResultAsync.fromPromise(
     ctx.db
       .select()
@@ -69,7 +69,9 @@ export const getActiveBudgetByUserId = (
   ctx: AppContext,
 ): ResultAsync<
   Budget & {
-    expenses: (Transaction & { category: { id: string; key: string; label: string; icon: string } })[];
+    expenses: (Transaction & {
+      category: { id: string; key: string; label: string; icon: string };
+    })[];
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
@@ -95,7 +97,9 @@ export const getActiveBudgetByUserId = (
     (error) => new EntityReadError("Budget", String(error)),
   ).andThen((budget) => {
     if (!budget) {
-      return errAsync(new EntityNotFoundError(`Active budget for user ${userId}`));
+      return errAsync(
+        new EntityNotFoundError(`Active budget for user ${userId}`),
+      );
     }
 
     return okAsync({
@@ -179,7 +183,10 @@ export const findCategoryById = (
   | InstanceType<typeof EntityReadError>
 > =>
   ResultAsync.fromPromise(
-    ctx.db.select({ id: categories.id }).from(categories).where(eq(categories.id, categoryId)),
+    ctx.db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(eq(categories.id, categoryId)),
     (error) => new EntityReadError("Category", String(error)),
   ).andThen(([category]) =>
     category
@@ -209,7 +216,9 @@ export const getBudgetWithExpensesByBudgetId = (
   ctx: AppContext,
 ): ResultAsync<
   Budget & {
-    expenses: (Transaction & { category: { id: string; key: string; label: string; icon: string } })[];
+    expenses: (Transaction & {
+      category: { id: string; key: string; label: string; icon: string };
+    })[];
     categoryBudgets: CategoryBudget[];
     categoryBreakdown: Array<{
       id: string;
@@ -243,17 +252,22 @@ export const getBudgetWithExpensesByBudgetId = (
     (error) => new EntityReadError("Budget", String(error)),
   ).andThen((budget) => {
     if (!budget) {
-      return errAsync(new EntityNotFoundError(`Budget ${budgetId} for user ${userId}`));
+      return errAsync(
+        new EntityNotFoundError(`Budget ${budgetId} for user ${userId}`),
+      );
     }
 
-    const categoryMap = new Map<string, {
-      id: string;
-      key: string;
-      label: string;
-      icon: string;
-      spent: number;
-      allocated: number | null;
-    }>();
+    const categoryMap = new Map<
+      string,
+      {
+        id: string;
+        key: string;
+        label: string;
+        icon: string;
+        spent: number;
+        allocated: number | null;
+      }
+    >();
 
     budget.expenses.forEach((expense) => {
       const existing = categoryMap.get(expense.categoryId);
@@ -292,14 +306,18 @@ export const getBudgetWithExpensesByBudgetId = (
     });
 
     const categoryBreakdown = Array.from(categoryMap.values())
-      .filter((category) => category.spent > 0 || (category.allocated && category.allocated > 0))
+      .filter(
+        (category) =>
+          category.spent > 0 || (category.allocated && category.allocated > 0),
+      )
       .map((category) => ({
         id: category.id,
         key: category.key,
         label: category.label,
         icon: category.icon,
         spent: category.spent.toFixed(2),
-        allocated: category.allocated !== null ? category.allocated.toFixed(2) : null,
+        allocated:
+          category.allocated !== null ? category.allocated.toFixed(2) : null,
       }));
 
     return okAsync({
@@ -335,15 +353,41 @@ export const getExpenseById = (
       : errAsync(new EntityNotFoundError(`Expense: ${expenseId}`)),
   );
 
+export const getTransactions = (
+  search: SearchQueries<
+    Transaction,
+    {
+      budgetId: string;
+      categoryId: string;
+      userId: string;
+      description: string;
+    }
+  >,
+  ctx: AppContext,
+): ResultAsync<Array<Transaction>, InstanceType<typeof EntityReadError>> =>
+  ResultAsync.fromPromise(
+    buildDrizzleQuery(
+      ctx.db.select().from(expenses),
+      search,
+      {
+        budgetId: (value) => eq(expenses.budgetId, value),
+        categoryId: (value) => eq(expenses.categoryId, value),
+        userId: (value) => eq(budgets.userId, value),
+        description: (value) => like(expenses.description, `%${value}%`),
+      },
+      {
+        createdAt: expenses.createdAt,
+      },
+    ),
+    (error) => new EntityReadError("Transaction", String(error)),
+  );
+
 export const hardDeleteExpense = (
   expenseId: string,
   ctx: AppContext,
 ): ResultAsync<Transaction, InstanceType<typeof EntityDeleteError>> =>
   ResultAsync.fromPromise(
-    ctx.db
-      .delete(expenses)
-      .where(eq(expenses.id, expenseId))
-      .returning(),
+    ctx.db.delete(expenses).where(eq(expenses.id, expenseId)).returning(),
     (error) => new EntityDeleteError("Expense", error),
   ).andThen(([deletedExpense]) =>
     deletedExpense

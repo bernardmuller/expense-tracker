@@ -16,6 +16,7 @@ import {
   EntityReadError,
   EntityUpdateError,
 } from "@/lib/errors/actionErrors";
+import { SearchQueries } from "@/lib/http/types";
 
 export const createTransaction = (
   budgetId: string,
@@ -90,6 +91,22 @@ export const getUserCategories = (
   Array<{ id: string; key: string; label: string; icon: string }>,
   InstanceType<typeof EntityReadError>
 > => TransactionQueries.getUserCategories(userId, ctx);
+
+export const getTransactions = (
+  search: SearchQueries<
+    Transaction,
+    {
+      budgetId: string;
+      categoryId: string;
+      userId: string;
+      description: string;
+    }
+  >,
+  ctx: AppContext,
+): ResultAsync<
+  Array<Transaction>,
+  InstanceType<typeof EntityReadError>
+> => TransactionQueries.getTransactions(search, ctx);
 
 export const deleteTransactionAndUpdateBudget = (
   userId: string,
