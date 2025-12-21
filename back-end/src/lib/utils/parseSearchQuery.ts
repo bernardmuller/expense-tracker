@@ -8,7 +8,13 @@ type RawQueryParams = Record<string, string | string[] | undefined>;
 const SORT_ORDERS = ["asc", "desc"] as const;
 type SortOrder = (typeof SORT_ORDERS)[number];
 
-const RESERVED_QUERY_PARAMS = ["limit", "offset", "sort", "order"] as const;
+const RESERVED_QUERY_PARAMS = [
+  "limit",
+  "offset",
+  "sort",
+  "order",
+  "include",
+] as const;
 
 interface ParseSearchQueryOptions<
   TEntity,
@@ -19,6 +25,7 @@ interface ParseSearchQueryOptions<
   filterKeys?: Array<keyof TFilters & string>;
   maxLimit?: number;
   allowArrayFilters?: boolean;
+  allowedIncludes?: string[];
 }
 
 function validateNotArray(
@@ -130,6 +137,33 @@ function parseOrderParam(
   return ok(rawValue as SortOrder);
 }
 
+function parseIncludeParam(
+  rawValue: string | string[] | undefined,
+  allowedIncludes?: string[],
+): Result<string[], InstanceType<typeof CoercionError>> {
+  if (rawValue === undefined) {
+    return ok([]);
+  }
+
+  const includeArray = Array.isArray(rawValue) ? rawValue : [rawValue];
+
+  for (const includeValue of includeArray) {
+    if (typeof includeValue !== "string") {
+      return err(new CoercionError("include values must be strings"));
+    }
+
+    if (allowedIncludes && !allowedIncludes.includes(includeValue)) {
+      return err(
+        new CoercionError(
+          `include value '${includeValue}' is not allowed. Allowed values: ${allowedIncludes.join(", ")}`,
+        ),
+      );
+    }
+  }
+
+  return ok(includeArray);
+}
+
 /**
  * Parses and validates search query parameters from raw query strings.
  * Handles pagination (limit/offset), sorting (sort/order), and custom filter parameters.
@@ -169,6 +203,7 @@ export function parseSearchQuery<
     filterKeys,
     maxLimit = 1000,
     allowArrayFilters = false,
+    allowedIncludes,
   } = options;
 
   if (filterKeys) {
@@ -187,6 +222,7 @@ export function parseSearchQuery<
   let offset: number | undefined;
   let sort: (keyof TEntity & string) | undefined;
   let order: SortOrder | undefined;
+  let include: string[] | undefined;
 
   if (rawQuery.limit !== undefined) {
     const limitResult = parseLimitParam(rawQuery.limit, maxLimit);
@@ -228,17 +264,27 @@ export function parseSearchQuery<
     );
   }
 
+  if (rawQuery.include !== undefined) {
+    const includeResult = parseIncludeParam(rawQuery.include, allowedIncludes);
+    if (includeResult.isErr()) {
+      return err(includeResult.error);
+    }
+    include = includeResult.value.length > 0 ? includeResult.value : undefined;
+  }
+
   const baseParams: {
     limit?: number;
     offset?: number;
     sort?: keyof TEntity & string;
     order?: SortOrder;
+    include?: string[];
   } = {};
 
   if (limit !== undefined) baseParams.limit = limit;
   if (offset !== undefined) baseParams.offset = offset;
   if (sort !== undefined) baseParams.sort = sort;
   if (order !== undefined) baseParams.order = order;
+  if (include !== undefined) baseParams.include = include;
 
   const filterParams: Record<string, unknown> = {};
 
