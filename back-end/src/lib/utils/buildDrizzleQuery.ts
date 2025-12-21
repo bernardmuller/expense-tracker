@@ -1,29 +1,44 @@
-import { and, desc, asc, SQL, AnyColumn } from "drizzle-orm";
+import { and, desc, asc, SQL, AnyColumn, eq } from "drizzle-orm";
+import { PgTable } from "drizzle-orm/pg-core";
 import { SearchQueries } from "../http/types";
 
 const DEFAULT_SORT_ORDER = "asc" as const;
 
 /**
- * Builds a Drizzle ORM query from search parameters with filtering, sorting, and pagination.
+ * Configuration for a single relation join
+ */
+export interface RelationConfig<TTable extends PgTable = PgTable> {
+  /** The table to join */
+  table: TTable;
+  /** The join condition (e.g., eq(expenses.categoryId, categories.id)) */
+  on: SQL;
+  /** Fields to select from the joined table */
+  fields: Record<string, AnyColumn>;
+}
+
+/**
+ * Builds a Drizzle ORM query from search parameters with filtering, sorting, pagination, and relation includes.
  *
  * @template TEntity - The entity type being queried
  * @template TFilters - The filter parameters type
  * @template TQueryBuilder - The Drizzle query builder type (must be PromiseLike and have query methods)
  *
  * @param qb - The initial Drizzle query builder (e.g., db.select().from(table))
- * @param query - Search parameters including filters, sort, order, limit, and offset
+ * @param query - Search parameters including filters, sort, order, limit, offset, and include
  * @param filterMap - Map of filter keys to SQL condition builder functions
  * @param sortColumns - Optional map of sort keys to table columns for ordering
+ * @param relationMap - Optional map of relation names to join configurations
  *
- * @returns Modified query builder with applied filters, sorting, and pagination
+ * @returns Modified query builder with applied filters, sorting, pagination, and joins
  *
  * @example
  * ```typescript
  * const query = buildDrizzleQuery(
- *   db.select().from(users),
- *   { status: 'active', limit: 10, sort: 'createdAt', order: 'desc' },
- *   { status: (val) => eq(users.status, val) },
- *   { createdAt: users.createdAt }
+ *   db.select().from(expenses),
+ *   { budgetId: '123', limit: 10, sort: 'createdAt', order: 'desc', include: ['category'] },
+ *   { budgetId: (val) => eq(expenses.budgetId, val) },
+ *   { createdAt: expenses.createdAt },
+ *   { category: { table: categories, on: eq(expenses.categoryId, categories.id), fields: {...} } }
  * );
  * ```
  */
@@ -35,6 +50,7 @@ function buildDrizzleQuery<
     orderBy: (...columns: SQL[]) => any;
     limit: (count: number) => any;
     offset: (count: number) => any;
+    leftJoin: (table: PgTable, on: SQL) => any;
   },
 >(
   qb: TQueryBuilder,
@@ -43,6 +59,7 @@ function buildDrizzleQuery<
     [K in keyof TFilters]: (value: TFilters[K]) => SQL;
   },
   sortColumns?: Record<string, AnyColumn>,
+  relationMap?: Record<string, RelationConfig>,
 ): TQueryBuilder {
   const conditions = (
     Object.entries(filterMap) as Array<
@@ -60,6 +77,22 @@ function buildDrizzleQuery<
     });
 
   let queryBuilder = qb;
+
+  if (query.include && query.include.length > 0 && relationMap) {
+    for (const relationName of query.include) {
+      const relation = relationMap[relationName];
+      if (!relation) {
+        console.warn(
+          `Relation "${relationName}" not found in relationMap. Available relations: ${Object.keys(relationMap).join(", ")}`,
+        );
+        continue;
+      }
+      queryBuilder = queryBuilder.leftJoin(
+        relation.table,
+        relation.on,
+      ) as TQueryBuilder;
+    }
+  }
 
   if (conditions.length > 0) {
     queryBuilder = queryBuilder.where(and(...conditions)) as TQueryBuilder;

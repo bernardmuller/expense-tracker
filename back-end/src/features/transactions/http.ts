@@ -157,13 +157,15 @@ const getTransactionsHandler = async (c: Context) => {
     rawQuery: c.req.query(),
     allowedSortKeys: ["createdAt"],
     filterKeys: ["budgetId", "categoryId", "userId", "description"],
+    allowedIncludes: ["category"],
   })
     .asyncAndThen((search) => {
       const ctx = createContext();
       return TransactionOperations.getTransactions(search, ctx);
     })
     .match(
-      (transactions) => c.json({ transactions, count: transactions.length }, 200),
+      (transactions) =>
+        c.json({ transactions, count: transactions.length }, 200),
       (error) => mapErrorToResponse(error, c),
     );
 };

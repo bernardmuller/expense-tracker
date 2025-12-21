@@ -29,4 +29,5 @@ export type SearchQueries<
   offset?: number;
   sort?: keyof T & string;
   order?: "asc" | "desc";
+  include?: string[];
 } & Partial<F>;
