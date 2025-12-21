@@ -11,6 +11,8 @@ import { eq, desc, and } from "drizzle-orm";
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { CategoryBudget, Transaction } from "./types";
 import type { Budget } from "@/lib/db/schema";
+import { SearchQueries } from "@/lib/http/types";
+import buildDrizzleQuery from "@/lib/utils/buildDrizzleQuery";
 
 export const getBudgetWithExpensesByBudgetId = (
   budgetId: string,
@@ -138,54 +140,29 @@ export const getBudgetWithExpensesByBudgetId = (
     });
   });
 
-export const getActiveBudgetByUserId = (
-  userId: string,
-  ctx: AppContext,
-): ResultAsync<
-  Budget & {
-    expenses: (Transaction & {
-      category: { id: string; key: string; label: string; icon: string };
-    })[];
-  },
-  | InstanceType<typeof EntityNotFoundError>
-  | InstanceType<typeof EntityReadError>
-> =>
-  ResultAsync.fromPromise(
-    ctx.db.query.budgets.findFirst({
-      where: and(eq(budgets.userId, userId), eq(budgets.isActive, true)),
-      with: {
-        expenses: {
-          orderBy: desc(expenses.createdAt),
-          limit: 5,
-          with: {
-            category: true,
-          },
-        },
-        categoryBudgets: {
-          with: {
-            category: true,
-          },
-        },
-      },
-    }),
-    (error) => new EntityReadError("Budget", String(error)),
-  ).andThen((budget) => {
-    if (!budget) {
-      return errAsync(
-        new EntityNotFoundError(`Active budget for user ${userId}`),
-      );
+export const getBudgets = (
+  search: SearchQueries<
+    Budget,
+    {
+      isActive: boolean;
+      userId: string;
     }
-
-    return okAsync({
-      id: budget.id,
-      userId: budget.userId,
-      name: budget.name,
-      startAmount: budget.startAmount,
-      currentAmount: budget.currentAmount,
-      isActive: budget.isActive,
-      createdAt: budget.createdAt,
-      updatedAt: budget.updatedAt,
-      deletedAt: budget.deletedAt,
-      expenses: budget.expenses,
-    });
-  });
+  >,
+  ctx: AppContext,
+): ResultAsync<Array<Budget>, InstanceType<typeof EntityReadError>> =>
+  ResultAsync.fromPromise(
+    buildDrizzleQuery(
+      ctx.db.select().from(budgets),
+      search,
+      {
+        userId: (value) => eq(budgets.userId, value),
+        isActive: (value) => eq(budgets.isActive, value),
+      },
+      {
+        name: budgets.name,
+        isActive: budgets.isActive,
+        createdAt: budgets.createdAt,
+      },
+    ),
+    (error) => new EntityReadError("Budget", String(error)),
+  );

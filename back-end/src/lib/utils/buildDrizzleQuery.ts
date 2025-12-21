@@ -1,5 +1,4 @@
 import { and, desc, asc, SQL, AnyColumn } from "drizzle-orm";
-import { PgSelect } from "drizzle-orm/pg-core";
 import { SearchQueries } from "../http/types";
 
 const DEFAULT_SORT_ORDER = "asc" as const;
@@ -9,7 +8,7 @@ const DEFAULT_SORT_ORDER = "asc" as const;
  *
  * @template TEntity - The entity type being queried
  * @template TFilters - The filter parameters type
- * @template T - The Drizzle PgSelect query builder type
+ * @template TQueryBuilder - The Drizzle query builder type (must be PromiseLike and have query methods)
  *
  * @param qb - The initial Drizzle query builder (e.g., db.select().from(table))
  * @param query - Search parameters including filters, sort, order, limit, and offset
@@ -31,15 +30,20 @@ const DEFAULT_SORT_ORDER = "asc" as const;
 function buildDrizzleQuery<
   TEntity,
   TFilters extends Record<string, unknown>,
-  T extends PgSelect,
+  TQueryBuilder extends PromiseLike<any> & {
+    where: (condition: SQL | undefined) => any;
+    orderBy: (...columns: SQL[]) => any;
+    limit: (count: number) => any;
+    offset: (count: number) => any;
+  },
 >(
-  qb: T,
+  qb: TQueryBuilder,
   query: SearchQueries<TEntity, TFilters>,
   filterMap: {
     [K in keyof TFilters]: (value: TFilters[K]) => SQL;
   },
   sortColumns?: Record<string, AnyColumn>,
-): T {
+): TQueryBuilder {
   const conditions = (
     Object.entries(filterMap) as Array<
       [keyof TFilters, (value: TFilters[keyof TFilters]) => SQL]
@@ -55,39 +59,33 @@ function buildDrizzleQuery<
       return builder(value as TFilters[keyof TFilters]);
     });
 
-  const withFilters = conditions.length > 0 ? qb.where(and(...conditions)) : qb;
+  let queryBuilder = qb;
 
-  const withSort =
-    query.sort && sortColumns
-      ? (() => {
-          const sortColumn = sortColumns[query.sort];
-          if (!sortColumn) {
-            console.warn(
-              `Sort key "${query.sort}" not found in sortColumns mapping`,
-            );
-            return withFilters;
-          }
-          const sortOrder = query.order ?? DEFAULT_SORT_ORDER;
-          return withFilters.orderBy(
-            sortOrder === "desc" ? desc(sortColumn) : asc(sortColumn),
-          );
-        })()
-      : withFilters;
+  if (conditions.length > 0) {
+    queryBuilder = queryBuilder.where(and(...conditions)) as TQueryBuilder;
+  }
 
-  const withLimit =
-    query.limit !== undefined && query.limit > 0
-      ? withSort.limit(query.limit)
-      : withSort;
+  if (query.sort && sortColumns) {
+    const sortColumn = sortColumns[query.sort];
+    if (!sortColumn) {
+      console.warn(`Sort key "${query.sort}" not found in sortColumns mapping`);
+    } else {
+      const sortOrder = query.order ?? DEFAULT_SORT_ORDER;
+      queryBuilder = queryBuilder.orderBy(
+        sortOrder === "desc" ? desc(sortColumn) : asc(sortColumn),
+      ) as TQueryBuilder;
+    }
+  }
 
-  const withOffset =
-    query.offset !== undefined && query.offset >= 0
-      ? withLimit.offset(query.offset)
-      : withLimit;
+  if (query.limit !== undefined && query.limit > 0) {
+    queryBuilder = queryBuilder.limit(query.limit) as TQueryBuilder;
+  }
 
-  // Type assertion needed because TypeScript can't track the builder's
-  // fluent interface through the functional composition chain.
-  // This is safe because PgSelect methods always return PgSelect.
-  return withOffset as T;
+  if (query.offset !== undefined && query.offset >= 0) {
+    queryBuilder = queryBuilder.offset(query.offset) as TQueryBuilder;
+  }
+
+  return queryBuilder;
 }
 
 export default buildDrizzleQuery;

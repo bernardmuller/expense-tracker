@@ -11,6 +11,7 @@ import {
   EntityReadError,
   EntityUpdateError,
 } from "@/lib/errors/actionErrors";
+import { SearchQueries } from "@/lib/http/types";
 
 export const getBudgetExpenses = (
   budgetId: string,
@@ -35,15 +36,17 @@ export const getBudgetExpenses = (
   | InstanceType<typeof EntityReadError>
 > => TransactionQueries.getBudgetWithExpensesByBudgetId(budgetId, userId, ctx);
 
-export const getActiveBudgetWithExpenses = (
-  userId: string,
+export const getBudgets = (
+  search: SearchQueries<
+    Budget,
+    {
+      userId: string;
+      isActive: boolean;
+    }
+  >,
   ctx: AppContext,
 ): ResultAsync<
-  Budget & {
-    expenses: (Transaction & {
-      category: { id: string; key: string; label: string; icon: string };
-    })[];
-  },
+  Array<Budget>,
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
-> => TransactionQueries.getActiveBudgetByUserId(userId, ctx);
+> => TransactionQueries.getBudgets(search, ctx);
