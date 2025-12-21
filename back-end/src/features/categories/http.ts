@@ -7,22 +7,22 @@ import type { Context } from "hono";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 import * as CategoryOperations from "./operations";
-import { categoryWithoutMetadataSchema } from "./types";
+import { categoryWithoutMetadataSchema, type Category } from "./types";
+import { parseSearchQuery } from "@/lib/utils/parseSearchQuery";
 
 const tags = ["Categories"];
 
-// --------------------------------
-// Route Definitions (OpenAPI)
-// --------------------------------
-
-const getAllCategoriesRoute = createRoute({
+const getCategoriesRoute = createRoute({
   path: "/categories",
   method: "get",
   tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      z.array(categoryWithoutMetadataSchema),
-      "Returns a list of categories",
+      z.object({
+        categories: z.array(categoryWithoutMetadataSchema),
+        count: z.number(),
+      }),
+      "List of categories",
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
       errorResponseSchema,
@@ -31,25 +31,29 @@ const getAllCategoriesRoute = createRoute({
   },
 });
 
-// --------------------------------
-// Handlers
-// --------------------------------
-
-const getAllCategoriesHandler = async (c: Context) => {
-  const ctx = createContext();
-  const result = await CategoryOperations.getAllCategories(ctx);
-
-  return result.match(
-    (categories) => c.json(categories, 200),
-    (error) => mapErrorToResponse(error, c),
-  );
+const getCategoriesHandler = async (c: Context) => {
+  return parseSearchQuery<
+    Category,
+    {
+      userId: string;
+      key: string;
+    }
+  >({
+    rawQuery: c.req.query(),
+    allowedSortKeys: ["key", "createdAt"],
+    filterKeys: ["userId", "key"],
+  })
+    .asyncAndThen((search) => {
+      const ctx = createContext();
+      return CategoryOperations.getCategories(search, ctx);
+    })
+    .match(
+      (categories) => c.json({ categories, count: categories.length }, 200),
+      (error) => mapErrorToResponse(error, c),
+    );
 };
 
-// --------------------------------
-// Router
-// --------------------------------
-
 export const categoryRouter = createRouter().openapi(
-  getAllCategoriesRoute,
-  getAllCategoriesHandler,
+  getCategoriesRoute,
+  getCategoriesHandler,
 );

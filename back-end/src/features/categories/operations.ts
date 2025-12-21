@@ -2,11 +2,19 @@ import type { AppContext } from "@/lib/db/context";
 import { EntityReadError } from "@/lib/errors/actionErrors";
 import { type ResultAsync } from "neverthrow";
 import * as CategoryQueries from "./queries";
-import type { CategoryWithoutMetadata } from "./types";
+import type { Category, CategoryWithoutMetadata } from "./types";
+import { SearchQueries } from "@/lib/http/types";
 
-export const getAllCategories = (
+export const getCategories = (
+  search: SearchQueries<
+    Category,
+    {
+      userId: string;
+      key: string;
+    }
+  >,
   ctx: AppContext,
 ): ResultAsync<
-  CategoryWithoutMetadata[],
+  Array<CategoryWithoutMetadata>,
   InstanceType<typeof EntityReadError>
-> => CategoryQueries.findAll(ctx);
+> => CategoryQueries.getCategories(search, ctx);
