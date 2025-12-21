@@ -6,6 +6,7 @@ import { authRouter as auth } from "./features/auth/http";
 import { userRouter as users } from "./features/users/http";
 import { categoryRouter as categories } from "./features/categories/http";
 import { transactionRouter as transactions } from "./features/transactions/http";
+import { budgetRouter as budgets } from "./features/budgets/http";
 import { cors } from "hono/cors";
 import env from "./env";
 import { authMiddleware } from "@/lib/http/middleware/auth";
@@ -14,7 +15,15 @@ const app = createApi();
 
 configureOpenAPI(app);
 
-const routes = [index, auth, users, categories, transactions, health] as const;
+const routes = [
+  index,
+  auth,
+  users,
+  categories,
+  transactions,
+  health,
+  budgets,
+] as const;
 
 app.use(
   "*",
@@ -36,7 +45,8 @@ app.use("*", async (c, next) => {
     path === "/scalar" ||
     path === "/doc" ||
     path.startsWith("/auth") ||
-    path.startsWith("/health")
+    path.startsWith("/health") ||
+    path.startsWith("/budgets")
   ) {
     return next();
   }
@@ -47,6 +57,7 @@ app.use("*", async (c, next) => {
 app.route("/", index);
 app.route("/auth", auth);
 app.route("/", users);
+app.route("/", budgets);
 app.route("/", categories);
 app.route("/", transactions);
 
