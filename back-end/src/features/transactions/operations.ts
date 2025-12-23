@@ -2,13 +2,13 @@ import { ResultAsync, okAsync, errAsync } from "neverthrow";
 import type { AppContext } from "@/lib/db/context";
 import * as TransactionQueries from "./queries";
 import * as TransactionDomain from "./actions";
+import * as BudgetDomain from "../budgets/actions";
 import type {
   CreateTransactionParams,
   Transaction,
   BudgetNotFoundError,
   CategoryNotFoundError,
 } from "./types";
-import type { Budget } from "@/lib/db/schema";
 import {
   EntityCreateError,
   EntityDeleteError,
@@ -17,6 +17,14 @@ import {
   EntityUpdateError,
 } from "@/lib/errors/actionErrors";
 import { SearchQueries } from "@/lib/http/types";
+import {
+  EncryptionCipherCreationError,
+  EncryptionCipherUpdateError,
+  EncryptionCipherFinalError,
+  EncryptionDecipherCreationError,
+  EncryptionDecipherUpdateError,
+  EncryptionDecipherFinalError,
+} from "@/lib/utils/encryption";
 
 export const createTransaction = (
   budgetId: string,
@@ -30,6 +38,12 @@ export const createTransaction = (
   | InstanceType<typeof EntityReadError>
   | InstanceType<typeof EntityCreateError>
   | InstanceType<typeof EntityUpdateError>
+  | InstanceType<typeof EncryptionCipherCreationError>
+  | InstanceType<typeof EncryptionCipherUpdateError>
+  | InstanceType<typeof EncryptionCipherFinalError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
   TransactionQueries.findBudgetById(budgetId, ctx).andThen((budget) =>
     TransactionQueries.findCategoryById(params.categoryId, ctx).andThen(() =>
@@ -55,18 +69,20 @@ export const createTransaction = (
           }
           const createdTransaction = createdTransactionResult.value;
 
-          const budgetUpdateResult =
-            TransactionDomain.updateBudgetAfterTransaction(
-              budget,
-              params.amount,
-            );
+          const budgetUpdateResult = await BudgetDomain.subtractFromBudgetCurrentAmount(budget, params.amount);
           if (!budgetUpdateResult.isOk()) {
-            throw new Error("Budget update failed");
+            throw budgetUpdateResult.error;
           }
           const updatedBudget = budgetUpdateResult.value;
 
+          const encryptedBudgetResult = await BudgetDomain.encryptBudgetAmounts(updatedBudget);
+          if (!encryptedBudgetResult.isOk()) {
+            throw encryptedBudgetResult.error;
+          }
+          const encryptedBudget = encryptedBudgetResult.value;
+
           const finalBudgetResult = await TransactionQueries.updateBudget(
-            updatedBudget,
+            encryptedBudget,
             transactionContext,
           );
           if (finalBudgetResult.isErr()) {
@@ -77,7 +93,13 @@ export const createTransaction = (
         }),
         (error) =>
           error instanceof EntityCreateError ||
-          error instanceof EntityUpdateError
+          error instanceof EntityUpdateError ||
+          error instanceof EncryptionCipherCreationError ||
+          error instanceof EncryptionCipherUpdateError ||
+          error instanceof EncryptionCipherFinalError ||
+          error instanceof EncryptionDecipherCreationError ||
+          error instanceof EncryptionDecipherUpdateError ||
+          error instanceof EncryptionDecipherFinalError
             ? error
             : new EntityCreateError("Transaction", error),
       ),
@@ -103,10 +125,8 @@ export const getTransactions = (
     }
   >,
   ctx: AppContext,
-): ResultAsync<
-  Array<Transaction>,
-  InstanceType<typeof EntityReadError>
-> => TransactionQueries.getTransactions(search, ctx);
+): ResultAsync<Array<Transaction>, InstanceType<typeof EntityReadError>> =>
+  TransactionQueries.getTransactions(search, ctx);
 
 export const deleteTransactionAndUpdateBudget = (
   userId: string,
@@ -119,6 +139,12 @@ export const deleteTransactionAndUpdateBudget = (
   | InstanceType<typeof EntityReadError>
   | InstanceType<typeof EntityDeleteError>
   | InstanceType<typeof EntityUpdateError>
+  | InstanceType<typeof EncryptionCipherCreationError>
+  | InstanceType<typeof EncryptionCipherUpdateError>
+  | InstanceType<typeof EncryptionCipherFinalError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
   TransactionQueries.findBudgetById(budgetId, ctx).andThen((budget) =>
     TransactionQueries.getExpenseById(expenseId, ctx).andThen((expense) =>
@@ -136,18 +162,23 @@ export const deleteTransactionAndUpdateBudget = (
           }
           const deletedExpense = deletedExpenseResult.value;
 
-          const budgetUpdateResult =
-            TransactionDomain.updateBudgetAfterDeletion(
-              budget,
-              parseFloat(expense.amount),
-            );
+          const budgetUpdateResult = await BudgetDomain.addToBudgetCurrentAmount(
+            budget,
+            parseFloat(expense.amount),
+          );
           if (!budgetUpdateResult.isOk()) {
-            throw new Error("Budget update failed");
+            throw budgetUpdateResult.error;
           }
           const updatedBudget = budgetUpdateResult.value;
 
+          const encryptedBudgetResult = await BudgetDomain.encryptBudgetAmounts(updatedBudget);
+          if (!encryptedBudgetResult.isOk()) {
+            throw encryptedBudgetResult.error;
+          }
+          const encryptedBudget = encryptedBudgetResult.value;
+
           const finalBudgetResult = await TransactionQueries.updateBudget(
-            updatedBudget,
+            encryptedBudget,
             transactionContext,
           );
           if (finalBudgetResult.isErr()) {
@@ -158,7 +189,13 @@ export const deleteTransactionAndUpdateBudget = (
         }),
         (error) =>
           error instanceof EntityDeleteError ||
-          error instanceof EntityUpdateError
+          error instanceof EntityUpdateError ||
+          error instanceof EncryptionCipherCreationError ||
+          error instanceof EncryptionCipherUpdateError ||
+          error instanceof EncryptionCipherFinalError ||
+          error instanceof EncryptionDecipherCreationError ||
+          error instanceof EncryptionDecipherUpdateError ||
+          error instanceof EncryptionDecipherFinalError
             ? error
             : new EntityDeleteError("Expense", error),
       ),

@@ -79,11 +79,12 @@ export const budgets = pgTable("budgets", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
-  startAmount: decimal("start_amount", { precision: 10, scale: 2 }).notNull(),
-  currentAmount: decimal("current_amount", {
-    precision: 10,
-    scale: 2,
-  }).notNull(),
+  startAmount: varchar("start_amount").notNull(),
+  currentAmount: varchar("current_amount").notNull(),
+  sa_iv: varchar("sa_iv"),
+  sa_tag: varchar("sa_tag"),
+  ca_iv: varchar("ca_iv"),
+  ca_tag: varchar("ca_tag"),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
@@ -243,4 +244,3 @@ export type UserCategory = typeof userCategories.$inferSelect;
 export type NewUserCategory = typeof userCategories.$inferInsert;
 export type CategoryBudget = typeof categoryBudgets.$inferSelect;
 export type NewCategoryBudget = typeof categoryBudgets.$inferInsert;
-

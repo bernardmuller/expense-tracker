@@ -8,7 +8,7 @@ export const transactionSchema = createSelectSchema(expenses);
 export const budgetInsertSchema = createInsertSchema(budgets);
 export const budgetSchema = createSelectSchema(budgets);
 
-export type Transaction = z.infer<typeof budgetSchema>;
+export type Transaction = z.infer<typeof transactionSchema>;
 export type Budget = z.infer<typeof budgetSchema>;
 
 export type CategoryBudget = {

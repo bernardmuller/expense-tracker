@@ -20,6 +20,11 @@ import {
   EntityUpdateError,
 } from "@/lib/errors/actionErrors";
 import { UserEmailAlreadyInUseError } from "@/lib/errors/applicationErrors";
+import {
+  EncryptionCipherCreationError,
+  EncryptionCipherUpdateError,
+  EncryptionCipherFinalError,
+} from "@/lib/utils/encryption";
 
 export const createUser = (
   params: CreateUserParams,
@@ -122,6 +127,9 @@ export const onboardUser = (
   | InstanceType<typeof UserAlreadyOnboardedError>
   | InstanceType<typeof EntityCreateError>
   | InstanceType<typeof EntityUpdateError>
+  | InstanceType<typeof EncryptionCipherCreationError>
+  | InstanceType<typeof EncryptionCipherUpdateError>
+  | InstanceType<typeof EncryptionCipherFinalError>
 > =>
   getUserById(userId, ctx).andThen((user: User) =>
     UserDomain.markUserAsOnboarded(user).asyncAndThen(() =>
@@ -151,4 +159,7 @@ export const createNewBudget = (
   | InstanceType<typeof EntityReadError>
   | InstanceType<typeof EntityCreateError>
   | InstanceType<typeof EntityUpdateError>
+  | InstanceType<typeof EncryptionCipherCreationError>
+  | InstanceType<typeof EncryptionCipherUpdateError>
+  | InstanceType<typeof EncryptionCipherFinalError>
 > => UserQueries.createNewBudget(userId, params, ctx);

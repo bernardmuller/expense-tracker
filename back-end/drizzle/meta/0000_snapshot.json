@@ -1,5 +1,5 @@
 {
-  "id": "043aa68e-780a-461d-abc9-04b5e0fa6c58",
+  "id": "b41cae54-066a-48eb-b941-0ad1d6eb0baf",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -12,12 +12,6 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
-        },
-        "account_id": {
-          "name": "account_id",
-          "type": "uuid",
-          "primaryKey": false,
           "notNull": true
         },
         "user_id": {
@@ -58,12 +52,6 @@
         },
         "scope": {
           "name": "scope",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "password": {
-          "name": "password",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -127,15 +115,39 @@
         },
         "start_amount": {
           "name": "start_amount",
-          "type": "numeric(10, 2)",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
         "current_amount": {
           "name": "current_amount",
-          "type": "numeric(10, 2)",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
+        },
+        "sa_iv": {
+          "name": "sa_iv",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sa_tag": {
+          "name": "sa_tag",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ca_iv": {
+          "name": "ca_iv",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ca_tag": {
+          "name": "ca_tag",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "is_active": {
           "name": "is_active",
@@ -359,9 +371,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "category": {
-          "name": "category",
-          "type": "varchar(50)",
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -392,6 +404,19 @@
           "tableTo": "budgets",
           "columnsFrom": [
             "budget_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "expenses_category_id_categories_id_fk": {
+          "name": "expenses_category_id_categories_id_fk",
+          "tableFrom": "expenses",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
           ],
           "columnsTo": [
             "id"

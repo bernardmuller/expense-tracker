@@ -13,6 +13,13 @@ import type { CategoryBudget, Transaction } from "./types";
 import type { Budget } from "@/lib/db/schema";
 import { SearchQueries } from "@/lib/http/types";
 import buildDrizzleQuery from "@/lib/utils/buildDrizzleQuery";
+import {
+  decrypt,
+  isEncrypted,
+  EncryptionDecipherCreationError,
+  EncryptionDecipherUpdateError,
+  EncryptionDecipherFinalError,
+} from "@/lib/utils/encryption";
 
 export const getBudgetWithExpensesByBudgetId = (
   budgetId: string,
@@ -35,6 +42,9 @@ export const getBudgetWithExpensesByBudgetId = (
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
   ResultAsync.fromPromise(
     ctx.db.query.budgets.findFirst({
@@ -61,83 +71,126 @@ export const getBudgetWithExpensesByBudgetId = (
       );
     }
 
-    const categoryMap = new Map<
-      string,
-      {
-        id: string;
-        key: string;
-        label: string;
-        icon: string;
-        spent: number;
-        allocated: number | null;
-      }
-    >();
+    const decryptCurrentResult = isEncrypted(
+      budget.currentAmount,
+      budget.ca_iv,
+      budget.ca_tag,
+    )
+      ? ResultAsync.fromPromise(
+          decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!),
+          (error) =>
+            error instanceof EncryptionDecipherCreationError ||
+            error instanceof EncryptionDecipherUpdateError ||
+            error instanceof EncryptionDecipherFinalError
+              ? error
+              : new EntityReadError("Budget", String(error)),
+        ).andThen((result) => result)
+      : okAsync(budget.currentAmount);
 
-    budget.expenses.forEach((expense) => {
-      const existing = categoryMap.get(expense.categoryId);
-      const spentAmount = parseFloat(expense.amount);
+    const decryptStartResult = isEncrypted(
+      budget.startAmount,
+      budget.sa_iv,
+      budget.sa_tag,
+    )
+      ? ResultAsync.fromPromise(
+          decrypt(budget.startAmount, budget.sa_iv!, budget.sa_tag!),
+          (error) =>
+            error instanceof EncryptionDecipherCreationError ||
+            error instanceof EncryptionDecipherUpdateError ||
+            error instanceof EncryptionDecipherFinalError
+              ? error
+              : new EntityReadError("Budget", String(error)),
+        ).andThen((result) => result)
+      : okAsync(budget.startAmount);
 
-      if (existing) {
-        existing.spent += spentAmount;
-      } else {
-        categoryMap.set(expense.categoryId, {
-          id: expense.category.id,
-          key: expense.category.key,
-          label: expense.category.label,
-          icon: expense.category.icon,
-          spent: spentAmount,
-          allocated: null,
+    return ResultAsync.combine([decryptCurrentResult, decryptStartResult]).map(
+      ([decryptedCurrentAmount, decryptedStartAmount]) => {
+        const categoryMap = new Map<
+          string,
+          {
+            id: string;
+            key: string;
+            label: string;
+            icon: string;
+            spent: number;
+            allocated: number | null;
+          }
+        >();
+
+        budget.expenses.forEach((expense) => {
+          const existing = categoryMap.get(expense.categoryId);
+          const spentAmount = parseFloat(expense.amount);
+
+          if (existing) {
+            existing.spent += spentAmount;
+          } else {
+            categoryMap.set(expense.categoryId, {
+              id: expense.category.id,
+              key: expense.category.key,
+              label: expense.category.label,
+              icon: expense.category.icon,
+              spent: spentAmount,
+              allocated: null,
+            });
+          }
         });
-      }
-    });
 
-    budget.categoryBudgets?.forEach((categoryBudget) => {
-      const existing = categoryMap.get(categoryBudget.categoryId);
-      const allocatedAmount = parseFloat(categoryBudget.allocatedAmount);
+        budget.categoryBudgets?.forEach((categoryBudget) => {
+          const existing = categoryMap.get(categoryBudget.categoryId);
+          const allocatedAmount = parseFloat(categoryBudget.allocatedAmount);
 
-      if (existing) {
-        existing.allocated = allocatedAmount;
-      } else {
-        categoryMap.set(categoryBudget.categoryId, {
-          id: categoryBudget.category.id,
-          key: categoryBudget.category.key,
-          label: categoryBudget.category.label,
-          icon: categoryBudget.category.icon,
-          spent: 0,
-          allocated: allocatedAmount,
+          if (existing) {
+            existing.allocated = allocatedAmount;
+          } else {
+            categoryMap.set(categoryBudget.categoryId, {
+              id: categoryBudget.category.id,
+              key: categoryBudget.category.key,
+              label: categoryBudget.category.label,
+              icon: categoryBudget.category.icon,
+              spent: 0,
+              allocated: allocatedAmount,
+            });
+          }
         });
-      }
-    });
 
-    const categoryBreakdown = Array.from(categoryMap.values())
-      .filter(
-        (category) =>
-          category.spent > 0 || (category.allocated && category.allocated > 0),
-      )
-      .map((category) => ({
-        id: category.id,
-        key: category.key,
-        label: category.label,
-        icon: category.icon,
-        spent: category.spent.toFixed(2),
-        allocated:
-          category.allocated !== null ? category.allocated.toFixed(2) : null,
-      }));
+        const categoryBreakdown = Array.from(categoryMap.values())
+          .filter(
+            (category) =>
+              category.spent > 0 ||
+              (category.allocated && category.allocated > 0),
+          )
+          .map((category) => ({
+            id: category.id,
+            key: category.key,
+            label: category.label,
+            icon: category.icon,
+            spent: category.spent.toFixed(2),
+            allocated:
+              category.allocated !== null
+                ? category.allocated.toFixed(2)
+                : null,
+          }));
 
-    return okAsync({
-      id: budget.id,
-      userId: budget.userId,
-      name: budget.name,
-      startAmount: budget.startAmount,
-      currentAmount: budget.currentAmount,
-      isActive: budget.isActive,
-      createdAt: budget.createdAt,
-      updatedAt: budget.updatedAt,
-      deletedAt: budget.deletedAt,
-      expenses: budget.expenses,
-      categoryBudgets: budget.categoryBudgets || [],
-      categoryBreakdown,
-    });
+        return {
+          id: budget.id,
+          userId: budget.userId,
+          name: budget.name,
+          startAmount: decryptedStartAmount,
+          currentAmount: decryptedCurrentAmount,
+          sa_iv: budget.sa_iv,
+          sa_tag: budget.sa_tag,
+          ca_iv: budget.ca_iv,
+          ca_tag: budget.ca_tag,
+          isActive: budget.isActive,
+          createdAt: budget.createdAt,
+          updatedAt: budget.updatedAt,
+          deletedAt: budget.deletedAt,
+          expenses: budget.expenses,
+          categoryBudgets: budget.categoryBudgets || [],
+          categoryBreakdown,
+        };
+      },
+    );
   });
 
 export const getActiveBudgetWithExpenses = (
@@ -151,6 +204,9 @@ export const getActiveBudgetWithExpenses = (
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
   ResultAsync.fromPromise(
     ctx.db.query.budgets.findFirst({
@@ -172,18 +228,56 @@ export const getActiveBudgetWithExpenses = (
       );
     }
 
-    return okAsync({
-      id: budget.id,
-      userId: budget.userId,
-      name: budget.name,
-      startAmount: budget.startAmount,
-      currentAmount: budget.currentAmount,
-      isActive: budget.isActive,
-      createdAt: budget.createdAt,
-      updatedAt: budget.updatedAt,
-      deletedAt: budget.deletedAt,
-      expenses: budget.expenses,
-    });
+    const decryptCurrentResult = isEncrypted(
+      budget.currentAmount,
+      budget.ca_iv,
+      budget.ca_tag,
+    )
+      ? ResultAsync.fromPromise(
+          decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!),
+          (error) =>
+            error instanceof EncryptionDecipherCreationError ||
+            error instanceof EncryptionDecipherUpdateError ||
+            error instanceof EncryptionDecipherFinalError
+              ? error
+              : new EntityReadError("Budget", String(error)),
+        ).andThen((result) => result)
+      : okAsync(budget.currentAmount);
+
+    const decryptStartResult = isEncrypted(
+      budget.startAmount,
+      budget.sa_iv,
+      budget.sa_tag,
+    )
+      ? ResultAsync.fromPromise(
+          decrypt(budget.startAmount, budget.sa_iv!, budget.sa_tag!),
+          (error) =>
+            error instanceof EncryptionDecipherCreationError ||
+            error instanceof EncryptionDecipherUpdateError ||
+            error instanceof EncryptionDecipherFinalError
+              ? error
+              : new EntityReadError("Budget", String(error)),
+        ).andThen((result) => result)
+      : okAsync(budget.startAmount);
+
+    return ResultAsync.combine([decryptCurrentResult, decryptStartResult]).map(
+      ([decryptedCurrentAmount, decryptedStartAmount]) => ({
+        id: budget.id,
+        userId: budget.userId,
+        name: budget.name,
+        startAmount: decryptedStartAmount,
+        currentAmount: decryptedCurrentAmount,
+        sa_iv: budget.sa_iv,
+        sa_tag: budget.sa_tag,
+        ca_iv: budget.ca_iv,
+        ca_tag: budget.ca_tag,
+        isActive: budget.isActive,
+        createdAt: budget.createdAt,
+        updatedAt: budget.updatedAt,
+        deletedAt: budget.deletedAt,
+        expenses: budget.expenses,
+      }),
+    );
   });
 
 export const getBudgets = (
@@ -195,7 +289,13 @@ export const getBudgets = (
     }
   >,
   ctx: AppContext,
-): ResultAsync<Array<Budget>, InstanceType<typeof EntityReadError>> =>
+): ResultAsync<
+  Array<Budget>,
+  | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
+> =>
   ResultAsync.fromPromise(
     buildDrizzleQuery(
       ctx.db.select().from(budgets),
@@ -211,4 +311,49 @@ export const getBudgets = (
       },
     ),
     (error) => new EntityReadError("Budget", String(error)),
-  );
+  ).andThen((budgetsList) => {
+    const decryptPromises = budgetsList.map((budget) => {
+      const decryptCurrentResult = isEncrypted(
+        budget.currentAmount,
+        budget.ca_iv,
+        budget.ca_tag,
+      )
+        ? ResultAsync.fromPromise(
+            decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!),
+            (error) =>
+              error instanceof EncryptionDecipherCreationError ||
+              error instanceof EncryptionDecipherUpdateError ||
+              error instanceof EncryptionDecipherFinalError
+                ? error
+                : new EntityReadError("Budget", String(error)),
+          ).andThen((result) => result)
+        : okAsync(budget.currentAmount);
+
+      const decryptStartResult = isEncrypted(
+        budget.startAmount,
+        budget.sa_iv,
+        budget.sa_tag,
+      )
+        ? ResultAsync.fromPromise(
+            decrypt(budget.startAmount, budget.sa_iv!, budget.sa_tag!),
+            (error) =>
+              error instanceof EncryptionDecipherCreationError ||
+              error instanceof EncryptionDecipherUpdateError ||
+              error instanceof EncryptionDecipherFinalError
+                ? error
+                : new EntityReadError("Budget", String(error)),
+          ).andThen((result) => result)
+        : okAsync(budget.startAmount);
+
+      return ResultAsync.combine([
+        decryptCurrentResult,
+        decryptStartResult,
+      ]).map(([decryptedCurrentAmount, decryptedStartAmount]) => ({
+        ...budget,
+        currentAmount: decryptedCurrentAmount,
+        startAmount: decryptedStartAmount,
+      }));
+    });
+
+    return ResultAsync.combine(decryptPromises);
+  });

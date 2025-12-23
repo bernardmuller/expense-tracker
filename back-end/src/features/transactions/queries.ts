@@ -14,6 +14,13 @@ import type { Budget } from "@/lib/db/schema";
 import { SearchQueries } from "@/lib/http/types";
 import buildDrizzleQuery from "@/lib/utils/buildDrizzleQuery";
 import { Category, CategoryWithoutMetadata } from "../categories/types";
+import {
+  decrypt,
+  isEncrypted,
+  EncryptionDecipherCreationError,
+  EncryptionDecipherUpdateError,
+  EncryptionDecipherFinalError,
+} from "@/lib/utils/encryption";
 
 export const create = (
   transaction: Partial<Transaction>,
@@ -75,6 +82,9 @@ export const getActiveBudgetByUserId = (
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
   ResultAsync.fromPromise(
     ctx.db.query.budgets.findFirst({
@@ -102,18 +112,26 @@ export const getActiveBudgetByUserId = (
       );
     }
 
-    return okAsync({
+    const decryptResult = isEncrypted(
+      budget.currentAmount,
+      budget.ca_iv,
+      budget.ca_tag,
+    )
+      ? decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!)
+      : okAsync(budget.currentAmount);
+
+    return decryptResult.map((decryptedAmount) => ({
       id: budget.id,
       userId: budget.userId,
       name: budget.name,
       startAmount: budget.startAmount,
-      currentAmount: budget.currentAmount,
+      currentAmount: decryptedAmount,
       isActive: budget.isActive,
       createdAt: budget.createdAt,
       updatedAt: budget.updatedAt,
       deletedAt: budget.deletedAt,
       expenses: budget.expenses,
-    });
+    }));
   });
 
 export const getUserCategories = (
@@ -162,7 +180,12 @@ export const updateBudget = (
     ctx.db
       .update(budgets)
       .set({
-        ...budget,
+        startAmount: budget.startAmount,
+        currentAmount: budget.currentAmount,
+        sa_iv: budget.sa_iv,
+        sa_tag: budget.sa_tag,
+        ca_iv: budget.ca_iv,
+        ca_tag: budget.ca_tag,
         updatedAt: new Date(),
       })
       .where(eq(budgets.id, budget.id))
@@ -231,6 +254,9 @@ export const getBudgetWithExpensesByBudgetId = (
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
   ResultAsync.fromPromise(
     ctx.db.query.budgets.findFirst({
@@ -257,82 +283,93 @@ export const getBudgetWithExpensesByBudgetId = (
       );
     }
 
-    const categoryMap = new Map<
-      string,
-      {
-        id: string;
-        key: string;
-        label: string;
-        icon: string;
-        spent: number;
-        allocated: number | null;
-      }
-    >();
+    const decryptResult = isEncrypted(
+      budget.currentAmount,
+      budget.ca_iv,
+      budget.ca_tag,
+    )
+      ? decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!)
+      : okAsync(budget.currentAmount);
 
-    budget.expenses.forEach((expense) => {
-      const existing = categoryMap.get(expense.categoryId);
-      const spentAmount = parseFloat(expense.amount);
+    return decryptResult.map((decryptedAmount) => {
+      const categoryMap = new Map<
+        string,
+        {
+          id: string;
+          key: string;
+          label: string;
+          icon: string;
+          spent: number;
+          allocated: number | null;
+        }
+      >();
 
-      if (existing) {
-        existing.spent += spentAmount;
-      } else {
-        categoryMap.set(expense.categoryId, {
-          id: expense.category.id,
-          key: expense.category.key,
-          label: expense.category.label,
-          icon: expense.category.icon,
-          spent: spentAmount,
-          allocated: null,
-        });
-      }
-    });
+      budget.expenses.forEach((expense) => {
+        const existing = categoryMap.get(expense.categoryId);
+        const spentAmount = parseFloat(expense.amount);
 
-    budget.categoryBudgets?.forEach((categoryBudget) => {
-      const existing = categoryMap.get(categoryBudget.categoryId);
-      const allocatedAmount = parseFloat(categoryBudget.allocatedAmount);
+        if (existing) {
+          existing.spent += spentAmount;
+        } else {
+          categoryMap.set(expense.categoryId, {
+            id: expense.category.id,
+            key: expense.category.key,
+            label: expense.category.label,
+            icon: expense.category.icon,
+            spent: spentAmount,
+            allocated: null,
+          });
+        }
+      });
 
-      if (existing) {
-        existing.allocated = allocatedAmount;
-      } else {
-        categoryMap.set(categoryBudget.categoryId, {
-          id: categoryBudget.category.id,
-          key: categoryBudget.category.key,
-          label: categoryBudget.category.label,
-          icon: categoryBudget.category.icon,
-          spent: 0,
-          allocated: allocatedAmount,
-        });
-      }
-    });
+      budget.categoryBudgets?.forEach((categoryBudget) => {
+        const existing = categoryMap.get(categoryBudget.categoryId);
+        const allocatedAmount = parseFloat(categoryBudget.allocatedAmount);
 
-    const categoryBreakdown = Array.from(categoryMap.values())
-      .filter(
-        (category) =>
-          category.spent > 0 || (category.allocated && category.allocated > 0),
-      )
-      .map((category) => ({
-        id: category.id,
-        key: category.key,
-        label: category.label,
-        icon: category.icon,
-        spent: category.spent.toFixed(2),
-        allocated:
-          category.allocated !== null ? category.allocated.toFixed(2) : null,
-      }));
+        if (existing) {
+          existing.allocated = allocatedAmount;
+        } else {
+          categoryMap.set(categoryBudget.categoryId, {
+            id: categoryBudget.category.id,
+            key: categoryBudget.category.key,
+            label: categoryBudget.category.label,
+            icon: categoryBudget.category.icon,
+            spent: 0,
+            allocated: allocatedAmount,
+          });
+        }
+      });
 
-    return okAsync({
-      id: budget.id,
-      userId: budget.userId,
-      name: budget.name,
-      startAmount: budget.startAmount,
-      currentAmount: budget.currentAmount,
-      isActive: budget.isActive,
-      createdAt: budget.createdAt,
-      updatedAt: budget.updatedAt,
-      deletedAt: budget.deletedAt,
-      expenses: budget.expenses,
-      categoryBudgets: budget.categoryBudgets || [],
-      categoryBreakdown,
+      const categoryBreakdown = Array.from(categoryMap.values())
+        .filter(
+          (category) =>
+            category.spent > 0 ||
+            (category.allocated && category.allocated > 0),
+        )
+        .map((category) => ({
+          id: category.id,
+          key: category.key,
+          label: category.label,
+          icon: category.icon,
+          spent: category.spent.toFixed(2),
+          allocated:
+            category.allocated !== null ? category.allocated.toFixed(2) : null,
+        }));
+
+      return {
+        id: budget.id,
+        userId: budget.userId,
+        name: budget.name,
+        startAmount: budget.startAmount,
+        currentAmount: decryptedAmount,
+        isActive: budget.isActive,
+        createdAt: budget.createdAt,
+        updatedAt: budget.updatedAt,
+        deletedAt: budget.deletedAt,
+        expenses: budget.expenses,
+        categoryBudgets: budget.categoryBudgets || [],
+        categoryBreakdown,
+      };
     });
   });
 

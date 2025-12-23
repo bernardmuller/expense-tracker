@@ -14,6 +14,12 @@ import type { OnboardingParams, CreateBudgetParams } from "./types";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { budgets, userCategories, categoryBudgets } from "@/lib/db/schema";
 import type { Budget } from "@/lib/db/schema";
+import {
+  encrypt,
+  EncryptionCipherCreationError,
+  EncryptionCipherUpdateError,
+  EncryptionCipherFinalError,
+} from "@/lib/utils/encryption";
 
 export const create = (user: Partial<User>, ctx: AppContext) =>
   ResultAsync.fromPromise(
@@ -118,6 +124,9 @@ export const onboardUser = (
   | InstanceType<typeof EntityReadError>
   | InstanceType<typeof EntityCreateError>
   | InstanceType<typeof EntityUpdateError>
+  | InstanceType<typeof EncryptionCipherCreationError>
+  | InstanceType<typeof EncryptionCipherUpdateError>
+  | InstanceType<typeof EncryptionCipherFinalError>
 > =>
   findById(userId, ctx).andThen(() =>
     ResultAsync.fromPromise(
@@ -125,14 +134,30 @@ export const onboardUser = (
         const budgetId = generateUuid();
         const now = new Date();
 
+        const encryptStartResult = await encrypt(params.startAmount.toString());
+        if (encryptStartResult.isErr()) {
+          throw encryptStartResult.error;
+        }
+        const encryptedStart = encryptStartResult.value;
+
+        const encryptCurrentResult = await encrypt(params.startAmount.toString());
+        if (encryptCurrentResult.isErr()) {
+          throw encryptCurrentResult.error;
+        }
+        const encryptedCurrent = encryptCurrentResult.value;
+
         const [budget] = await tx
           .insert(budgets)
           .values({
             id: budgetId,
             userId,
             name: params.name,
-            startAmount: params.startAmount.toString(),
-            currentAmount: params.startAmount.toString(),
+            startAmount: encryptedStart.ciphertext,
+            currentAmount: encryptedCurrent.ciphertext,
+            sa_iv: encryptedStart.iv,
+            sa_tag: encryptedStart.tag,
+            ca_iv: encryptedCurrent.iv,
+            ca_tag: encryptedCurrent.tag,
             isActive: true,
             createdAt: now,
             updatedAt: now,
@@ -151,7 +176,10 @@ export const onboardUser = (
           updatedAt: now,
         }));
 
-        await tx.insert(userCategories).values(userCategoryInserts).onConflictDoNothing();
+        await tx
+          .insert(userCategories)
+          .values(userCategoryInserts)
+          .onConflictDoNothing();
 
         console.log("user categories");
 
@@ -186,7 +214,11 @@ export const onboardUser = (
         return updatedUser;
       }),
       (error) =>
-        error instanceof EntityCreateError || error instanceof EntityUpdateError
+        error instanceof EntityCreateError ||
+        error instanceof EntityUpdateError ||
+        error instanceof EncryptionCipherCreationError ||
+        error instanceof EncryptionCipherUpdateError ||
+        error instanceof EncryptionCipherFinalError
           ? error
           : new EntityCreateError("Onboarding", error),
     ),
@@ -202,6 +234,9 @@ export const createNewBudget = (
   | InstanceType<typeof EntityReadError>
   | InstanceType<typeof EntityCreateError>
   | InstanceType<typeof EntityUpdateError>
+  | InstanceType<typeof EncryptionCipherCreationError>
+  | InstanceType<typeof EncryptionCipherUpdateError>
+  | InstanceType<typeof EncryptionCipherFinalError>
 > =>
   findById(userId, ctx).andThen(() =>
     ResultAsync.fromPromise(
@@ -218,15 +253,30 @@ export const createNewBudget = (
           })
           .where(eq(budgets.userId, userId));
 
-        // Create new budget as active
+        const encryptStartResult = await encrypt(params.startAmount.toString());
+        if (encryptStartResult.isErr()) {
+          throw encryptStartResult.error;
+        }
+        const encryptedStart = encryptStartResult.value;
+
+        const encryptCurrentResult = await encrypt(params.startAmount.toString());
+        if (encryptCurrentResult.isErr()) {
+          throw encryptCurrentResult.error;
+        }
+        const encryptedCurrent = encryptCurrentResult.value;
+
         const [budget] = await tx
           .insert(budgets)
           .values({
             id: budgetId,
             userId,
             name: params.name,
-            startAmount: params.startAmount.toString(),
-            currentAmount: params.startAmount.toString(),
+            startAmount: encryptedStart.ciphertext,
+            currentAmount: encryptedCurrent.ciphertext,
+            sa_iv: encryptedStart.iv,
+            sa_tag: encryptedStart.tag,
+            ca_iv: encryptedCurrent.iv,
+            ca_tag: encryptedCurrent.tag,
             isActive: true,
             createdAt: now,
             updatedAt: now,
@@ -244,7 +294,10 @@ export const createNewBudget = (
           updatedAt: now,
         }));
 
-        await tx.insert(userCategories).values(userCategoryInserts).onConflictDoNothing();
+        await tx
+          .insert(userCategories)
+          .values(userCategoryInserts)
+          .onConflictDoNothing();
 
         // Create category budgets for new budget
         const categoryBudgetInserts = params.categories.map((cat) => ({
@@ -261,7 +314,11 @@ export const createNewBudget = (
         return budget;
       }),
       (error) =>
-        error instanceof EntityCreateError || error instanceof EntityUpdateError
+        error instanceof EntityCreateError ||
+        error instanceof EntityUpdateError ||
+        error instanceof EncryptionCipherCreationError ||
+        error instanceof EncryptionCipherUpdateError ||
+        error instanceof EncryptionCipherFinalError
           ? error
           : new EntityCreateError("Budget creation", error),
     ),

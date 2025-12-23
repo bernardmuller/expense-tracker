@@ -12,6 +12,11 @@ import {
   EntityUpdateError,
 } from "@/lib/errors/actionErrors";
 import { SearchQueries } from "@/lib/http/types";
+import {
+  EncryptionDecipherCreationError,
+  EncryptionDecipherUpdateError,
+  EncryptionDecipherFinalError,
+} from "@/lib/utils/encryption";
 
 export const getBudgetExpenses = (
   budgetId: string,
@@ -34,6 +39,9 @@ export const getBudgetExpenses = (
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > => TransactionQueries.getBudgetWithExpensesByBudgetId(budgetId, userId, ctx);
 
 export const getBudgets = (
@@ -49,6 +57,9 @@ export const getBudgets = (
   Array<Budget>,
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > => TransactionQueries.getBudgets(search, ctx);
 
 export const getActiveBudgetWithExpenses = (
@@ -62,4 +73,7 @@ export const getActiveBudgetWithExpenses = (
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
+  | InstanceType<typeof EncryptionDecipherCreationError>
+  | InstanceType<typeof EncryptionDecipherUpdateError>
+  | InstanceType<typeof EncryptionDecipherFinalError>
 > => TransactionQueries.getActiveBudgetWithExpenses(userId, ctx);

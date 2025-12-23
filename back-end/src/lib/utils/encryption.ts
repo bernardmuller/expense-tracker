@@ -28,7 +28,7 @@ const bcryptCompare = (string: string, hash: string) =>
     () => new EncryptionComparisonError(),
   );
 
-const encrypt = async (value: string) => {
+export const encrypt = async (value: string) => {
   const iv = crypto.randomBytes(12);
 
   return createCipherivSafe(
@@ -38,51 +38,64 @@ const encrypt = async (value: string) => {
   ).andThen((cipher) => {
     return cipherUpdateSafe(cipher, value, "utf8", "base64url").andThen(
       (encrypted) => {
-        return cipherFinalSafe(cipher, "base64url").map((finalPart) => {
-          return {
+        return cipherFinalSafe(cipher, "base64url").andThen((finalPart) => {
+          const authTagResult = fromThrowable(
+            () => cipher.getAuthTag(),
+            () => new EncryptionCipherFinalError(),
+          )();
+
+          return authTagResult.map((authTag) => ({
             ciphertext: encrypted + finalPart,
             iv: iv.toString("base64url"),
-          };
+            tag: authTag.toString("base64url"),
+          }));
         });
       },
     );
   });
 };
 
-const decrypt = async (ciphertext: string, iv: string, tag: string) => {
+export const decrypt = async (ciphertext: string, iv: string, tag: string) => {
   return createDecipherivSafe(
     ALGO,
     Buffer.from(ENCRYPTION_KEY, "hex"),
     Buffer.from(iv, "base64url"),
   ).andThen((decipher) => {
-    return decipherUpdateSafe(
-      decipher,
-      ciphertext,
-      "base64url",
-      "utf8",
-    ).andThen((decrypted) => {
-      return decipherFinalSafe(decipher, "utf8").map((finalPart) => {
-        return decrypted + finalPart;
-      });
-    });
+    const setAuthTagResult = fromThrowable(
+      () => decipher.setAuthTag(Buffer.from(tag, "base64url")),
+      () => new EncryptionDecipherCreationError(),
+    )();
+
+    return setAuthTagResult.andThen(() =>
+      decipherUpdateSafe(
+        decipher,
+        ciphertext,
+        "base64url",
+        "utf8",
+      ).andThen((decrypted) => {
+        return decipherFinalSafe(decipher, "utf8").map((finalPart) => {
+          return decrypted + finalPart;
+        });
+      }),
+    );
   });
 };
 
 const createCipherivSafe = fromThrowable(
   (algo: string, key: Buffer, iv: Buffer) =>
-    crypto.createCipheriv(algo, key, iv),
+    crypto.createCipheriv(algo, key, iv) as crypto.CipherGCM,
   () => new EncryptionCipherCreationError(),
 );
 
 const createDecipherivSafe = fromThrowable(
   (algo: string, key: Buffer, iv: Buffer) =>
-    crypto.createDecipheriv(algo, key, iv),
+    crypto.createDecipheriv(algo, key, iv) as crypto.DecipherGCM,
   () => new EncryptionDecipherCreationError(),
 );
 
 const cipherUpdateSafe = fromThrowable(
   (
-    cipher: crypto.Cipher,
+    cipher: crypto.CipherGCM,
     data: string,
     inputEncoding: crypto.Encoding,
     outputEncoding: crypto.Encoding,
@@ -91,14 +104,14 @@ const cipherUpdateSafe = fromThrowable(
 );
 
 const cipherFinalSafe = fromThrowable(
-  (cipher: crypto.Cipher, outputEncoding: crypto.Encoding) =>
+  (cipher: crypto.CipherGCM, outputEncoding: crypto.Encoding) =>
     cipher.final(outputEncoding),
   () => new EncryptionCipherFinalError(),
 );
 
 const decipherUpdateSafe = fromThrowable(
   (
-    decipher: crypto.Decipher,
+    decipher: crypto.DecipherGCM,
     data: string,
     inputEncoding: crypto.Encoding,
     outputEncoding: crypto.Encoding,
@@ -107,7 +120,7 @@ const decipherUpdateSafe = fromThrowable(
 );
 
 const decipherFinalSafe = fromThrowable(
-  (decipher: crypto.Decipher, outputEncoding: crypto.Encoding) =>
+  (decipher: crypto.DecipherGCM, outputEncoding: crypto.Encoding) =>
     decipher.final(outputEncoding),
   () => new EncryptionDecipherFinalError(),
 );
@@ -201,3 +214,19 @@ export const EncryptionDecipherFinalError = createError(
     statusCode: 500,
   },
 );
+
+export const isEncrypted = (
+  currentAmount: string,
+  iv: string | null,
+  tag: string | null,
+): boolean => {
+  if (!iv || !tag) {
+    return false;
+  }
+
+  if (/^\d+(\.\d+)?([eE][+-]?\d+)?$/.test(currentAmount)) {
+    return false;
+  }
+
+  return true;
+};
