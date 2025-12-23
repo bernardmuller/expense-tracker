@@ -50,3 +50,16 @@ export const getBudgets = (
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
 > => TransactionQueries.getBudgets(search, ctx);
+
+export const getActiveBudgetWithExpenses = (
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Budget & {
+    expenses: (Transaction & {
+      category: { id: string; key: string; label: string; icon: string };
+    })[];
+  },
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> => TransactionQueries.getActiveBudgetWithExpenses(userId, ctx);

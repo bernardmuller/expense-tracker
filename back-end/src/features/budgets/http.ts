@@ -36,6 +36,57 @@ const getBudgetsRoute = createRoute({
   },
 });
 
+const getActiveBudgetRoute = createRoute({
+  path: "/users/{id}/budgets/active",
+  method: "get",
+  tags: tags,
+  request: {
+    params: z.object({ id: z.uuid() }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.object({
+        id: z.uuid(),
+        userId: z.uuid(),
+        name: z.string(),
+        startAmount: z.string(),
+        currentAmount: z.string(),
+        isActive: z.boolean(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+        deletedAt: z.date().nullable(),
+        expenses: z.array(
+          z.object({
+            id: z.uuid(),
+            budgetId: z.uuid(),
+            description: z.string(),
+            amount: z.string(),
+            categoryId: z.uuid(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+            deletedAt: z.date().nullable(),
+            category: z.object({
+              id: z.uuid(),
+              key: z.string(),
+              label: z.string(),
+              icon: z.string(),
+            }),
+          }),
+        ),
+      }),
+      "Active budget with expenses",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "Active budget not found",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
 const getBudgetExpensesRoute = createRoute({
   path: "/budgets/{id}/expenses",
   method: "get",
@@ -156,6 +207,21 @@ const getBudgetsHandler = async (c: Context) => {
     );
 };
 
+const getActiveBudgetHandler = async (c: Context) => {
+  const user = c.get("user") as { userId: string };
+  const ctx = createContext();
+  const result = await TransactionOperations.getActiveBudgetWithExpenses(
+    user.userId,
+    ctx,
+  );
+
+  return result.match(
+    (budget) => c.json(budget, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
 export const budgetRouter = createRouter()
   .openapi(getBudgetExpensesRoute, getBudgetExpensesHandler)
-  .openapi(getBudgetsRoute, getBudgetsHandler);
+  .openapi(getBudgetsRoute, getBudgetsHandler)
+  .openapi(getActiveBudgetRoute, getActiveBudgetHandler);

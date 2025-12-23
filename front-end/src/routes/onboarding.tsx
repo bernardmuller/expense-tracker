@@ -31,6 +31,8 @@ import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
+import { getUserById } from '@/lib/http/api/users'
+import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -151,7 +153,9 @@ function OnboardingPage() {
           await Promise.all([
             queryClient.prefetchQuery(getActiveBudgetQueryOptions()),
             queryClient.prefetchQuery(getCategoriesQueryOptions()),
+            queryClient.invalidateQueries(getUserByIdQueryOptions()),
           ])
+
           navigate({ to: '/dashboard' })
         },
       })
@@ -289,7 +293,7 @@ function OnboardingPage() {
                     name="categories"
                     children={(field) => (
                       <div className="flex flex-col">
-                        {categories.map((category, index) => {
+                        {categories.categories.map((category, index) => {
                           const isChecked = field.state.value.some(
                             (cat) => cat.id === category.id,
                           )
@@ -298,9 +302,7 @@ function OnboardingPage() {
                               <SelectableCategoryItem
                                 {...category}
                                 checked={isChecked}
-                                onCheckedChange={() =>
-                                  toggleCategory(category)
-                                }
+                                onCheckedChange={() => toggleCategory(category)}
                               />
                               {index < categories.length - 1 && (
                                 <Separator className="my-2" />

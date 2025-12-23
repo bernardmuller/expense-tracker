@@ -870,6 +870,96 @@ export interface paths {
         };
         trace?: never;
     };
+    "/users/{id}/budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Budget creation data */
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        startAmount: number;
+                        categories: {
+                            /** Format: uuid */
+                            id: string;
+                            icon: string;
+                            label: string;
+                            amount: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Budget created successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            userId: string;
+                            name: string;
+                            startAmount: string;
+                            currentAmount: string;
+                            isActive: boolean;
+                            createdAt: string;
+                            updatedAt: string;
+                            deletedAt: string | null;
+                        };
+                    };
+                };
+                /** @description User not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/{id}/verify": {
         parameters: {
             query?: never;
@@ -985,318 +1075,6 @@ export interface paths {
                             message: string;
                             code: string;
                         };
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: string;
-                            message: string;
-                            code: string;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Returns a list of categories */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** Format: uuid */
-                            id: string;
-                            key: string;
-                            label: string;
-                            icon: string;
-                        }[];
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: string;
-                            message: string;
-                            code: string;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/budgets/{id}/transactions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description Transaction creation data */
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        description: string;
-                        amount: number;
-                        /** Format: uuid */
-                        categoryId: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Transaction created successfully */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** Format: uuid */
-                            id: string;
-                            /** Format: uuid */
-                            budgetId: string;
-                            description: string;
-                            amount: string;
-                            /** Format: uuid */
-                            categoryId: string;
-                            /** Format: date */
-                            createdAt: string;
-                            /** Format: date */
-                            updatedAt: string;
-                            /** Format: date */
-                            deletedAt: string | null;
-                        };
-                    };
-                };
-                /** @description Budget or category not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: string;
-                            message: string;
-                            code: string;
-                        };
-                    };
-                };
-                /** @description Validation error */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: string;
-                            message: string;
-                            code: string;
-                        };
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: string;
-                            message: string;
-                            code: string;
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/budgets/active": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Active budget with expenses */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** Format: uuid */
-                            id: string;
-                            /** Format: uuid */
-                            userId: string;
-                            name: string;
-                            startAmount: string;
-                            currentAmount: string;
-                            isActive: boolean;
-                            /** Format: date */
-                            createdAt: string;
-                            /** Format: date */
-                            updatedAt: string;
-                            /** Format: date */
-                            deletedAt: string | null;
-                            expenses: {
-                                /** Format: uuid */
-                                id: string;
-                                /** Format: uuid */
-                                budgetId: string;
-                                description: string;
-                                amount: string;
-                                /** Format: uuid */
-                                categoryId: string;
-                                /** Format: date */
-                                createdAt: string;
-                                /** Format: date */
-                                updatedAt: string;
-                                /** Format: date */
-                                deletedAt: string | null;
-                                category: {
-                                    /** Format: uuid */
-                                    id: string;
-                                    key: string;
-                                    label: string;
-                                    icon: string;
-                                };
-                            }[];
-                        };
-                    };
-                };
-                /** @description Active budget not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: string;
-                            message: string;
-                            code: string;
-                        };
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: string;
-                            message: string;
-                            code: string;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User categories */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** Format: uuid */
-                            id: string;
-                            key: string;
-                            label: string;
-                            icon: string;
-                        }[];
                     };
                 };
                 /** @description Internal server error */
@@ -1441,6 +1219,466 @@ export interface paths {
                             error: string;
                             message: string;
                             code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Active budget with expenses */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            budgets: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                userId: string;
+                                name: string;
+                                startAmount: string;
+                                currentAmount: string;
+                                isActive: boolean;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                                /** Format: date */
+                                deletedAt: string | null;
+                            }[];
+                            count: number;
+                        };
+                    };
+                };
+                /** @description Active budget not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/budgets/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Active budget with expenses */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            userId: string;
+                            name: string;
+                            startAmount: string;
+                            currentAmount: string;
+                            isActive: boolean;
+                            /** Format: date */
+                            createdAt: string;
+                            /** Format: date */
+                            updatedAt: string;
+                            /** Format: date */
+                            deletedAt: string | null;
+                            expenses: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                budgetId: string;
+                                description: string;
+                                amount: string;
+                                /** Format: uuid */
+                                categoryId: string;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                                /** Format: date */
+                                deletedAt: string | null;
+                                category: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    key: string;
+                                    label: string;
+                                    icon: string;
+                                };
+                            }[];
+                        };
+                    };
+                };
+                /** @description Active budget not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of categories */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            categories: {
+                                /** Format: uuid */
+                                id: string;
+                                key: string;
+                                label: string;
+                                icon: string;
+                            }[];
+                            count: number;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/budgets/{id}/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Transaction creation data */
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        description: string;
+                        amount: number;
+                        /** Format: uuid */
+                        categoryId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Transaction created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            budgetId: string;
+                            description: string;
+                            amount: string;
+                            /** Format: uuid */
+                            categoryId: string;
+                            /** Format: date */
+                            createdAt: string;
+                            /** Format: date */
+                            updatedAt: string;
+                            /** Format: date */
+                            deletedAt: string | null;
+                        };
+                    };
+                };
+                /** @description Budget or category not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User categories */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            key: string;
+                            label: string;
+                            icon: string;
+                        }[];
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of transactions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            transactions: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                budgetId: string;
+                                description: string;
+                                amount: string;
+                                /** Format: uuid */
+                                categoryId: string;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                                /** Format: date */
+                                deletedAt: string | null;
+                            }[];
+                            count: number;
                         };
                     };
                 };

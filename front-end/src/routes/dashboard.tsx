@@ -71,6 +71,8 @@ function Dashboard() {
   const spentAmount = startAmount - currentAmount
   const spentPercentage = (spentAmount / startAmount) * 100
 
+  console.log(categories)
+
   return (
     <>
       <RefreshIndicator isRefreshing={!!isRefreshing} />
@@ -125,7 +127,7 @@ function Dashboard() {
               categoryId: value.category,
             })
           }
-          categories={categories
+          categories={categories.categories
             .map((c) => ({
               label: c.label,
               value: c.id,

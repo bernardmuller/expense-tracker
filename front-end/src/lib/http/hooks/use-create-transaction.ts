@@ -75,16 +75,23 @@ export function useCreateTransaction(budgetId: string) {
       await queryClient.cancelQueries({ queryKey: budgetDetailQueryKey })
 
       const previousBudget = queryClient.getQueryData(activeBudgetQueryKey)
-      const previousBudgetDetail = queryClient.getQueryData(budgetDetailQueryKey)
+      const previousBudgetDetail =
+        queryClient.getQueryData(budgetDetailQueryKey)
 
       const categories = queryClient.getQueryData<CategoriesRequestSuccess>(
         queryKeys.categories.all,
       )
-      const category = categories?.find(
+      const category = categories?.categories.find(
         (cat) => cat.id === newTransaction.categoryId,
       )
 
-      if (!category) return { previousBudget, previousBudgetDetail, activeBudgetQueryKey, budgetDetailQueryKey }
+      if (!category)
+        return {
+          previousBudget,
+          previousBudgetDetail,
+          activeBudgetQueryKey,
+          budgetDetailQueryKey,
+        }
 
       const optimisticTransaction = {
         id: `temp-${Date.now()}`,
@@ -150,14 +157,25 @@ export function useCreateTransaction(budgetId: string) {
         },
       )
 
-      return { previousBudget, previousBudgetDetail, activeBudgetQueryKey, budgetDetailQueryKey }
+      return {
+        previousBudget,
+        previousBudgetDetail,
+        activeBudgetQueryKey,
+        budgetDetailQueryKey,
+      }
     },
     onError: (_err, _newTransaction, context) => {
       if (context?.previousBudget) {
-        queryClient.setQueryData(context.activeBudgetQueryKey, context.previousBudget)
+        queryClient.setQueryData(
+          context.activeBudgetQueryKey,
+          context.previousBudget,
+        )
       }
       if (context?.previousBudgetDetail) {
-        queryClient.setQueryData(context.budgetDetailQueryKey, context.previousBudgetDetail)
+        queryClient.setQueryData(
+          context.budgetDetailQueryKey,
+          context.previousBudgetDetail,
+        )
       }
     },
     onSuccess: () => {

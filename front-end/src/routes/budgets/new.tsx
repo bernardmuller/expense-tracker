@@ -156,7 +156,9 @@ function NewBudgetPage() {
   const initialCategories = categories
     ? budgetDetail.categoryBudgets
         .map((cb) => {
-          const category = categories.find((c) => c.id === cb.categoryId)
+          const category = categories.categories.find(
+            (c) => c.id === cb.categoryId,
+          )
           return category
             ? {
                 id: category.id,
@@ -359,7 +361,7 @@ function NewBudgetPage() {
                     <div className="text-destructive p-8 text-center">
                       Failed to load categories. Please try again.
                     </div>
-                  ) : !categories || categories.length === 0 ? (
+                  ) : !categories || categories.categories.length === 0 ? (
                     <div className="text-muted-foreground p-8 text-center">
                       No categories available
                     </div>
@@ -368,7 +370,7 @@ function NewBudgetPage() {
                       name="categories"
                       children={(field) => (
                         <div className="flex flex-col">
-                          {categories.map((category, index) => {
+                          {categories.categories.map((category, index) => {
                             const isChecked = field.state.value.some(
                               (cat) => cat.id === category.id,
                             )
@@ -381,7 +383,7 @@ function NewBudgetPage() {
                                     toggleCategory(category)
                                   }
                                 />
-                                {index < categories.length - 1 && (
+                                {index < categories.categories.length - 1 && (
                                   <Separator className="my-3" />
                                 )}
                               </Fragment>
