@@ -5,8 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1766499471634,
-      "tag": "0000_sweet_storm",
+      "when": 1761810258607,
+      "tag": "0000_short_magik",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766664000000,
+      "tag": "0001_add_budget_encryption",
       "breakpoints": true
     }
   ]

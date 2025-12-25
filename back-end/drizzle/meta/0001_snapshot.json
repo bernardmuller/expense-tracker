@@ -1,6 +1,6 @@
 {
-  "id": "043aa68e-780a-461d-abc9-04b5e0fa6c58",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "c59fa360-96cd-4390-bcf9-5ed8993eabf6",
+  "prevId": "043aa68e-780a-461d-abc9-04b5e0fa6c58",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -14,15 +14,15 @@
           "primaryKey": true,
           "notNull": true
         },
-        "account_id": {
-          "name": "account_id",
+        "user_id": {
+          "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
+        "password": {
+          "name": "password",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -58,12 +58,6 @@
         },
         "scope": {
           "name": "scope",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "password": {
-          "name": "password",
           "type": "text",
           "primaryKey": false,
           "notNull": false
