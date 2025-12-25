@@ -54,8 +54,10 @@ const createTestBudget = async (
       startAmount,
       currentAmount,
       isActive: true,
-      iv: null,
-      tag: null,
+      sa_iv: null,
+      sa_tag: null,
+      ca_iv: null,
+      ca_tag: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       deletedAt: null,
@@ -119,16 +121,18 @@ describe("Transaction Operations", () => {
             .where(eq(budgets.id, budget.id));
 
           expect(updatedBudget).toBeTruthy();
-          expect(updatedBudget.iv).toBeTruthy();
-          expect(updatedBudget.tag).toBeTruthy();
-          // Verify currentAmount is encrypted (critical field that changes)
-          expect(
-            isEncrypted(
-              updatedBudget.currentAmount,
-              updatedBudget.iv,
-              updatedBudget.tag,
-            ),
-          ).toBe(true);
+          if (updatedBudget) {
+            expect(updatedBudget.ca_iv).toBeTruthy();
+            expect(updatedBudget.ca_tag).toBeTruthy();
+            // Verify currentAmount is encrypted (critical field that changes)
+            expect(
+              isEncrypted(
+                updatedBudget.currentAmount,
+                updatedBudget.ca_iv,
+                updatedBudget.ca_tag,
+              ),
+            ).toBe(true);
+          }
         }
       });
     });
@@ -196,16 +200,18 @@ describe("Transaction Operations", () => {
               .where(eq(budgets.id, budget.id));
 
             expect(updatedBudget).toBeTruthy();
-            expect(updatedBudget.iv).toBeTruthy();
-            expect(updatedBudget.tag).toBeTruthy();
-            // Verify currentAmount is encrypted (critical field that changes)
-            expect(
-              isEncrypted(
-                updatedBudget.currentAmount,
-                updatedBudget.iv,
-                updatedBudget.tag,
-              ),
-            ).toBe(true);
+            if (updatedBudget) {
+              expect(updatedBudget.ca_iv).toBeTruthy();
+              expect(updatedBudget.ca_tag).toBeTruthy();
+              // Verify currentAmount is encrypted (critical field that changes)
+              expect(
+                isEncrypted(
+                  updatedBudget.currentAmount,
+                  updatedBudget.ca_iv,
+                  updatedBudget.ca_tag,
+                ),
+              ).toBe(true);
+            }
           }
         }
       });

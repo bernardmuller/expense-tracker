@@ -8,7 +8,6 @@ import * as UserOperations from "./operations";
 import { createUserSchema, userSchema } from "./types";
 import { onboardingSchema, createBudgetSchema } from "./types";
 import type { CreateUserParams } from "./types";
-import { z } from "zod";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
 

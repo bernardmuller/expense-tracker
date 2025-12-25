@@ -112,20 +112,30 @@ export const getActiveBudgetByUserId = (
       );
     }
 
-    const decryptResult = isEncrypted(
+    return (isEncrypted(
       budget.currentAmount,
       budget.ca_iv,
       budget.ca_tag,
     )
-      ? decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!)
-      : okAsync(budget.currentAmount);
-
-    return decryptResult.map((decryptedAmount) => ({
+      ? ResultAsync.fromPromise(
+          decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!),
+          (error) =>
+            error instanceof EncryptionDecipherCreationError ||
+            error instanceof EncryptionDecipherUpdateError ||
+            error instanceof EncryptionDecipherFinalError
+              ? error
+              : new EntityReadError("Budget", String(error)),
+        ).andThen((result) => result)
+      : okAsync(budget.currentAmount)).andThen((decryptedAmount) => okAsync({
       id: budget.id,
       userId: budget.userId,
       name: budget.name,
       startAmount: budget.startAmount,
       currentAmount: decryptedAmount,
+      sa_iv: budget.sa_iv,
+      sa_tag: budget.sa_tag,
+      ca_iv: budget.ca_iv,
+      ca_tag: budget.ca_tag,
       isActive: budget.isActive,
       createdAt: budget.createdAt,
       updatedAt: budget.updatedAt,
@@ -283,15 +293,21 @@ export const getBudgetWithExpensesByBudgetId = (
       );
     }
 
-    const decryptResult = isEncrypted(
+    return (isEncrypted(
       budget.currentAmount,
       budget.ca_iv,
       budget.ca_tag,
     )
-      ? decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!)
-      : okAsync(budget.currentAmount);
-
-    return decryptResult.map((decryptedAmount) => {
+      ? ResultAsync.fromPromise(
+          decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!),
+          (error) =>
+            error instanceof EncryptionDecipherCreationError ||
+            error instanceof EncryptionDecipherUpdateError ||
+            error instanceof EncryptionDecipherFinalError
+              ? error
+              : new EntityReadError("Budget", String(error)),
+        ).andThen((result) => result)
+      : okAsync(budget.currentAmount)).andThen((decryptedAmount) => {
       const categoryMap = new Map<
         string,
         {
@@ -356,12 +372,16 @@ export const getBudgetWithExpensesByBudgetId = (
             category.allocated !== null ? category.allocated.toFixed(2) : null,
         }));
 
-      return {
+      return okAsync({
         id: budget.id,
         userId: budget.userId,
         name: budget.name,
         startAmount: budget.startAmount,
         currentAmount: decryptedAmount,
+        sa_iv: budget.sa_iv,
+        sa_tag: budget.sa_tag,
+        ca_iv: budget.ca_iv,
+        ca_tag: budget.ca_tag,
         isActive: budget.isActive,
         createdAt: budget.createdAt,
         updatedAt: budget.updatedAt,
@@ -369,7 +389,7 @@ export const getBudgetWithExpensesByBudgetId = (
         expenses: budget.expenses,
         categoryBudgets: budget.categoryBudgets || [],
         categoryBreakdown,
-      };
+      });
     });
   });
 

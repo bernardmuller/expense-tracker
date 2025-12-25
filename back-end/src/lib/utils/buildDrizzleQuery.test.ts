@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { and, desc, asc, SQL } from "drizzle-orm";
+import { and, desc, asc, SQL, AnyColumn } from "drizzle-orm";
 import buildDrizzleQuery from "./buildDrizzleQuery";
 import type { PgSelect } from "drizzle-orm/pg-core";
 
@@ -24,6 +24,7 @@ function createMockQueryBuilder() {
     orderBy: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
     offset: vi.fn().mockReturnThis(),
+    leftJoin: vi.fn().mockReturnThis(),
   };
   return mockQb as unknown as PgSelect;
 }
@@ -34,6 +35,30 @@ const mockColumns = {
   createdAt: { name: "createdAt" },
   updatedAt: { name: "updatedAt" },
   name: { name: "name" },
+};
+
+// Mock table objects for relation testing
+const mockCategoriesTable = { name: "categories" };
+const mockBudgetsTable = { name: "budgets" };
+
+// Mock relation configurations
+const mockRelationMap = {
+  category: {
+    table: mockCategoriesTable,
+    on: { _type: "eq", left: "categoryId", right: "id" } as unknown as SQL,
+    fields: {
+      id: { name: "category.id" },
+      name: { name: "category.name" },
+    },
+  },
+  budget: {
+    table: mockBudgetsTable,
+    on: { _type: "eq", left: "budgetId", right: "id" } as unknown as SQL,
+    fields: {
+      id: { name: "budget.id" },
+      name: { name: "budget.name" },
+    },
+  },
 };
 
 describe("buildDrizzleQuery", () => {
@@ -181,20 +206,20 @@ describe("buildDrizzleQuery", () => {
       const mockQb = createMockQueryBuilder();
       const filterMap = {};
 
-      buildDrizzleQuery(mockQb, {}, filterMap, mockColumns);
+      buildDrizzleQuery(mockQb, {}, filterMap, mockColumns as unknown as Record<string, AnyColumn>);
 
       expect(mockQb.orderBy).not.toHaveBeenCalled();
     });
 
     it("should apply ascending sort by default", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(
         mockQb,
         { sort: "createdAt" },
         filterMap,
-        mockColumns,
+        mockColumns as unknown as Record<string, AnyColumn>,
       );
 
       expect(asc).toHaveBeenCalledWith(mockColumns.createdAt);
@@ -206,13 +231,13 @@ describe("buildDrizzleQuery", () => {
 
     it("should apply ascending sort when order is 'asc'", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(
         mockQb,
         { sort: "createdAt", order: "asc" },
         filterMap,
-        mockColumns,
+        mockColumns as unknown as Record<string, AnyColumn>,
       );
 
       expect(asc).toHaveBeenCalledWith(mockColumns.createdAt);
@@ -221,13 +246,13 @@ describe("buildDrizzleQuery", () => {
 
     it("should apply descending sort when order is 'desc'", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(
         mockQb,
         { sort: "createdAt", order: "desc" },
         filterMap,
-        mockColumns,
+        mockColumns as unknown as Record<string, AnyColumn>,
       );
 
       expect(desc).toHaveBeenCalledWith(mockColumns.createdAt);
@@ -239,14 +264,14 @@ describe("buildDrizzleQuery", () => {
 
     it("should warn and skip sorting for invalid sort key", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
       const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       buildDrizzleQuery(
         mockQb,
         { sort: "invalidColumn" },
         filterMap,
-        mockColumns,
+        mockColumns as unknown as Record<string, AnyColumn>,
       );
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
@@ -259,7 +284,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should not apply sorting when sortColumns is not provided", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(
         mockQb,
@@ -272,7 +297,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should not apply sorting when sortColumns is empty", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(
         mockQb,
@@ -282,6 +307,171 @@ describe("buildDrizzleQuery", () => {
       );
 
       expect(mockQb.orderBy).not.toHaveBeenCalled();
+    });
+  });
+
+  // ============================================
+  // Relation Joins/Includes Tests
+  // ============================================
+
+  describe("Relation Joins/Includes", () => {
+    it("should not apply joins when include is not provided", () => {
+      const mockQb = createMockQueryBuilder();
+      const filterMap = {};
+
+      buildDrizzleQuery(mockQb, {}, filterMap, mockColumns as unknown as Record<string, AnyColumn>, mockRelationMap as any);
+
+      expect(mockQb.leftJoin).not.toHaveBeenCalled();
+    });
+
+    it("should not apply joins when include array is empty", () => {
+      const mockQb = createMockQueryBuilder();
+      const filterMap = {} as any;
+
+      buildDrizzleQuery(
+        mockQb,
+        { include: [] },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      expect(mockQb.leftJoin).not.toHaveBeenCalled();
+    });
+
+    it("should not apply joins when relationMap is not provided", () => {
+      const mockQb = createMockQueryBuilder();
+      const filterMap = {} as any;
+
+      buildDrizzleQuery(
+        mockQb,
+        { include: ["category"] },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+      );
+
+      expect(mockQb.leftJoin).not.toHaveBeenCalled();
+    });
+
+    it("should apply single relation join", () => {
+      const mockQb = createMockQueryBuilder();
+      const filterMap = {} as any;
+
+      buildDrizzleQuery(
+        mockQb,
+        { include: ["category"] },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      expect(mockQb.leftJoin).toHaveBeenCalledTimes(1);
+      expect(mockQb.leftJoin).toHaveBeenCalledWith(
+        mockCategoriesTable,
+        mockRelationMap.category.on,
+      );
+    });
+
+    it("should apply multiple relation joins", () => {
+      const mockQb = createMockQueryBuilder();
+      const filterMap = {} as any;
+
+      buildDrizzleQuery(
+        mockQb,
+        { include: ["category", "budget"] },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      expect(mockQb.leftJoin).toHaveBeenCalledTimes(2);
+      expect(mockQb.leftJoin).toHaveBeenCalledWith(
+        mockCategoriesTable,
+        mockRelationMap.category.on,
+      );
+      expect(mockQb.leftJoin).toHaveBeenCalledWith(
+        mockBudgetsTable,
+        mockRelationMap.budget.on,
+      );
+    });
+
+    it("should warn and skip invalid relation names", () => {
+      const mockQb = createMockQueryBuilder();
+      const filterMap = {} as any;
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      buildDrizzleQuery(
+        mockQb,
+        { include: ["invalidRelation"] },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Relation "invalidRelation" not found in relationMap. Available relations: category, budget',
+      );
+      expect(mockQb.leftJoin).not.toHaveBeenCalled();
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it("should apply valid relations and skip invalid ones", () => {
+      const mockQb = createMockQueryBuilder();
+      const filterMap = {} as any;
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      buildDrizzleQuery(
+        mockQb,
+        { include: ["category", "invalidRelation", "budget"] },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Relation "invalidRelation" not found in relationMap. Available relations: category, budget',
+      );
+      expect(mockQb.leftJoin).toHaveBeenCalledTimes(2);
+      expect(mockQb.leftJoin).toHaveBeenCalledWith(
+        mockCategoriesTable,
+        mockRelationMap.category.on,
+      );
+      expect(mockQb.leftJoin).toHaveBeenCalledWith(
+        mockBudgetsTable,
+        mockRelationMap.budget.on,
+      );
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it("should apply joins before filters", () => {
+      const mockQb = createMockQueryBuilder();
+      const calls: string[] = [];
+
+      mockQb.leftJoin = vi.fn().mockImplementation(() => {
+        calls.push("leftJoin");
+        return mockQb;
+      });
+      mockQb.where = vi.fn().mockImplementation(() => {
+        calls.push("where");
+        return mockQb;
+      });
+
+      const filterMap = {
+        status: vi.fn().mockReturnValue({ _type: "sql" } as unknown as SQL),
+      };
+
+      buildDrizzleQuery(
+        mockQb,
+        { status: "active", include: ["category"] },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      // Verify joins are applied before filters
+      expect(calls).toEqual(["leftJoin", "where"]);
     });
   });
 
@@ -301,7 +491,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should apply limit when provided", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { limit: 10 }, filterMap);
 
@@ -310,7 +500,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should not apply limit when limit is 0", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { limit: 0 }, filterMap);
 
@@ -319,7 +509,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should not apply limit when limit is negative", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { limit: -1 }, filterMap);
 
@@ -337,7 +527,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should apply offset when provided", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { offset: 20 }, filterMap);
 
@@ -346,7 +536,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should apply offset when offset is 0", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { offset: 0 }, filterMap);
 
@@ -355,7 +545,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should not apply offset when offset is negative", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { offset: -1 }, filterMap);
 
@@ -364,7 +554,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should apply both limit and offset", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { limit: 10, offset: 20 }, filterMap);
 
@@ -374,7 +564,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should apply large limit and offset values", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(mockQb, { limit: 1000, offset: 5000 }, filterMap);
 
@@ -408,13 +598,63 @@ describe("buildDrizzleQuery", () => {
           offset: 50,
         },
         filterMap,
-        mockColumns,
+        mockColumns as unknown as Record<string, AnyColumn>,
       );
 
       // Verify filters applied
       expect(mockQb.where).toHaveBeenCalled();
       expect(filterMap.status).toHaveBeenCalledWith("active");
       expect(filterMap.category).toHaveBeenCalledWith("electronics");
+
+      // Verify sorting applied
+      expect(desc).toHaveBeenCalledWith(mockColumns.createdAt);
+      expect(mockQb.orderBy).toHaveBeenCalled();
+
+      // Verify pagination applied
+      expect(mockQb.limit).toHaveBeenCalledWith(25);
+      expect(mockQb.offset).toHaveBeenCalledWith(50);
+    });
+
+    it("should apply includes, filters, sorting, and pagination together", () => {
+      const mockQb = createMockQueryBuilder();
+      const mockSql1 = { _type: "sql1" } as unknown as SQL;
+      const mockSql2 = { _type: "sql2" } as unknown as SQL;
+      const filterMap = {
+        status: vi.fn().mockReturnValue(mockSql1),
+        categoryFilter: vi.fn().mockReturnValue(mockSql2),
+      };
+
+      buildDrizzleQuery(
+        mockQb,
+        {
+          status: "active",
+          categoryFilter: "electronics",
+          sort: "createdAt",
+          order: "desc",
+          limit: 25,
+          offset: 50,
+          include: ["category", "budget"],
+        },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      // Verify joins applied
+      expect(mockQb.leftJoin).toHaveBeenCalledTimes(2);
+      expect(mockQb.leftJoin).toHaveBeenCalledWith(
+        mockCategoriesTable,
+        mockRelationMap.category.on,
+      );
+      expect(mockQb.leftJoin).toHaveBeenCalledWith(
+        mockBudgetsTable,
+        mockRelationMap.budget.on,
+      );
+
+      // Verify filters applied
+      expect(mockQb.where).toHaveBeenCalled();
+      expect(filterMap.status).toHaveBeenCalledWith("active");
+      expect(filterMap.categoryFilter).toHaveBeenCalledWith("electronics");
 
       // Verify sorting applied
       expect(desc).toHaveBeenCalledWith(mockColumns.createdAt);
@@ -460,11 +700,66 @@ describe("buildDrizzleQuery", () => {
           offset: 5,
         },
         filterMap,
-        mockColumns,
+        mockColumns as unknown as Record<string, AnyColumn>,
       );
 
       // Verify correct order: where -> orderBy -> limit -> offset
       expect(calls).toEqual(["where", "orderBy", "limit", "offset"]);
+    });
+
+    it("should maintain correct method chaining order with includes", () => {
+      const mockQb = createMockQueryBuilder();
+      const calls: string[] = [];
+
+      mockQb.leftJoin = vi.fn().mockImplementation(() => {
+        calls.push("leftJoin");
+        return mockQb;
+      });
+      mockQb.where = vi.fn().mockImplementation(() => {
+        calls.push("where");
+        return mockQb;
+      });
+      mockQb.orderBy = vi.fn().mockImplementation(() => {
+        calls.push("orderBy");
+        return mockQb;
+      });
+      mockQb.limit = vi.fn().mockImplementation(() => {
+        calls.push("limit");
+        return mockQb;
+      });
+      mockQb.offset = vi.fn().mockImplementation(() => {
+        calls.push("offset");
+        return mockQb;
+      });
+
+      const filterMap = {
+        status: vi.fn().mockReturnValue({ _type: "sql" } as unknown as SQL),
+      };
+
+      buildDrizzleQuery(
+        mockQb,
+        {
+          status: "active",
+          sort: "createdAt",
+          order: "asc",
+          limit: 10,
+          offset: 5,
+          include: ["category", "budget"],
+        },
+        filterMap,
+        mockColumns as unknown as Record<string, AnyColumn>,
+        mockRelationMap as any,
+      );
+
+      // Verify correct order: leftJoin (x2) -> where -> orderBy -> limit -> offset
+      expect(calls).toEqual([
+        "leftJoin",
+        "leftJoin",
+        "where",
+        "orderBy",
+        "limit",
+        "offset",
+      ]);
     });
 
     it("should handle partial query parameters", () => {
@@ -497,7 +792,7 @@ describe("buildDrizzleQuery", () => {
       const result = buildDrizzleQuery(
         mockQb,
         { limit: 10 },
-        {},
+        {} as any,
       );
 
       expect(mockQb.where).not.toHaveBeenCalled();
@@ -535,13 +830,13 @@ describe("buildDrizzleQuery", () => {
 
     it("should handle query with only sorting", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(
         mockQb,
         { sort: "name", order: "asc" },
         filterMap,
-        mockColumns,
+        mockColumns as unknown as Record<string, AnyColumn>,
       );
 
       expect(mockQb.where).not.toHaveBeenCalled();
@@ -552,7 +847,7 @@ describe("buildDrizzleQuery", () => {
 
     it("should handle query with only pagination", () => {
       const mockQb = createMockQueryBuilder();
-      const filterMap = {};
+      const filterMap = {} as any;
 
       buildDrizzleQuery(
         mockQb,

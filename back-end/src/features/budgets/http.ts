@@ -97,27 +97,27 @@ const getBudgetExpensesRoute = createRoute({
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       z.object({
-        id: z.uuid(),
-        userId: z.uuid(),
+        id: z.string(),
+        userId: z.string(),
         name: z.string(),
         startAmount: z.string(),
         currentAmount: z.string(),
         isActive: z.boolean(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-        deletedAt: z.date().nullable(),
+        createdAt: z.string(),
+        updatedAt: z.string(),
+        deletedAt: z.string().nullable(),
         expenses: z.array(
           z.object({
-            id: z.uuid(),
-            budgetId: z.uuid(),
+            id: z.string(),
+            budgetId: z.string(),
             description: z.string(),
             amount: z.string(),
-            categoryId: z.uuid(),
-            createdAt: z.date(),
-            updatedAt: z.date(),
-            deletedAt: z.date().nullable(),
+            categoryId: z.string(),
+            createdAt: z.string(),
+            updatedAt: z.string(),
+            deletedAt: z.string().nullable(),
             category: z.object({
-              id: z.uuid(),
+              id: z.string(),
               key: z.string(),
               label: z.string(),
               icon: z.string(),
@@ -126,15 +126,15 @@ const getBudgetExpensesRoute = createRoute({
         ),
         categoryBudgets: z.array(
           z.object({
-            id: z.uuid(),
-            budgetId: z.uuid(),
-            categoryId: z.uuid(),
+            id: z.string(),
+            budgetId: z.string(),
+            categoryId: z.string(),
             allocatedAmount: z.string(),
-            createdAt: z.date(),
-            updatedAt: z.date(),
-            deletedAt: z.date().nullable(),
+            createdAt: z.string(),
+            updatedAt: z.string(),
+            deletedAt: z.string().nullable(),
             category: z.object({
-              id: z.uuid(),
+              id: z.string(),
               key: z.string(),
               label: z.string(),
               icon: z.string(),
@@ -143,7 +143,7 @@ const getBudgetExpensesRoute = createRoute({
         ),
         categoryBreakdown: z.array(
           z.object({
-            id: z.uuid(),
+            id: z.string(),
             key: z.string(),
             label: z.string(),
             icon: z.string(),
@@ -180,7 +180,7 @@ const getBudgetExpensesHandler = async (c: Context) => {
   );
 
   return result.match(
-    (budget) => c.json(budget, 200),
+    (budget) => c.json(budget as any, 200),
     (error) => mapErrorToResponse(error, c),
   );
 };

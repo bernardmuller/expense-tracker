@@ -103,6 +103,10 @@ const deleteExpenseRoute = createRoute({
       transactionSchema,
       "Expense deleted successfully",
     ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(
+      z.object({ error: z.string() }),
+      "Missing required parameters",
+    ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       errorResponseSchema,
       "Expense or budget not found",
@@ -171,7 +175,14 @@ const getTransactionsHandler = async (c: Context) => {
 };
 
 const deleteExpenseHandler = async (c: Context) => {
-  const { userId, budgetId, expenseId } = c.req.param();
+  const userId = c.req.param("userId");
+  const budgetId = c.req.param("budgetId");
+  const expenseId = c.req.param("expenseId");
+
+  if (!userId || !budgetId || !expenseId) {
+    return c.json({ error: "Missing required parameters" }, 400);
+  }
+
   const ctx = createContext();
   const result = await TransactionOperations.deleteTransactionAndUpdateBudget(
     userId,

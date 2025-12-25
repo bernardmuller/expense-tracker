@@ -43,3 +43,11 @@ export const getCategories = (
     ),
     (error) => new EntityReadError("Category", String(error)),
   );
+
+// Alias for backwards compatibility
+export const findAll = (
+  ctx: AppContext,
+): ResultAsync<
+  Array<CategoryWithoutMetadata>,
+  InstanceType<typeof EntityReadError>
+> => getCategories({}, ctx);
