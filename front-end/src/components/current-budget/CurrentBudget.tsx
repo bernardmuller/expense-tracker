@@ -12,7 +12,7 @@ import type { CurrentBudgetProps, CurrentBudgetBaseProps } from './CurrentBudget
 import { Progress } from '../ui/progress'
 import { formatPercentage } from '@/lib/utils/formatting/formatPercentage'
 
-function CurrentBudgetContent({
+export function CurrentBudgetContent({
   budgetName,
   currentAmount,
   startingAmount,
@@ -106,3 +106,5 @@ export function CurrentBudgetWithoutAction({
     </Card>
   )
 }
+
+export { default as CurrentBudgetWithBadge } from './CurrentBudgetWithBadge'

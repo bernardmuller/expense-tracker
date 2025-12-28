@@ -20,6 +20,7 @@ export const users = pgTable("users", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  budgetStartDate: timestamp("budget_start_date", { mode: "string" }),
   onboarded: boolean("onboarded")
     .$defaultFn(() => false)
     .notNull(),

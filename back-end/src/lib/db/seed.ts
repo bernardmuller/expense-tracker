@@ -116,6 +116,7 @@ export async function seedDatabase() {
       email: "developer@email.com",
       emailVerified: false,
       image: null,
+      budgetStartDate: new Date("2025-12-01").toDateString(),
       createdAt: new Date("2025-09-23 21:24:05.307"),
       updatedAt: new Date("2025-09-23 21:24:05.307"),
     };
