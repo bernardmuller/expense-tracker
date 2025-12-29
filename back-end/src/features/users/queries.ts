@@ -1,5 +1,5 @@
 import type { AppContext } from "@/lib/db/context";
-import { users } from "@/lib/db/schema";
+import { userPreferences, users } from "@/lib/db/schema";
 import {
   EntityCreateError,
   EntityDeleteError,
@@ -38,6 +38,15 @@ export const create = (user: Partial<User>, ctx: AppContext) =>
           image: user.image,
         })
         .returning();
+
+      const [createdUserPreference] = await ctx.db
+        .insert(userPreferences)
+        .values({
+          id: generateUuid(),
+          userId: user.id,
+          budgetStartDate: null,
+        });
+
       if (!createdUser) throw new EntityCreateError("User");
       return createdUser;
     })(),
@@ -140,7 +149,9 @@ export const onboardUser = (
         }
         const encryptedStart = encryptStartResult.value;
 
-        const encryptCurrentResult = await encrypt(params.startAmount.toString());
+        const encryptCurrentResult = await encrypt(
+          params.startAmount.toString(),
+        );
         if (encryptCurrentResult.isErr()) {
           throw encryptCurrentResult.error;
         }
@@ -164,8 +175,6 @@ export const onboardUser = (
           })
           .returning();
 
-        console.log("budget");
-
         if (!budget) throw new EntityCreateError("Budget");
 
         const userCategoryInserts = params.categories.map((cat) => ({
@@ -181,9 +190,6 @@ export const onboardUser = (
           .values(userCategoryInserts)
           .onConflictDoNothing();
 
-        console.log("user categories");
-
-        // Create category budgets
         const categoryBudgetInserts = params.categories.map((cat) => ({
           id: generateUuid(),
           budgetId,
@@ -195,9 +201,6 @@ export const onboardUser = (
 
         await tx.insert(categoryBudgets).values(categoryBudgetInserts);
 
-        console.log("category budgets");
-
-        // Update user as onboarded
         const [updatedUser] = await tx
           .update(users)
           .set({
@@ -244,7 +247,6 @@ export const createNewBudget = (
         const budgetId = generateUuid();
         const now = new Date();
 
-        // Deactivate all existing budgets for this user
         await tx
           .update(budgets)
           .set({
@@ -259,7 +261,9 @@ export const createNewBudget = (
         }
         const encryptedStart = encryptStartResult.value;
 
-        const encryptCurrentResult = await encrypt(params.startAmount.toString());
+        const encryptCurrentResult = await encrypt(
+          params.startAmount.toString(),
+        );
         if (encryptCurrentResult.isErr()) {
           throw encryptCurrentResult.error;
         }
@@ -285,7 +289,6 @@ export const createNewBudget = (
 
         if (!budget) throw new EntityCreateError("Budget");
 
-        // Insert user categories (with conflict do nothing for existing ones)
         const userCategoryInserts = params.categories.map((cat) => ({
           id: generateUuid(),
           userId,
@@ -299,7 +302,6 @@ export const createNewBudget = (
           .values(userCategoryInserts)
           .onConflictDoNothing();
 
-        // Create category budgets for new budget
         const categoryBudgetInserts = params.categories.map((cat) => ({
           id: generateUuid(),
           budgetId,
