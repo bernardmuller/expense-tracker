@@ -146,7 +146,7 @@ function Dashboard() {
           )}
           {budget.expenses.length > 0 && (
             <div>
-              {budget.expenses.map((expense) => (
+              {budget.expenses.slice(0, 5).map((expense) => (
                 <Swiper
                   key={expense.id}
                   rightAction={{

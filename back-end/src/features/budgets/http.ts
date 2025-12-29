@@ -180,7 +180,7 @@ const getBudgetExpensesHandler = async (c: Context) => {
   );
 
   return result.match(
-    (budget) => c.json(budget as any, 200),
+    (expenses) => c.json(expenses, 200),
     (error) => mapErrorToResponse(error, c),
   );
 };

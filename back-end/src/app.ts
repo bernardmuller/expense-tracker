@@ -45,8 +45,7 @@ app.use("*", async (c, next) => {
     path === "/scalar" ||
     path === "/doc" ||
     path.startsWith("/auth") ||
-    path.startsWith("/health") ||
-    path.startsWith("/budgets")
+    path.startsWith("/health")
   ) {
     return next();
   }

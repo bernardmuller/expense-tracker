@@ -9,6 +9,7 @@ import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { ArrowLeftIcon, LogOut } from 'lucide-react'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/profile')({
   beforeLoad: () => requireAuth(),
@@ -34,6 +35,7 @@ function ProfilePage() {
   const handleClearCategoriesCache = () => {
     queryClient.removeQueries({ queryKey: ['categories'] })
     queryClient.removeQueries({ queryKey: ['budgets'] })
+    toast.success('Cache cleared successfully')
   }
 
   return (
