@@ -10,6 +10,7 @@ import OtpForm from '@/components/otp-form/OtpForm'
 import { useRegisterRequest } from '@/lib/http/hooks/use-register-request'
 import { useRegisterVerify } from '@/lib/http/hooks/use-register-verify'
 import { hasTokens } from '@/lib/auth/token-storage'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/register')({
   beforeLoad: () => {
@@ -29,20 +30,22 @@ function RegisterPage() {
   const registerMutation = useRegisterRequest()
   const verifyMutation = useRegisterVerify()
 
-  const handleRegisterSubmit = async (value: { name: string; email: string }) =>
+  const handleRegisterSubmit = (value: { name: string; email: string }) =>
     registerMutation.mutate(value, {
       onSuccess: (result) => result.isOk() && setStep('verify'),
     })
 
-  const handleOtpSubmit = async (value: { otp: string }) =>
+  const handleOtpSubmit = (value: { otp: string }) =>
     verifyMutation.mutate(value, {
-      onSuccess: (result) => result.isOk() && navigate({ to: '/login' }),
+      onSuccess: (result) =>
+        result.isOk() &&
+        navigate({ to: '/login' }).then(() =>
+          toast.success('Registered successfully, please log in.'),
+        ),
     })
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center bg-background p-4"
-    >
+    <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md">
         {step === 'register' ? (
           <RegisterForm
