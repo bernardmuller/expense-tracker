@@ -2,6 +2,7 @@ import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Toaster } from '../components/ui/sonner'
+import { ErrorBoundary } from '../components/error-boundary'
 
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
@@ -32,4 +33,5 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       )}
     </>
   ),
+  errorComponent: ErrorBoundary,
 })

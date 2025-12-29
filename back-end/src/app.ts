@@ -28,7 +28,7 @@ const routes = [
 app.use(
   "*",
   cors({
-    origin: [env.AUTH_URL],
+    origin: [env.AUTH_URL, "http://localhost:4173"],
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],

@@ -71,8 +71,6 @@ function Dashboard() {
   const spentAmount = startAmount - currentAmount
   const spentPercentage = (spentAmount / startAmount) * 100
 
-  console.log(categories)
-
   return (
     <>
       <RefreshIndicator isRefreshing={!!isRefreshing} />

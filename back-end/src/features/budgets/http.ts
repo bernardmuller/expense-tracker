@@ -171,7 +171,7 @@ const getBudgetExpensesRoute = createRoute({
 
 const getBudgetExpensesHandler = async (c: Context) => {
   const budgetId = c.req.param("id");
-  const user = c.get("user") as { userId: string };
+  const user = c.get("user");
   const ctx = createContext();
   const result = await TransactionOperations.getBudgetExpenses(
     budgetId,

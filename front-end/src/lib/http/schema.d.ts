@@ -1125,37 +1125,25 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /** Format: uuid */
                             id: string;
-                            /** Format: uuid */
                             userId: string;
                             name: string;
                             startAmount: string;
                             currentAmount: string;
                             isActive: boolean;
-                            /** Format: date */
                             createdAt: string;
-                            /** Format: date */
                             updatedAt: string;
-                            /** Format: date */
                             deletedAt: string | null;
                             expenses: {
-                                /** Format: uuid */
                                 id: string;
-                                /** Format: uuid */
                                 budgetId: string;
                                 description: string;
                                 amount: string;
-                                /** Format: uuid */
                                 categoryId: string;
-                                /** Format: date */
                                 createdAt: string;
-                                /** Format: date */
                                 updatedAt: string;
-                                /** Format: date */
                                 deletedAt: string | null;
                                 category: {
-                                    /** Format: uuid */
                                     id: string;
                                     key: string;
                                     label: string;
@@ -1163,21 +1151,14 @@ export interface paths {
                                 };
                             }[];
                             categoryBudgets: {
-                                /** Format: uuid */
                                 id: string;
-                                /** Format: uuid */
                                 budgetId: string;
-                                /** Format: uuid */
                                 categoryId: string;
                                 allocatedAmount: string;
-                                /** Format: date */
                                 createdAt: string;
-                                /** Format: date */
                                 updatedAt: string;
-                                /** Format: date */
                                 deletedAt: string | null;
                                 category: {
-                                    /** Format: uuid */
                                     id: string;
                                     key: string;
                                     label: string;
@@ -1185,7 +1166,6 @@ export interface paths {
                                 };
                             }[];
                             categoryBreakdown: {
-                                /** Format: uuid */
                                 id: string;
                                 key: string;
                                 label: string;
@@ -1276,6 +1256,10 @@ export interface paths {
                                 name: string;
                                 startAmount: string;
                                 currentAmount: string;
+                                sa_iv: string | null;
+                                sa_tag: string | null;
+                                ca_iv: string | null;
+                                ca_tag: string | null;
                                 isActive: boolean;
                                 /** Format: date */
                                 createdAt: string;
@@ -1749,6 +1733,17 @@ export interface paths {
                             updatedAt: string;
                             /** Format: date */
                             deletedAt: string | null;
+                        };
+                    };
+                };
+                /** @description Missing required parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
                         };
                     };
                 };

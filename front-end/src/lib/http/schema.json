@@ -1905,12 +1905,10 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string",
-                      "format": "uuid"
+                      "type": "string"
                     },
                     "userId": {
-                      "type": "string",
-                      "format": "uuid"
+                      "type": "string"
                     },
                     "name": {
                       "type": "string"
@@ -1925,17 +1923,14 @@
                       "type": "boolean"
                     },
                     "createdAt": {
-                      "type": "string",
-                      "format": "date"
+                      "type": "string"
                     },
                     "updatedAt": {
-                      "type": "string",
-                      "format": "date"
+                      "type": "string"
                     },
                     "deletedAt": {
                       "type": "string",
-                      "nullable": true,
-                      "format": "date"
+                      "nullable": true
                     },
                     "expenses": {
                       "type": "array",
@@ -1943,12 +1938,10 @@
                         "type": "object",
                         "properties": {
                           "id": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                           },
                           "budgetId": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                           },
                           "description": {
                             "type": "string"
@@ -1957,28 +1950,23 @@
                             "type": "string"
                           },
                           "categoryId": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                           },
                           "createdAt": {
-                            "type": "string",
-                            "format": "date"
+                            "type": "string"
                           },
                           "updatedAt": {
-                            "type": "string",
-                            "format": "date"
+                            "type": "string"
                           },
                           "deletedAt": {
                             "type": "string",
-                            "nullable": true,
-                            "format": "date"
+                            "nullable": true
                           },
                           "category": {
                             "type": "object",
                             "properties": {
                               "id": {
-                                "type": "string",
-                                "format": "uuid"
+                                "type": "string"
                               },
                               "key": {
                                 "type": "string"
@@ -2017,39 +2005,32 @@
                         "type": "object",
                         "properties": {
                           "id": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                           },
                           "budgetId": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                           },
                           "categoryId": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                           },
                           "allocatedAmount": {
                             "type": "string"
                           },
                           "createdAt": {
-                            "type": "string",
-                            "format": "date"
+                            "type": "string"
                           },
                           "updatedAt": {
-                            "type": "string",
-                            "format": "date"
+                            "type": "string"
                           },
                           "deletedAt": {
                             "type": "string",
-                            "nullable": true,
-                            "format": "date"
+                            "nullable": true
                           },
                           "category": {
                             "type": "object",
                             "properties": {
                               "id": {
-                                "type": "string",
-                                "format": "uuid"
+                                "type": "string"
                               },
                               "key": {
                                 "type": "string"
@@ -2087,8 +2068,7 @@
                         "type": "object",
                         "properties": {
                           "id": {
-                            "type": "string",
-                            "format": "uuid"
+                            "type": "string"
                           },
                           "key": {
                             "type": "string"
@@ -2253,6 +2233,22 @@
                           "currentAmount": {
                             "type": "string"
                           },
+                          "sa_iv": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "sa_tag": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "ca_iv": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "ca_tag": {
+                            "type": "string",
+                            "nullable": true
+                          },
                           "isActive": {
                             "type": "boolean"
                           },
@@ -2276,6 +2272,10 @@
                           "name",
                           "startAmount",
                           "currentAmount",
+                          "sa_iv",
+                          "sa_tag",
+                          "ca_iv",
+                          "ca_tag",
                           "isActive",
                           "createdAt",
                           "updatedAt",
@@ -3088,6 +3088,24 @@
                     "createdAt",
                     "updatedAt",
                     "deletedAt"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
                   ]
                 }
               }

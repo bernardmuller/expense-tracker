@@ -98,7 +98,6 @@ export const decodeRefreshToken = (
     (error) => {
       const errorMessage = String(error);
 
-      // Check if it's an expiration error
       if (
         errorMessage.includes("jwt expired") ||
         errorMessage.includes("TokenExpiredError")
@@ -137,7 +136,6 @@ export const decodeAccessToken = (
     (error) => {
       const errorMessage = String(error);
 
-      // Check if it's an expiration error
       if (
         errorMessage.includes("jwt expired") ||
         errorMessage.includes("TokenExpiredError")
