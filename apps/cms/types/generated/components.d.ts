@@ -1,5 +1,30 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface SharedBadge extends Struct.ComponentSchema {
+  collectionName: 'components_shared_badges';
+  info: {
+    displayName: 'Badge';
+    icon: 'star';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    variant: Schema.Attribute.Enumeration<['default', 'outline']>;
+  };
+}
+
+export interface SharedCallToAction extends Struct.ComponentSchema {
+  collectionName: 'components_shared_call_to_actions';
+  info: {
+    displayName: 'Call To Action';
+    icon: 'cursor';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    link: Schema.Attribute.String;
+    variant: Schema.Attribute.Enumeration<['default', 'secondary', 'link']>;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
@@ -65,6 +90,8 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'shared.badge': SharedBadge;
+      'shared.call-to-action': SharedCallToAction;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;

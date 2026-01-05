@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_shared_call_to_actions",
+  "info": {
+    "displayName": "Call To Action",
+    "icon": "cursor"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "default",
+        "secondary",
+        "link"
+      ]
+    },
+    "link": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

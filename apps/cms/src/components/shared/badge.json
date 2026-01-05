@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_shared_badges",
+  "info": {
+    "displayName": "Badge",
+    "icon": "star"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "default",
+        "outline"
+      ]
+    }
+  },
+  "config": {}
+}
