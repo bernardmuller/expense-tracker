@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import z from 'zod'
 import { Check, LoaderCircleIcon } from 'lucide-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
@@ -33,6 +33,11 @@ import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { getUserById } from '@/lib/http/api/users'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
+import {
+  getBudgetCycleDescription,
+  calculateNextBudgetStart,
+  calculateBudgetEnd,
+} from '@/lib/utils/budget-dates'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -43,6 +48,14 @@ const userCategorySchema = z.object({
 
 const onboardingFormSchema = z
   .object({
+    budgetFrequency: z.enum(['weekly', 'bi-weekly', 'monthly', 'custom'], {
+      required_error: 'You must select a budget frequency',
+    }),
+    budgetStartDay: z.number({
+      required_error: 'You must select a start day',
+      invalid_type_error: 'Invalid day',
+    }),
+    customDuration: z.number().optional(),
     name: z
       .string()
       .min(1, 'You must provide a budget name')
@@ -58,6 +71,36 @@ const onboardingFormSchema = z
     message: 'You must select at least one category',
     path: ['categories'],
   })
+  .refine(
+    (data) => {
+      if (data.budgetFrequency === 'monthly') {
+        return data.budgetStartDay >= 1 && data.budgetStartDay <= 31
+      }
+      if (
+        data.budgetFrequency === 'weekly' ||
+        data.budgetFrequency === 'bi-weekly'
+      ) {
+        return data.budgetStartDay >= 0 && data.budgetStartDay <= 6
+      }
+      return true
+    },
+    {
+      message: 'Invalid start day for selected frequency',
+      path: ['budgetStartDay'],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.budgetFrequency === 'custom') {
+        return data.customDuration && data.customDuration > 0
+      }
+      return true
+    },
+    {
+      message: 'You must provide a duration for custom frequency',
+      path: ['customDuration'],
+    },
+  )
 
 export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
 
@@ -92,25 +135,35 @@ const getStepWithError = (
   if (!fieldMeta) return null
 
   if (
-    (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
-    (fieldMeta['startAmount']?.errors &&
-      fieldMeta['startAmount'].errors.length > 0)
+    (fieldMeta['budgetFrequency']?.errors &&
+      fieldMeta['budgetFrequency'].errors.length > 0) ||
+    (fieldMeta['budgetStartDay']?.errors &&
+      fieldMeta['budgetStartDay'].errors.length > 0) ||
+    (fieldMeta['customDuration']?.errors &&
+      fieldMeta['customDuration'].errors.length > 0)
   )
     return 1
 
   if (
-    fieldMeta['categories']?.errors &&
-    fieldMeta['categories'].errors.length > 0 &&
-    formValues.categories.length === 0
+    (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
+    (fieldMeta['startAmount']?.errors &&
+      fieldMeta['startAmount'].errors.length > 0)
   )
     return 2
 
   if (
     fieldMeta['categories']?.errors &&
     fieldMeta['categories'].errors.length > 0 &&
+    formValues.categories.length === 0
+  )
+    return 3
+
+  if (
+    fieldMeta['categories']?.errors &&
+    fieldMeta['categories'].errors.length > 0 &&
     formValues.categories.length > 0
   ) {
-    return 3
+    return 4
   }
 
   return null
@@ -127,6 +180,9 @@ function OnboardingPage() {
 
   const form = useAppForm({
     defaultValues: {
+      budgetFrequency: 'monthly' as const,
+      budgetStartDay: 1,
+      customDuration: undefined,
       name: '',
       startAmount: 0,
       categories: [],
@@ -142,11 +198,31 @@ function OnboardingPage() {
         amount: cat.amount || 0,
       }))
 
+      const startDate = calculateNextBudgetStart(
+        value.budgetFrequency,
+        value.budgetStartDay,
+        value.customDuration,
+      )
+
+      const endDate = calculateBudgetEnd(
+        startDate,
+        value.budgetFrequency,
+        value.budgetStartDay,
+        value.customDuration,
+      )
+
       const onboardingData = {
+        budgetFrequency: value.budgetFrequency,
+        budgetStartDay: value.budgetStartDay,
+        customDuration: value.customDuration,
+        startDate,
+        endDate,
         name: value.name,
         startAmount: value.startAmount,
         categories: transformedCategories,
       }
+
+      console.log(onboardingData)
 
       onboardMutation.mutate(onboardingData, {
         onSuccess: async () => {
@@ -169,18 +245,37 @@ function OnboardingPage() {
         setCurrentStep(stepWithError)
         switch (stepWithError) {
           case 1:
-            toast.error('Please provide the budget name and start amount')
+            toast.error('Please complete your budget preferences')
             break
           case 2:
-            toast.error('Please select your spending categories')
+            toast.error('Please provide the budget name and start amount')
             break
           case 3:
+            toast.error('Please select your spending categories')
+            break
+          case 4:
             toast.error('Please allocate amounts to all categories')
             break
         }
       }
     },
   })
+
+  useEffect(() => {
+    const frequency = form.state.values.budgetFrequency
+    const currentDay = form.state.values.budgetStartDay
+
+    if (frequency === 'monthly' && (currentDay < 1 || currentDay > 31)) {
+      form.setFieldValue('budgetStartDay', 1)
+    } else if (
+      (frequency === 'weekly' || frequency === 'bi-weekly') &&
+      (currentDay < 0 || currentDay > 6)
+    ) {
+      form.setFieldValue('budgetStartDay', 1)
+    } else if (frequency === 'custom' && (!currentDay || currentDay < 1)) {
+      form.setFieldValue('budgetStartDay', 30)
+    }
+  }, [form.state.values.budgetFrequency])
 
   const toggleCategory = (category: Category) => {
     const currentCategories = form.state.values.categories
@@ -249,6 +344,92 @@ function OnboardingPage() {
               <Card className="w-full">
                 <CardHeader className="w-full">
                   <StepHeader
+                    title="Preferences"
+                    description={onboardingSteps[currentStep - 1].description}
+                  />
+                </CardHeader>
+                <CardContent className="flex flex-col gap-6">
+                  {/*<Separator />*/}
+                  <form.AppField
+                    name="budgetFrequency"
+                    children={(field) => (
+                      <field.BudgetFrequencyField
+                        label="Budget Frequency"
+                        placeholder="Select how often your budget resets"
+                      />
+                    )}
+                  />
+                  <form.Subscribe
+                    selector={(state) => state.values.budgetFrequency}
+                    children={(frequency) => (
+                      <>
+                        <form.AppField
+                          name="budgetStartDay"
+                          children={(field) => (
+                            <field.BudgetStartDayField
+                              label={
+                                frequency === 'monthly'
+                                  ? 'Start Day of Month'
+                                  : frequency === 'weekly' ||
+                                      frequency === 'bi-weekly'
+                                    ? 'Start Day of Week'
+                                    : 'Start Day'
+                              }
+                              placeholder={
+                                frequency === 'monthly'
+                                  ? 'Select day of month'
+                                  : 'Select day of week'
+                              }
+                              frequency={frequency}
+                            />
+                          )}
+                        />
+                        {frequency === 'custom' && (
+                          <form.AppField
+                            name="customDuration"
+                            children={(field) => (
+                              <field.BudgetStartDayField
+                                label="Budget Duration (days)"
+                                placeholder="Enter number of days"
+                                frequency={frequency}
+                              />
+                            )}
+                          />
+                        )}
+                      </>
+                    )}
+                  />
+                  <form.Subscribe
+                    selector={(state) => ({
+                      frequency: state.values.budgetFrequency,
+                      startDay: state.values.budgetStartDay,
+                      customDuration: state.values.customDuration,
+                    })}
+                    children={({ frequency, startDay, customDuration }) => {
+                      const description = getBudgetCycleDescription(
+                        frequency,
+                        startDay,
+                        customDuration,
+                      )
+                      return (
+                        <p className="text-muted-foreground text-sm italic">
+                          {description}
+                        </p>
+                      )
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </FieldGroup>
+          </StepperContent>
+          <StepperContent
+            value={2}
+            className="flex flex-1 items-center justify-center"
+          >
+            <FieldGroup>
+              <Card className="w-full">
+                <CardHeader className="w-full">
+                  <StepHeader
                     title="Setup your Budget"
                     description={onboardingSteps[currentStep - 1].description}
                   />
@@ -277,7 +458,7 @@ function OnboardingPage() {
             </FieldGroup>
           </StepperContent>
           <StepperContent
-            value={2}
+            value={3}
             className="flex flex-1 items-center justify-center"
           >
             <Card className="w-full">
@@ -304,7 +485,7 @@ function OnboardingPage() {
                                 checked={isChecked}
                                 onCheckedChange={() => toggleCategory(category)}
                               />
-                              {index < categories.length - 1 && (
+                              {index < categories.categories.length - 1 && (
                                 <Separator className="my-2" />
                               )}
                             </Fragment>
@@ -318,7 +499,7 @@ function OnboardingPage() {
             </Card>
           </StepperContent>
           <StepperContent
-            value={3}
+            value={4}
             className="flex flex-1 flex-col items-center justify-center
               space-y-4"
           >
@@ -345,17 +526,17 @@ function OnboardingPage() {
                           <div
                             className="flex w-full items-center justify-between"
                           >
-                            <h3 className="text-muted-foreground text-lg">
+                            <h3 className="text-muted-foreground text-md">
                               Total Allocated
                             </h3>
                             <div className="flex gap-3">
-                              <span className="text-lg font-semibold">
+                              <span className="text-md font-semibold">
                                 {formatCurrency(totalAllocated, 'za')}
                               </span>
-                              <span className="text-muted-foreground text-lg">
+                              <span className="text-muted-foreground text-md">
                                 of
                               </span>
-                              <span className="text-lg font-semibold">
+                              <span className="text-md font-semibold">
                                 {formatCurrency(
                                   form.state.values.startAmount,
                                   'za',

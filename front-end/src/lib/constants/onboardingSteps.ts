@@ -3,6 +3,10 @@ export const onboardingSteps: Array<{
   description: string
 }> = [
   {
+    title: 'Preferences',
+    description: 'Set your profile and preferences',
+  },
+  {
     title: 'Budget',
     description: 'Set your budget name and start amount for the period',
   },

@@ -6,7 +6,7 @@ export function usePrivacy() {
   const [isPrivacyEnabled, setIsPrivacyEnabled] = useState<boolean>(() => {
     try {
       const stored = getItem(STORAGE_KEYS.BUDGET_PRIVACY)
-      return stored !== null ? stored === 'true' : true
+      return stored === 'true' ? true : false
     } catch {
       return true
     }
