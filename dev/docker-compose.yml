@@ -9,6 +9,15 @@ services:
       POSTGRES_PASSWORD: devpassword
       POSTGRES_DB: devdb
 
+  cms-database:
+    image: postgres:latest
+    ports:
+      - 9876:5432
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: cmsdb
+
   drizzle-gateway:
     image: ghcr.io/drizzle-team/gateway:latest
     ports:
