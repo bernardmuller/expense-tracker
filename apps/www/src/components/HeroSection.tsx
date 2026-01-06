@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { client } from "@/lib/cms-client";
+import { cmsClient } from "@/lib/cms-client";
 import { ArrowRight } from "lucide-react";
+import type { HeroSectionDocument } from "@/types/cms";
 
 export async function HeroSection() {
-  const res = await client.collection("hero-section").find({
+  const res = await cmsClient.heroSection.find({
     populate: ["highlights", "actions"],
   });
-  const data = res.data;
-  console.log(data);
+  const data: HeroSectionDocument = res.data;
   return (
     <section className="container py-20 md:py-32">
       <div className="mx-auto max-w-4xl text-center">
