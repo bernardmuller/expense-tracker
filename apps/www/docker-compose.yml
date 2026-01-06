@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  www:
+    build:
+      context: ./apps/www/.
+      dockerfile: Dockerfile
+      args:
+        PUBLIC_STRAPI_URL: ${PUBLIC_STRAPI_URL}
+        PUBLIC_STRAPI_API_TOKEN: ${PUBLIC_STRAPI_API_TOKEN}
+    ports:
+      - "4321:4321"
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
+    container_name: expense-tracker-www

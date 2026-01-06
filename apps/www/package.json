@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "docker:build": "docker build --build-arg PUBLIC_STRAPI_URL=https://your-strapi-url.com/api --build-arg STRAPI_API_TOKEN=your_production_token -t your-app ."
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
