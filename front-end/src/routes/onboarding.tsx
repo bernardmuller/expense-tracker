@@ -154,9 +154,9 @@ function OnboardingPage() {
             queryClient.prefetchQuery(getActiveBudgetQueryOptions()),
             queryClient.prefetchQuery(getCategoriesQueryOptions()),
             queryClient.invalidateQueries(getUserByIdQueryOptions()),
-          ])
-
-          navigate({ to: '/dashboard' })
+          ]).then(() => {
+            navigate({ to: '/dashboard' })
+          })
         },
       })
     },

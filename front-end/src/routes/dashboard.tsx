@@ -9,7 +9,7 @@ import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { Suspense, useMemo } from 'react'
 import { DashboardSkeleton } from './dashboard.skeleton'
@@ -36,8 +36,9 @@ export const Route = createFileRoute('/dashboard')({
 function DashboardPage() {
   const router = useRouter()
   const data = useSuspenseQuery(getUserByIdQueryOptions())
+  const active = useQuery(getActiveBudgetQueryOptions())
 
-  if (!data.data.onboarded) {
+  if (!data.data.onboarded && !active.data) {
     router.navigate({ to: '/onboarding' })
   }
 

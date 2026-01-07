@@ -44,7 +44,7 @@ export async function fetchActiveBudget(): Promise<ActiveBudgetSuccess> {
   return result.match(
     (data) => data,
     (error) => {
-      toast.error(error.message || 'Failed to get active budget')
+      // toast.error(error.message || 'Failed to get active budget')
       throw error
     },
   )

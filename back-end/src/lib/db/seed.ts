@@ -120,24 +120,6 @@ export async function seedDatabase() {
       updatedAt: new Date("2025-09-23 21:24:05.307"),
     };
 
-    const accountData = {
-      id: generateUuid(),
-      accountId: generateUuid(),
-      providerId: "credential",
-      userId: USER_ID,
-      accessToken: null,
-      refreshToken: null,
-      idToken: null,
-      accessTokenExpiresAt: null,
-      refreshTokenExpiresAt: null,
-      scope: null,
-      // password: "Tester@123"
-      password:
-        "97e1fe8d5e6d11f56c29ce3c9ca659ed:119dd77d8a419319a40363c499bd4e8bfc02fa9f72b860d6ed06f1bfbb89c7cc69874483f0fa780b716585895127bee35fef525c120465b4568c3e2abc0b97a5",
-      createdAt: new Date("2025-09-23 21:24:05.312"),
-      updatedAt: new Date("2025-09-23 21:24:05.312"),
-    };
-
     const userCategoriesData = [
       {
         id: USER_CATEGORY_IDS[0]!,
@@ -189,7 +171,6 @@ export async function seedDatabase() {
     }
 
     await db.insert(users).values(userData).onConflictDoNothing();
-    await db.insert(accounts).values(accountData).onConflictDoNothing();
 
     for (const userCategory of userCategoriesData) {
       await db
