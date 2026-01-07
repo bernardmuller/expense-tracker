@@ -3,11 +3,13 @@ version: "3.8"
 services:
   www:
     build:
-      context: ./apps/www/.
+      context: .
       dockerfile: Dockerfile
       args:
         PUBLIC_STRAPI_URL: ${PUBLIC_STRAPI_URL}
         PUBLIC_STRAPI_API_TOKEN: ${PUBLIC_STRAPI_API_TOKEN}
+    env_file:
+      - .env
     ports:
       - "4321:4321"
     environment:
