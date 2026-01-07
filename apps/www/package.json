@@ -6,11 +6,11 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "docker:build": "docker build --build-arg PUBLIC_STRAPI_URL=https://your-strapi-url.com/api --build-arg STRAPI_API_TOKEN=your_production_token -t your-app ."
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
+    "@astrojs/netlify": "^6.6.3",
     "@astrojs/react": "^4.4.2",
     "@radix-ui/react-slot": "^1.2.4",
     "@strapi/client": "^1.6.0",
