@@ -5,6 +5,8 @@ import { defineConfig } from 'vite'
 
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import netlify from '@netlify/vite-plugin-tanstack-start'
 
 export default defineConfig({
   plugins: [
@@ -16,6 +18,8 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
+    tanstackStart(),
+    netlify(),
   ],
   test: {
     globals: true,
