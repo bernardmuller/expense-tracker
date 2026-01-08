@@ -85,7 +85,6 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@netlify/vite-plugin-tanstack-start": "^1.2.6",
     "@storybook/addon-themes": "^9.1.10",
     "@tanstack/eslint-config": "^0.3.0",
     "@testing-library/dom": "^10.4.0",
