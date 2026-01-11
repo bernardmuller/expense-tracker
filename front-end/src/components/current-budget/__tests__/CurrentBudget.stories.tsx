@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CurrentBudget } from '../CurrentBudget'
-import {
-    generateCurrentBudgetProps
-} from '../__mocks__/CurrentBudget.mocks'
+import { generateCurrentBudgetProps } from '../__mocks__/CurrentBudget.mocks'
 
 const currentBudgetProps = generateCurrentBudgetProps()
 

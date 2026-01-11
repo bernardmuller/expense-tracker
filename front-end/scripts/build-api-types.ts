@@ -1,7 +1,7 @@
-import { writeFile } from 'fs/promises'
-import { execSync } from 'child_process'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
+import { writeFile } from 'node:fs/promises'
+import { execSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 import { ResultAsync, errAsync } from 'neverthrow'
 
 const __filename = fileURLToPath(import.meta.url)

@@ -1,4 +1,4 @@
-import { addons, type State } from 'storybook/manager-api';
+import { addons, type State } from 'storybook/manager-api'
 
 addons.setConfig({
   navSize: 300,
@@ -12,10 +12,10 @@ addons.setConfig({
   initialActive: 'sidebar',
   layoutCustomisations: {
     showSidebar(state: State, defaultValue: boolean) {
-      return state.storyId === 'landing' ? false : defaultValue;
+      return state.storyId === 'landing' ? false : defaultValue
     },
     showToolbar(state: State, defaultValue: boolean) {
-      return state.viewMode === 'docs' ? false : defaultValue;
+      return state.viewMode === 'docs' ? false : defaultValue
     },
   },
   sidebar: {
@@ -29,4 +29,4 @@ addons.setConfig({
     copy: { hidden: false },
     fullscreen: { hidden: false },
   },
-});
+})

@@ -104,24 +104,27 @@ export function useDeleteExpense() {
         },
       )
 
-      queryClient.setQueryData(expensesQueryKey, (old: typeof previousExpenses) => {
-        if (!old) return old
+      queryClient.setQueryData(
+        expensesQueryKey,
+        (old: typeof previousExpenses) => {
+          if (!old) return old
 
-        const deletedExpense = old.expenses.find(
-          (e) => e.id === params.expenseId,
-        )
-        if (!deletedExpense) return old
+          const deletedExpense = old.expenses.find(
+            (e) => e.id === params.expenseId,
+          )
+          if (!deletedExpense) return old
 
-        const currentAmount = parseFloat(old.currentAmount)
-        const expenseAmount = parseFloat(deletedExpense.amount)
-        const newAmount = currentAmount + expenseAmount
+          const currentAmount = parseFloat(old.currentAmount)
+          const expenseAmount = parseFloat(deletedExpense.amount)
+          const newAmount = currentAmount + expenseAmount
 
-        return {
-          ...old,
-          currentAmount: newAmount.toString(),
-          expenses: old.expenses.filter((e) => e.id !== params.expenseId),
-        }
-      })
+          return {
+            ...old,
+            currentAmount: newAmount.toString(),
+            expenses: old.expenses.filter((e) => e.id !== params.expenseId),
+          }
+        },
+      )
 
       return {
         previousActiveBudget,

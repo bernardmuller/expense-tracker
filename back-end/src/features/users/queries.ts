@@ -12,8 +12,14 @@ import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { User } from "./types";
 import type { OnboardingParams, CreateBudgetParams } from "./types";
 import { generateUuid } from "@/lib/utils/generateUuid";
-import { budgets, userCategories, categoryBudgets } from "@/lib/db/schema";
-import type { Budget } from "@/lib/db/schema";
+import {
+  budgets,
+  userCategories,
+  categoryBudgets,
+  userPreferences,
+} from "@/lib/db/schema";
+import type { Budget, UserPreferences } from "@/lib/db/schema";
+
 import {
   encrypt,
   EncryptionCipherCreationError,
@@ -170,12 +176,28 @@ export const onboardUser = (
             ca_iv: encryptedCurrent.iv,
             ca_tag: encryptedCurrent.tag,
             isActive: true,
+            startDate: params.startDate,
+            endDate: params.endDate,
             createdAt: now,
             updatedAt: now,
           })
           .returning();
 
         if (!budget) throw new EntityCreateError("Budget");
+
+        const userPrefs = await tx
+          .insert(userPreferences)
+          .values({
+            id: generateUuid(),
+            userId,
+            budgetStartDate: params.startDate,
+            frequency: params.budgetFrequency,
+            customDuration: params.customDuration,
+            updatedAt: now,
+          })
+          .returning();
+
+        if (!userPrefs) throw new EntityCreateError("UserPreferences");
 
         const userCategoryInserts = params.categories.map((cat) => ({
           id: generateUuid(),
@@ -324,4 +346,49 @@ export const createNewBudget = (
           ? error
           : new EntityCreateError("Budget creation", error),
     ),
+  );
+
+export const findPreferencesByUserId = (
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  UserPreferences,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> =>
+  ResultAsync.fromPromise(
+    ctx.db
+      .select()
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userId)),
+    (error) => new EntityReadError("UserPreferences", String(error)),
+  ).andThen(([prefs]) =>
+    prefs
+      ? okAsync(prefs)
+      : errAsync(new EntityNotFoundError(`UserPreferences: ${userId}`)),
+  );
+
+export const updatePreferences = (
+  userId: string,
+  preferences: Partial<UserPreferences>,
+  ctx: AppContext,
+): ResultAsync<
+  UserPreferences,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityUpdateError>
+> =>
+  ResultAsync.fromPromise(
+    ctx.db
+      .update(userPreferences)
+      .set({
+        ...preferences,
+        updatedAt: new Date(),
+      })
+      .where(eq(userPreferences.userId, userId))
+      .returning(),
+    (error) => new EntityUpdateError("UserPreferences", error),
+  ).andThen(([updatedPrefs]) =>
+    updatedPrefs
+      ? okAsync(updatedPrefs)
+      : errAsync(new EntityNotFoundError(`UserPreferences: ${userId}`)),
   );

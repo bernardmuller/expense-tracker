@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils/cn'
 import type { ComponentProps, ReactNode } from 'react'
-import { Label } from '../ui/label'
+import type { Label } from '../ui/label'
 
 type RootProps = ComponentProps<typeof Label> & {
   children: ReactNode

@@ -1,8 +1,8 @@
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSlot
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
 } from '@/components/ui/input-otp'
 import { useFieldContext } from '@/hooks/form-context'
 import { useStore } from '@tanstack/react-form'

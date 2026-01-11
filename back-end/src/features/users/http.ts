@@ -7,6 +7,10 @@ import { createContext } from "@/lib/db/context";
 import * as UserOperations from "./operations";
 import { createUserSchema, userSchema } from "./types";
 import { onboardingSchema, createBudgetSchema } from "./types";
+import {
+  userPreferencesSchema,
+  updateUserPreferencesSchema,
+} from "./types";
 import type { CreateUserParams } from "./types";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
@@ -236,6 +240,57 @@ const isUserFullySetupRoute = createRoute({
   },
 });
 
+const getUserPreferencesRoute = createRoute({
+  path: "/users/{id}/preferences",
+  method: "get",
+  tags,
+  request: {
+    params: z.object({
+      id: z.uuid(),
+    }),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      userPreferencesSchema,
+      "User preferences",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "User not found",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+const updateUserPreferencesRoute = createRoute({
+  path: "/users/{id}/preferences",
+  method: "patch",
+  tags,
+  request: {
+    params: z.object({
+      id: z.uuid(),
+    }),
+    body: jsonContent(updateUserPreferencesSchema, "User preferences update data"),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      userPreferencesSchema,
+      "User preferences updated successfully",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      errorResponseSchema,
+      "User not found",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      errorResponseSchema,
+      "Internal server error",
+    ),
+  },
+});
+
 // --------------------------------
 // Handlers
 // --------------------------------
@@ -274,7 +329,9 @@ const createUserHandler = async (c: Context) => {
 
 const onboardUserHandler = async (c: Context) => {
   const user = c.get("user") as { userId: string };
-  const body = await c.req.json();
+  const json = await c.req.json();
+  // Validate and coerce types (e.g. string -> Date)
+  const body = onboardingSchema.parse(json);
   const ctx = createContext();
   const result = await UserOperations.onboardUser(user.userId, body, ctx);
 
@@ -341,6 +398,29 @@ const isUserFullySetupHandler = async (c: Context) => {
   );
 };
 
+const getUserPreferencesHandler = async (c: Context) => {
+  const userId = c.req.param("id");
+  const ctx = createContext();
+  const result = await UserOperations.getUserPreferences(userId, ctx);
+
+  return result.match(
+    (prefs) => c.json(prefs, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
+const updateUserPreferencesHandler = async (c: Context) => {
+  const userId = c.req.param("id");
+  const body = await c.req.json();
+  const ctx = createContext();
+  const result = await UserOperations.updateUserPreferences(userId, body, ctx);
+
+  return result.match(
+    (prefs) => c.json(prefs, 200),
+    (error) => mapErrorToResponse(error, c),
+  );
+};
+
 // --------------------------------
 // Router
 // --------------------------------
@@ -354,4 +434,6 @@ export const userRouter = createRouter()
   .openapi(createBudgetRoute, createBudgetHandler)
   .openapi(markUserAsVerifiedRoute, markUserAsVerifiedHandler)
   .openapi(updateUserRoute, updateUserHandler)
-  .openapi(isUserFullySetupRoute, isUserFullySetupHandler);
+  .openapi(isUserFullySetupRoute, isUserFullySetupHandler)
+  .openapi(getUserPreferencesRoute, getUserPreferencesHandler)
+  .openapi(updateUserPreferencesRoute, updateUserPreferencesHandler);

@@ -745,6 +745,14 @@ export interface paths {
                     "application/json": {
                         name: string;
                         startAmount: number;
+                        /** Format: date */
+                        startDate: string | null;
+                        /** Format: date */
+                        endDate: string | null;
+                        /** @enum {string} */
+                        budgetFrequency: "weekly" | "bi-weekly" | "monthly" | "custom";
+                        budgetStartDay: number;
+                        customDuration?: number;
                         categories: {
                             /** Format: uuid */
                             id: string;
@@ -1100,6 +1108,140 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/{id}/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User preferences */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            budgetStartDate: string | null;
+                            /** @enum {string|null} */
+                            frequency: "weekly" | "bi-weekly" | "monthly" | "custom" | null;
+                            budgetStartDay: number | null;
+                            customDuration: number | null;
+                        };
+                    };
+                };
+                /** @description User not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description User preferences update data */
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** Format: date-time */
+                        budgetStartDate?: string;
+                        /** @enum {string} */
+                        frequency?: "weekly" | "bi-weekly" | "monthly" | "custom";
+                        budgetStartDay?: number;
+                        customDuration?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description User preferences updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            budgetStartDate: string | null;
+                            /** @enum {string|null} */
+                            frequency: "weekly" | "bi-weekly" | "monthly" | "custom" | null;
+                            budgetStartDay: number | null;
+                            customDuration: number | null;
+                        };
+                    };
+                };
+                /** @description User not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/budgets/{id}/expenses": {
         parameters: {
             query?: never;
@@ -1261,6 +1403,10 @@ export interface paths {
                                 ca_iv: string | null;
                                 ca_tag: string | null;
                                 isActive: boolean;
+                                /** Format: date */
+                                startDate: string | null;
+                                /** Format: date */
+                                endDate: string | null;
                                 /** Format: date */
                                 createdAt: string;
                                 /** Format: date */

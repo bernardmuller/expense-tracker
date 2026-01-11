@@ -125,7 +125,7 @@ function BudgetExpenses() {
               </Swiper>
             ))}
           </div>
-          {/*<Separator className="my-4" />*/}
+          {/* <Separator className="my-4" />*/}
           <div className="flex items-center justify-between py-2 pr-3">
             <span className="text-muted-foreground font-medium">Total</span>
             <span className="text-foreground font-semibold">

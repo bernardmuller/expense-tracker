@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
-import { Result, ok, err, errAsync } from 'neverthrow'
+import type { Result } from 'neverthrow'
+import { ok, err, errAsync } from 'neverthrow'
 import { toast } from 'sonner'
 import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'
@@ -8,7 +9,7 @@ import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { withAccessToken } from '../with-token'
 
 type OnboardRequestBody =
-  //@ts-ignore: content does exist
+  // @ts-ignore: content does exist
   paths['/users/{id}/onboard']['post']['requestBody']['content']['application/json']
 
 type OnboardRequestSuccess =

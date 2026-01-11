@@ -30,3 +30,5 @@ lerna-debug.log*
 
 # database dumps
 dumps/
+
+dist/

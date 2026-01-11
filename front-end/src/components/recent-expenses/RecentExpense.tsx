@@ -10,8 +10,8 @@ export default function RecentExpense({
     <div className="flex items-center justify-between py-2 pr-3">
       <div className="flex items-center gap-3">
         <div
-          className="flex h-10 w-10 items-center justify-center rounded-full
-            bg-muted"
+          className="bg-muted flex h-10 w-10 items-center justify-center
+            rounded-full"
         >
           <span className="text-lg">{emoji}</span>
         </div>

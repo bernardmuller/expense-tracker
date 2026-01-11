@@ -1,4 +1,5 @@
-import { Link, type NavigateOptions } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
+import type { NavigateOptions } from '@tanstack/react-router'
 
 export function LinkTrigger({
   children,

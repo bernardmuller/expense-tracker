@@ -28,6 +28,28 @@ export const createUserSchema = userSchema
     path: ["name"],
   });
 
+export const userPreferencesSchema = z.object({
+  budgetStartDate: z
+    .string()
+    .transform((val) => new Date(val))
+    .nullable(),
+  frequency: z.enum(["weekly", "bi-weekly", "monthly", "custom"]).nullable(),
+  budgetStartDay: z.number().nullable(),
+  customDuration: z.number().nullable(),
+});
+
+export const updateUserPreferencesSchema = z.object({
+  budgetStartDate: z.string().datetime().optional(),
+  frequency: z.enum(["weekly", "bi-weekly", "monthly", "custom"]).optional(),
+  budgetStartDay: z.number().optional(),
+  customDuration: z.number().optional(),
+});
+
+export type UserPreferences = z.infer<typeof userPreferencesSchema>;
+export type UpdateUserPreferencesParams = z.infer<
+  typeof updateUserPreferencesSchema
+>;
+
 export type CreateUserParams = z.infer<typeof createUserSchema>;
 
 export const onboardingCategorySchema = z.object({
@@ -40,6 +62,11 @@ export const onboardingCategorySchema = z.object({
 export const onboardingSchema = z.object({
   name: z.string().min(1).max(50),
   startAmount: z.number().positive(),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+  budgetFrequency: z.enum(["weekly", "bi-weekly", "monthly", "custom"]),
+  budgetStartDay: z.number(),
+  customDuration: z.number().optional(),
   categories: z.array(onboardingCategorySchema).min(1),
 });
 

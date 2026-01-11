@@ -8,7 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import type { CurrentBudgetProps, CurrentBudgetBaseProps } from './CurrentBudget.types'
+import type {
+  CurrentBudgetProps,
+  CurrentBudgetBaseProps,
+} from './CurrentBudget.types'
 import { Progress } from '../ui/progress'
 import { formatPercentage } from '@/lib/utils/formatting/formatPercentage'
 
@@ -34,9 +37,7 @@ export function CurrentBudgetContent({
       </CardContent>
       <CardFooter className="flex flex-col gap-1">
         <div className="flex w-full justify-between">
-          <span className="text-muted-foreground">
-            Spent: {spentAmount}
-          </span>
+          <span className="text-muted-foreground">Spent: {spentAmount}</span>
           <span className="text-muted-foreground">
             {formatPercentage(spentPercentage)}
           </span>

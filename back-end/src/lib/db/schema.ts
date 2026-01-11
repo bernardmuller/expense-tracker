@@ -37,6 +37,8 @@ export const userPreferences = pgTable("user_preferences", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   budgetStartDate: timestamp("budget_start_date"),
+  frequency: varchar("frequency", { length: 20 }),
+  customDuration: integer("custom_duration"),
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -100,6 +102,8 @@ export const budgets = pgTable("budgets", {
   ca_iv: varchar("ca_iv"),
   ca_tag: varchar("ca_tag"),
   isActive: boolean("is_active").default(true).notNull(),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),
@@ -258,3 +262,5 @@ export type UserCategory = typeof userCategories.$inferSelect;
 export type NewUserCategory = typeof userCategories.$inferInsert;
 export type CategoryBudget = typeof categoryBudgets.$inferSelect;
 export type NewCategoryBudget = typeof categoryBudgets.$inferInsert;
+export type UserPreferences = typeof userPreferences.$inferSelect;
+export type NewUserPreferences = typeof userPreferences.$inferInsert;

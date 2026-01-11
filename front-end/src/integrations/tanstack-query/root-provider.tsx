@@ -26,7 +26,9 @@ export function getContext() {
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     dehydrateOptions: {
       shouldDehydrateQuery: (query) => {
-        return Array.isArray(query.queryKey) && query.queryKey[0] === 'categories'
+        return (
+          Array.isArray(query.queryKey) && query.queryKey[0] === 'categories'
+        )
       },
     },
   })

@@ -19,7 +19,7 @@ interface StepperContextValue {
   stepsCount: number
   orientation: StepperOrientation
   registerTrigger: (node: HTMLButtonElement | null) => void
-  triggerNodes: HTMLButtonElement[]
+  triggerNodes: Array<HTMLButtonElement>
   focusNext: (currentIdx: number) => void
   focusPrev: (currentIdx: number) => void
   focusFirst: () => void
@@ -70,9 +70,9 @@ function Stepper({
   ...props
 }: StepperProps) {
   const [activeStep, setActiveStep] = React.useState(defaultValue)
-  const [triggerNodes, setTriggerNodes] = React.useState<HTMLButtonElement[]>(
-    [],
-  )
+  const [triggerNodes, setTriggerNodes] = React.useState<
+    Array<HTMLButtonElement>
+  >([])
 
   // Register/unregister triggers
   const registerTrigger = React.useCallback(
@@ -208,8 +208,7 @@ function StepperItem({
   )
 }
 
-interface StepperTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface StepperTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean
 }
 

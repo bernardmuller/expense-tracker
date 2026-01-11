@@ -3,7 +3,13 @@ import { useStore } from '@tanstack/react-form'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldLabel } from '../ui/field'
 
-export default function TextField({ label, placeholder }: { label?: string, placeholder: string }) {
+export default function TextField({
+  label,
+  placeholder,
+}: {
+  label?: string
+  placeholder: string
+}) {
   const field = useFieldContext<string>()
   const isInvalid = useStore(field.store, (state) => !state.meta.isValid)
 

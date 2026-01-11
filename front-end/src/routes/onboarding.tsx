@@ -349,7 +349,7 @@ function OnboardingPage() {
                   />
                 </CardHeader>
                 <CardContent className="flex flex-col gap-6">
-                  {/*<Separator />*/}
+                  {/* <Separator />*/}
                   <form.AppField
                     name="budgetFrequency"
                     children={(field) => (

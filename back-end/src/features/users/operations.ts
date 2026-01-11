@@ -11,6 +11,8 @@ import type {
   UserAlreadyVerifiedError,
   OnboardingParams,
   CreateBudgetParams,
+  UpdateUserPreferencesParams,
+  UserPreferences,
 } from "./types";
 import type { Budget } from "@/lib/db/schema";
 import {
@@ -40,8 +42,8 @@ export const createUser = (
     .orElse((error) =>
       error instanceof EntityNotFoundError
         ? UserDomain.createUser(params).asyncAndThen((user) =>
-            UserQueries.create(user, ctx),
-          )
+          UserQueries.create(user, ctx),
+        )
         : errAsync(error),
     );
 
@@ -163,3 +165,43 @@ export const createNewBudget = (
   | InstanceType<typeof EncryptionCipherUpdateError>
   | InstanceType<typeof EncryptionCipherFinalError>
 > => UserQueries.createNewBudget(userId, params, ctx);
+
+export const getUserPreferences = (
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  UserPreferences,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityReadError>
+> =>
+  UserQueries.findPreferencesByUserId(userId, ctx).map((prefs) => ({
+    budgetStartDate: prefs.budgetStartDate,
+    frequency: prefs.frequency as "weekly" | "bi-weekly" | "monthly" | "custom" | null,
+    budgetStartDay: prefs.budgetStartDay,
+    customDuration: prefs.customDuration,
+  }));
+
+export const updateUserPreferences = (
+  userId: string,
+  params: UpdateUserPreferencesParams,
+  ctx: AppContext,
+): ResultAsync<
+  UserPreferences,
+  | InstanceType<typeof EntityNotFoundError>
+  | InstanceType<typeof EntityUpdateError>
+> =>
+  UserQueries.updatePreferences(
+    userId,
+    {
+      budgetStartDate: params.budgetStartDate ? new Date(params.budgetStartDate) : undefined,
+      frequency: params.frequency,
+      budgetStartDay: params.budgetStartDay,
+      customDuration: params.customDuration,
+    },
+    ctx,
+  ).map((prefs) => ({
+    budgetStartDate: prefs.budgetStartDate,
+    frequency: prefs.frequency as "weekly" | "bi-weekly" | "monthly" | "custom" | null,
+    budgetStartDay: prefs.budgetStartDay,
+    customDuration: prefs.customDuration,
+  }));

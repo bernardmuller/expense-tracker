@@ -6,9 +6,9 @@ const IconBadgeDefault = () => {
   return (
     <IconBadge.Root active={false}>
       <IconBadge.Icon>
-        <Calendar className="h-3.5 w-3.5 text-foreground" />
+        <Calendar className="text-foreground h-3.5 w-3.5" />
       </IconBadge.Icon>
-      <span className="text-sm font-medium text-primary">12 days left</span>
+      <span className="text-primary text-sm font-medium">12 days left</span>
     </IconBadge.Root>
   )
 }
@@ -17,9 +17,9 @@ const IconBadgeActive = () => {
   return (
     <IconBadge.Root active={true}>
       <IconBadge.Icon>
-        <Calendar className="h-3.5 w-3.5 text-primary" />
+        <Calendar className="text-primary h-3.5 w-3.5" />
       </IconBadge.Icon>
-      <span className="text-xs font-medium text-primary">12 days left</span>
+      <span className="text-primary text-xs font-medium">12 days left</span>
     </IconBadge.Root>
   )
 }

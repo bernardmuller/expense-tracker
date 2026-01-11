@@ -1,4 +1,3 @@
-
 import Filter from '../Filter'
 import { generateFilterProps } from '../__mocks__/filterProps.mock'
 import type { Meta, StoryObj } from '@storybook/react-vite'
