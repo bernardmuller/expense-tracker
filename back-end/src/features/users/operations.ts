@@ -42,8 +42,8 @@ export const createUser = (
     .orElse((error) =>
       error instanceof EntityNotFoundError
         ? UserDomain.createUser(params).asyncAndThen((user) =>
-          UserQueries.create(user, ctx),
-        )
+            UserQueries.create(user, ctx),
+          )
         : errAsync(error),
     );
 
@@ -176,8 +176,12 @@ export const getUserPreferences = (
 > =>
   UserQueries.findPreferencesByUserId(userId, ctx).map((prefs) => ({
     budgetStartDate: prefs.budgetStartDate,
-    frequency: prefs.frequency as "weekly" | "bi-weekly" | "monthly" | "custom" | null,
-    budgetStartDay: prefs.budgetStartDay,
+    frequency: prefs.frequency as
+      | "weekly"
+      | "bi-weekly"
+      | "monthly"
+      | "custom"
+      | null,
     customDuration: prefs.customDuration,
   }));
 
@@ -193,15 +197,20 @@ export const updateUserPreferences = (
   UserQueries.updatePreferences(
     userId,
     {
-      budgetStartDate: params.budgetStartDate ? new Date(params.budgetStartDate) : undefined,
+      budgetStartDate: params.budgetStartDate
+        ? new Date(params.budgetStartDate)
+        : undefined,
       frequency: params.frequency,
-      budgetStartDay: params.budgetStartDay,
       customDuration: params.customDuration,
     },
     ctx,
   ).map((prefs) => ({
     budgetStartDate: prefs.budgetStartDate,
-    frequency: prefs.frequency as "weekly" | "bi-weekly" | "monthly" | "custom" | null,
-    budgetStartDay: prefs.budgetStartDay,
+    frequency: prefs.frequency as
+      | "weekly"
+      | "bi-weekly"
+      | "monthly"
+      | "custom"
+      | null,
     customDuration: prefs.customDuration,
   }));

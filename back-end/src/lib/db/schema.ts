@@ -36,7 +36,7 @@ export const userPreferences = pgTable("user_preferences", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  budgetStartDate: timestamp("budget_start_date"),
+  budgetStartDate: integer("budget_start_date"),
   frequency: varchar("frequency", { length: 20 }),
   customDuration: integer("custom_duration"),
   createdAt: timestamp("created_at")

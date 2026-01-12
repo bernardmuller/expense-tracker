@@ -1947,10 +1947,6 @@
                         "custom"
                       ]
                     },
-                    "budgetStartDay": {
-                      "type": "number",
-                      "nullable": true
-                    },
                     "customDuration": {
                       "type": "number",
                       "nullable": true
@@ -1959,7 +1955,6 @@
                   "required": [
                     "budgetStartDate",
                     "frequency",
-                    "budgetStartDay",
                     "customDuration"
                   ]
                 }
@@ -2044,7 +2039,8 @@
                 "properties": {
                   "budgetStartDate": {
                     "type": "string",
-                    "format": "date-time"
+                    "nullable": true,
+                    "format": "date"
                   },
                   "frequency": {
                     "type": "string",
@@ -2054,9 +2050,6 @@
                       "monthly",
                       "custom"
                     ]
-                  },
-                  "budgetStartDay": {
-                    "type": "number"
                   },
                   "customDuration": {
                     "type": "number"
@@ -2088,10 +2081,6 @@
                         "custom"
                       ]
                     },
-                    "budgetStartDay": {
-                      "type": "number",
-                      "nullable": true
-                    },
                     "customDuration": {
                       "type": "number",
                       "nullable": true
@@ -2100,7 +2089,6 @@
                   "required": [
                     "budgetStartDate",
                     "frequency",
-                    "budgetStartDay",
                     "customDuration"
                   ]
                 }

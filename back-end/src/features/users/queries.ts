@@ -185,19 +185,15 @@ export const onboardUser = (
 
         if (!budget) throw new EntityCreateError("Budget");
 
-        const userPrefs = await tx
-          .insert(userPreferences)
-          .values({
-            id: generateUuid(),
-            userId,
+        await tx
+          .update(userPreferences)
+          .set({
             budgetStartDate: params.startDate,
             frequency: params.budgetFrequency,
             customDuration: params.customDuration,
             updatedAt: now,
           })
-          .returning();
-
-        if (!userPrefs) throw new EntityCreateError("UserPreferences");
+          .where(eq(users.id, userId));
 
         const userCategoryInserts = params.categories.map((cat) => ({
           id: generateUuid(),
@@ -376,8 +372,9 @@ export const updatePreferences = (
   UserPreferences,
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityUpdateError>
-> =>
-  ResultAsync.fromPromise(
+> => {
+  console.log(preferences);
+  return ResultAsync.fromPromise(
     ctx.db
       .update(userPreferences)
       .set({
@@ -392,3 +389,4 @@ export const updatePreferences = (
       ? okAsync(updatedPrefs)
       : errAsync(new EntityNotFoundError(`UserPreferences: ${userId}`)),
   );
+};

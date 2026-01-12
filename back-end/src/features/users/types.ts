@@ -34,14 +34,12 @@ export const userPreferencesSchema = z.object({
     .transform((val) => new Date(val))
     .nullable(),
   frequency: z.enum(["weekly", "bi-weekly", "monthly", "custom"]).nullable(),
-  budgetStartDay: z.number().nullable(),
   customDuration: z.number().nullable(),
 });
 
 export const updateUserPreferencesSchema = z.object({
-  budgetStartDate: z.string().datetime().optional(),
+  budgetStartDate: z.coerce.date().optional(),
   frequency: z.enum(["weekly", "bi-weekly", "monthly", "custom"]).optional(),
-  budgetStartDay: z.number().optional(),
   customDuration: z.number().optional(),
 });
 

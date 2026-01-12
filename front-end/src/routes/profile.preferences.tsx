@@ -9,9 +9,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { ArrowLeftIcon } from 'lucide-react'
 import z from 'zod'
 
-import {
-  getUserPreferencesQueryOptions,
-} from '@/lib/http/queries/users/getUserPreferences'
+import { getUserPreferencesQueryOptions } from '@/lib/http/queries/users/getUserPreferences'
 import { useUpdateUserPreferences } from '@/lib/http/hooks/use-update-user-preferences'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
@@ -76,9 +74,11 @@ function BudgetPreferencesPage() {
 
   const getInitialValues = (): PreferencesFormValues => {
     return {
-      budgetFrequency: preferences?.frequency || 'monthly',
-      budgetStartDay: preferences?.budgetStartDay || 1,
-      customDuration: preferences?.customDuration || undefined,
+      budgetFrequency: preferences.frequency || 'monthly',
+      budgetStartDay: preferences.budgetStartDate
+        ? new Date(preferences.budgetStartDate).getDate()
+        : 1,
+      customDuration: preferences.customDuration || undefined,
     }
   }
 
@@ -96,6 +96,7 @@ function BudgetPreferencesPage() {
     },
   })
 
+  console.log(getInitialValues(), preferences)
   return (
     <Layout>
       <div className="mb-6 flex items-center">
@@ -136,7 +137,7 @@ function BudgetPreferencesPage() {
                           frequency === 'monthly'
                             ? 'Start Day of Month'
                             : frequency === 'weekly' ||
-                              frequency === 'bi-weekly'
+                                frequency === 'bi-weekly'
                               ? 'Start Day of Week'
                               : 'Start Day'
                         }

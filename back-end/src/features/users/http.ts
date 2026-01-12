@@ -7,10 +7,7 @@ import { createContext } from "@/lib/db/context";
 import * as UserOperations from "./operations";
 import { createUserSchema, userSchema } from "./types";
 import { onboardingSchema, createBudgetSchema } from "./types";
-import {
-  userPreferencesSchema,
-  updateUserPreferencesSchema,
-} from "./types";
+import { userPreferencesSchema, updateUserPreferencesSchema } from "./types";
 import type { CreateUserParams } from "./types";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
@@ -273,7 +270,10 @@ const updateUserPreferencesRoute = createRoute({
     params: z.object({
       id: z.uuid(),
     }),
-    body: jsonContent(updateUserPreferencesSchema, "User preferences update data"),
+    body: jsonContent(
+      updateUserPreferencesSchema,
+      "User preferences update data",
+    ),
   },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
@@ -416,7 +416,10 @@ const updateUserPreferencesHandler = async (c: Context) => {
   const result = await UserOperations.updateUserPreferences(userId, body, ctx);
 
   return result.match(
-    (prefs) => c.json(prefs, 200),
+    (prefs) => {
+      console.log(prefs);
+      return c.json(prefs, 200);
+    },
     (error) => mapErrorToResponse(error, c),
   );
 };

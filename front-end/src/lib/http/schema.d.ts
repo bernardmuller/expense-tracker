@@ -1136,7 +1136,6 @@ export interface paths {
                             budgetStartDate: string | null;
                             /** @enum {string|null} */
                             frequency: "weekly" | "bi-weekly" | "monthly" | "custom" | null;
-                            budgetStartDay: number | null;
                             customDuration: number | null;
                         };
                     };
@@ -1187,11 +1186,10 @@ export interface paths {
             requestBody?: {
                 content: {
                     "application/json": {
-                        /** Format: date-time */
-                        budgetStartDate?: string;
+                        /** Format: date */
+                        budgetStartDate?: string | null;
                         /** @enum {string} */
                         frequency?: "weekly" | "bi-weekly" | "monthly" | "custom";
-                        budgetStartDay?: number;
                         customDuration?: number;
                     };
                 };
@@ -1207,7 +1205,6 @@ export interface paths {
                             budgetStartDate: string | null;
                             /** @enum {string|null} */
                             frequency: "weekly" | "bi-weekly" | "monthly" | "custom" | null;
-                            budgetStartDay: number | null;
                             customDuration: number | null;
                         };
                     };
