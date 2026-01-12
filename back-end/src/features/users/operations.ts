@@ -198,7 +198,7 @@ export const updateUserPreferences = (
     userId,
     {
       budgetStartDate: params.budgetStartDate
-        ? new Date(params.budgetStartDate)
+        ? params.budgetStartDate
         : undefined,
       frequency: params.frequency,
       customDuration: params.customDuration,

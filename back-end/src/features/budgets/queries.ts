@@ -276,6 +276,8 @@ export const getActiveBudgetWithExpenses = (
         updatedAt: budget.updatedAt,
         deletedAt: budget.deletedAt,
         expenses: budget.expenses,
+        startDate: budget.startDate,
+        endDate: budget.endDate,
       }),
     );
   });

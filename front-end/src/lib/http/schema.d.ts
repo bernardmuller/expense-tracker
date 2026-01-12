@@ -1133,7 +1133,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            budgetStartDate: string | null;
+                            budgetStartDate: number | null;
                             /** @enum {string|null} */
                             frequency: "weekly" | "bi-weekly" | "monthly" | "custom" | null;
                             customDuration: number | null;
@@ -1186,8 +1186,7 @@ export interface paths {
             requestBody?: {
                 content: {
                     "application/json": {
-                        /** Format: date */
-                        budgetStartDate?: string | null;
+                        budgetStartDate?: number;
                         /** @enum {string} */
                         frequency?: "weekly" | "bi-weekly" | "monthly" | "custom";
                         customDuration?: number;
@@ -1202,7 +1201,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            budgetStartDate: string | null;
+                            budgetStartDate: number | null;
                             /** @enum {string|null} */
                             frequency: "weekly" | "bi-weekly" | "monthly" | "custom" | null;
                             customDuration: number | null;
@@ -1490,6 +1489,10 @@ export interface paths {
                             updatedAt: string;
                             /** Format: date */
                             deletedAt: string | null;
+                            /** Format: date */
+                            startDate: string | null;
+                            /** Format: date */
+                            endDate: string | null;
                             expenses: {
                                 /** Format: uuid */
                                 id: string;

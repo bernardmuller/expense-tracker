@@ -188,12 +188,12 @@ export const onboardUser = (
         await tx
           .update(userPreferences)
           .set({
-            budgetStartDate: params.startDate,
+            budgetStartDate: params.budgetStartDay,
             frequency: params.budgetFrequency,
             customDuration: params.customDuration,
             updatedAt: now,
           })
-          .where(eq(users.id, userId));
+          .where(eq(userPreferences.userId, userId));
 
         const userCategoryInserts = params.categories.map((cat) => ({
           id: generateUuid(),
@@ -372,9 +372,8 @@ export const updatePreferences = (
   UserPreferences,
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityUpdateError>
-> => {
-  console.log(preferences);
-  return ResultAsync.fromPromise(
+> =>
+  ResultAsync.fromPromise(
     ctx.db
       .update(userPreferences)
       .set({
@@ -389,4 +388,3 @@ export const updatePreferences = (
       ? okAsync(updatedPrefs)
       : errAsync(new EntityNotFoundError(`UserPreferences: ${userId}`)),
   );
-};

@@ -55,6 +55,8 @@ const getActiveBudgetRoute = createRoute({
         createdAt: z.date(),
         updatedAt: z.date(),
         deletedAt: z.date().nullable(),
+        startDate: z.date().nullable(),
+        endDate: z.date().nullable(),
         expenses: z.array(
           z.object({
             id: z.uuid(),

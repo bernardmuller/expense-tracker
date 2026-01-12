@@ -1,5 +1,8 @@
 import AddExpenseForm from '@/components/add-expense-form/AddExpenseForm'
-import { CurrentBudget } from '@/components/current-budget/CurrentBudget'
+import {
+  CurrentBudget,
+  CurrentBudgetWithBadge,
+} from '@/components/current-budget/CurrentBudget'
 import { Layout } from '@/components/layouts/Layout'
 import RecentExpenses from '@/components/recent-expenses/RecentExpenses'
 import { RefreshIndicator } from '@/components/refresh-indicator/RefreshIndicator'
@@ -22,6 +25,7 @@ import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { usePrivacy } from '@/lib/hooks/usePrivacy'
 import { getPrivacyDisplayValue } from '@/lib/utils/formatting/getPrivacyDisplayValue'
 import { AppHeader } from '@/components/app-header'
+import { differenceInCalendarDays } from 'date-fns'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: () => requireAuth(),
@@ -79,10 +83,7 @@ function Dashboard() {
         <AppHeader.Root>
           <AppHeader.Content>
             <AppHeader.Icon src="/favicon.ico" alt="App Icon" />
-            <AppHeader.Info
-              appName="Expense Tracker"
-              message={`Hi, ${user.name}!`}
-            />
+            <AppHeader.Info appName="Expenny" message={`Hi, ${user.name}!`} />
           </AppHeader.Content>
           <AppHeader.Action>
             <Button
@@ -96,28 +97,57 @@ function Dashboard() {
             </Button>
           </AppHeader.Action>
         </AppHeader.Root>
-        <CurrentBudget
-          budgetName={budget.name}
-          currentAmount={getPrivacyDisplayValue(
-            formatCurrency(currentAmount, 'za'),
-            isPrivacyEnabled,
-          )}
-          startingAmount={getPrivacyDisplayValue(
-            formatCurrency(startAmount, 'za'),
-            isPrivacyEnabled,
-          )}
-          spentAmount={getPrivacyDisplayValue(
-            formatCurrency(spentAmount, 'za'),
-            isPrivacyEnabled,
-          )}
-          spentPercentage={spentPercentage}
-          onClick={togglePrivacy}
-          linkProvider={({ children }) => (
-            <Link to="/budgets/$id" params={{ id: budget.id }}>
-              {children}
-            </Link>
-          )}
-        />
+        {budget.endDate ? (
+          <CurrentBudgetWithBadge
+            budgetName={budget.name}
+            currentAmount={getPrivacyDisplayValue(
+              formatCurrency(currentAmount, 'za'),
+              isPrivacyEnabled,
+            )}
+            startingAmount={getPrivacyDisplayValue(
+              formatCurrency(startAmount, 'za'),
+              isPrivacyEnabled,
+            )}
+            spentAmount={getPrivacyDisplayValue(
+              formatCurrency(spentAmount, 'za'),
+              isPrivacyEnabled,
+            )}
+            spentPercentage={spentPercentage}
+            onClick={togglePrivacy}
+            linkProvider={({ children }) => (
+              <Link to="/budgets/$id" params={{ id: budget.id }}>
+                {children}
+              </Link>
+            )}
+            daysLeft={differenceInCalendarDays(
+              new Date(budget.endDate),
+              new Date(),
+            )}
+          />
+        ) : (
+          <CurrentBudget
+            budgetName={budget.name}
+            currentAmount={getPrivacyDisplayValue(
+              formatCurrency(currentAmount, 'za'),
+              isPrivacyEnabled,
+            )}
+            startingAmount={getPrivacyDisplayValue(
+              formatCurrency(startAmount, 'za'),
+              isPrivacyEnabled,
+            )}
+            spentAmount={getPrivacyDisplayValue(
+              formatCurrency(spentAmount, 'za'),
+              isPrivacyEnabled,
+            )}
+            spentPercentage={spentPercentage}
+            onClick={togglePrivacy}
+            linkProvider={({ children }) => (
+              <Link to="/budgets/$id" params={{ id: budget.id }}>
+                {children}
+              </Link>
+            )}
+          />
+        )}
         <AddExpenseForm
           onSubmit={(value) =>
             createTransactionMutation.mutate({

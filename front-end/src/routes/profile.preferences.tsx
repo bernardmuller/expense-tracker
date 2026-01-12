@@ -76,7 +76,7 @@ function BudgetPreferencesPage() {
     return {
       budgetFrequency: preferences.frequency || 'monthly',
       budgetStartDay: preferences.budgetStartDate
-        ? new Date(preferences.budgetStartDate).getDate()
+        ? preferences.budgetStartDate
         : 1,
       customDuration: preferences.customDuration || undefined,
     }
@@ -90,7 +90,7 @@ function BudgetPreferencesPage() {
     onSubmit: ({ value }) => {
       updatePreferencesMutation.mutate({
         frequency: value.budgetFrequency,
-        budgetStartDay: value.budgetStartDay,
+        budgetStartDate: value.budgetStartDay,
         customDuration: value.customDuration,
       })
     },

@@ -1934,7 +1934,7 @@
                   "type": "object",
                   "properties": {
                     "budgetStartDate": {
-                      "type": "string",
+                      "type": "number",
                       "nullable": true
                     },
                     "frequency": {
@@ -2038,9 +2038,7 @@
                 "type": "object",
                 "properties": {
                   "budgetStartDate": {
-                    "type": "string",
-                    "nullable": true,
-                    "format": "date"
+                    "type": "number"
                   },
                   "frequency": {
                     "type": "string",
@@ -2068,7 +2066,7 @@
                   "type": "object",
                   "properties": {
                     "budgetStartDate": {
-                      "type": "string",
+                      "type": "number",
                       "nullable": true
                     },
                     "frequency": {
@@ -2689,6 +2687,16 @@
                       "nullable": true,
                       "format": "date"
                     },
+                    "startDate": {
+                      "type": "string",
+                      "nullable": true,
+                      "format": "date"
+                    },
+                    "endDate": {
+                      "type": "string",
+                      "nullable": true,
+                      "format": "date"
+                    },
                     "expenses": {
                       "type": "array",
                       "items": {
@@ -2774,6 +2782,8 @@
                     "createdAt",
                     "updatedAt",
                     "deletedAt",
+                    "startDate",
+                    "endDate",
                     "expenses"
                   ]
                 }

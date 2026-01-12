@@ -29,16 +29,13 @@ export const createUserSchema = userSchema
   });
 
 export const userPreferencesSchema = z.object({
-  budgetStartDate: z
-    .string()
-    .transform((val) => new Date(val))
-    .nullable(),
+  budgetStartDate: z.number().nullable(),
   frequency: z.enum(["weekly", "bi-weekly", "monthly", "custom"]).nullable(),
   customDuration: z.number().nullable(),
 });
 
 export const updateUserPreferencesSchema = z.object({
-  budgetStartDate: z.coerce.date().optional(),
+  budgetStartDate: z.number().optional(),
   frequency: z.enum(["weekly", "bi-weekly", "monthly", "custom"]).optional(),
   customDuration: z.number().optional(),
 });
