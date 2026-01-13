@@ -2,7 +2,7 @@ import configureOpenAPI from "@/lib/http/openapi";
 import createApi from "@/lib/http/createApi";
 import index from "@/lib/http/routes/index";
 import { healthRouter as health } from "./features/health/http";
-import { authRouter as auth } from "./features/auth/http";
+import { authRouter as auth } from "./features/auth";
 import { userRouter as users } from "./features/users/http";
 import { categoryRouter as categories } from "./features/categories/http";
 import { transactionRouter as transactions } from "./features/transactions/http";
