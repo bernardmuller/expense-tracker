@@ -42,32 +42,6 @@ const createTransactionRoute = createRoute({
   },
 });
 
-const getUserCategoriesRoute = createRoute({
-  path: "/users/{id}/categories",
-  method: "get",
-  tags: ["Users"],
-  request: {
-    params: z.object({ id: z.uuid() }),
-  },
-  responses: {
-    [HttpStatusCodes.OK]: jsonContent(
-      z.array(
-        z.object({
-          id: z.string().uuid(),
-          key: z.string(),
-          label: z.string(),
-          icon: z.string(),
-        }),
-      ),
-      "User categories",
-    ),
-    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      errorResponseSchema,
-      "Internal server error",
-    ),
-  },
-});
-
 const getTransactionsRoute = createRoute({
   path: "/transactions",
   method: "get",
@@ -134,20 +108,6 @@ const createTransactionHandler = async (c: Context) => {
   );
 };
 
-const getUserCategoriesHandler = async (c: Context) => {
-  const user = c.get("user") as { userId: string };
-  const ctx = createContext();
-  const result = await TransactionOperations.getUserCategories(
-    user.userId,
-    ctx,
-  );
-
-  return result.match(
-    (categories) => c.json(categories, 200),
-    (error) => mapErrorToResponse(error, c),
-  );
-};
-
 const getTransactionsHandler = async (c: Context) => {
   return parseSearchQuery<
     Transaction,
@@ -199,6 +159,5 @@ const deleteExpenseHandler = async (c: Context) => {
 
 export const transactionRouter = createRouter()
   .openapi(createTransactionRoute, createTransactionHandler)
-  .openapi(getUserCategoriesRoute, getUserCategoriesHandler)
   .openapi(getTransactionsRoute, getTransactionsHandler)
   .openapi(deleteExpenseRoute, deleteExpenseHandler);

@@ -4,7 +4,7 @@ import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
-import * as TransactionOperations from "./operations";
+import * as BudgetOperations from "./operations";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
 import { SearchQueries } from "@/lib/http/types";
@@ -175,7 +175,7 @@ const getBudgetExpensesHandler = async (c: Context) => {
   const budgetId = c.req.param("id");
   const user = c.get("user");
   const ctx = createContext();
-  const result = await TransactionOperations.getBudgetExpenses(
+  const result = await BudgetOperations.getBudgetExpenses(
     budgetId,
     user.userId,
     ctx,
@@ -201,7 +201,7 @@ const getBudgetsHandler = async (c: Context) => {
   })
     .asyncAndThen((search) => {
       const ctx = createContext();
-      return TransactionOperations.getBudgets(search, ctx);
+      return BudgetOperations.getBudgets(search, ctx);
     })
     .match(
       (budgets) => c.json({ budgets, count: budgets.length }, 200),
@@ -212,7 +212,7 @@ const getBudgetsHandler = async (c: Context) => {
 const getActiveBudgetHandler = async (c: Context) => {
   const user = c.get("user") as { userId: string };
   const ctx = createContext();
-  const result = await TransactionOperations.getActiveBudgetWithExpenses(
+  const result = await BudgetOperations.getActiveBudgetWithExpenses(
     user.userId,
     ctx,
   );

@@ -214,3 +214,11 @@ export const updateUserPreferences = (
       | null,
     customDuration: prefs.customDuration,
   }));
+
+export const getUserCategories = (
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Array<{ id: string; key: string; label: string; icon: string }>,
+  InstanceType<typeof EntityReadError>
+> => UserQueries.getUserCategories(userId, ctx);

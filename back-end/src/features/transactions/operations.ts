@@ -3,6 +3,7 @@ import type { AppContext } from "@/lib/db/context";
 import * as TransactionQueries from "./queries";
 import * as TransactionDomain from "./actions";
 import * as BudgetDomain from "../budgets/actions";
+import * as BudgetQueries from "../budgets/queries";
 import type {
   CreateTransactionParams,
   Transaction,
@@ -45,7 +46,7 @@ export const createTransaction = (
   | InstanceType<typeof EncryptionDecipherUpdateError>
   | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
-  TransactionQueries.findBudgetById(budgetId, ctx).andThen((budget) =>
+  BudgetQueries.findBudgetById(budgetId, ctx).andThen((budget) =>
     TransactionQueries.findCategoryById(params.categoryId, ctx).andThen(() =>
       ResultAsync.fromPromise(
         ctx.db.transaction(async (tx) => {
@@ -81,7 +82,7 @@ export const createTransaction = (
           }
           const encryptedBudget = encryptedBudgetResult.value;
 
-          const finalBudgetResult = await TransactionQueries.updateBudget(
+          const finalBudgetResult = await BudgetQueries.updateBudget(
             encryptedBudget,
             transactionContext,
           );
@@ -105,14 +106,6 @@ export const createTransaction = (
       ),
     ),
   );
-
-export const getUserCategories = (
-  userId: string,
-  ctx: AppContext,
-): ResultAsync<
-  Array<{ id: string; key: string; label: string; icon: string }>,
-  InstanceType<typeof EntityReadError>
-> => TransactionQueries.getUserCategories(userId, ctx);
 
 export const getTransactions = (
   search: SearchQueries<
@@ -146,7 +139,7 @@ export const deleteTransactionAndUpdateBudget = (
   | InstanceType<typeof EncryptionDecipherUpdateError>
   | InstanceType<typeof EncryptionDecipherFinalError>
 > =>
-  TransactionQueries.findBudgetById(budgetId, ctx).andThen((budget) =>
+  BudgetQueries.findBudgetById(budgetId, ctx).andThen((budget) =>
     TransactionQueries.getExpenseById(expenseId, ctx).andThen((expense) =>
       ResultAsync.fromPromise(
         ctx.db.transaction(async (tx) => {
@@ -177,7 +170,7 @@ export const deleteTransactionAndUpdateBudget = (
           }
           const encryptedBudget = encryptedBudgetResult.value;
 
-          const finalBudgetResult = await TransactionQueries.updateBudget(
+          const finalBudgetResult = await BudgetQueries.updateBudget(
             encryptedBudget,
             transactionContext,
           );

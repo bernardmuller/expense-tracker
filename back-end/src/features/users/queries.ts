@@ -1,5 +1,5 @@
 import type { AppContext } from "@/lib/db/context";
-import { userPreferences, users } from "@/lib/db/schema";
+import { users } from "@/lib/db/schema";
 import {
   EntityCreateError,
   EntityDeleteError,
@@ -14,6 +14,7 @@ import type { OnboardingParams, CreateBudgetParams } from "./types";
 import { generateUuid } from "@/lib/utils/generateUuid";
 import {
   budgets,
+  categories,
   userCategories,
   categoryBudgets,
   userPreferences,
@@ -245,6 +246,9 @@ export const onboardUser = (
     ),
   );
 
+// TODO: Consider moving budget creation logic to budgets feature
+// Currently here because it's tightly coupled with user onboarding and user categories
+// Requires careful transaction management if moved
 export const createNewBudget = (
   userId: string,
   params: CreateBudgetParams,
@@ -387,4 +391,25 @@ export const updatePreferences = (
     updatedPrefs
       ? okAsync(updatedPrefs)
       : errAsync(new EntityNotFoundError(`UserPreferences: ${userId}`)),
+  );
+
+export const getUserCategories = (
+  userId: string,
+  ctx: AppContext,
+): ResultAsync<
+  Array<{ id: string; key: string; label: string; icon: string }>,
+  InstanceType<typeof EntityReadError>
+> =>
+  ResultAsync.fromPromise(
+    ctx.db
+      .select({
+        id: categories.id,
+        key: categories.key,
+        label: categories.label,
+        icon: categories.icon,
+      })
+      .from(userCategories)
+      .innerJoin(categories, eq(userCategories.categoryId, categories.id))
+      .where(eq(userCategories.userId, userId)),
+    (error) => new EntityReadError("UserCategories", String(error)),
   );

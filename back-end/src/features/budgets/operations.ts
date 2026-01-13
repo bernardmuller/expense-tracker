@@ -1,7 +1,7 @@
 import { ResultAsync, okAsync, errAsync } from "neverthrow";
 import type { AppContext } from "@/lib/db/context";
-import * as TransactionQueries from "./queries";
-import * as TransactionDomain from "./actions";
+import * as BudgetQueries from "./queries";
+import * as BudgetDomain from "./actions";
 import type { Transaction } from "./types";
 import type { Budget, CategoryBudget } from "@/lib/db/schema";
 import {
@@ -42,7 +42,7 @@ export const getBudgetExpenses = (
   | InstanceType<typeof EncryptionDecipherCreationError>
   | InstanceType<typeof EncryptionDecipherUpdateError>
   | InstanceType<typeof EncryptionDecipherFinalError>
-> => TransactionQueries.getBudgetWithExpensesByBudgetId(budgetId, userId, ctx);
+> => BudgetQueries.getBudgetWithExpensesByBudgetId(budgetId, userId, ctx);
 
 export const getBudgets = (
   search: SearchQueries<
@@ -60,7 +60,7 @@ export const getBudgets = (
   | InstanceType<typeof EncryptionDecipherCreationError>
   | InstanceType<typeof EncryptionDecipherUpdateError>
   | InstanceType<typeof EncryptionDecipherFinalError>
-> => TransactionQueries.getBudgets(search, ctx);
+> => BudgetQueries.getBudgets(search, ctx);
 
 export const getActiveBudgetWithExpenses = (
   userId: string,
@@ -76,4 +76,4 @@ export const getActiveBudgetWithExpenses = (
   | InstanceType<typeof EncryptionDecipherCreationError>
   | InstanceType<typeof EncryptionDecipherUpdateError>
   | InstanceType<typeof EncryptionDecipherFinalError>
-> => TransactionQueries.getActiveBudgetWithExpenses(userId, ctx);
+> => BudgetQueries.getActiveBudgetWithExpenses(userId, ctx);
