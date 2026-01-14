@@ -1,12 +1,12 @@
 import configureOpenAPI from "@/lib/http/openapi";
 import createApi from "@/lib/http/createApi";
 import index from "@/lib/http/routes/index";
-import { healthRouter as health } from "./features/health/http";
+import { healthRouter as health } from "./features/health";
 import { authRouter as auth } from "./features/auth";
-import { userRouter as users } from "./features/users/http";
-import { categoryRouter as categories } from "./features/categories/http";
-import { transactionRouter as transactions } from "./features/transactions/http";
-import { budgetRouter as budgets } from "./features/budgets/http";
+import { userRouter as users } from "./features/users";
+import { categoryRouter as categories } from "./features/categories";
+import { transactionRouter as transactions } from "./features/transactions";
+import { budgetRouter as budgets } from "./features/budgets";
 import { cors } from "hono/cors";
 import env from "./env";
 import { authMiddleware } from "@/lib/http/middleware/auth";
