@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { onboardingSteps } from '@/lib/constants/onboardingSteps'
+import { newBudgetSteps } from '@/lib/constants/newBudgetSteps'
 import { Separator } from '../ui/separator'
 
 type CloseBudgetProps = {
@@ -30,7 +30,7 @@ export default function CloseBudget({ onGetStarted }: CloseBudgetProps) {
           </CardHeader>
           <CardContent className="py-2">
             <div className="space-y-6">
-              {onboardingSteps.map((step, index) => (
+              {newBudgetSteps.map((step, index) => (
                 <div key={step.title} className="flex items-center gap-3">
                   <div
                     className="bg-primary/10 flex min-h-8 min-w-8 items-center

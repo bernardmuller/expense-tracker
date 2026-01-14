@@ -34,10 +34,11 @@ import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { getUserById } from '@/lib/http/api/users'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import {
-  getBudgetCycleDescription,
   calculateNextBudgetStart,
   calculateBudgetEnd,
 } from '@/lib/utils/budget-dates'
+import { getDaysUntilStart } from '@/lib/utils/formatting/getDaysUntilStart'
+import { BudgetStartIndicator } from '@/components/budget-start-indicator/BudgetStartIndicator'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -406,16 +407,12 @@ function OnboardingPage() {
                       customDuration: state.values.customDuration,
                     })}
                     children={({ frequency, startDay, customDuration }) => {
-                      const description = getBudgetCycleDescription(
+                      const daysUntilStart = getDaysUntilStart(
                         frequency,
                         startDay,
                         customDuration,
                       )
-                      return (
-                        <p className="text-muted-foreground text-sm italic">
-                          {description}
-                        </p>
-                      )
+                      return <BudgetStartIndicator daysUntilStart={daysUntilStart} />
                     }}
                   />
                 </CardContent>

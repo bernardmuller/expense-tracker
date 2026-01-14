@@ -14,7 +14,7 @@ export function calculateNextBudgetStart(
       const nextStart = new Date(today)
       nextStart.setDate(startDay)
 
-      if (nextStart <= today) {
+      if (nextStart < today) {
         nextStart.setMonth(nextStart.getMonth() + 1)
       }
 
@@ -30,9 +30,7 @@ export function calculateNextBudgetStart(
       const currentDay = today.getDay()
       const daysUntilStart = (startDay - currentDay + 7) % 7
 
-      if (daysUntilStart === 0) {
-        nextStart.setDate(nextStart.getDate() + 7)
-      } else {
+      if (daysUntilStart > 0) {
         nextStart.setDate(nextStart.getDate() + daysUntilStart)
       }
 
@@ -44,9 +42,7 @@ export function calculateNextBudgetStart(
       const currentDay = today.getDay()
       const daysUntilStart = (startDay - currentDay + 7) % 7
 
-      if (daysUntilStart === 0) {
-        nextStart.setDate(nextStart.getDate() + 7)
-      } else {
+      if (daysUntilStart > 0) {
         nextStart.setDate(nextStart.getDate() + daysUntilStart)
       }
 

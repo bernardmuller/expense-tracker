@@ -25,17 +25,24 @@ import {
   StepperTrigger,
 } from '@/components/ui/stepper'
 import { useAppForm } from '@/hooks/form'
-import { onboardingSteps } from '@/lib/constants/onboardingSteps'
 import { useCategories } from '@/lib/http/hooks/use-categories'
 import { useCreateBudget } from '@/lib/http/hooks/use-create-budget'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users/getUserCatgories'
+import { getUserPreferencesQueryOptions } from '@/lib/http/queries/users/getUserPreferences'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { requireAuth } from '@/lib/auth/route-guard'
 import BudgetInfoBlock from '@/components/budget-info/BudgetInfoBlock'
 import CloseBudget from '@/components/close-budget/CloseBudget'
+import {
+  calculateNextBudgetStart,
+  calculateBudgetEnd,
+} from '@/lib/utils/budget-dates'
+import { getDaysUntilStart } from '@/lib/utils/formatting/getDaysUntilStart'
+import { newBudgetSteps } from '@/lib/constants/newBudgetSteps'
+import { BudgetStartIndicator } from '@/components/budget-start-indicator/BudgetStartIndicator'
 
 const userCategorySchema = z.object({
   id: z.string(),
@@ -46,6 +53,14 @@ const userCategorySchema = z.object({
 
 const newBudgetFormSchema = z
   .object({
+    budgetFrequency: z.enum(['weekly', 'bi-weekly', 'monthly', 'custom'], {
+      required_error: 'You must select a budget frequency',
+    }),
+    budgetStartDay: z.number({
+      required_error: 'You must select a start day',
+      invalid_type_error: 'Invalid day',
+    }),
+    customDuration: z.number().optional(),
     name: z
       .string()
       .min(1, 'You must provide a budget name')
@@ -61,6 +76,36 @@ const newBudgetFormSchema = z
     message: 'You must select at least one category',
     path: ['categories'],
   })
+  .refine(
+    (data) => {
+      if (data.budgetFrequency === 'monthly') {
+        return data.budgetStartDay >= 1 && data.budgetStartDay <= 31
+      }
+      if (
+        data.budgetFrequency === 'weekly' ||
+        data.budgetFrequency === 'bi-weekly'
+      ) {
+        return data.budgetStartDay >= 0 && data.budgetStartDay <= 6
+      }
+      return true
+    },
+    {
+      message: 'Invalid start day for selected frequency',
+      path: ['budgetStartDay'],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.budgetFrequency === 'custom') {
+        return data.customDuration && data.customDuration > 0
+      }
+      return true
+    },
+    {
+      message: 'You must provide a duration for custom frequency',
+      path: ['customDuration'],
+    },
+  )
 
 export type NewBudgetFormValues = z.infer<typeof newBudgetFormSchema>
 
@@ -76,6 +121,7 @@ export const Route = createFileRoute('/budgets/new')({
         getBudgetByIdQueryOptions(activeBudget.id),
       ),
       context.queryClient.ensureQueryData(getUserCategoriesQueryOptions()),
+      context.queryClient.ensureQueryData(getUserPreferencesQueryOptions()),
     ])
   },
   component: NewBudgetPage,
@@ -105,25 +151,35 @@ const getStepWithError = (
   if (!fieldMeta) return null
 
   if (
-    (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
-    (fieldMeta['startAmount']?.errors &&
-      fieldMeta['startAmount'].errors.length > 0)
+    (fieldMeta['budgetFrequency']?.errors &&
+      fieldMeta['budgetFrequency'].errors.length > 0) ||
+    (fieldMeta['budgetStartDay']?.errors &&
+      fieldMeta['budgetStartDay'].errors.length > 0) ||
+    (fieldMeta['customDuration']?.errors &&
+      fieldMeta['customDuration'].errors.length > 0)
   )
     return 1
 
   if (
-    fieldMeta['categories']?.errors &&
-    fieldMeta['categories'].errors.length > 0 &&
-    formValues.categories.length === 0
+    (fieldMeta['name']?.errors && fieldMeta['name'].errors.length > 0) ||
+    (fieldMeta['startAmount']?.errors &&
+      fieldMeta['startAmount'].errors.length > 0)
   )
     return 2
 
   if (
     fieldMeta['categories']?.errors &&
     fieldMeta['categories'].errors.length > 0 &&
+    formValues.categories.length === 0
+  )
+    return 3
+
+  if (
+    fieldMeta['categories']?.errors &&
+    fieldMeta['categories'].errors.length > 0 &&
     formValues.categories.length > 0
   ) {
-    return 3
+    return 4
   }
 
   return null
@@ -140,6 +196,9 @@ function NewBudgetPage() {
   )
   const { data: budgetDetail } = useSuspenseQuery(
     getBudgetByIdQueryOptions(currentBudget.id),
+  )
+  const { data: preferences } = useSuspenseQuery(
+    getUserPreferencesQueryOptions(),
   )
   const {
     data: categories,
@@ -173,6 +232,9 @@ function NewBudgetPage() {
 
   const form = useAppForm({
     defaultValues: {
+      budgetFrequency: preferences.frequency || 'monthly',
+      budgetStartDay: preferences.budgetStartDate || 1,
+      customDuration: preferences.customDuration,
       name: '',
       startAmount: suggestedStartAmount,
       categories: initialCategories,
@@ -188,7 +250,25 @@ function NewBudgetPage() {
         amount: cat.amount || 0,
       }))
 
+      const startDate = calculateNextBudgetStart(
+        value.budgetFrequency,
+        value.budgetStartDay,
+        value.customDuration,
+      )
+
+      const endDate = calculateBudgetEnd(
+        startDate,
+        value.budgetFrequency,
+        value.budgetStartDay,
+        value.customDuration,
+      )
+
       const newBudgetData = {
+        budgetFrequency: value.budgetFrequency,
+        budgetStartDay: value.budgetStartDay,
+        customDuration: value.customDuration,
+        startDate,
+        endDate,
         name: value.name,
         startAmount: value.startAmount,
         categories: transformedCategories,
@@ -212,31 +292,21 @@ function NewBudgetPage() {
         setCurrentStep(stepWithError)
         switch (stepWithError) {
           case 1:
-            toast.error('Please provide the budget name and start amount')
+            toast.error('Please complete your budget preferences')
             break
           case 2:
-            toast.error('Please select your spending categories')
+            toast.error('Please provide the budget name and start amount')
             break
           case 3:
+            toast.error('Please select your spending categories')
+            break
+          case 4:
             toast.error('Please allocate amounts to all categories')
             break
         }
       }
     },
   })
-
-  useEffect(() => {
-    form.setFieldValue('startAmount', suggestedStartAmount)
-  }, [suggestedStartAmount])
-
-  useEffect(() => {
-    if (
-      initialCategories.length > 0 &&
-      form.state.values.categories.length === 0
-    ) {
-      form.setFieldValue('categories', initialCategories)
-    }
-  }, [initialCategories])
 
   const toggleCategory = (category: Category) => {
     const currentCategories = form.state.values.categories
@@ -275,7 +345,7 @@ function NewBudgetPage() {
         className="flex flex-1 flex-col space-y-8"
       >
         <StepperNav>
-          {onboardingSteps.map((step, index) => (
+          {newBudgetSteps.map((step, index) => (
             <StepperItem
               key={index}
               step={index + 1}
@@ -285,7 +355,7 @@ function NewBudgetPage() {
                 <StepperIndicator>{index + 1}</StepperIndicator>
                 <StepperTitle>{step.title}</StepperTitle>
               </StepperTrigger>
-              {onboardingSteps.length > index + 1 && (
+              {newBudgetSteps.length > index + 1 && (
                 <StepperSeparator
                   className="group-data-[state=completed]/step:bg-primary
                     absolute inset-x-0 top-3 left-[calc(50%+0.875rem)] m-0
@@ -302,6 +372,106 @@ function NewBudgetPage() {
             className="flex flex-1 items-center justify-center"
           >
             <FieldGroup>
+              <Card className="w-full">
+                <CardHeader className="w-full">
+                  <StepHeader
+                    title="Time period"
+                    description={newBudgetSteps[currentStep - 1].description}
+                  />
+                </CardHeader>
+                <CardContent className="flex flex-col gap-6">
+                  <form.AppField
+                    name="budgetFrequency"
+                    children={(field) => (
+                      <field.BudgetFrequencyField
+                        label="Budget Frequency"
+                        placeholder="Select how often your budget resets"
+                      />
+                    )}
+                  />
+                  <form.Subscribe
+                    selector={(state) => state.values.budgetFrequency}
+                    children={(frequency) => {
+                      const currentDay = form.state.values.budgetStartDay
+                      if (
+                        frequency === 'monthly' &&
+                        (currentDay < 1 || currentDay > 31)
+                      ) {
+                        form.setFieldValue('budgetStartDay', 1)
+                      } else if (
+                        (frequency === 'weekly' || frequency === 'bi-weekly') &&
+                        (currentDay < 0 || currentDay > 6)
+                      ) {
+                        form.setFieldValue('budgetStartDay', 1)
+                      } else if (
+                        frequency === 'custom' &&
+                        (!currentDay || currentDay < 1)
+                      ) {
+                        form.setFieldValue('budgetStartDay', 30)
+                      }
+                      return (
+                        <>
+                          <form.AppField
+                            name="budgetStartDay"
+                            children={(field) => (
+                              <field.BudgetStartDayField
+                                label={
+                                  frequency === 'monthly'
+                                    ? 'Start Day of Month'
+                                    : frequency === 'weekly' ||
+                                        frequency === 'bi-weekly'
+                                      ? 'Start Day of Week'
+                                      : 'Start Day'
+                                }
+                                placeholder={
+                                  frequency === 'monthly'
+                                    ? 'Select day of month'
+                                    : 'Select day of week'
+                                }
+                                frequency={frequency}
+                              />
+                            )}
+                          />
+                          {frequency === 'custom' && (
+                            <form.AppField
+                              name="customDuration"
+                              children={(field) => (
+                                <field.BudgetStartDayField
+                                  label="Budget Duration (days)"
+                                  placeholder="Enter number of days"
+                                  frequency={frequency}
+                                />
+                              )}
+                            />
+                          )}
+                        </>
+                      )
+                    }}
+                  />
+                  <form.Subscribe
+                    selector={(state) => ({
+                      frequency: state.values.budgetFrequency,
+                      startDay: state.values.budgetStartDay,
+                      customDuration: state.values.customDuration,
+                    })}
+                    children={({ frequency, startDay, customDuration }) => {
+                      const daysUntilStart = getDaysUntilStart(
+                        frequency,
+                        startDay,
+                        customDuration,
+                      )
+                      return <BudgetStartIndicator daysUntilStart={daysUntilStart} />
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </FieldGroup>
+          </StepperContent>
+          <StepperContent
+            value={2}
+            className="flex flex-1 items-center justify-center"
+          >
+            <FieldGroup>
               <div className="flex w-full flex-col gap-4">
                 <BudgetInfoBlock
                   currentAmount={currentAmount}
@@ -313,7 +483,7 @@ function NewBudgetPage() {
                   <CardHeader className="w-full">
                     <StepHeader
                       title="Setup your New Budget"
-                      description={onboardingSteps[currentStep - 1].description}
+                      description={newBudgetSteps[currentStep - 1].description}
                     />
                   </CardHeader>
                   <CardContent className="flex flex-col gap-6">
@@ -341,14 +511,14 @@ function NewBudgetPage() {
             </FieldGroup>
           </StepperContent>
           <StepperContent
-            value={2}
+            value={3}
             className="flex flex-1 items-center justify-center"
           >
             <Card className="w-full">
               <CardHeader>
                 <StepHeader
                   title="Select Your Categories"
-                  description={onboardingSteps[currentStep - 1].description}
+                  description={newBudgetSteps[currentStep - 1].description}
                 />
               </CardHeader>
               <CardContent>
@@ -398,7 +568,7 @@ function NewBudgetPage() {
             </Card>
           </StepperContent>
           <StepperContent
-            value={3}
+            value={4}
             className="flex flex-1 flex-col items-center justify-center
               space-y-4"
           >
@@ -416,7 +586,7 @@ function NewBudgetPage() {
                         <StepHeader
                           title="Allocate Your Categories"
                           description={
-                            onboardingSteps[currentStep - 1].description
+                            newBudgetSteps[currentStep - 1].description
                           }
                         />
                       </CardHeader>
@@ -494,22 +664,20 @@ function NewBudgetPage() {
         </StepperPanel>
       </Stepper>
       <div className="flex items-center justify-between gap-2.5 py-4">
-        {currentStep > 1 && currentStep !== 0 ? (
-          <Button
-            variant="outline"
-            onClick={() => setCurrentStep((prev) => prev - 1)}
-          >
-            Previous
-          </Button>
-        ) : (
-          <Button variant="outline" onClick={() => router.history.back()}>
-            Cancel
-          </Button>
-        )}
-        {currentStep !== onboardingSteps.length ? (
+        <Button
+          variant="outline"
+          onClick={() =>
+            currentStep > 1
+              ? setCurrentStep((prev) => prev - 1)
+              : router.history.back()
+          }
+        >
+          {currentStep > 1 ? 'Previous' : 'Cancel'}
+        </Button>
+        {currentStep !== newBudgetSteps.length ? (
           <Button
             onClick={() => setCurrentStep((prev) => prev + 1)}
-            disabled={currentStep === onboardingSteps.length}
+            disabled={currentStep === newBudgetSteps.length}
           >
             Next
           </Button>
