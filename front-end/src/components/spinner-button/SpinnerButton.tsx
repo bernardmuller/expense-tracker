@@ -26,7 +26,7 @@ export function SpinnerButton(props: SpinnerButtonProps) {
   return (
     <Button
       disabled={props.isDisabled}
-      size="sm"
+      // size="sm"
       onClick={onClick}
       className={className}
       {...props.buttonProps}

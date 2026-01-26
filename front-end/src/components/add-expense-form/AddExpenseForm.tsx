@@ -80,7 +80,7 @@ export default function AddExpenseForm({
               children={(field) => (
                 <field.SelectField
                   filterItems={categories}
-                  placeHolder="Categories"
+                  placeHolder="Select Category"
                 />
               )}
             />
