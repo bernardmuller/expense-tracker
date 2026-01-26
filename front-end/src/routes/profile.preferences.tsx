@@ -23,13 +23,8 @@ export const Route = createFileRoute('/profile/preferences')({
 
 const preferencesSchema = z
   .object({
-    budgetFrequency: z.enum(['weekly', 'bi-weekly', 'monthly', 'custom'], {
-      required_error: 'You must select a budget frequency',
-    }),
-    budgetStartDay: z.number({
-      required_error: 'You must select a start day',
-      invalid_type_error: 'Invalid day',
-    }),
+    budgetFrequency: z.enum(['weekly', 'bi-weekly', 'monthly', 'custom']),
+    budgetStartDay: z.number(),
     customDuration: z.number().optional(),
   })
   .refine(

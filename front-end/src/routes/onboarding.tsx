@@ -49,13 +49,8 @@ const userCategorySchema = z.object({
 
 const onboardingFormSchema = z
   .object({
-    budgetFrequency: z.enum(['weekly', 'bi-weekly', 'monthly', 'custom'], {
-      required_error: 'You must select a budget frequency',
-    }),
-    budgetStartDay: z.number({
-      required_error: 'You must select a start day',
-      invalid_type_error: 'Invalid day',
-    }),
+    budgetFrequency: z.enum(['weekly', 'bi-weekly', 'monthly', 'custom']),
+    budgetStartDay: z.number(),
     customDuration: z.number().optional(),
     name: z
       .string()
@@ -412,7 +407,14 @@ function OnboardingPage() {
                         startDay,
                         customDuration,
                       )
-                      return <BudgetStartIndicator daysUntilStart={daysUntilStart} />
+                      return (
+                        <BudgetStartIndicator
+                          frequency={frequency}
+                          daysUntilStart={daysUntilStart}
+                          startDay={startDay}
+                          customDuration={customDuration}
+                        />
+                      )
                     }}
                   />
                 </CardContent>

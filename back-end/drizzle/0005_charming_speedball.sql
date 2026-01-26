@@ -1,0 +1,1 @@
+ALTER TABLE "user_preferences" ALTER COLUMN "budget_start_date" SET DATA TYPE integer;

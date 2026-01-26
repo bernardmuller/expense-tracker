@@ -35,9 +35,9 @@ export default function BudgetFrequencyField({
           <SelectValue placeholder={placeholder || 'Select frequency'} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="monthly">Monthly</SelectItem>
-          <SelectItem value="weekly">Weekly</SelectItem>
-          <SelectItem value="bi-weekly">Bi-weekly</SelectItem>
+          <SelectItem value="monthly">One Month</SelectItem>
+          <SelectItem value="weekly">One Week</SelectItem>
+          <SelectItem value="bi-weekly">Two Weeks</SelectItem>
           <SelectItem value="custom">Custom</SelectItem>
         </SelectContent>
       </Select>

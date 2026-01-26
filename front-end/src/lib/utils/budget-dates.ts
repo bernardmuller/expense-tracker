@@ -95,7 +95,7 @@ export function calculateBudgetEnd(
 
     case 'custom': {
       const end = new Date(start)
-      end.setDate(end.getDate() + (customDuration || 30) - 1)
+      end.setDate(end.getDate() + (customDuration || 30))
       return end
     }
 

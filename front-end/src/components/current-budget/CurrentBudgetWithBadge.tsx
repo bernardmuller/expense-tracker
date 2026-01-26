@@ -24,12 +24,12 @@ export default function CurrentBudgetWithBadge({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Current Budget</CardTitle>
-        <Button variant="link" asChild className="w-fit p-0">
-          <LinkProvider>
+        <LinkProvider>
+          <div className="space-y-1.5">
+            <CardTitle>Current Budget</CardTitle>
             <CardDescription>{budgetName}</CardDescription>
-          </LinkProvider>
-        </Button>
+          </div>
+        </LinkProvider>
         <CardAction>
           <IconBadge.Root active={daysLeft <= 0}>
             <IconBadge.Icon>

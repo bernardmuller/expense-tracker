@@ -1,7 +1,7 @@
 import type { ResultAsync } from "neverthrow";
 import type { AppContext } from "@/lib/db/context";
-import * as UserQueries from "../queries";
-import type { CreateBudgetParams } from "../types";
+import { createNewBudget as createNewBudgetQuery } from "../queries/createNewBudget";
+import type { CreateBudgetParams } from "../types/types";
 import type { Budget } from "@/lib/db/schema";
 import {
   EntityCreateError,
@@ -28,4 +28,4 @@ export const createNewBudget = (
   | InstanceType<typeof EncryptionCipherCreationError>
   | InstanceType<typeof EncryptionCipherUpdateError>
   | InstanceType<typeof EncryptionCipherFinalError>
-> => UserQueries.createNewBudget(userId, params, ctx);
+> => createNewBudgetQuery(userId, params, ctx);

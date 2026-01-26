@@ -1,9 +1,5 @@
 import type { AppContext } from "@/lib/db/context";
-import {
-  budgets,
-  userCategories,
-  categoryBudgets,
-} from "@/lib/db/schema";
+import { budgets, userCategories, categoryBudgets } from "@/lib/db/schema";
 import type { Budget } from "@/lib/db/schema";
 import {
   EntityCreateError,
@@ -20,7 +16,7 @@ import {
 import { generateUuid } from "@/lib/utils/generateUuid";
 import { eq } from "drizzle-orm";
 import { ResultAsync } from "neverthrow";
-import type { CreateBudgetParams } from "../types";
+import type { CreateBudgetParams } from "../types/types";
 import { findById } from "./findById";
 
 // TODO: Consider moving budget creation logic to budgets feature
@@ -74,6 +70,8 @@ export const createNewBudget = (
             id: budgetId,
             userId,
             name: params.name,
+            startDate: params.startDate && new Date(params.startDate),
+            endDate: params.endDate && new Date(params.endDate),
             startAmount: encryptedStart.ciphertext,
             currentAmount: encryptedCurrent.ciphertext,
             sa_iv: encryptedStart.iv,
