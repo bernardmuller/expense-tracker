@@ -16,3 +16,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: { ...currentBudgetProps, daysLeft: -2 },
 }
+
+export const BudgetEnd: Story = {
+  args: { ...currentBudgetProps, daysLeft: 0 },
+}

@@ -10,12 +10,13 @@ export function Root({
   onClick?: () => void
 }) {
   return (
-    <Card
-      className="border-border/50 cursor-pointer gap-2 p-6"
+    <div
+      className="bg-muted/40 hover:bg-muted/60 flex cursor-pointer flex-col
+        gap-1 rounded-lg p-3"
       onClick={onClick}
     >
       {children}
-    </Card>
+    </div>
   )
 }
 
@@ -32,7 +33,9 @@ export function Header({
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         <span className="text-lg">{icon}</span>
-        <h3 className="text-foreground text-lg font-semibold">{name}</h3>
+        <h3 className="text-foreground font-grotesk text-md font-semibold">
+          {name}
+        </h3>
       </div>
       {children}
     </div>
@@ -76,7 +79,7 @@ export function Spent({ amount }: { amount: string }) {
   return (
     <div className="text-muted-foreground font-sm flex gap-1">
       <span>Spent:</span>
-      <span className="text-primary font-semibold">{amount}</span>
+      <span className="text-primary font-grotesk">{amount}</span>
     </div>
   )
 }

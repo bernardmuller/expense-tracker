@@ -9,7 +9,7 @@ import type {
 
 export function Root({ children, className }: RootProps) {
   return (
-    <div className={cn('flex items-center justify-between', className)}>
+    <div className={cn('mb-6 flex items-center justify-between', className)}>
       {children}
     </div>
   )
@@ -25,12 +25,12 @@ export function Icon({ src, alt, className }: IconProps) {
   return (
     <div
       className={cn(
-        `bg-background flex h-12 w-12 items-center justify-center rounded-full
-        border`,
+        `-m-3 flex h-18 w-18 items-center justify-center overflow-hidden
+        rounded-lg`,
         className,
       )}
     >
-      <img src={src} alt={alt} className="h-8 w-8" />
+      <img src={src} alt={alt} className="h-full w-full" />
     </div>
   )
 }
@@ -38,8 +38,8 @@ export function Icon({ src, alt, className }: IconProps) {
 export function Info({ appName, message, className }: InfoProps) {
   return (
     <div className={cn('flex flex-col', className)}>
-      <span className="text-sm font-semibold">{appName}</span>
-      <span className="text-muted-foreground text-xs">{message}</span>
+      <span className="text-md font-grotesk font-semibold">{appName}</span>
+      <span className="text-muted-foreground text-sm">{message}</span>
     </div>
   )
 }

@@ -21,7 +21,7 @@ export default function RecentExpenses({
         <CardAction>
           <Button variant="link" className="h-auto p-0 text-sm" asChild>
             <LinkProvider>
-              <span className="text-primary">View All</span>
+              <span className="text-primary text-sm">View All</span>
             </LinkProvider>
           </Button>
         </CardAction>

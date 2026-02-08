@@ -18,7 +18,8 @@ import { Suspense, useMemo } from 'react'
 import { DashboardSkeleton } from './dashboard.skeleton'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
 import { Button } from '@/components/ui/button'
-import { Trash2, UserCircle } from 'lucide-react'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { Trash2, User, UserCircle } from 'lucide-react'
 import { Swiper } from '@/components/swiper'
 import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
@@ -71,8 +72,8 @@ function Dashboard() {
 
   const userIdResult = getUserIdFromAccessToken()
   const userId = userIdResult.isOk() ? userIdResult.value : ''
-  const currentAmount = parseFloat(budget.currentAmount)
-  const startAmount = parseFloat(budget.startAmount)
+  const currentAmount = Math.floor(parseFloat(budget.currentAmount))
+  const startAmount = Math.floor(parseFloat(budget.startAmount))
   const spentAmount = startAmount - currentAmount
   const spentPercentage = (spentAmount / startAmount) * 100
 
@@ -86,13 +87,15 @@ function Dashboard() {
             <AppHeader.Info appName="Expenny" message={`Hi, ${user.name}!`} />
           </AppHeader.Content>
           <AppHeader.Action>
+            <ThemeToggle />
             <Button
-              variant="outline"
+              variant="ghost"
               asChild
-              className="aspect-square h-12 rounded-full"
+              className="text-muted-foreground aspect-square"
             >
               <Link to="/profile">
-                <UserCircle />
+                <User className="h-5 w-5" />
+                <span className="sr-only">Profile</span>
               </Link>
             </Button>
           </AppHeader.Action>
@@ -176,7 +179,7 @@ function Dashboard() {
             </div>
           )}
           {budget.expenses.length > 0 && (
-            <div>
+            <div className="flex flex-col gap-2">
               {budget.expenses.slice(0, 5).map((expense) => (
                 <Swiper
                   key={expense.id}

@@ -27,7 +27,9 @@ export function CurrentBudgetContent({
     <>
       <CardContent className="flex flex-col items-center">
         <Button variant="ghost" onClick={onClick}>
-          <span className="text-primary pb-1 text-4xl font-bold">
+          <span
+            className="text-primary font-grotesk pb-1 text-4xl font-semibold"
+          >
             {currentAmount}
           </span>
         </Button>
@@ -35,12 +37,12 @@ export function CurrentBudgetContent({
           remaining of {startingAmount}
         </span>
       </CardContent>
-      <CardFooter className="flex flex-col gap-1">
+      <CardFooter className="flex flex-col gap-2">
         <div className="flex w-full justify-between">
-          <span className="text-muted-foreground">Spent: {spentAmount}</span>
-          <span className="text-muted-foreground">
-            {formatPercentage(spentPercentage)}
+          <span className="text-muted-foreground text-sm font-light">
+            Spent: {spentAmount}
           </span>
+          <span className="text-sm">{formatPercentage(spentPercentage)}</span>
         </div>
         <Progress value={spentPercentage} />
       </CardFooter>
@@ -72,9 +74,9 @@ export function CurrentBudget({
       </CardHeader>
       <CurrentBudgetContent
         budgetName={budgetName}
-        currentAmount={currentAmount}
-        startingAmount={startingAmount}
-        spentAmount={spentAmount}
+        currentAmount={currentAmount.toString()}
+        startingAmount={startingAmount.toString()}
+        spentAmount={spentAmount.toString()}
         spentPercentage={spentPercentage}
         onClick={onClick}
       />

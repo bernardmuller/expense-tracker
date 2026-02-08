@@ -153,7 +153,7 @@ const StepHeader = ({
 }) => {
   return (
     <div className="w-full">
-      <h3 className="text-lg">{title}</h3>
+      <h3 className="font-grotesk text-lg font-semibold">{title}</h3>
       <p className="text-muted-foreground text-sm">{description}</p>
     </div>
   )
@@ -256,7 +256,7 @@ function NewBudgetPage() {
       budgetStartDay: preferences.budgetStartDate || 1,
       customDuration: preferences.customDuration,
       name: '',
-      startAmount: suggestedStartAmount,
+      startAmount: Math.floor(suggestedStartAmount),
       categories: initialCategories,
       startDate: undefined,
       endDate: undefined,
@@ -265,7 +265,6 @@ function NewBudgetPage() {
       onSubmit: newBudgetFormSchema,
     },
     onSubmit: ({ value }) => {
-      console.log('✅ onSubmit called with value:', value)
       const transformedCategories = value.categories.map((cat) => ({
         id: cat.id,
         icon: cat.icon,
@@ -296,10 +295,8 @@ function NewBudgetPage() {
         startAmount: value.startAmount,
         categories: transformedCategories,
       }
-      console.log('📤 Sending budget data:', newBudgetData)
       createBudgetMutation.mutate(newBudgetData, {
         onSuccess: async (result) => {
-          console.log('📥 Mutation success, result:', result)
           if (result.isOk()) {
             await queryClient.invalidateQueries({
               queryKey: ['budgets'],
@@ -310,17 +307,10 @@ function NewBudgetPage() {
       })
     },
     onSubmitInvalid: ({ formApi }) => {
-      console.log('❌ onSubmitInvalid called')
-      console.log('🔍 Form errors:', formApi.state.errors)
-      console.log('🔍 Field meta:', formApi.state.fieldMeta)
-      console.log('🔍 Form values:', formApi.state.values)
-
       const stepWithError = getStepWithError(
         formApi.state.fieldMeta,
         formApi.state.values,
       )
-      console.log('📍 Step with error:', stepWithError)
-
       if (stepWithError !== null) {
         setCurrentStep(stepWithError)
         switch (stepWithError) {
@@ -627,17 +617,17 @@ function NewBudgetPage() {
                           <div
                             className="flex w-full items-center justify-between"
                           >
-                            <h3 className="text-muted-foreground text-lg">
+                            <h3 className="text-muted-foreground text-sm">
                               Total Allocated
                             </h3>
-                            <div className="flex gap-3">
-                              <span className="text-lg font-semibold">
+                            <div className="flex gap-2">
+                              <span className="text-sm font-semibold">
                                 {formatCurrency(totalAllocated, 'za')}
                               </span>
-                              <span className="text-muted-foreground text-lg">
+                              <span className="text-muted-foreground text-sm">
                                 of
                               </span>
-                              <span className="text-lg font-semibold">
+                              <span className="text-sm font-semibold">
                                 {formatCurrency(
                                   form.state.values.startAmount,
                                   'za',
@@ -716,13 +706,6 @@ function NewBudgetPage() {
         ) : (
           <Button
             onClick={() => {
-              console.log('🔵 Finish button clicked')
-              console.log('🔍 Form state:', {
-                values: form.state.values,
-                errors: form.state.errors,
-                isSubmitting: form.state.isSubmitting,
-                canSubmit: form.state.canSubmit,
-              })
               form.handleSubmit()
             }}
             disabled={form.state.isSubmitting || createBudgetMutation.isPending}

@@ -31,11 +31,19 @@ export default function CurrentBudgetWithBadge({
           </div>
         </LinkProvider>
         <CardAction>
-          <IconBadge.Root active={daysLeft <= 0}>
-            <IconBadge.Icon>
-              <Calendar className="text-primary h-3.5 w-3.5" />
-            </IconBadge.Icon>
-            <span className="text-primary text-xs font-medium">
+          <IconBadge.Root active={daysLeft === 0}>
+            {daysLeft !== 0 && (
+              <IconBadge.Icon>
+                <Calendar className="text-secondary h-3.5 w-3.5" />
+              </IconBadge.Icon>
+            )}
+            <span
+              className={
+                daysLeft === 0
+                  ? 'font-grotesk text-destructive-foreground text-xs'
+                  : 'text-secondary text-xs font-medium'
+              }
+            >
               {daysLeft === 0 ? (
                 <LinkProvider>Budget End</LinkProvider>
               ) : daysLeft < 0 ? (

@@ -12,16 +12,12 @@ export function Root({ children, className, active = false }: RootProps) {
     return (
       <div
         className={cn(
-          `from-primary via-primary/60 to-primary animate-pulse rounded-full
-          bg-gradient-to-r p-[1px] [animation-duration:3s]`,
+          `animate-budget-end bg-destructive flex items-center gap-1.5
+          rounded-full px-3 py-1.5 hover:cursor-pointer`,
           className,
         )}
       >
-        <div
-          className="bg-card flex items-center gap-2 rounded-full px-2.5 py-1.5"
-        >
-          {children}
-        </div>
+        {children}
       </div>
     )
   }

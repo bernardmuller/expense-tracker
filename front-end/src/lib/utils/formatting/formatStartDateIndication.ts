@@ -9,6 +9,10 @@ export function getStartDateIndication(
 ): string {
   const diffDays = getDaysUntilStart(frequency, startDay, customDuration, fromDate)
 
+  if (diffDays < 0) {
+    return 'In progress'
+  }
+
   if (diffDays === 0) {
     return 'Starts today'
   }

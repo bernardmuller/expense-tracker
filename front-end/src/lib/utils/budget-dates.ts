@@ -11,42 +11,68 @@ export function calculateNextBudgetStart(
 
   switch (frequency) {
     case 'monthly': {
-      const nextStart = new Date(today)
-      nextStart.setDate(startDay)
-
-      if (nextStart < today) {
-        nextStart.setMonth(nextStart.getMonth() + 1)
+      const getClampedDate = (year: number, month: number): Date => {
+        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const day = Math.min(startDay, daysInMonth)
+        return new Date(year, month, day)
       }
 
-      if (nextStart.getDate() !== startDay) {
-        nextStart.setDate(0)
-      }
+      const year = today.getFullYear()
+      const month = today.getMonth()
+      const prevMonth = month === 0 ? 11 : month - 1
+      const prevYear = month === 0 ? year - 1 : year
+      const nextMonth = month === 11 ? 0 : month + 1
+      const nextYear = month === 11 ? year + 1 : year
 
-      return nextStart
+      const candidates = [
+        getClampedDate(prevYear, prevMonth),
+        getClampedDate(year, month),
+        getClampedDate(nextYear, nextMonth),
+      ]
+
+      const todayTime = today.getTime()
+      return candidates.reduce((closest, candidate) =>
+        Math.abs(candidate.getTime() - todayTime) <
+        Math.abs(closest.getTime() - todayTime)
+          ? candidate
+          : closest,
+      )
     }
 
     case 'weekly': {
-      const nextStart = new Date(today)
       const currentDay = today.getDay()
-      const daysUntilStart = (startDay - currentDay + 7) % 7
+      const daysUntilNext = (startDay - currentDay + 7) % 7
+      const daysSincePrev = daysUntilNext === 0 ? 0 : 7 - daysUntilNext
 
-      if (daysUntilStart > 0) {
-        nextStart.setDate(nextStart.getDate() + daysUntilStart)
-      }
+      const nextDate = new Date(today)
+      nextDate.setDate(today.getDate() + daysUntilNext)
 
-      return nextStart
+      const prevDate = new Date(today)
+      prevDate.setDate(today.getDate() - daysSincePrev)
+
+      const todayTime = today.getTime()
+      return Math.abs(prevDate.getTime() - todayTime) <
+        Math.abs(nextDate.getTime() - todayTime)
+        ? prevDate
+        : nextDate
     }
 
     case 'bi-weekly': {
-      const nextStart = new Date(today)
       const currentDay = today.getDay()
-      const daysUntilStart = (startDay - currentDay + 7) % 7
+      const daysUntilNext = (startDay - currentDay + 7) % 7
+      const daysSincePrev = daysUntilNext === 0 ? 0 : 7 - daysUntilNext
 
-      if (daysUntilStart > 0) {
-        nextStart.setDate(nextStart.getDate() + daysUntilStart)
-      }
+      const nextDate = new Date(today)
+      nextDate.setDate(today.getDate() + daysUntilNext)
 
-      return nextStart
+      const prevDate = new Date(today)
+      prevDate.setDate(today.getDate() - daysSincePrev)
+
+      const todayTime = today.getTime()
+      return Math.abs(prevDate.getTime() - todayTime) <
+        Math.abs(nextDate.getTime() - todayTime)
+        ? prevDate
+        : nextDate
     }
 
     case 'custom': {

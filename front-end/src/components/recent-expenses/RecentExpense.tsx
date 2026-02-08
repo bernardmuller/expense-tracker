@@ -11,16 +11,16 @@ export default function RecentExpense({
       <div className="flex items-center gap-3">
         <div
           className="bg-muted flex h-10 w-10 items-center justify-center
-            rounded-full"
+            rounded-lg"
         >
           <span className="text-lg">{emoji}</span>
         </div>
         <div>
-          <div className="text-sm font-medium">{description}</div>
+          <div className="font-grotesk text-sm font-medium">{description}</div>
           <div className="text-muted-foreground text-xs">{categoryLabel}</div>
         </div>
       </div>
-      <div className="text-sm font-semibold">{amount}</div>
+      <div className="text-md font-semibold">{amount}</div>
     </div>
   )
 }
