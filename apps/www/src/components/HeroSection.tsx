@@ -35,10 +35,10 @@ export function HeroSection({ data }: HeroSectionProps) {
           </div>
 
           <div className="opacity-0 animate-fade-up-delay-1">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground text-balance leading-tighter">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-grotesk tracking-tight text-foreground text-balance leading-tighter">
               {heading}
             </h1>
-            <h1 className="mt-1 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-primary text-balance leading-tighter">
+            <h1 className="mt-1 text-4xl sm:text-5xl md:text-6xl font-bold font-grotesk tracking-tight text-primary text-balance leading-tighter">
               {subheading}
             </h1>
           </div>

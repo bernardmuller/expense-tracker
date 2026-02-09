@@ -14,7 +14,7 @@ export function InterfacePreview({ videoUrl }: InterfacePreviewProps) {
   }, []);
 
   return (
-    <div className="relative w-full max-w-[200px] sm:max-w-[200px] md:max-w-[320px] lg:max-w-[320px] xl:max-w-[380px] mx-auto px-4 -mb-24 md:-mb-40">
+    <div className="relative w-full max-w-[200px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[280px] xl:max-w-[320px] mx-auto px-4 -mb-24 md:-mb-40">
       <div className="relative animate-float">
         <div className="absolute -inset-8 rounded-3xl bg-primary/30 blur-3xl animate-glow-pulse" />
         <div className="relative rounded-2xl overflow-hidden border border-border/30 shadow-2xl shadow-black/50">
