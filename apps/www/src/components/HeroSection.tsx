@@ -23,44 +23,56 @@ export function HeroSection({ data }: HeroSectionProps) {
   const videoUrl = data?.video?.url;
 
   return (
-    <section className="relative min-h-[95vh] md:min-h-screen flex flex-col items-center justify-end pb-16  px-4 sm:px-6 lg:px-8 pt-12 mt-16 md:mt-12">
-      <InterfacePreview videoUrl={videoUrl} />
+    <section className="relative flex min-h-svh w-full flex-col items-center justify-center overflow-hidden border-b py-24">
+      <div className="relative z-10 flex flex-col items-center gap-y-6 w-full">
+        <InterfacePreview videoUrl={videoUrl} />
 
-      <div className="relative z-20 mx-auto max-w-4xl w-full text-center flex flex-col items-center px-2 sm:px-4">
-        <div className="mb-4 sm:mb-6 flex justify-center bg-accent/80 px-6 py-3 sm:px-8 sm:py-4 rounded-full max-w-full sm:max-w-72">
-          <span className="text-xs sm:text-sm font-semibold text-primary/80 uppercase tracking-wider">
-            {eyebrowText}
-          </span>
-        </div>
+        <div className="relative z-10 flex max-w-2xl flex-col items-center gap-y-6 px-4 xs:px-0 text-center">
+          <div className="mb-2 flex justify-center bg-accent/80 px-6 py-3 sm:px-6 sm:py-3 rounded-full">
+            <span className="text-xs sm:text-sm font-semibold text-primary/80 uppercase tracking-wider">
+              {eyebrowText}
+            </span>
+          </div>
 
-        <div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-foreground text-balance font-grotesk leading-tighter">
-            {heading}
-          </h1>
-          <h1 className="mb-4 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter font-grotesk leading-tighter text-primary">
-            {subheading}
-          </h1>
-        </div>
+          <div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground text-balance leading-tighter">
+              {heading}
+            </h1>
+            <h1 className="mt-1 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-primary text-balance leading-tighter">
+              {subheading}
+            </h1>
+          </div>
 
-        <p className="mb-6 sm:mb-8 text-base sm:text-lg md:text-xl text-muted-foreground text-balance max-w-2xl mx-auto leading-relaxed px-2">
-          {description}
-        </p>
+          <p className="max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
+            {description}
+          </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto">
-          <a
-            href={primaryAction.link}
-            target="_blank"
-            className="w-full sm:w-auto"
-          >
-            <Button
-              size="lg"
-              variant={primaryAction.variant}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+            <a
+              href={primaryAction.link}
+              target="_blank"
+              className="w-full sm:w-auto"
             >
-              {primaryAction.label}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </a>
+              <Button
+                size="lg"
+                variant={primaryAction.variant}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto group"
+              >
+                {primaryAction.label}
+                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-0.5" />
+              </Button>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div
+        aria-hidden="true"
+        role="presentation"
+        className="absolute start-1/2 bottom-8 -translate-x-1/2"
+      >
+        <div className="flex h-8 w-5 items-start justify-center rounded-full border border-muted-foreground/30 p-1.5 animate-bounce">
+          <div className="h-1.5 w-1 rounded-full bg-muted-foreground/50"></div>
         </div>
       </div>
     </section>
