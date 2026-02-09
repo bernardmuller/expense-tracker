@@ -28,13 +28,13 @@ export function HeroSection({ data }: HeroSectionProps) {
         <InterfacePreview videoUrl={videoUrl} />
 
         <div className="relative z-10 flex max-w-2xl flex-col items-center gap-y-6 px-4 xs:px-0 text-center">
-          <div className="mb-2 flex justify-center bg-accent/80 px-6 py-3 sm:px-6 sm:py-3 rounded-full">
+          <div className="mb-2 flex justify-center bg-accent/80 px-6 py-3 sm:px-6 sm:py-3 rounded-full opacity-0 animate-fade-up">
             <span className="text-xs sm:text-sm font-semibold text-primary/80 uppercase tracking-wider">
               {eyebrowText}
             </span>
           </div>
 
-          <div>
+          <div className="opacity-0 animate-fade-up-delay-1">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground text-balance leading-tighter">
               {heading}
             </h1>
@@ -43,11 +43,11 @@ export function HeroSection({ data }: HeroSectionProps) {
             </h1>
           </div>
 
-          <p className="max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed">
+          <p className="max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed opacity-0 animate-fade-up-delay-2">
             {description}
           </p>
 
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4 opacity-0 animate-fade-up-delay-3">
             <a
               href={primaryAction.link}
               target="_blank"
@@ -56,7 +56,7 @@ export function HeroSection({ data }: HeroSectionProps) {
               <Button
                 size="lg"
                 variant={primaryAction.variant}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto group"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto group transition-transform duration-200 hover:scale-105 active:scale-95"
               >
                 {primaryAction.label}
                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-0.5" />
