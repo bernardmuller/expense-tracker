@@ -31,20 +31,20 @@ function LoginPage() {
   const loginMutation = useLoginRequest()
   const verifyMutation = useLoginVerify()
 
-  const handleLoginSubmit = async (value: { email: string }) =>
-    loginMutation.mutate(value, {
-      onSuccess: (result) => result.isOk() && setStep('verify'),
-    })
+  const handleLoginSubmit = async (value: { email: string }) => {
+    const result = await loginMutation.mutateAsync(value)
+    if (result.isOk()) {
+      setStep('verify')
+    }
+  }
 
-  const handleOtpSubmit = async (value: { otp: string }) =>
-    verifyMutation.mutate(value, {
-      onSuccess: (result) => {
-        if (result.isOk()) {
-          auth.login()
-          navigate({ to: '/' })
-        }
-      },
-    })
+  const handleOtpSubmit = async (value: { otp: string }) => {
+    const result = await verifyMutation.mutateAsync(value)
+    if (result.isOk()) {
+      auth.login()
+      navigate({ to: '/' })
+    }
+  }
 
   return (
     <div

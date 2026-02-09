@@ -55,7 +55,7 @@ const newBudgetFormSchema = z
   .object({
     budgetFrequency: z.enum(['weekly', 'bi-weekly', 'monthly', 'custom']),
     budgetStartDay: z.number().optional(),
-    customDuration: z.number().optional(),
+    customDuration: z.number().nullish(),
     name: z
       .string()
       .min(1, 'You must provide a budget name')
@@ -73,56 +73,6 @@ const newBudgetFormSchema = z
     message: 'You must select at least one category',
     path: ['categories'],
   })
-// .refine(
-//   (data) => {
-//     if (data.budgetFrequency === 'monthly') {
-//       return (
-//         data.budgetStartDay !== undefined &&
-//         data.budgetStartDay >= 1 &&
-//         data.budgetStartDay <= 31
-//       )
-//     }
-//     if (
-//       data.budgetFrequency === 'weekly' ||
-//       data.budgetFrequency === 'bi-weekly'
-//     ) {
-//       return (
-//         data.budgetStartDay !== undefined &&
-//         data.budgetStartDay >= 0 &&
-//         data.budgetStartDay <= 6
-//       )
-//     }
-//     return true
-//   },
-//   {
-//     message: 'Invalid start day for selected frequency',
-//     path: ['budgetStartDay'],
-//   },
-// )
-// .refine(
-//   (data) => {
-//     if (data.budgetFrequency === 'custom') {
-//       return data.customDuration && data.customDuration > 0
-//     }
-//     return true
-//   },
-//   {
-//     message: 'You must provide a duration for custom frequency',
-//     path: ['customDuration'],
-//   },
-// )
-// .refine(
-//   (data) => {
-//     if (data.budgetFrequency !== 'custom') {
-//       return data.budgetStartDay !== undefined
-//     }
-//     return true
-//   },
-//   {
-//     message: 'You must select a start day',
-//     path: ['budgetStartDay'],
-//   },
-// )
 
 export type NewBudgetFormValues = z.infer<typeof newBudgetFormSchema>
 
@@ -165,7 +115,6 @@ const getStepWithError = (
     | undefined,
   formValues: NewBudgetFormValues,
 ): number | null => {
-  console.log(fieldMeta)
   if (!fieldMeta) return null
 
   if (
@@ -199,8 +148,6 @@ const getStepWithError = (
   ) {
     return 4
   }
-
-  console.log('no error')
 
   return null
 }
@@ -275,14 +222,13 @@ function NewBudgetPage() {
       const startDate = calculateNextBudgetStart(
         value.budgetFrequency,
         value.budgetStartDay ?? 1,
-        value.customDuration,
       )
 
       const endDate = calculateBudgetEnd(
         startDate,
         value.budgetFrequency,
         value.budgetStartDay ?? 1,
-        value.customDuration,
+        value.customDuration ?? undefined,
       )
 
       const newBudgetData = {
@@ -295,6 +241,7 @@ function NewBudgetPage() {
         startAmount: value.startAmount,
         categories: transformedCategories,
       }
+
       createBudgetMutation.mutate(newBudgetData, {
         onSuccess: async (result) => {
           if (result.isOk()) {
@@ -473,14 +420,14 @@ function NewBudgetPage() {
                       const daysUntilStart = getDaysUntilStart(
                         frequency,
                         startDay ?? 1,
-                        customDuration,
+                        customDuration ?? undefined,
                       )
                       return (
                         <BudgetStartIndicator
                           frequency={frequency}
                           daysUntilStart={daysUntilStart}
                           startDay={startDay ?? 1}
-                          customDuration={customDuration}
+                          customDuration={customDuration ?? undefined}
                         />
                       )
                     }}
@@ -706,6 +653,7 @@ function NewBudgetPage() {
         ) : (
           <Button
             onClick={() => {
+              console.log('submit')
               form.handleSubmit()
             }}
             disabled={form.state.isSubmitting || createBudgetMutation.isPending}

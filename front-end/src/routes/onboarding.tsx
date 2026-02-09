@@ -197,7 +197,6 @@ function OnboardingPage() {
       const startDate = calculateNextBudgetStart(
         value.budgetFrequency,
         value.budgetStartDay,
-        value.customDuration,
       )
 
       const endDate = calculateBudgetEnd(

@@ -30,19 +30,20 @@ function RegisterPage() {
   const registerMutation = useRegisterRequest()
   const verifyMutation = useRegisterVerify()
 
-  const handleRegisterSubmit = (value: { name: string; email: string }) =>
-    registerMutation.mutate(value, {
-      onSuccess: (result) => result.isOk() && setStep('verify'),
-    })
+  const handleRegisterSubmit = async (value: { name: string; email: string }) => {
+    const result = await registerMutation.mutateAsync(value)
+    if (result.isOk()) {
+      setStep('verify')
+    }
+  }
 
-  const handleOtpSubmit = (value: { otp: string }) =>
-    verifyMutation.mutate(value, {
-      onSuccess: (result) =>
-        result.isOk() &&
-        navigate({ to: '/login' }).then(() =>
-          toast.success('Registered successfully, please log in.'),
-        ),
-    })
+  const handleOtpSubmit = async (value: { otp: string }) => {
+    const result = await verifyMutation.mutateAsync(value)
+    if (result.isOk()) {
+      await navigate({ to: '/login' })
+      toast.success('Registered successfully, please log in.')
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">

@@ -1,66 +1,74 @@
 import { Button } from "@/components/ui/button";
-import { cmsClient } from "@/lib/cms-client";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
+import { InterfacePreview } from "@/components/InterfacePreview";
 import type { HeroSectionDocument } from "@/types/cms";
 
-export async function HeroSection() {
-  try {
-    const res = await cmsClient.heroSection.find({
-      populate: ["highlights", "actions"],
-    });
-    const data: HeroSectionDocument = res.data;
-    return (
-      <section className="container py-20 md:py-32">
-        <div className="mx-auto max-w-4xl text-center">
-          {data.highlights.map((h) => (
-            <div
-              key={h.id}
-              className="mb-6 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary"
+interface HeroSectionProps {
+  data?: HeroSectionDocument;
+}
+
+export function HeroSection({ data }: HeroSectionProps) {
+  // Use provided data or fallback defaults
+  const eyebrowText = data?.highlights?.[0]?.label || "Finally,";
+  const heading = data?.caption || "A free and open-source";
+  const subheading = data?.name || "expense tracker";
+  const description =
+    data?.description ||
+    "Expenny is a free and open-source expense tracker that simplifies the process of tracking, managing, and sharing your expenses.";
+  const primaryAction = data?.actions?.[0] || {
+    id: 1,
+    label: "Get Started",
+    link: "#",
+    variant: "default" as const,
+  };
+  const secondaryAction = data?.actions?.[1] || {
+    id: 2,
+    label: "Learn More",
+    link: "#",
+    variant: "outline" as const,
+  };
+
+  return (
+    <section className="relative min-h-screen flex flex-col items-center justify-end pb-16 sm:pb-24 md:pb-32 lg:pb-48 px-4 sm:px-6 lg:px-8 pt-12 mt-12">
+      <InterfacePreview />
+
+      <div className="relative z-20 mx-auto max-w-4xl w-full text-center flex flex-col items-center px-2 sm:px-4">
+        <div className="mb-4 sm:mb-6 flex justify-center bg-accent/80 px-6 py-3 sm:px-8 sm:py-4 rounded-full max-w-full sm:max-w-72">
+          <span className="text-xs sm:text-sm font-semibold text-primary/80 uppercase tracking-wider">
+            {eyebrowText}
+          </span>
+        </div>
+
+        <div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-foreground text-balance font-grotesk leading-tighter">
+            {heading}
+          </h1>
+          <h1 className="mb-4 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter font-grotesk leading-tighter text-primary">
+            {subheading}
+          </h1>
+        </div>
+
+        <p className="mb-6 sm:mb-8 text-base sm:text-lg md:text-xl text-muted-foreground text-balance max-w-2xl mx-auto leading-relaxed px-2">
+          {description}
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full sm:w-auto">
+          <a
+            href={primaryAction.link}
+            target="_blank"
+            className="w-full sm:w-auto"
+          >
+            <Button
+              size="lg"
+              variant={primaryAction.variant}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
             >
-              {h.label}
-            </div>
-          ))}
-          <div className="mb-6 text-balance text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-            <h2>{data.caption}</h2>
-            <h1 className="text-primary">{data.name}</h1>
-          </div>
-          <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl lg:text-2xl">
-            {data.description}
-          </p>
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            {data.actions.map((h) => (
-              <a href={h.link} target="_blank">
-                <Button
-                  key={h.id}
-                  size="lg"
-                  variant={h.variant}
-                  className="gap-2"
-                >
-                  {h.label} {h.link && <ArrowRight className="h-4 w-4" />}
-                </Button>
-              </a>
-            ))}
-          </div>
+              {primaryAction.label}
+              {/*<ArrowRight className="w-4 h-4 ml-2" />*/}
+            </Button>
+          </a>
         </div>
-      </section>
-    );
-  } catch (error) {
-    console.error("Failed to fetch hero section data from CMS:", error);
-    return (
-      <section className="container py-20 md:py-32">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-            Welcome
-          </div>
-          <div className="mb-6 text-balance text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-            <h2>Welcome to</h2>
-            <h1 className="text-primary">Expenny</h1>
-          </div>
-          <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl lg:text-2xl">
-            Content is currently unavailable. Please try again later.
-          </p>
-        </div>
-      </section>
-    );
-  }
+      </div>
+    </section>
+  );
 }

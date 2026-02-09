@@ -13,7 +13,6 @@ export function getDaysUntilStart(
   const startDate = calculateNextBudgetStart(
     frequency,
     startDay,
-    customDuration,
     fromDate,
   )
   startDate.setHours(0, 0, 0, 0)

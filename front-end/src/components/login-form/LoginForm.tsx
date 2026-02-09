@@ -1,12 +1,5 @@
 import { useAppForm } from '@/hooks/form'
 import z from 'zod'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../ui/card'
 import { FieldGroup } from '../ui/field'
 
 const loginSchema = z.object({
@@ -29,50 +22,56 @@ export default function LoginForm({
     validators: {
       onSubmit: loginSchema,
     },
-    onSubmit: ({ value }) => {
-      onSubmit(value)
+    onSubmit: async ({ value }) => {
+      await onSubmit(value)
     },
   })
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="login-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FieldGroup>
-            <form.AppField
-              name="email"
-              children={(field) => (
-                <field.TextField placeholder="Email address" />
-              )}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter className="flex flex-col gap-4">
+    <div className="flex flex-col items-center space-y-6">
+      <div className="flex flex-col items-center space-y-4">
+        <img src="/favicon.ico" alt="Logo" className="h-16 w-16" />
+        <div className="flex flex-col items-center space-y-1">
+          <h1 className="text-foreground text-2xl font-semibold">
+            Sign in to your account
+          </h1>
+          <div className="text-muted-foreground text-sm">
+            Don't have an account?{' '}
+            <LinkProvider>
+              <span className="text-primary hover:underline">
+                Create one now →
+              </span>
+            </LinkProvider>
+          </div>
+        </div>
+      </div>
+
+      <form
+        id="login-form"
+        onSubmit={(e) => {
+          e.preventDefault()
+          form.handleSubmit()
+        }}
+        className="w-full space-y-6"
+      >
+        <FieldGroup>
+          <form.AppField
+            name="email"
+            children={(field) => (
+              <field.TextField placeholder="john.doe@example.com" />
+            )}
+          />
+        </FieldGroup>
+
         <form.AppForm>
           <form.FormButton
-            enabledText="Log in"
-            loadingText="Logging in"
+            enabledText="Sign in"
+            loadingText="Signing in"
             disabledText="Enter your email to log in"
             formId="login-form"
           />
         </form.AppForm>
-        <div className="text-muted-foreground text-center text-sm">
-          Don't have an account?{' '}
-          <LinkProvider>
-            <span className="text-primary">Register</span>
-          </LinkProvider>
-        </div>
-      </CardFooter>
-    </Card>
+      </form>
+    </div>
   )
 }

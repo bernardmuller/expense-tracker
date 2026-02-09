@@ -1,6 +1,5 @@
 import { useAppForm } from '@/hooks/form'
 import z from 'zod'
-import { Card, CardContent, CardFooter } from '../ui/card'
 import { Button } from '../ui/button'
 
 const otpSchema = z.object({
@@ -42,37 +41,40 @@ export default function OtpForm({
   })
 
   return (
-    <Card>
-      <span className="flex w-full justify-center text-lg font-semibold">
-        {title}
-      </span>
-      <CardContent>
-        <form
-          id="otp-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-          className="flex flex-col items-center space-y-3"
-        >
-          <div className="flex items-center">
-            <form.AppField
-              name="otp"
-              children={(field) => <field.OtpField label="One-Time Password" />}
-            />
-          </div>
-          <span className="text-center text-sm">
-            Please enter the one-time password sent to your email address.
-          </span>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-center">
-        <Button asChild>
+    <div className="flex flex-col items-center space-y-6">
+      <div className="flex flex-col items-center space-y-4">
+        <img src="/favicon.ico" alt="Logo" className="h-16 w-16" />
+        <h1 className="text-foreground text-2xl font-semibold text-center">
+          {title}
+        </h1>
+      </div>
+
+      <form
+        id="otp-form"
+        onSubmit={(e) => {
+          e.preventDefault()
+          form.handleSubmit()
+        }}
+        className="flex w-full flex-col items-center space-y-4"
+      >
+        <div className="flex items-center">
+          <form.AppField
+            name="otp"
+            children={(field) => <field.OtpField label="One-Time Password" />}
+          />
+        </div>
+        <span className="text-muted-foreground text-center text-sm">
+          Please enter the one-time password sent to your email address.
+        </span>
+      </form>
+
+      <div className="flex w-full justify-center">
+        <Button variant="ghost" asChild>
           <LinkProvider>
             <span className="text-primary text-sm">Back</span>
           </LinkProvider>
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   )
 }

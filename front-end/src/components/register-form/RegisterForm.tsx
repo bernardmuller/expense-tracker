@@ -1,12 +1,5 @@
 import { useAppForm } from '@/hooks/form'
 import z from 'zod'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../ui/card'
 import { FieldGroup } from '../ui/field'
 
 const registerSchema = z.object({
@@ -34,39 +27,49 @@ export default function RegisterForm({
     validators: {
       onSubmit: registerSchema,
     },
-    onSubmit: ({ value }) => {
-      onSubmit(value)
+    onSubmit: async ({ value }) => {
+      await onSubmit(value)
     },
   })
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Register</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="register-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-        >
-          <FieldGroup>
-            <form.AppField
-              name="name"
-              children={(field) => <field.TextField placeholder="Name" />}
-            />
-            <form.AppField
-              name="email"
-              children={(field) => (
-                <field.TextField placeholder="Email address" />
-              )}
-            />
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter className="flex flex-col gap-4">
+    <div className="flex flex-col items-center space-y-6">
+      <div className="flex flex-col items-center space-y-4">
+        <img src="/favicon.ico" alt="Logo" className="h-16 w-16" />
+        <div className="flex flex-col items-center space-y-1">
+          <h1 className="text-foreground text-2xl font-semibold">
+            Create your account
+          </h1>
+          <div className="text-muted-foreground text-sm">
+            Already have an account?{' '}
+            <LinkProvider>
+              <span className="text-primary hover:underline">Sign in →</span>
+            </LinkProvider>
+          </div>
+        </div>
+      </div>
+
+      <form
+        id="register-form"
+        onSubmit={(e) => {
+          e.preventDefault()
+          form.handleSubmit()
+        }}
+        className="w-full space-y-6"
+      >
+        <FieldGroup>
+          <form.AppField
+            name="name"
+            children={(field) => <field.TextField placeholder="Name" />}
+          />
+          <form.AppField
+            name="email"
+            children={(field) => (
+              <field.TextField placeholder="Email address" />
+            )}
+          />
+        </FieldGroup>
+
         <form.AppForm>
           <form.FormButton
             enabledText="Create Account"
@@ -75,13 +78,7 @@ export default function RegisterForm({
             formId="register-form"
           />
         </form.AppForm>
-        <div className="text-muted-foreground text-center text-sm">
-          Already have an account?{' '}
-          <LinkProvider>
-            <span className="text-primary">Log in</span>
-          </LinkProvider>
-        </div>
-      </CardFooter>
-    </Card>
+      </form>
+    </div>
   )
 }

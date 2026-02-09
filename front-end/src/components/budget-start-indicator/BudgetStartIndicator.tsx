@@ -24,7 +24,6 @@ export function BudgetStartIndicator({
   const startDate = calculateNextBudgetStart(
     frequency,
     startDay,
-    customDuration,
   )
   const endDate = calculateBudgetEnd(
     startDate,

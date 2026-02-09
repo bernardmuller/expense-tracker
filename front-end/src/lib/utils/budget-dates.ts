@@ -3,7 +3,6 @@ export type BudgetFrequency = 'weekly' | 'bi-weekly' | 'monthly' | 'custom'
 export function calculateNextBudgetStart(
   frequency: BudgetFrequency,
   startDay: number,
-  customDuration?: number,
   fromDate: Date = new Date(),
 ): Date {
   const today = new Date(fromDate)
