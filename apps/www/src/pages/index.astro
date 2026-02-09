@@ -10,7 +10,7 @@ let heroData: HeroSectionDocument | undefined;
 
 try {
   const res = await cmsClient.heroSection.find({
-    populate: ["highlights", "actions"],
+    populate: ["highlights", "actions", "video"],
   });
   heroData = res.data;
 } catch (error) {
@@ -30,7 +30,7 @@ try {
     </head>
 
     <body>
-        <Header client:load />
+        <Header githubLink={heroData?.github_link} client:load />
         <HeroSection data={heroData} client:load />
     </body>
 </html>

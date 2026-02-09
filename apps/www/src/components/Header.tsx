@@ -2,7 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Moon, Sun, Github } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export function Header() {
+interface HeaderProps {
+  githubLink?: string;
+}
+
+export function Header({ githubLink }: HeaderProps) {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   useEffect(() => {
@@ -47,14 +51,32 @@ export function Header() {
               )}
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="GitHub"
-              className="text-foreground hover:bg-accent/50"
-            >
-              <Github className="h-5 w-5" />
-            </Button>
+            {githubLink ? (
+              <a
+                href={githubLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="GitHub"
+                  className="text-foreground hover:bg-accent/50"
+                >
+                  <Github className="h-5 w-5" />
+                </Button>
+              </a>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="GitHub"
+                className="text-foreground hover:bg-accent/50"
+              >
+                <Github className="h-5 w-5" />
+              </Button>
+            )}
           </div>
         </div>
       </div>

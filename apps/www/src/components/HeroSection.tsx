@@ -8,29 +8,23 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ data }: HeroSectionProps) {
-  // Use provided data or fallback defaults
-  const eyebrowText = data?.highlights?.[0]?.label || "Finally,";
-  const heading = data?.caption || "A free and open-source";
-  const subheading = data?.name || "expense tracker";
+  const eyebrowText = data?.highlights?.[0]?.label || "Build Financial Habits";
+  const heading = data?.caption || "Take Control of Your Finances with";
+  const subheading = data?.name || "Expenny";
   const description =
     data?.description ||
-    "Expenny is a free and open-source expense tracker that simplifies the process of tracking, managing, and sharing your expenses.";
+    "Expenny is a free and open-source expense tracker that helps you with financial clarity";
   const primaryAction = data?.actions?.[0] || {
     id: 1,
     label: "Get Started",
     link: "#",
     variant: "default" as const,
   };
-  const secondaryAction = data?.actions?.[1] || {
-    id: 2,
-    label: "Learn More",
-    link: "#",
-    variant: "outline" as const,
-  };
+  const videoUrl = data?.video?.url;
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-end pb-16 sm:pb-24 md:pb-32 lg:pb-48 px-4 sm:px-6 lg:px-8 pt-12 mt-12">
-      <InterfacePreview />
+    <section className="relative min-h-[95vh] md:min-h-screen flex flex-col items-center justify-end pb-16  px-4 sm:px-6 lg:px-8 pt-12 mt-16 md:mt-12">
+      <InterfacePreview videoUrl={videoUrl} />
 
       <div className="relative z-20 mx-auto max-w-4xl w-full text-center flex flex-col items-center px-2 sm:px-4">
         <div className="mb-4 sm:mb-6 flex justify-center bg-accent/80 px-6 py-3 sm:px-8 sm:py-4 rounded-full max-w-full sm:max-w-72">
@@ -64,7 +58,7 @@ export function HeroSection({ data }: HeroSectionProps) {
               className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
             >
               {primaryAction.label}
-              {/*<ArrowRight className="w-4 h-4 ml-2" />*/}
+              <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </a>
         </div>

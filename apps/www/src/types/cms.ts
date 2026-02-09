@@ -13,12 +13,24 @@ export interface CallToAction {
   link: string;
 }
 
+export interface StrapiMedia {
+  id: number;
+  name: string;
+  url: string;
+  mime: string;
+  size: number;
+  width?: number;
+  height?: number;
+}
+
 export interface HeroSectionDocument extends API.Document {
   highlights: Badge[];
   caption: string;
   name: string;
   description: string;
   actions: CallToAction[];
+  github_link?: string;
+  video?: StrapiMedia;
 }
 
 export type DocumentResponse<T extends API.Document = API.Document> =
