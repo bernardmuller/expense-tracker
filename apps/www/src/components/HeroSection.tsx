@@ -28,13 +28,13 @@ export function HeroSection({ data }: HeroSectionProps) {
         <InterfacePreview videoUrl={videoUrl} />
 
         <div className="relative z-10 flex max-w-2xl flex-col items-center gap-y-6 px-4 xs:px-0 text-center">
-          <div className="mb-2 flex justify-center bg-accent/80 px-6 py-3 sm:px-6 sm:py-3 rounded-full opacity-0 animate-fade-up">
+          <div className="flex justify-center bg-accent/80 px-6 py-3 sm:px-6 sm:py-3 rounded-full opacity-0 animate-fade-up">
             <span className="text-xs sm:text-sm font-semibold text-primary/80 uppercase tracking-wider">
               {eyebrowText}
             </span>
           </div>
 
-          <div className="opacity-0 animate-fade-up-delay-1">
+          <div className="opacity-0 animate-fade-up-delay-1 -mt-2">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-grotesk tracking-tight text-foreground text-balance leading-tighter">
               {heading}
             </h1>
