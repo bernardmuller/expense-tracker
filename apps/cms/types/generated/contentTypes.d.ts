@@ -612,6 +612,7 @@ export interface ApiHeroSectionHeroSection extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
+    github_link: Schema.Attribute.String & Schema.Attribute.Required;
     highlights: Schema.Attribute.Component<'shared.badge', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

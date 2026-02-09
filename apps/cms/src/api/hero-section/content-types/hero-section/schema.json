@@ -29,6 +29,10 @@
       "type": "component",
       "component": "shared.call-to-action",
       "repeatable": true
+    },
+    "github_link": {
+      "type": "string",
+      "required": true
     }
   }
 }
