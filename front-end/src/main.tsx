@@ -26,6 +26,9 @@ declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router
   }
+  interface HistoryState {
+    showConfetti?: boolean
+  }
 }
 
 const rootElement = document.getElementById('app')

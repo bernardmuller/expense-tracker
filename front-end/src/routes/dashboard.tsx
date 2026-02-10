@@ -13,13 +13,20 @@ import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
-import { Suspense, useMemo } from 'react'
+import {
+  createFileRoute,
+  Link,
+  useLocation,
+  useRouter,
+} from '@tanstack/react-router'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
+import { Confetti } from '@/components/confetti/Confetti'
 import { DashboardSkeleton } from './dashboard.skeleton'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { Trash2, User, UserCircle } from 'lucide-react'
+import { Trash2, User } from 'lucide-react'
 import { Swiper } from '@/components/swiper'
 import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
@@ -55,6 +62,7 @@ function DashboardPage() {
 }
 
 function Dashboard() {
+  const location = useLocation()
   const { data: budget, isFetching: budgetFetching } = useSuspenseQuery(
     getActiveBudgetQueryOptions(),
   )
@@ -69,6 +77,7 @@ function Dashboard() {
     () => (budgetFetching || categoriesFetching) && categories,
     [categories, budgetFetching, categoriesFetching],
   )
+  const [showConfetti, setShowConfetti] = useState(false)
 
   const userIdResult = getUserIdFromAccessToken()
   const userId = userIdResult.isOk() ? userIdResult.value : ''
@@ -77,8 +86,17 @@ function Dashboard() {
   const spentAmount = startAmount - currentAmount
   const spentPercentage = (spentAmount / startAmount) * 100
 
+  useEffect(() => {
+    const state = location.state as { showConfetti?: boolean } | undefined
+    if (state?.showConfetti) {
+      setShowConfetti(true)
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state])
+
   return (
     <>
+      {showConfetti && <Confetti />}
       <RefreshIndicator isRefreshing={!!isRefreshing} />
       <Layout>
         <AppHeader.Root>

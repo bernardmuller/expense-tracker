@@ -248,7 +248,7 @@ function NewBudgetPage() {
             await queryClient.invalidateQueries({
               queryKey: ['budgets'],
             })
-            navigate({ to: '/dashboard' })
+            navigate({ to: '/dashboard', state: { showConfetti: true } })
           }
         },
       })

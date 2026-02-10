@@ -31,7 +31,6 @@ import { useOnboardRequest } from '@/lib/http/hooks/use-onboard-request'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { getUserById } from '@/lib/http/api/users'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import {
   calculateNextBudgetStart,
@@ -226,7 +225,7 @@ function OnboardingPage() {
             queryClient.prefetchQuery(getCategoriesQueryOptions()),
             queryClient.invalidateQueries(getUserByIdQueryOptions()),
           ]).then(() => {
-            navigate({ to: '/dashboard' })
+            navigate({ to: '/dashboard', state: { showConfetti: true } })
           })
         },
       })
