@@ -1,5 +1,6 @@
 export * from "./RegisterRequestParams.type";
 export * from "./RegisterVerifyParams.type";
+export * from "./RegisterVerifyResponse.type";
 export * from "./LoginRequestParams.type";
 export * from "./LoginParams.type";
 export * from "./LoginAttemptParams.type";

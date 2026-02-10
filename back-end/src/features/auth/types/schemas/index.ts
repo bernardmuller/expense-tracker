@@ -2,6 +2,7 @@ export * from "./user.schema";
 export * from "./registerRequest.schema";
 export * from "./registerVerify.schema";
 export * from "./registerVerifyParams.schema";
+export * from "./registerVerifyResponse.schema";
 export * from "./loginRequest.schema";
 export * from "./loginAttempt.schema";
 export * from "./loginResponse.schema";

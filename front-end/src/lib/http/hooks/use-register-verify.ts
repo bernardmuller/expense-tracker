@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { client, toResult } from '../client'
 import { withToken } from '../with-token'
 import { queryKeys } from '../query-keys'
+import { setTokens } from '@/lib/auth/token-storage'
 import type { paths } from '../schema'
 
 type RegisterVerifyBody =
@@ -39,6 +40,7 @@ export function useRegisterVerify() {
             }),
           )
             .andThen((data) => {
+              setTokens(data.accessToken, data.refreshToken)
               sessionStorage.removeItem('token')
               return ok(data)
             })

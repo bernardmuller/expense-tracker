@@ -32,7 +32,7 @@ export const registerVerifyHandler = async (c: Context) => {
   const result = await registerVerify({ otp: body.otp, token: token }, ctx);
 
   return result.match(
-    (user) => c.json(user, 200),
+    (response) => c.json(response, 200),
     (error) => mapErrorToResponse(error, c),
   );
 };

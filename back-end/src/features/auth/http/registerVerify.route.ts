@@ -2,7 +2,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent, jsonContentRequired } from "stoker/openapi/helpers";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
-import { registerVerifyParamsSchema, registerVerifySchema } from "../types";
+import { registerVerifyParamsSchema, registerVerifyResponseSchema } from "../types";
 
 const tags = ["Auth"];
 
@@ -25,7 +25,7 @@ export const registerVerifyRoute = createRoute({
   },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
-      registerVerifySchema,
+      registerVerifyResponseSchema,
       "Registration completed successfully, user logged in",
     ),
     [HttpStatusCodes.UNAUTHORIZED]: jsonContent(

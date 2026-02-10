@@ -147,17 +147,21 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /** Format: uuid */
-                            id: string;
-                            name: string;
-                            email: string;
-                            emailVerified: boolean;
-                            image: string | null;
-                            onboarded: boolean;
-                            /** Format: date */
-                            createdAt: string;
-                            /** Format: date */
-                            updatedAt: string;
+                            user: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                email: string;
+                                emailVerified: boolean;
+                                image: string | null;
+                                onboarded: boolean;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                            };
+                            accessToken: string;
+                            refreshToken: string;
                         };
                     };
                 };
@@ -902,6 +906,8 @@ export interface paths {
                     "application/json": {
                         name: string;
                         startAmount: number;
+                        startDate?: string;
+                        endDate?: string;
                         categories: {
                             /** Format: uuid */
                             id: string;

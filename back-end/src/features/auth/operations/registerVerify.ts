@@ -1,7 +1,7 @@
 import type { AppContext } from "@/lib/db/context";
 import * as UserOperations from "@/features/users/operations";
 import { type ResultAsync, errAsync } from "neverthrow";
-import type { RegisterVerifyParams } from "../types";
+import type { RegisterVerifyParams, RegisterVerifyResponse } from "../types";
 import { pinoInstance as logger } from "@/lib/http/middleware/logger";
 import {
   EntityCreateError,
@@ -11,6 +11,10 @@ import {
 import { UserEmailAlreadyInUseError } from "@/lib/errors/applicationErrors";
 import { compareOTP } from "@/lib/utils/compareOTP";
 import { decodeVerificationToken } from "@/lib/utils/decodeVerificationToken";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "@/lib/utils/jwt";
 import * as VerificationOperations from "@/features/verifications/operations";
 import {
   InvalidOTPError,
@@ -20,13 +24,12 @@ import {
   VerificationExpiredError,
   VerificationNotFoundError,
 } from "../types";
-import type { User } from "@/features/users/types";
 
 export const registerVerify = (
   params: RegisterVerifyParams & { token: string },
   ctx: AppContext,
 ): ResultAsync<
-  User,
+  RegisterVerifyResponse,
   | InstanceType<typeof InvalidVerificationTokenError>
   | InstanceType<typeof VerificationNotFoundError>
   | InstanceType<typeof EntityReadError>
@@ -41,9 +44,14 @@ export const registerVerify = (
 > =>
   decodeVerificationToken(params.token)
     .andThen(({ verificationId }) =>
-      VerificationOperations.getVerificationById(verificationId, ctx),
+      VerificationOperations.getVerificationById(verificationId, ctx).map(
+        (verification) => ({
+          verification,
+          verificationId,
+        }),
+      ),
     )
-    .andThen((verification) => {
+    .andThen(({ verification, verificationId }) => {
       const now = new Date();
       if (verification.expiresAt < now) {
         return errAsync(new VerificationExpiredError());
@@ -62,14 +70,38 @@ export const registerVerify = (
         isMatch,
         email: userData.email,
         name: userData.name,
+        verificationId,
       }));
     })
-    .andThen(({ isMatch, email, name }) =>
+    .andThen(({ isMatch, email, name, verificationId }) =>
       isMatch
-        ? UserOperations.createUser({ name, email }, ctx).map((user) => user)
+        ? UserOperations.createUser({ name, email }, ctx).map((user) => ({
+            user,
+            verificationId,
+          }))
         : errAsync(new InvalidOTPError()),
     )
-    .andThen((user) => UserOperations.markUserAsVerified(user.id, ctx))
+    .andThen(({ user, verificationId }) =>
+      UserOperations.markUserAsVerified(user.id, ctx).map(() => ({
+        user,
+        verificationId,
+      })),
+    )
+    .andThen(({ user, verificationId }) =>
+      generateAccessToken(user.id, user.email, user.name).andThen(
+        (accessToken) =>
+          generateRefreshToken(user.id, user.email, user.name).andThen(
+            (refreshToken) =>
+              VerificationOperations.deleteVerification(verificationId, ctx).map(
+                () => ({
+                  user,
+                  accessToken,
+                  refreshToken,
+                }),
+              ),
+          ),
+      ),
+    )
     .mapErr((error) => {
       logger.error(
         {
