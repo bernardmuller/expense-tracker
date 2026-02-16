@@ -15,14 +15,16 @@ import { ChevronLeft } from 'lucide-react'
 
 export function Root({ children, className }: RootProps) {
   return (
-    <header
-      className={cn(
-        `bg-background fixed z-50 grid w-screen grid-cols-3 items-center p-4
-        shadow-md`,
-        className,
-      )}
-    >
-      {children}
+    <header className="bg-background fixed z-50 w-screen">
+      <div
+        className={cn(
+          `mx-auto grid w-screen grid-cols-3 items-center self-center p-4
+          shadow-md lg:w-1/2`,
+          className,
+        )}
+      >
+        {children}
+      </div>
     </header>
   )
 }
@@ -37,8 +39,8 @@ export function Icon({ src, alt, className }: IconProps) {
   return (
     <div
       className={cn(
-        `-m-3 flex min-h-18 min-w-18 items-center justify-center overflow-hidden
-        rounded-lg`,
+        `-m-3 flex h-18 min-h-18 w-18 min-w-18 items-center justify-center
+        overflow-hidden rounded-lg`,
         className,
       )}
     >

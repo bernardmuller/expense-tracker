@@ -19,6 +19,9 @@ export default defineConfig({
     tailwindcss(),
     netlify(),
   ],
+  optimizeDeps: {
+    include: ['@radix-ui/react-dropdown-menu'],
+  },
   test: {
     globals: true,
     environment: 'jsdom',

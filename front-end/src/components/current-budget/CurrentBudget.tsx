@@ -95,7 +95,7 @@ export function CurrentBudgetWithoutAction({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Current Budget</CardTitle>
+        <CardTitle>Budget Detail</CardTitle>
         <CardDescription>{budgetName}</CardDescription>
       </CardHeader>
       <CurrentBudgetContent

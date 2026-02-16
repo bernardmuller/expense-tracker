@@ -9,7 +9,7 @@ import {
 import type { CurrentBudgetProps } from './CurrentBudget.types'
 import { CurrentBudgetContent } from './CurrentBudget'
 import * as IconBadge from '@/components/icon-badge/IconBadge.compound'
-import { Calendar } from 'lucide-react'
+import { Calendar, ChevronRight } from 'lucide-react'
 
 export default function CurrentBudgetWithBadge({
   budgetName,
@@ -26,7 +26,11 @@ export default function CurrentBudgetWithBadge({
       <CardHeader>
         <LinkProvider>
           <div className="space-y-1.5">
-            <CardTitle>Current Budget</CardTitle>
+            <CardTitle>
+              <h3 className="flex items-center gap-1 hover:underline">
+                Current Budget <ChevronRight className="h-4 w-4" />
+              </h3>
+            </CardTitle>
             <CardDescription>{budgetName}</CardDescription>
           </div>
         </LinkProvider>

@@ -34,6 +34,7 @@ import { usePrivacy } from '@/lib/hooks/usePrivacy'
 import { getPrivacyDisplayValue } from '@/lib/utils/formatting/getPrivacyDisplayValue'
 import { AppHeader } from '@/components/app-header'
 import { differenceInCalendarDays } from 'date-fns'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: () => requireAuth(),
@@ -73,6 +74,7 @@ function Dashboard() {
   const createTransactionMutation = useCreateTransaction(budget.id)
   const deleteExpenseMutation = useDeleteExpense()
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
+  const isMobile = useIsMobile()
   const isRefreshing = useMemo(
     () => (budgetFetching || categoriesFetching) && categories,
     [categories, budgetFetching, categoriesFetching],
@@ -198,7 +200,7 @@ function Dashboard() {
               No recent expenses
             </div>
           )}
-          {budget.expenses.length > 0 && (
+          {budget.expenses.length > 0 && isMobile && (
             <div className="flex flex-col gap-2">
               {budget.expenses.slice(0, 5).map((expense) => (
                 <Swiper
@@ -222,8 +224,35 @@ function Dashboard() {
                     description={expense.description}
                     emoji={expense.category.icon}
                     categoryLabel={expense.category.label}
+                    onDelete={() => {
+                      deleteExpenseMutation.mutate({
+                        userId,
+                        budgetId: budget.id,
+                        expenseId: expense.id,
+                      })
+                    }}
                   />
                 </Swiper>
+              ))}
+            </div>
+          )}
+          {budget.expenses.length > 0 && !isMobile && (
+            <div className="flex flex-col gap-2">
+              {budget.expenses.slice(0, 5).map((expense) => (
+                <RecentExpense
+                  key={expense.id}
+                  amount={formatCurrency(parseFloat(expense.amount), 'za')}
+                  description={expense.description}
+                  emoji={expense.category.icon}
+                  categoryLabel={expense.category.label}
+                  onDelete={() => {
+                    deleteExpenseMutation.mutate({
+                      userId,
+                      budgetId: budget.id,
+                      expenseId: expense.id,
+                    })
+                  }}
+                />
               ))}
             </div>
           )}
