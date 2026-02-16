@@ -1,5 +1,5 @@
 import type { AppContext } from "@/lib/db/context";
-import * as UserOperations from "@/features/users/operations";
+import * as UserOperations from "@/features/users/actions";
 import { type ResultAsync, errAsync } from "neverthrow";
 import type { RegisterVerifyParams, RegisterVerifyResponse } from "../types";
 import { pinoInstance as logger } from "@/lib/http/middleware/logger";
@@ -11,10 +11,7 @@ import {
 import { UserEmailAlreadyInUseError } from "@/lib/errors/applicationErrors";
 import { compareOTP } from "@/lib/utils/compareOTP";
 import { decodeVerificationToken } from "@/lib/utils/decodeVerificationToken";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "@/lib/utils/jwt";
+import { generateAccessToken, generateRefreshToken } from "@/lib/utils/jwt";
 import * as VerificationOperations from "@/features/verifications/operations";
 import {
   InvalidOTPError,
@@ -75,14 +72,14 @@ export const registerVerify = (
     })
     .andThen(({ isMatch, email, name, verificationId }) =>
       isMatch
-        ? UserOperations.createUser({ name, email }, ctx).map((user) => ({
+        ? UserOperations.createUser({ name, email }).map((user) => ({
             user,
             verificationId,
           }))
         : errAsync(new InvalidOTPError()),
     )
     .andThen(({ user, verificationId }) =>
-      UserOperations.markUserAsVerified(user.id, ctx).map(() => ({
+      UserOperations.markUserAsVerified(user.id).map(() => ({
         user,
         verificationId,
       })),
@@ -92,13 +89,14 @@ export const registerVerify = (
         (accessToken) =>
           generateRefreshToken(user.id, user.email, user.name).andThen(
             (refreshToken) =>
-              VerificationOperations.deleteVerification(verificationId, ctx).map(
-                () => ({
-                  user,
-                  accessToken,
-                  refreshToken,
-                }),
-              ),
+              VerificationOperations.deleteVerification(
+                verificationId,
+                ctx,
+              ).map(() => ({
+                user,
+                accessToken,
+                refreshToken,
+              })),
           ),
       ),
     )

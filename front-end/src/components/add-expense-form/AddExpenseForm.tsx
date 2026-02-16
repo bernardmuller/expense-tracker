@@ -78,7 +78,7 @@ export default function AddExpenseForm({
             <form.AppField
               name="category"
               children={(field) => (
-                <field.SelectField
+                <field.SearchableSelectField
                   filterItems={categories}
                   placeHolder="Select Category"
                 />

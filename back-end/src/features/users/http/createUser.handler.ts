@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { createUser } from "../operations";
+import { createUser } from "../operations/createUser";
 
 export const createUserHandler = async (c: Context) => {
   const body = await c.req.json();

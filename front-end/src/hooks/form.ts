@@ -8,6 +8,7 @@ import OtpField from '@/components/form/OtpField'
 
 import BudgetFrequencyField from '@/components/form/BudgetFrequencyField'
 import BudgetStartDayField from '@/components/form/BudgetStartDayField'
+import SearchableSelectField from '@/components/form/SearchableSelectField'
 
 export const { useAppForm } = createFormHook({
   fieldContext,
@@ -16,6 +17,7 @@ export const { useAppForm } = createFormHook({
     NumberField,
     TextField,
     SelectField,
+    SearchableSelectField,
     OtpField,
     BudgetFrequencyField,
     BudgetStartDayField,

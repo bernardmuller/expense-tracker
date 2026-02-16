@@ -5,8 +5,12 @@ import {
   markUserAsVerified,
   updateUser,
 } from "./actions";
-import type { CreateUserParams, User } from "./types";
-import { UserAlreadyOnboardedError, UserAlreadyVerifiedError } from "./types";
+import type { CreateUserParams } from "./types/types";
+import type { User } from "./types/types";
+import {
+  UserAlreadyOnboardedError,
+  UserAlreadyVerifiedError,
+} from "./types/errors";
 import { beforeEach, describe, expect, it } from "vitest";
 import { generateMockUser, mockUsers } from "@/test/mocks/user.mock";
 import { faker } from "@faker-js/faker/locale/en";

@@ -2,7 +2,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 import * as HttpStatusCodes from "stoker/http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
-import { userSchema } from "../types";
+import { userSchema } from "../types/schemas";
 
 const tags = ["Users"];
 
