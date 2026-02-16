@@ -1,4 +1,3 @@
-import { Layout } from '@/components/layouts/Layout'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/budgets/$id')({
@@ -6,9 +5,5 @@ export const Route = createFileRoute('/budgets/$id')({
 })
 
 function RouteComponent() {
-  return (
-    <Layout>
-      <Outlet />
-    </Layout>
-  )
+  return <Outlet />
 }

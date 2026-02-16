@@ -26,3 +26,29 @@ export type ActionProps = {
   children: ReactNode
   className?: string
 }
+
+export type BackProps = {
+  onBack: () => void
+  label?: string
+  className?: string
+}
+
+export type LeftProps = {
+  children: ReactNode
+  className?: string
+}
+
+export type CenterProps = {
+  children: ReactNode
+  className?: string
+}
+
+export type RightProps = {
+  children: ReactNode
+  className?: string
+}
+
+export type TitleProps = {
+  children: ReactNode
+  className?: string
+}

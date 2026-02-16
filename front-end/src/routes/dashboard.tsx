@@ -98,26 +98,28 @@ function Dashboard() {
     <>
       {showConfetti && <Confetti />}
       <RefreshIndicator isRefreshing={!!isRefreshing} />
+      <AppHeader.Root>
+        <AppHeader.Left>
+          <AppHeader.Icon src="/favicon.ico" alt="App Icon" />
+          <AppHeader.Info appName="Expenny" message={`Hi, ${user.name}!`} />
+        </AppHeader.Left>
+        <div />
+        <AppHeader.Right>
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            asChild
+            className="text-muted-foreground aspect-square"
+          >
+            <Link to="/profile">
+              <User className="h-5 w-5" />
+              <span className="sr-only">Profile</span>
+            </Link>
+          </Button>
+        </AppHeader.Right>
+      </AppHeader.Root>
+
       <Layout>
-        <AppHeader.Root>
-          <AppHeader.Content>
-            <AppHeader.Icon src="/favicon.ico" alt="App Icon" />
-            <AppHeader.Info appName="Expenny" message={`Hi, ${user.name}!`} />
-          </AppHeader.Content>
-          <AppHeader.Action>
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              asChild
-              className="text-muted-foreground aspect-square"
-            >
-              <Link to="/profile">
-                <User className="h-5 w-5" />
-                <span className="sr-only">Profile</span>
-              </Link>
-            </Button>
-          </AppHeader.Action>
-        </AppHeader.Root>
         {budget.endDate ? (
           <CurrentBudgetWithBadge
             budgetName={budget.name}
