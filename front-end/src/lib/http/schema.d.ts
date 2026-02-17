@@ -1700,6 +1700,8 @@ export interface paths {
                         amount: number;
                         /** Format: uuid */
                         categoryId: string;
+                        note?: string;
+                        createdAt?: string;
                     };
                 };
             };
@@ -1719,6 +1721,7 @@ export interface paths {
                             amount: string;
                             /** Format: uuid */
                             categoryId: string;
+                            note: string | null;
                             /** Format: date */
                             createdAt: string;
                             /** Format: date */
@@ -1807,6 +1810,7 @@ export interface paths {
                                 amount: string;
                                 /** Format: uuid */
                                 categoryId: string;
+                                note: string | null;
                                 /** Format: date */
                                 createdAt: string;
                                 /** Format: date */
@@ -1879,6 +1883,7 @@ export interface paths {
                             amount: string;
                             /** Format: uuid */
                             categoryId: string;
+                            note: string | null;
                             /** Format: date */
                             createdAt: string;
                             /** Format: date */

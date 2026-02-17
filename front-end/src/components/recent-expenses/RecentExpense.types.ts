@@ -4,4 +4,5 @@ export type RecentExpenseProps = {
   emoji: string
   categoryLabel: string
   onDelete?: () => void
+  createdAt: string
 }

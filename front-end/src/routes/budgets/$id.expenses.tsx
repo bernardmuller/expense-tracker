@@ -16,6 +16,7 @@ import { Trash2 } from 'lucide-react'
 import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { Layout } from '@/components/layouts/Layout'
+import { format } from 'date-fns'
 
 const expensesSearchSchema = z.object({
   category: z.string().optional(),
@@ -130,6 +131,7 @@ function BudgetExpenses() {
                       description={expense.description}
                       emoji={expense.category.icon}
                       categoryLabel={expense.category.label}
+                      createdAt={format(expense.createdAt, 'dd MMMM yyyy')}
                     />
                   </Swiper>
                 ))}

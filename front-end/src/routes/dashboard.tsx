@@ -33,7 +33,7 @@ import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { usePrivacy } from '@/lib/hooks/usePrivacy'
 import { getPrivacyDisplayValue } from '@/lib/utils/formatting/getPrivacyDisplayValue'
 import { AppHeader } from '@/components/app-header'
-import { differenceInCalendarDays } from 'date-fns'
+import { differenceInCalendarDays, format } from 'date-fns'
 import { useIsMobile } from '@/hooks/use-mobile'
 
 export const Route = createFileRoute('/dashboard')({
@@ -179,6 +179,8 @@ function Dashboard() {
               description: value.description,
               amount: value.amount,
               categoryId: value.category,
+              createdAt: value.createdAt,
+              note: value.note,
             })
           }
           categories={categories.categories
@@ -231,6 +233,7 @@ function Dashboard() {
                         expenseId: expense.id,
                       })
                     }}
+                    createdAt={format(expense.createdAt, 'dd MMMM yyyy')}
                   />
                 </Swiper>
               ))}

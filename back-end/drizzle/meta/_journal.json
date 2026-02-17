@@ -36,6 +36,13 @@
       "when": 1769439256818,
       "tag": "0005_charming_speedball",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771303499933,
+      "tag": "0006_illegal_random",
+      "breakpoints": true
     }
   ]
 }

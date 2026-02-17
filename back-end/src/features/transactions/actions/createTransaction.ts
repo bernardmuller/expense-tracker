@@ -14,7 +14,8 @@ export const createTransaction = (
     description: params.description,
     amount: params.amount.toString(),
     categoryId: params.categoryId,
-    createdAt: now,
+    note: params.note ?? null,
+    createdAt: params.createdAt ? new Date(params.createdAt) : now,
     updatedAt: now,
     deletedAt: null,
   });

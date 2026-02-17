@@ -27,6 +27,8 @@ export const create = (
           description: transaction.description,
           amount: transaction.amount,
           categoryId: transaction.categoryId,
+          note: transaction.note,
+          createdAt: transaction.createdAt,
         })
         .returning();
       if (!createdTransaction) throw new EntityCreateError("Transaction");

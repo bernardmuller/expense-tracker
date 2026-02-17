@@ -184,6 +184,7 @@ export const expenses = pgTable("expenses", {
   categoryId: uuid("category_id")
     .notNull()
     .references(() => categories.id, { onDelete: "cascade" }),
+  note: varchar("note", { length: 255 }),
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),

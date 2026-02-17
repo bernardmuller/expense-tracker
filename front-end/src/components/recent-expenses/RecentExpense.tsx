@@ -15,7 +15,7 @@ export default function RecentExpense({
   description,
   amount,
   emoji,
-  categoryLabel,
+  createdAt,
   onDelete,
 }: RecentExpenseProps) {
   const isMobile = useIsMobile()
@@ -30,8 +30,12 @@ export default function RecentExpense({
           <span className="text-lg">{emoji}</span>
         </div>
         <div>
-          <div className="font-grotesk text-sm font-medium">{description}</div>
-          <div className="text-muted-foreground text-xs">{categoryLabel}</div>
+          <div className="flex items-center gap-1">
+            <div className="font-grotesk text-sm font-medium">
+              {description}
+            </div>
+          </div>
+          <div className="text-muted-foreground text-xs">{createdAt}</div>
         </div>
       </div>
       <div className="flex items-center gap-2">

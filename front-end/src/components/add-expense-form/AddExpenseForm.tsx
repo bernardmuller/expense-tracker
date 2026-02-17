@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import z from 'zod'
 import {
   Card,
@@ -9,6 +10,7 @@ import {
 import { FieldGroup } from '../ui/field'
 import type { FilterItems } from '../filter/Filter.types'
 import { useAppForm } from '@/hooks/form'
+import { Button } from '../ui/button'
 
 const addExpenseSchema = z.object({
   description: z.string(),
@@ -16,22 +18,36 @@ const addExpenseSchema = z.object({
   category: z.string().refine((val) => val !== '', {
     message: 'You must specify a category',
   }),
+  createdAt: z.string(),
+  note: z.string(),
 })
 
 type AddExpenseFormValues = z.infer<typeof addExpenseSchema>
+
+type AddExpenseSubmitValues = Omit<
+  AddExpenseFormValues,
+  'createdAt' | 'note'
+> & {
+  createdAt?: string
+  note?: string
+}
 
 export default function AddExpenseForm({
   onSubmit,
   categories,
 }: {
-  onSubmit: (value: AddExpenseFormValues) => void
+  onSubmit: (value: AddExpenseSubmitValues) => void
   categories: FilterItems
 }) {
+  const [showAdvanced, setShowAdvanced] = useState(false)
+
   const form = useAppForm({
     defaultValues: {
       description: '',
       amount: 0,
       category: '',
+      createdAt: '',
+      note: '',
     },
     validators: {
       onSubmit: addExpenseSchema,
@@ -45,6 +61,8 @@ export default function AddExpenseForm({
       onSubmit({
         ...value,
         description,
+        createdAt: value.createdAt || undefined,
+        note: value.note || undefined,
       })
       form.reset()
       form.setFieldValue('category', '')
@@ -85,6 +103,29 @@ export default function AddExpenseForm({
               )}
             />
           </FieldGroup>
+
+          <Button
+            variant="link"
+            type="button"
+            className="hover:bg-card p-1 py-1"
+            onClick={() => setShowAdvanced((prev) => !prev)}
+          >
+            {showAdvanced
+              ? '- Hide advanced options'
+              : '+ Show advanced options'}
+          </Button>
+          {showAdvanced && (
+            <FieldGroup>
+              <form.AppField
+                name="createdAt"
+                children={(field) => <field.DateField max={new Date()} />}
+              />
+              <form.AppField
+                name="note"
+                children={(field) => <field.TextAreaField placeholder="Note" />}
+              />
+            </FieldGroup>
+          )}
         </form>
       </CardContent>
       <CardFooter>
