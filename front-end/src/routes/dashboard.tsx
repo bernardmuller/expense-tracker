@@ -255,6 +255,7 @@ function Dashboard() {
                       expenseId: expense.id,
                     })
                   }}
+                  createdAt={format(expense.createdAt, 'dd MMMM yyyy')}
                 />
               ))}
             </div>
