@@ -4,3 +4,4 @@ export * from "./getBudgets";
 export * from "./findBudgetById";
 export * from "./updateBudget";
 export * from "./getActiveBudgetByUserId";
+export * from "./getBudgetWithRelatives";

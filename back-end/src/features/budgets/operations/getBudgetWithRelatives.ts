@@ -1,7 +1,7 @@
 import { ResultAsync } from "neverthrow";
 import type { AppContext } from "@/lib/db/context";
-import * as BudgetQueries from "../queries/index";
-import type { Transaction } from "../types";
+import * as BudgetQueries from "../queries";
+import type { Transaction, CategoryBudget } from "../types";
 import type { Budget } from "@/lib/db/schema";
 import {
   EntityNotFoundError,
@@ -13,18 +13,34 @@ import {
   EncryptionDecipherFinalError,
 } from "@/lib/utils/encryption";
 
-export const getActiveBudgetWithExpenses = (
+type BudgetWithDetails = Budget & {
+  expenses: (Transaction & {
+    category: { id: string; key: string; label: string; icon: string };
+  })[];
+  categoryBudgets: CategoryBudget[];
+  categoryBreakdown: Array<{
+    id: string;
+    key: string;
+    label: string;
+    icon: string;
+    spent: string;
+    allocated: string | null;
+  }>;
+};
+
+export const getBudgetWithRelatives = (
+  budgetId: string,
   userId: string,
   ctx: AppContext,
 ): ResultAsync<
-  Budget & {
-    expenses: (Transaction & {
-      category: { id: string; key: string; label: string; icon: string };
-    })[];
+  {
+    budget: BudgetWithDetails;
+    previous: string | null;
+    next: string | null;
   },
   | InstanceType<typeof EntityNotFoundError>
   | InstanceType<typeof EntityReadError>
   | InstanceType<typeof EncryptionDecipherCreationError>
   | InstanceType<typeof EncryptionDecipherUpdateError>
   | InstanceType<typeof EncryptionDecipherFinalError>
-> => BudgetQueries.getActiveBudgetWithExpenses(userId, ctx);
+> => BudgetQueries.getBudgetWithRelatives(budgetId, userId, ctx);
