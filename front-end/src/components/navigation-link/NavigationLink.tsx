@@ -8,6 +8,7 @@ interface NavigationLinkProps {
   subtitle: string
   linkProvider: ({ children }: { children: React.ReactNode }) => React.ReactNode
   variant?: 'link' | 'primary'
+  active?: boolean
 }
 
 export function NavigationLink({
@@ -17,6 +18,7 @@ export function NavigationLink({
   subtitle,
   linkProvider: LinkProvider,
   variant = 'link',
+  active = false,
 }: NavigationLinkProps) {
   return (
     <LinkProvider>
@@ -24,7 +26,10 @@ export function NavigationLink({
         className={cn(
           `bg-muted/40 hover:bg-muted/60 flex cursor-pointer items-center gap-3
           rounded-lg p-3 px-6`,
-          { 'bg-transparent hover:bg-transparent': variant === 'primary' },
+          {
+            'bg-transparent hover:bg-transparent': variant === 'primary',
+            // 'bg-card/60 hover:bg-card/70': active,
+          },
         )}
       >
         <div

@@ -16,7 +16,6 @@ import { Progress } from '../ui/progress'
 import { formatPercentage } from '@/lib/utils/formatting/formatPercentage'
 
 export function CurrentBudgetContent({
-  budgetName,
   currentAmount,
   startingAmount,
   spentAmount,

@@ -23,6 +23,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { NavigationLink } from '@/components/navigation-link/NavigationLink'
 import { Plus, ReceiptText } from 'lucide-react'
 import { Layout } from '@/components/layouts/Layout'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
@@ -93,7 +94,7 @@ function BudgetDetail() {
           <AppHeader.Back onBack={() => navigate({ to: '/dashboard' })} />
         </AppHeader.Left>
         <AppHeader.Center>
-          <div />
+          <AppHeader.Title>Budget</AppHeader.Title>
         </AppHeader.Center>
         <AppHeader.Right>
           <ThemeToggle />
@@ -144,6 +145,7 @@ function BudgetDetail() {
               </Link>
             )}
             variant="primary"
+            active={budget.budget.isActive}
           />
         </Card>
         <Card>
