@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { markUserAsVerified } from "../operations";
+import { markUserAsVerified } from "../services";
 
 export const markUserAsVerifiedHandler = async (c: Context) => {
   const userId = c.req.param("id");

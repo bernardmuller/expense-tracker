@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { updateUserPreferences } from "../operations";
+import { updateUserPreferences } from "../services";
 
 export const updateUserPreferencesHandler = async (c: Context) => {
   const userId = c.req.param("id");

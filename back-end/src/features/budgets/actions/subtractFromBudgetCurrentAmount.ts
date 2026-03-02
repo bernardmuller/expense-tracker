@@ -1,34 +1,16 @@
 import { ResultAsync, okAsync } from "neverthrow";
 import type { Budget } from "@/lib/db/schema";
-import {
-  decrypt,
-  isEncrypted,
-  EncryptionDecipherCreationError,
-  EncryptionDecipherUpdateError,
-  EncryptionDecipherFinalError,
-} from "@/lib/utils/encryption";
+import { decrypt, isEncrypted } from "@/lib/utils/encryption";
+import { EncryptionError } from "@/lib/errors/domain";
+import { AppResult } from "@/lib/result";
 
 export const subtractFromBudgetCurrentAmount = (
   budget: Budget,
   transactionAmount: number,
-): ResultAsync<
-  Budget,
-  | InstanceType<typeof EncryptionDecipherCreationError>
-  | InstanceType<typeof EncryptionDecipherUpdateError>
-  | InstanceType<typeof EncryptionDecipherFinalError>
-> => {
+): AppResult<Budget, EncryptionError> => {
   if (isEncrypted(budget.currentAmount, budget.ca_iv, budget.ca_tag)) {
-    return ResultAsync.fromPromise(
-      decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!),
-      (error) =>
-        error instanceof EncryptionDecipherCreationError ||
-        error instanceof EncryptionDecipherUpdateError ||
-        error instanceof EncryptionDecipherFinalError
-          ? error
-          : new EncryptionDecipherFinalError(),
-    )
-      .andThen((decryptResult) => decryptResult)
-      .map((decryptedAmount: string) => {
+    return decrypt(budget.currentAmount, budget.ca_iv!, budget.ca_tag!).map(
+      (decryptedAmount: string) => {
         const currentAmount = parseFloat(decryptedAmount);
         const newAmount = currentAmount - transactionAmount;
 
@@ -37,7 +19,8 @@ export const subtractFromBudgetCurrentAmount = (
           currentAmount: newAmount.toString(),
           updatedAt: new Date(),
         };
-      });
+      },
+    );
   } else {
     const currentAmount = parseFloat(budget.currentAmount);
     const newAmount = currentAmount - transactionAmount;

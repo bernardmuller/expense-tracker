@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { deleteTransactionAndUpdateBudget } from "../operations";
+import { deleteTransactionAndUpdateBudget } from "../services";
 
 export const deleteExpenseHandler = async (c: Context) => {
   const userId = c.req.param("userId");

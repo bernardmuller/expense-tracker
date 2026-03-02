@@ -1,7 +1,7 @@
 import { Result, ok, err } from "neverthrow";
 import { SearchQueries } from "../http/types";
 import coerceUnknown from "./coerceUnknown";
-import { CoercionError } from "../errors/utilityErrors";
+import { ValidationError } from "../errors/domain";
 
 type RawQueryParams = Record<string, string | string[] | undefined>;
 
@@ -31,9 +31,9 @@ interface ParseSearchQueryOptions<
 function validateNotArray(
   paramName: string,
   value: string | string[] | undefined,
-): Result<string | undefined, InstanceType<typeof CoercionError>> {
+): Result<string | undefined, ValidationError> {
   if (Array.isArray(value)) {
-    return err(new CoercionError(`${paramName} parameter cannot be an array`));
+    return err(new ValidationError(`${paramName} parameter cannot be an array`));
   }
   return ok(value);
 }
@@ -42,7 +42,7 @@ function parseNumericParam(
   paramName: string,
   rawValue: string | string[] | undefined,
   validator?: (value: number) => string | null,
-): Result<number, InstanceType<typeof CoercionError>> {
+): Result<number, ValidationError> {
   const notArrayResult = validateNotArray(paramName, rawValue);
   if (notArrayResult.isErr()) {
     return err(notArrayResult.error);
@@ -55,13 +55,13 @@ function parseNumericParam(
 
   const value = coerceResult.value;
   if (typeof value !== "number") {
-    return err(new CoercionError(`${paramName} must be a number`));
+    return err(new ValidationError(`${paramName} must be a number`));
   }
 
   if (validator) {
     const validationError = validator(value);
     if (validationError) {
-      return err(new CoercionError(validationError));
+      return err(new ValidationError(validationError));
     }
   }
 
@@ -71,7 +71,7 @@ function parseNumericParam(
 function parseLimitParam(
   rawValue: string | string[] | undefined,
   maxLimit: number,
-): Result<number, InstanceType<typeof CoercionError>> {
+): Result<number, ValidationError> {
   return parseNumericParam("limit", rawValue, (num) => {
     if (num <= 0 || num > maxLimit) {
       return `limit must be between 1 and ${maxLimit}`;
@@ -82,7 +82,7 @@ function parseLimitParam(
 
 function parseOffsetParam(
   rawValue: string | string[] | undefined,
-): Result<number, InstanceType<typeof CoercionError>> {
+): Result<number, ValidationError> {
   return parseNumericParam("offset", rawValue, (num) => {
     if (num < 0) {
       return "offset must be non-negative";
@@ -94,14 +94,14 @@ function parseOffsetParam(
 function parseSortParam<TEntity>(
   rawValue: string | string[] | undefined,
   allowedSortKeys?: Array<keyof TEntity & string>,
-): Result<keyof TEntity & string, InstanceType<typeof CoercionError>> {
+): Result<keyof TEntity & string, ValidationError> {
   const notArrayResult = validateNotArray("sort", rawValue);
   if (notArrayResult.isErr()) {
     return err(notArrayResult.error);
   }
 
   if (typeof rawValue !== "string") {
-    return err(new CoercionError("sort must be a string"));
+    return err(new ValidationError("sort must be a string"));
   }
 
   if (
@@ -109,7 +109,7 @@ function parseSortParam<TEntity>(
     !allowedSortKeys.includes(rawValue as keyof TEntity & string)
   ) {
     return err(
-      new CoercionError(`sort must be one of: ${allowedSortKeys.join(", ")}`),
+      new ValidationError(`sort must be one of: ${allowedSortKeys.join(", ")}`),
     );
   }
 
@@ -118,19 +118,19 @@ function parseSortParam<TEntity>(
 
 function parseOrderParam(
   rawValue: string | string[] | undefined,
-): Result<SortOrder, InstanceType<typeof CoercionError>> {
+): Result<SortOrder, ValidationError> {
   const notArrayResult = validateNotArray("order", rawValue);
   if (notArrayResult.isErr()) {
     return err(notArrayResult.error);
   }
 
   if (typeof rawValue !== "string") {
-    return err(new CoercionError("order must be a string"));
+    return err(new ValidationError("order must be a string"));
   }
 
   if (!SORT_ORDERS.includes(rawValue as SortOrder)) {
     return err(
-      new CoercionError(`order must be one of: ${SORT_ORDERS.join(", ")}`),
+      new ValidationError(`order must be one of: ${SORT_ORDERS.join(", ")}`),
     );
   }
 
@@ -140,7 +140,7 @@ function parseOrderParam(
 function parseIncludeParam(
   rawValue: string | string[] | undefined,
   allowedIncludes?: string[],
-): Result<string[], InstanceType<typeof CoercionError>> {
+): Result<string[], ValidationError> {
   if (rawValue === undefined) {
     return ok([]);
   }
@@ -149,12 +149,12 @@ function parseIncludeParam(
 
   for (const includeValue of includeArray) {
     if (typeof includeValue !== "string") {
-      return err(new CoercionError("include values must be strings"));
+      return err(new ValidationError("include values must be strings"));
     }
 
     if (allowedIncludes && !allowedIncludes.includes(includeValue)) {
       return err(
-        new CoercionError(
+        new ValidationError(
           `include value '${includeValue}' is not allowed. Allowed values: ${allowedIncludes.join(", ")}`,
         ),
       );
@@ -195,7 +195,7 @@ export function parseSearchQuery<
   options: ParseSearchQueryOptions<TEntity, TFilters>,
 ): Result<
   SearchQueries<TEntity, TFilters>,
-  InstanceType<typeof CoercionError>
+  ValidationError
 > {
   const {
     rawQuery,
@@ -210,7 +210,7 @@ export function parseSearchQuery<
     for (const filterKey of filterKeys) {
       if (RESERVED_QUERY_PARAMS.includes(filterKey as any)) {
         return err(
-          new CoercionError(
+          new ValidationError(
             `Filter key '${filterKey}' conflicts with reserved parameter. Reserved params: ${RESERVED_QUERY_PARAMS.join(", ")}`,
           ),
         );
@@ -258,7 +258,7 @@ export function parseSearchQuery<
 
   if (order !== undefined && sort === undefined) {
     return err(
-      new CoercionError(
+      new ValidationError(
         "order parameter requires sort to be specified. Provide a sort key when using order.",
       ),
     );
@@ -298,7 +298,7 @@ export function parseSearchQuery<
 
       if (Array.isArray(rawValue) && !allowArrayFilters) {
         return err(
-          new CoercionError(
+          new ValidationError(
             `Filter parameter '${key}' cannot be an array. To allow array filters, set allowArrayFilters: true`,
           ),
         );
@@ -310,7 +310,7 @@ export function parseSearchQuery<
           const coercedResult = coerceUnknown(item);
           if (coercedResult.isErr()) {
             return err(
-              new CoercionError(
+              new ValidationError(
                 `Failed to parse filter '${key}' array element: ${coercedResult.error.message}`,
               ),
             );
@@ -322,7 +322,7 @@ export function parseSearchQuery<
         const coercedResult = coerceUnknown(rawValue);
         if (coercedResult.isErr()) {
           return err(
-            new CoercionError(
+            new ValidationError(
               `Failed to parse filter '${key}': ${coercedResult.error.message}`,
             ),
           );

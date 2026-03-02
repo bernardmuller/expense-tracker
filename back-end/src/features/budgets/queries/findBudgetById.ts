@@ -1,26 +1,19 @@
 import type { AppContext } from "@/lib/db/context";
 import { budgets } from "@/lib/db/schema";
-import {
-  EntityNotFoundError,
-  EntityReadError,
-} from "@/lib/errors/actionErrors";
-import { eq } from "drizzle-orm";
-import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { Budget } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { AppResult, fromDB, success, failure } from "@/lib/result";
+import { NotFoundError, DatabaseError } from "@/lib/errors/domain";
 
 export const findBudgetById = (
   budgetId: string,
   ctx: AppContext,
-): ResultAsync<
-  Budget,
-  | InstanceType<typeof EntityNotFoundError>
-  | InstanceType<typeof EntityReadError>
-> =>
-  ResultAsync.fromPromise(
+): AppResult<Budget, NotFoundError | DatabaseError> => {
+  return fromDB(
     ctx.db.select().from(budgets).where(eq(budgets.id, budgetId)),
-    (error) => new EntityReadError("Budget", String(error)),
   ).andThen(([budget]) =>
     budget
-      ? okAsync(budget)
-      : errAsync(new EntityNotFoundError(`Budget: ${budgetId}`)),
+      ? success(budget)
+      : failure(new NotFoundError(`Budget: ${budgetId}`)),
   );
+};

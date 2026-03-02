@@ -1,11 +1,11 @@
 import type { AppContext } from "@/lib/db/context";
 import { categories, userCategories } from "@/lib/db/schema";
-import { EntityReadError } from "@/lib/errors/actionErrors";
-import { ResultAsync } from "neverthrow";
 import type { Category, CategoryWithoutMetadata } from "../types";
 import { SearchQueries } from "@/lib/http/types";
 import buildDrizzleQuery from "@/lib/utils/buildDrizzleQuery";
 import { eq } from "drizzle-orm";
+import { AppResult, fromDB } from "@/lib/result";
+import { DatabaseError } from "@/lib/errors/domain";
 
 export const getCategories = (
   search: SearchQueries<
@@ -16,11 +16,8 @@ export const getCategories = (
     }
   >,
   ctx: AppContext,
-): ResultAsync<
-  Array<CategoryWithoutMetadata>,
-  InstanceType<typeof EntityReadError>
-> =>
-  ResultAsync.fromPromise(
+): AppResult<Array<CategoryWithoutMetadata>, DatabaseError> =>
+  fromDB(
     buildDrizzleQuery(
       ctx.db
         .select({
@@ -41,5 +38,4 @@ export const getCategories = (
         createdAt: categories.createdAt,
       },
     ),
-    (error) => new EntityReadError("Category", String(error)),
   );

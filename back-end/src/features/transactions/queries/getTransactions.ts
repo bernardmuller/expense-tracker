@@ -1,11 +1,11 @@
 import type { AppContext } from "@/lib/db/context";
 import { expenses, budgets, categories } from "@/lib/db/schema";
-import { EntityReadError } from "@/lib/errors/actionErrors";
 import { eq, like } from "drizzle-orm";
-import { ResultAsync } from "neverthrow";
 import type { Transaction } from "../types";
 import { SearchQueries } from "@/lib/http/types";
 import buildDrizzleQuery from "@/lib/utils/buildDrizzleQuery";
+import { AppResult, fromDB } from "@/lib/result";
+import { DatabaseError } from "@/lib/errors/domain";
 
 export const getTransactions = (
   search: SearchQueries<
@@ -18,7 +18,7 @@ export const getTransactions = (
     }
   >,
   ctx: AppContext,
-): ResultAsync<Array<Transaction>, InstanceType<typeof EntityReadError>> => {
+): AppResult<Array<Transaction>, DatabaseError> => {
   const includesCategory = search.include?.includes("category");
 
   const baseSelect = {
@@ -26,6 +26,7 @@ export const getTransactions = (
     budgetId: expenses.budgetId,
     description: expenses.description,
     amount: expenses.amount,
+    note: expenses.note,
     categoryId: expenses.categoryId,
     createdAt: expenses.createdAt,
     updatedAt: expenses.updatedAt,
@@ -46,7 +47,7 @@ export const getTransactions = (
     ? ctx.db.select(selectWithCategory).from(expenses)
     : ctx.db.select(baseSelect).from(expenses);
 
-  return ResultAsync.fromPromise(
+  return fromDB(
     buildDrizzleQuery(
       queryBuilder,
       search,
@@ -72,6 +73,5 @@ export const getTransactions = (
         },
       },
     ),
-    (error) => new EntityReadError("Transaction", String(error)),
   );
 };

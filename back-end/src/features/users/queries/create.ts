@@ -1,41 +1,44 @@
 import type { AppContext } from "@/lib/db/context";
 import { users, userPreferences } from "@/lib/db/schema";
-import { EntityCreateError } from "@/lib/errors/actionErrors";
-import { ResultAsync } from "neverthrow";
-import type { User } from "../types";
+import type { User } from "@/lib/db/schema";
 import { generateUuid } from "@/lib/utils/generateUuid";
+import { AppResult, fromDB, success, failure } from "@/lib/result";
+import { DatabaseError, ValidationError } from "@/lib/errors/domain";
 
-export const create = (user: Partial<User>, ctx: AppContext) =>
-  ResultAsync.fromPromise(
-    (async () => {
-      if (!user.id || !user.name || !user.email) {
-        throw new Error("Missing required fields: id, name, or email");
-      }
-      const [createdUser] = await ctx.db
+export const create = (
+  user: Partial<User>,
+  ctx: AppContext,
+): AppResult<User, DatabaseError | ValidationError> => {
+  if (!user.id || !user.name || !user.email) {
+    return failure(
+      new ValidationError("Missing required fields: id, name, or email"),
+    );
+  }
+
+  return fromDB(
+    ctx.db.transaction(async (tx) => {
+      const [createdUser] = await tx
         .insert(users)
         .values({
-          id: user.id,
-          name: user.name,
-          email: user.email,
+          id: user.id!,
+          name: user.name!,
+          email: user.email!,
           emailVerified: user.emailVerified ?? false,
           onboarded: user.onboarded ?? false,
           image: user.image,
         })
         .returning();
 
-      const [createdUserPreference] = await ctx.db
-        .insert(userPreferences)
-        .values({
-          id: generateUuid(),
-          userId: user.id,
-          budgetStartDate: null,
-        });
+      await tx.insert(userPreferences).values({
+        id: generateUuid(),
+        userId: user.id!,
+        budgetStartDate: null,
+      });
 
-      if (!createdUser) throw new EntityCreateError("User");
+      if (!createdUser) throw new Error("Failed to create user");
       return createdUser;
-    })(),
-    (error) =>
-      error instanceof EntityCreateError
-        ? error
-        : new EntityCreateError("User", error),
+    }),
+  ).andThen((user) =>
+    user ? success(user) : failure(new DatabaseError("Failed to create user")),
   );
+};

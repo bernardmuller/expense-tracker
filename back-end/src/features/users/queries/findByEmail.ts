@@ -1,24 +1,14 @@
 import type { AppContext } from "@/lib/db/context";
 import { users } from "@/lib/db/schema";
-import {
-  EntityNotFoundError,
-  EntityReadError,
-} from "@/lib/errors/actionErrors";
 import { eq } from "drizzle-orm";
-import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { User } from "../types";
+import { AppResult, fromDB, success, failure } from "@/lib/result";
+import { NotFoundError, DatabaseError } from "@/lib/errors/domain";
 
 export const findByEmail = (
   email: string,
   ctx: AppContext,
-): ResultAsync<
-  User,
-  | InstanceType<typeof EntityNotFoundError>
-  | InstanceType<typeof EntityReadError>
-> =>
-  ResultAsync.fromPromise(
-    ctx.db.select().from(users).where(eq(users.email, email)),
-    (error) => new EntityReadError("User", String(error)),
-  ).andThen(([user]) =>
-    user ? okAsync(user) : errAsync(new EntityNotFoundError(email)),
+): AppResult<User, NotFoundError | DatabaseError> =>
+  fromDB(ctx.db.select().from(users).where(eq(users.email, email))).andThen(
+    ([user]) => (user ? success(user) : failure(new NotFoundError(email))),
   );

@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { getAllUsers } from "../operations/getAllUsers";
+import { getAllUsers } from "../services/getAllUsers";
 
 export const getAllUsersHandler = async (c: Context) => {
   const ctx = createContext();

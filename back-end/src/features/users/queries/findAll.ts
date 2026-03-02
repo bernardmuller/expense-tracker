@@ -1,12 +1,8 @@
 import type { AppContext } from "@/lib/db/context";
 import { users } from "@/lib/db/schema";
-import { EntityReadError } from "@/lib/errors/actionErrors";
-import { ResultAsync } from "neverthrow";
+import type { User } from "../types";
+import { AppResult, fromDB } from "@/lib/result";
+import { DatabaseError } from "@/lib/errors/domain";
 
-export const findAll = (ctx: AppContext) =>
-  ResultAsync.fromPromise(
-    (async () => {
-      return await ctx.db.select().from(users);
-    })(),
-    (error) => new EntityReadError("User", error),
-  );
+export const findAll = (ctx: AppContext): AppResult<User[], DatabaseError> =>
+  fromDB(ctx.db.select().from(users));

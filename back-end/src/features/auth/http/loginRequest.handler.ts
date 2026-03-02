@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { loginRequest } from "../operations";
+import { loginRequest } from "../services";
 
 export const loginRequestHandler = async (c: Context) => {
   const body = await c.req.json<{

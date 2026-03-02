@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { registerRequest } from "../operations";
+import { registerRequest } from "../services";
 
 export const registerRequestHandler = async (c: Context) => {
   const body = await c.req.json<{

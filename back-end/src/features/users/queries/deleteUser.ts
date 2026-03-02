@@ -1,14 +1,11 @@
 import type { AppContext } from "@/lib/db/context";
 import { users } from "@/lib/db/schema";
-import { EntityDeleteError } from "@/lib/errors/actionErrors";
 import { eq } from "drizzle-orm";
-import { ResultAsync } from "neverthrow";
+import { AppResult, fromDB, success } from "@/lib/result";
+import { DatabaseError } from "@/lib/errors/domain";
 
-export const deleteUser = (userId: string, ctx: AppContext) =>
-  ResultAsync.fromPromise(
-    (async () => {
-      await ctx.db.delete(users).where(eq(users.id, userId));
-      return true;
-    })(),
-    (error) => new EntityDeleteError("User", error),
-  );
+export const deleteUser = (
+  userId: string,
+  ctx: AppContext,
+): AppResult<boolean, DatabaseError> =>
+  fromDB(ctx.db.delete(users).where(eq(users.id, userId))).map(() => true);

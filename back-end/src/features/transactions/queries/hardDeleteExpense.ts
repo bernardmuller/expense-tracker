@@ -1,19 +1,18 @@
 import type { AppContext } from "@/lib/db/context";
 import { expenses } from "@/lib/db/schema";
-import { EntityDeleteError } from "@/lib/errors/actionErrors";
 import { eq } from "drizzle-orm";
-import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { Transaction } from "../types";
+import { AppResult, fromDB, success, failure } from "@/lib/result";
+import { DatabaseError } from "@/lib/errors/domain";
 
 export const hardDeleteExpense = (
   expenseId: string,
   ctx: AppContext,
-): ResultAsync<Transaction, InstanceType<typeof EntityDeleteError>> =>
-  ResultAsync.fromPromise(
+): AppResult<Transaction, DatabaseError> =>
+  fromDB(
     ctx.db.delete(expenses).where(eq(expenses.id, expenseId)).returning(),
-    (error) => new EntityDeleteError("Expense", error),
   ).andThen(([deletedExpense]) =>
     deletedExpense
-      ? okAsync(deletedExpense)
-      : errAsync(new EntityDeleteError("Expense")),
+      ? success(deletedExpense)
+      : failure(new DatabaseError("Failed to delete expense")),
   );

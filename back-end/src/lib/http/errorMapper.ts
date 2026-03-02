@@ -1,6 +1,27 @@
 import type { Context } from "hono";
+import { AppError } from "@/lib/errors/base";
 
 export function mapErrorToResponse(error: unknown, c: Context) {
+  if (error instanceof AppError) {
+    console.error({
+      error: error.name,
+      message: error.message,
+      code: error.code,
+      metadata: error.metadata,
+      stack: error.stack,
+    });
+
+    return c.json(
+      {
+        error: error.name,
+        message: error.message,
+        code: error.code,
+        ...(error.metadata && { details: error.metadata }),
+      },
+      error.statusCode as any,
+    );
+  }
+
   if (
     error &&
     typeof error === "object" &&
@@ -25,7 +46,6 @@ export function mapErrorToResponse(error: unknown, c: Context) {
         message: typedError.message,
         code: typedError.code,
       },
-      // I know, I know... Nothing else works
       typedError.statusCode as any,
     );
   }

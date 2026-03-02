@@ -265,3 +265,5 @@ export type CategoryBudget = typeof categoryBudgets.$inferSelect;
 export type NewCategoryBudget = typeof categoryBudgets.$inferInsert;
 export type UserPreferences = typeof userPreferences.$inferSelect;
 export type NewUserPreferences = typeof userPreferences.$inferInsert;
+export type Verification = typeof verifications.$inferSelect;
+export type NewVerifications = typeof verifications.$inferInsert;

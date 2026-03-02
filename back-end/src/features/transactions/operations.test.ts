@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { withTestTransaction } from "@/lib/db/testUtils";
-import * as TransactionOperations from "./operations";
+import * as TransactionOperations from "./services";
 import { generateMockCategory } from "@/test/mocks/category.mock";
 import { generateMockUser } from "@/test/mocks/user.mock";
 import type { AppContext } from "@/lib/db/context";

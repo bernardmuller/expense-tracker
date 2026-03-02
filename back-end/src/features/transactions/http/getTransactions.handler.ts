@@ -2,7 +2,7 @@ import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
 import { parseSearchQuery } from "@/lib/utils/parseSearchQuery";
-import { getTransactions } from "../operations";
+import { getTransactions } from "../services";
 import type { Transaction } from "../types";
 
 export const getTransactionsHandler = async (c: Context) => {

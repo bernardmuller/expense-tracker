@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import { AppResult } from "@/lib/result";
+import { AuthenticationError } from "@/lib/errors/domain";
 import { ResultAsync } from "neverthrow";
-import { InvalidVerificationTokenError } from "@/features/auth/types";
 
 type VerificationTokenPayload = {
   userId: string;
@@ -17,10 +18,7 @@ const getJwtSecret = (): string => {
 
 export const decodeVerificationToken = (
   token: string,
-): ResultAsync<
-  VerificationTokenPayload,
-  InstanceType<typeof InvalidVerificationTokenError>
-> =>
+): AppResult<VerificationTokenPayload, AuthenticationError> =>
   ResultAsync.fromPromise(
     (async () => {
       const secret = getJwtSecret();
@@ -34,5 +32,5 @@ export const decodeVerificationToken = (
 
       return decoded;
     })(),
-    (error) => new InvalidVerificationTokenError(String(error)),
+    (error) => new AuthenticationError(`Verification token decode failed: ${String(error)}`),
   );

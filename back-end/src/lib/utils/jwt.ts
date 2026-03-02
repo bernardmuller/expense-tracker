@@ -1,12 +1,7 @@
 import jwt from "jsonwebtoken";
+import { AppResult } from "@/lib/result";
+import { AuthenticationError } from "@/lib/errors/domain";
 import { ResultAsync } from "neverthrow";
-import {
-  JwtGenerationError,
-  RefreshTokenDecodeError,
-  ExpiredRefreshTokenError,
-  AccessTokenDecodeError,
-  ExpiredAccessTokenError,
-} from "@/features/auth/types";
 
 type TokenPayload = {
   userId: string;
@@ -34,50 +29,46 @@ export const generateAccessToken = (
   userId: string,
   email: string,
   name: string,
-): ResultAsync<string, InstanceType<typeof JwtGenerationError>> =>
+): AppResult<string, AuthenticationError> =>
   ResultAsync.fromPromise(
     (async () => {
       const payload: TokenPayload = { userId, email, name };
       const secret = getJwtSecret();
       return jwt.sign(payload, secret, { expiresIn: "24h" });
     })(),
-    (error) => new JwtGenerationError(String(error)),
+    (error) => new AuthenticationError(`Token generation failed: ${String(error)}`),
   );
 
 export const generateRefreshToken = (
   userId: string,
   email: string,
   name: string,
-): ResultAsync<string, InstanceType<typeof JwtGenerationError>> =>
+): AppResult<string, AuthenticationError> =>
   ResultAsync.fromPromise(
     (async () => {
       const payload: TokenPayload = { userId, email, name };
       const secret = getJwtSecret();
       return jwt.sign(payload, secret, { expiresIn: "7d" });
     })(),
-    (error) => new JwtGenerationError(String(error)),
+    (error) => new AuthenticationError(`Token generation failed: ${String(error)}`),
   );
 
 export const generateVerificationToken = (
   userId: string,
   verificationId: string,
-): ResultAsync<string, InstanceType<typeof JwtGenerationError>> =>
+): AppResult<string, AuthenticationError> =>
   ResultAsync.fromPromise(
     (async () => {
       const payload = { userId, verificationId };
       const secret = getJwtSecret();
       return jwt.sign(payload, secret, { expiresIn: "15m" });
     })(),
-    (error) => new JwtGenerationError(String(error)),
+    (error) => new AuthenticationError(`Token generation failed: ${String(error)}`),
   );
 
 export const decodeRefreshToken = (
   token: string,
-): ResultAsync<
-  TokenPayload,
-  | InstanceType<typeof RefreshTokenDecodeError>
-  | InstanceType<typeof ExpiredRefreshTokenError>
-> =>
+): AppResult<TokenPayload, AuthenticationError> =>
   ResultAsync.fromPromise(
     (async () => {
       const secret = getJwtSecret();
@@ -102,20 +93,16 @@ export const decodeRefreshToken = (
         errorMessage.includes("jwt expired") ||
         errorMessage.includes("TokenExpiredError")
       ) {
-        return new ExpiredRefreshTokenError();
+        return new AuthenticationError("Refresh token has expired");
       }
 
-      return new RefreshTokenDecodeError(errorMessage);
+      return new AuthenticationError(`Token decode failed: ${errorMessage}`);
     },
   );
 
 export const decodeAccessToken = (
   token: string,
-): ResultAsync<
-  TokenPayload,
-  | InstanceType<typeof AccessTokenDecodeError>
-  | InstanceType<typeof ExpiredAccessTokenError>
-> =>
+): AppResult<TokenPayload, AuthenticationError> =>
   ResultAsync.fromPromise(
     (async () => {
       const secret = getJwtSecret();
@@ -140,9 +127,9 @@ export const decodeAccessToken = (
         errorMessage.includes("jwt expired") ||
         errorMessage.includes("TokenExpiredError")
       ) {
-        return new ExpiredAccessTokenError();
+        return new AuthenticationError("Access token has expired");
       }
 
-      return new AccessTokenDecodeError(errorMessage);
+      return new AuthenticationError(`Token decode failed: ${errorMessage}`);
     },
   );

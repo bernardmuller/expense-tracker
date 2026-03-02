@@ -1,0 +1,87 @@
+import type { AppContext } from "@/lib/db/context";
+import * as UserServices from "@/features/users/services";
+import { errAsync } from "neverthrow";
+import type { RegisterVerifyParams, RegisterVerifyResponse } from "../types";
+import { pinoInstance as logger } from "@/lib/http/middleware/logger";
+import { compareOTP } from "@/lib/utils/compareOTP";
+import { decodeVerificationToken } from "@/lib/utils/decodeVerificationToken";
+import { generateAccessToken, generateRefreshToken } from "@/lib/utils/jwt";
+import * as VerificationServices from "@/features/verifications/services";
+import { AppResult } from "@/lib/result";
+import { AuthenticationError } from "@/lib/errors/domain";
+
+export const registerVerify = (
+  params: RegisterVerifyParams & { token: string },
+  ctx: AppContext,
+): AppResult<RegisterVerifyResponse> =>
+  decodeVerificationToken(params.token)
+    .andThen(({ verificationId }) =>
+      VerificationServices.getVerificationById(verificationId, ctx).map(
+        (verification) => ({
+          verification,
+          verificationId,
+        }),
+      ),
+    )
+    .andThen(({ verification, verificationId }) => {
+      const now = new Date();
+      if (verification.expiresAt < now) {
+        return errAsync(new AuthenticationError("Verification has expired"));
+      }
+
+      let userData: { email: string; name: string };
+      try {
+        userData = JSON.parse(verification.identifier);
+      } catch {
+        return errAsync(
+          new AuthenticationError("Invalid verification data"),
+        );
+      }
+
+      return compareOTP(params.otp, verification.value).map((isMatch) => ({
+        isMatch,
+        email: userData.email,
+        name: userData.name,
+        verificationId,
+      }));
+    })
+    .andThen(({ isMatch, email, name, verificationId }) =>
+      isMatch
+        ? UserServices.createUser({ name, email }, ctx).map((user) => ({
+            user,
+            verificationId,
+          }))
+        : errAsync(new AuthenticationError("Invalid OTP")),
+    )
+    .andThen(({ user, verificationId }) =>
+      UserServices.markUserAsVerified(user.id, ctx).map(() => ({
+        user,
+        verificationId,
+      })),
+    )
+    .andThen(({ user, verificationId }) =>
+      generateAccessToken(user.id, user.email, user.name).andThen(
+        (accessToken) =>
+          generateRefreshToken(user.id, user.email, user.name).andThen(
+            (refreshToken) =>
+              VerificationServices.deleteVerification(
+                verificationId,
+                ctx,
+              ).map(() => ({
+                user,
+                accessToken,
+                refreshToken,
+              })),
+          ),
+      ),
+    )
+    .mapErr((error) => {
+      logger.error(
+        {
+          code: error.code,
+          message: error.message,
+        },
+        "Registration verification failed",
+      );
+      return error;
+    });

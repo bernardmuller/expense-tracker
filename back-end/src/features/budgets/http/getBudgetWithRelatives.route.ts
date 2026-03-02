@@ -5,19 +5,22 @@ import { errorResponseSchema } from "@/lib/errors/errorResponseSchema";
 
 const tags = ["Budgets"];
 
-// Schema for a budget with full details
 const budgetWithDetailsSchema = z.object({
   id: z.string(),
   userId: z.string(),
   name: z.string(),
   startAmount: z.string(),
   currentAmount: z.string(),
+  sa_iv: z.string().nullable(),
+  sa_tag: z.string().nullable(),
+  ca_iv: z.string().nullable(),
+  ca_tag: z.string().nullable(),
   isActive: z.boolean(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  deletedAt: z.string().nullable(),
-  startDate: z.string().nullable(),
-  endDate: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date().nullable(),
+  startDate: z.date().nullable(),
+  endDate: z.date().nullable(),
   expenses: z.array(
     z.object({
       id: z.string(),
@@ -25,9 +28,9 @@ const budgetWithDetailsSchema = z.object({
       description: z.string(),
       amount: z.string(),
       categoryId: z.string(),
-      createdAt: z.string(),
-      updatedAt: z.string(),
-      deletedAt: z.string().nullable(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+      deletedAt: z.date().nullable(),
       category: z.object({
         id: z.string(),
         key: z.string(),
@@ -42,9 +45,9 @@ const budgetWithDetailsSchema = z.object({
       budgetId: z.string(),
       categoryId: z.string(),
       allocatedAmount: z.string(),
-      createdAt: z.string(),
-      updatedAt: z.string(),
-      deletedAt: z.string().nullable(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+      deletedAt: z.date().nullable(),
       category: z.object({
         id: z.string(),
         key: z.string(),

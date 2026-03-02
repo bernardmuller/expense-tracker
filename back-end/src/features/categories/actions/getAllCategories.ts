@@ -1,12 +1,8 @@
 import type { AppContext } from "@/lib/db/context";
-import type { ResultAsync } from "neverthrow";
-import type { EntityReadError } from "@/lib/errors/actionErrors";
-import * as CategoryQueries from "../queries";
+import * as CategoryQueries from "../queries/index";
 import type { CategoryWithoutMetadata } from "../types";
+import { AppResult } from "@/lib/result";
 
 export const getAllCategories = (
   ctx: AppContext,
-): ResultAsync<
-  CategoryWithoutMetadata[],
-  InstanceType<typeof EntityReadError>
-> => CategoryQueries.findAll(ctx);
+): AppResult<CategoryWithoutMetadata[]> => CategoryQueries.findAll(ctx);

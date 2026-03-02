@@ -5,10 +5,12 @@ import {
   fromPromise,
   fromThrowable,
   ok,
+  okAsync,
+  errAsync,
   Result,
   ResultAsync,
 } from "neverthrow";
-import { createError } from "../utils/createError";
+import { EncryptionError } from "@/lib/errors/domain";
 
 const ENCRYPTION_KEY = env.ENCRYPTION_KEY;
 const ALGO = "aes-256-gcm";
@@ -16,22 +18,30 @@ const ALGO = "aes-256-gcm";
 const bcryptGenSalt = (rounds: number) =>
   fromPromise(
     bcrypt.genSalt(rounds),
-    () => new EncryptionSaltGenerationError(),
+    () => new EncryptionError("Failed to generate salt"),
   );
 
 const bcryptHash = (string: string, salt: string) =>
-  fromPromise(bcrypt.hash(string, salt), () => new EncryptionHashError());
+  fromPromise(
+    bcrypt.hash(string, salt),
+    () => new EncryptionError("Failed to hash string"),
+  );
 
 const bcryptCompare = (string: string, hash: string) =>
   fromPromise(
     bcrypt.compare(string, hash),
-    () => new EncryptionComparisonError(),
+    () => new EncryptionError("Failed to compare hash"),
   );
 
-export const encrypt = async (value: string) => {
+export const encrypt = (
+  value: string,
+): ResultAsync<
+  { ciphertext: string; iv: string; tag: string },
+  EncryptionError
+> => {
   const iv = crypto.randomBytes(12);
 
-  return createCipherivSafe(
+  const result = createCipherivSafe(
     ALGO,
     Buffer.from(ENCRYPTION_KEY, "hex"),
     iv,
@@ -41,7 +51,7 @@ export const encrypt = async (value: string) => {
         return cipherFinalSafe(cipher, "base64url").andThen((finalPart) => {
           const authTagResult = fromThrowable(
             () => cipher.getAuthTag(),
-            () => new EncryptionCipherFinalError(),
+            () => new EncryptionError("Failed to get auth tag"),
           )();
 
           return authTagResult.map((authTag) => ({
@@ -53,17 +63,26 @@ export const encrypt = async (value: string) => {
       },
     );
   });
+
+  return result.match(
+    (value) => okAsync(value),
+    (error) => errAsync(error),
+  );
 };
 
-export const decrypt = async (ciphertext: string, iv: string, tag: string) => {
-  return createDecipherivSafe(
+export const decrypt = (
+  ciphertext: string,
+  iv: string,
+  tag: string,
+): ResultAsync<string, EncryptionError> => {
+  const result = createDecipherivSafe(
     ALGO,
     Buffer.from(ENCRYPTION_KEY, "hex"),
     Buffer.from(iv, "base64url"),
   ).andThen((decipher) => {
     const setAuthTagResult = fromThrowable(
       () => decipher.setAuthTag(Buffer.from(tag, "base64url")),
-      () => new EncryptionDecipherCreationError(),
+      () => new EncryptionError("Failed to set auth tag"),
     )();
 
     return setAuthTagResult.andThen(() =>
@@ -79,18 +98,23 @@ export const decrypt = async (ciphertext: string, iv: string, tag: string) => {
       }),
     );
   });
+
+  return result.match(
+    (value) => okAsync(value),
+    (error) => errAsync(error),
+  );
 };
 
 const createCipherivSafe = fromThrowable(
   (algo: string, key: Buffer, iv: Buffer) =>
     crypto.createCipheriv(algo, key, iv) as crypto.CipherGCM,
-  () => new EncryptionCipherCreationError(),
+  () => new EncryptionError("Failed to create cipher"),
 );
 
 const createDecipherivSafe = fromThrowable(
   (algo: string, key: Buffer, iv: Buffer) =>
     crypto.createDecipheriv(algo, key, iv) as crypto.DecipherGCM,
-  () => new EncryptionDecipherCreationError(),
+  () => new EncryptionError("Failed to create decipher"),
 );
 
 const cipherUpdateSafe = fromThrowable(
@@ -100,13 +124,13 @@ const cipherUpdateSafe = fromThrowable(
     inputEncoding: crypto.Encoding,
     outputEncoding: crypto.Encoding,
   ) => cipher.update(data, inputEncoding, outputEncoding),
-  () => new EncryptionCipherUpdateError(),
+  () => new EncryptionError("Failed to update cipher"),
 );
 
 const cipherFinalSafe = fromThrowable(
   (cipher: crypto.CipherGCM, outputEncoding: crypto.Encoding) =>
     cipher.final(outputEncoding),
-  () => new EncryptionCipherFinalError(),
+  () => new EncryptionError("Failed to finalize cipher"),
 );
 
 const decipherUpdateSafe = fromThrowable(
@@ -116,104 +140,17 @@ const decipherUpdateSafe = fromThrowable(
     inputEncoding: crypto.Encoding,
     outputEncoding: crypto.Encoding,
   ) => decipher.update(data, inputEncoding, outputEncoding),
-  () => new EncryptionDecipherUpdateError(),
+  () => new EncryptionError("Failed to update decipher"),
 );
 
 const decipherFinalSafe = fromThrowable(
   (decipher: crypto.DecipherGCM, outputEncoding: crypto.Encoding) =>
     decipher.final(outputEncoding),
-  () => new EncryptionDecipherFinalError(),
+  () => new EncryptionError("Failed to finalize decipher"),
 );
 
-export const EncryptionSaltGenerationError = createError(
-  "EncryptionSaltGenerationError",
-  () => "Encryption salt generation error",
-  {
-    code: "ENCRYPTION_SALT_GENERATION_ERROR",
-    error: "Failed to generate salt",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionHashError = createError(
-  "EncryptionHashError",
-  () => "Encryption hash error",
-  {
-    code: "ENCRYPTION_HASH_ERROR",
-    error: "Failed to hash string",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionComparisonError = createError(
-  "EncryptionComparisonError",
-  () => "Encryption comparison error",
-  {
-    code: "ENCRYPTION_COMPARISON_ERROR",
-    error: "Failed to compare hash",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionCipherCreationError = createError(
-  "EncryptionCipherCreationError",
-  () => "Encryption cipher creation error",
-  {
-    code: "ENCRYPTION_CIPHER_CREATION_ERROR",
-    error: "Failed to create cipher",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionCipherUpdateError = createError(
-  "EncryptionCipherUpdateError",
-  () => "Encryption cipher update error",
-  {
-    code: "ENCRYPTION_CIPHER_UPDATE_ERROR",
-    error: "Failed to update cipher",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionCipherFinalError = createError(
-  "EncryptionCipherFinalError",
-  () => "Encryption cipher finalization error",
-  {
-    code: "ENCRYPTION_CIPHER_FINAL_ERROR",
-    error: "Failed to finalize cipher",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionDecipherCreationError = createError(
-  "EncryptionDecipherCreationError",
-  () => "Encryption decipher creation error",
-  {
-    code: "ENCRYPTION_DECIPHER_CREATION_ERROR",
-    error: "Failed to create decipher",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionDecipherUpdateError = createError(
-  "EncryptionDecipherUpdateError",
-  () => "Encryption decipher update error",
-  {
-    code: "ENCRYPTION_DECIPHER_UPDATE_ERROR",
-    error: "Failed to update decipher",
-    statusCode: 500,
-  },
-);
-
-export const EncryptionDecipherFinalError = createError(
-  "EncryptionDecipherFinalError",
-  () => "Encryption decipher finalization error",
-  {
-    code: "ENCRYPTION_DECIPHER_FINAL_ERROR",
-    error: "Failed to finalize decipher",
-    statusCode: 500,
-  },
-);
+// All encryption errors now use the unified EncryptionError class from lib/errors/domain
+// This provides consistent error handling across the application
 
 export const isEncrypted = (
   currentAmount: string,

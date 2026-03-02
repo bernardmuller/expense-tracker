@@ -1,19 +1,16 @@
 import type { Context, Next } from "hono";
 import { decodeAccessToken } from "@/lib/utils/jwt";
-import {
-  MissingAuthorizationHeaderError,
-  InvalidAuthorizationHeaderError,
-} from "@/features/auth/types";
+import { AuthenticationError } from "@/lib/errors/domain";
 
 export const authMiddleware = async (c: Context, next: Next) => {
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader) {
-    const error = new MissingAuthorizationHeaderError();
+    const error = new AuthenticationError("Missing authorization header");
     return c.json(
       {
         code: error.code,
-        error: error.error,
+        error: error.name,
         message: error.message,
       },
       401,
@@ -21,11 +18,13 @@ export const authMiddleware = async (c: Context, next: Next) => {
   }
 
   if (!authHeader.startsWith("Bearer ")) {
-    const error = new InvalidAuthorizationHeaderError();
+    const error = new AuthenticationError(
+      "Invalid authorization header format",
+    );
     return c.json(
       {
         code: error.code,
-        error: error.error,
+        error: error.name,
         message: error.message,
       },
       401,
@@ -35,11 +34,11 @@ export const authMiddleware = async (c: Context, next: Next) => {
   const token = authHeader.substring(7);
 
   if (!token) {
-    const error = new InvalidAuthorizationHeaderError();
+    const error = new AuthenticationError("Missing token");
     return c.json(
       {
         code: error.code,
-        error: error.error,
+        error: error.name,
         message: error.message,
       },
       401,
@@ -57,7 +56,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
       return c.json(
         {
           code: error.code,
-          error: error.error,
+          error: error.name,
           message: error.message,
         },
         401,

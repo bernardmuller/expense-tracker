@@ -1,17 +1,15 @@
 import type { AppContext } from "@/lib/db/context";
 import { budgets } from "@/lib/db/schema";
-import {
-  EntityUpdateError,
-} from "@/lib/errors/actionErrors";
-import { eq } from "drizzle-orm";
-import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import type { Budget } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { AppResult, fromDB, success, failure } from "@/lib/result";
+import { DatabaseError } from "@/lib/errors/domain";
 
 export const updateBudget = (
   budget: Budget,
   ctx: AppContext,
-): ResultAsync<Budget, InstanceType<typeof EntityUpdateError>> =>
-  ResultAsync.fromPromise(
+): AppResult<Budget, DatabaseError> => {
+  return fromDB(
     ctx.db
       .update(budgets)
       .set({
@@ -25,9 +23,9 @@ export const updateBudget = (
       })
       .where(eq(budgets.id, budget.id))
       .returning(),
-    (error) => new EntityUpdateError("Budget", error),
   ).andThen(([updatedBudget]) =>
     updatedBudget
-      ? okAsync(updatedBudget)
-      : errAsync(new EntityUpdateError("Budget")),
+      ? success(updatedBudget)
+      : failure(new DatabaseError("Failed to update budget")),
   );
+};

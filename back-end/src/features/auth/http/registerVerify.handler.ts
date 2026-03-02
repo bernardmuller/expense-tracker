@@ -1,8 +1,8 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { registerVerify } from "../operations";
-import { MissingAuthorizationHeaderError, InvalidAuthorizationHeaderError } from "../types";
+import { registerVerify } from "../services";
+import { AuthenticationError } from "@/lib/errors/domain";
 
 export const registerVerifyHandler = async (c: Context) => {
   const body = await c.req.json<{
@@ -12,19 +12,19 @@ export const registerVerifyHandler = async (c: Context) => {
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader) {
-    const error = new MissingAuthorizationHeaderError();
+    const error = new AuthenticationError("Authentication token missing");
     return mapErrorToResponse(error, c);
   }
 
   if (!authHeader.startsWith("Bearer ")) {
-    const error = new InvalidAuthorizationHeaderError();
+    const error = new AuthenticationError("Invalid authentication token");
     return mapErrorToResponse(error, c);
   }
 
   const token = authHeader.substring(7);
 
   if (!token) {
-    const error = new InvalidAuthorizationHeaderError();
+    const error = new AuthenticationError("Invalid authentication token");
     return mapErrorToResponse(error, c);
   }
 

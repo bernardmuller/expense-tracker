@@ -1,8 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { withTestTransaction } from "@/lib/db/testUtils";
-import * as UserOperations from "./operations";
-import { UserAlreadyOnboardedError, UserAlreadyVerifiedError } from "./types";
-import { UserEmailAlreadyInUseError } from "@/lib/errors/applicationErrors";
+import * as UserOperations from "./services";
+import { AuthenticationError, AuthorizationError } from "@/lib/errors/domain";
 
 describe("User Operations", () => {
   describe("createUser", () => {
@@ -49,7 +48,7 @@ describe("User Operations", () => {
 
         expect(secondResult.isErr()).toBe(true);
         if (secondResult.isErr()) {
-          expect(secondResult.error).toBeInstanceOf(UserEmailAlreadyInUseError);
+          expect(secondResult.error).toBeInstanceOf(AuthorizationError);
         }
       });
     });
@@ -133,9 +132,7 @@ describe("User Operations", () => {
 
         expect(secondOnboardResult.isErr()).toBe(true);
         if (secondOnboardResult.isErr()) {
-          expect(secondOnboardResult.error).toBeInstanceOf(
-            UserAlreadyOnboardedError,
-          );
+          expect(secondOnboardResult.error).toBeInstanceOf(AuthenticationError);
         }
       });
     });
@@ -178,9 +175,7 @@ describe("User Operations", () => {
 
         expect(secondVerifyResult.isErr()).toBe(true);
         if (secondVerifyResult.isErr()) {
-          expect(secondVerifyResult.error).toBeInstanceOf(
-            UserAlreadyVerifiedError,
-          );
+          expect(secondVerifyResult.error).toBeInstanceOf(AuthenticationError);
         }
       });
     });

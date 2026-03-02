@@ -1,12 +1,13 @@
 import bcrypt from "bcrypt";
+import { AppResult, fromDB } from "@/lib/result";
+import { AuthenticationError } from "@/lib/errors/domain";
 import { ResultAsync } from "neverthrow";
-import { OTPCompareError } from "@/features/auth/types";
 
 export const compareOTP = (
   plainOTP: string,
   hashedOTP: string,
-): ResultAsync<boolean, InstanceType<typeof OTPCompareError>> =>
+): AppResult<boolean, AuthenticationError> =>
   ResultAsync.fromPromise(
     bcrypt.compare(plainOTP, hashedOTP),
-    (error) => new OTPCompareError(String(error)),
+    (error) => new AuthenticationError(`OTP comparison failed: ${String(error)}`),
   );

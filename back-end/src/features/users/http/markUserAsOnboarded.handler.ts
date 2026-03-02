@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { markUserAsOnboarded } from "../operations";
+import { markUserAsOnboarded } from "../services";
 
 export const markUserAsOnboardedHandler = async (c: Context) => {
   const userId = c.req.param("id");

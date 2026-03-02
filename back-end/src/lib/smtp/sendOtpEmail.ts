@@ -1,5 +1,6 @@
 import env from "@/env";
-import { EmailSendError } from "@/lib/errors/smtpErrors";
+import { EmailError } from "@/lib/errors/domain";
+import { AppResult } from "@/lib/result";
 import { ResultAsync } from "neverthrow";
 import { Resend, type CreateEmailResponse } from "resend";
 
@@ -9,7 +10,7 @@ export const sendOtpEmail = (
   to: string[],
   subject: string,
   otp: string,
-): ResultAsync<CreateEmailResponse, InstanceType<typeof EmailSendError>> =>
+): AppResult<CreateEmailResponse, EmailError> =>
   ResultAsync.fromPromise(
     resend.emails.send({
       from: env.MAIL_ADDRESS,
@@ -18,5 +19,5 @@ export const sendOtpEmail = (
       html: `<p>Your OTP: ${otp}</p>`,
       replyTo: env.MAIL_ADDRESS,
     }),
-    (error) => new EmailSendError("Failed to send otp email", error),
+    (error) => new EmailError(`Failed to send OTP email: ${String(error)}`),
   );

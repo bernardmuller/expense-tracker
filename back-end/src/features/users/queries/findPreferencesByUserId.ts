@@ -1,29 +1,21 @@
 import type { AppContext } from "@/lib/db/context";
 import { userPreferences } from "@/lib/db/schema";
 import type { UserPreferences } from "@/lib/db/schema";
-import {
-  EntityNotFoundError,
-  EntityReadError,
-} from "@/lib/errors/actionErrors";
 import { eq } from "drizzle-orm";
-import { errAsync, okAsync, ResultAsync } from "neverthrow";
+import { AppResult, fromDB, success, failure } from "@/lib/result";
+import { NotFoundError, DatabaseError } from "@/lib/errors/domain";
 
 export const findPreferencesByUserId = (
   userId: string,
   ctx: AppContext,
-): ResultAsync<
-  UserPreferences,
-  | InstanceType<typeof EntityNotFoundError>
-  | InstanceType<typeof EntityReadError>
-> =>
-  ResultAsync.fromPromise(
+): AppResult<UserPreferences, NotFoundError | DatabaseError> =>
+  fromDB(
     ctx.db
       .select()
       .from(userPreferences)
       .where(eq(userPreferences.userId, userId)),
-    (error) => new EntityReadError("UserPreferences", String(error)),
   ).andThen(([prefs]) =>
     prefs
-      ? okAsync(prefs)
-      : errAsync(new EntityNotFoundError(`UserPreferences: ${userId}`)),
+      ? success(prefs)
+      : failure(new NotFoundError(`UserPreferences: ${userId}`)),
   );

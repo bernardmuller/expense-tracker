@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
-import { createNewBudget } from "../operations/createNewBudget";
+import { createNewBudget } from "../services/createNewBudget";
 
 export const createBudgetHandler = async (c: Context) => {
   const user = c.get("user") as { userId: string };

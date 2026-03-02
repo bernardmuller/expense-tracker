@@ -1,17 +1,17 @@
 import type { AppContext } from "@/lib/db/context";
 import { categories, userCategories } from "@/lib/db/schema";
-import { EntityReadError } from "@/lib/errors/actionErrors";
 import { eq } from "drizzle-orm";
-import { ResultAsync } from "neverthrow";
+import { AppResult, fromDB } from "@/lib/result";
+import { DatabaseError } from "@/lib/errors/domain";
 
 export const getUserCategories = (
   userId: string,
   ctx: AppContext,
-): ResultAsync<
+): AppResult<
   Array<{ id: string; key: string; label: string; icon: string }>,
-  InstanceType<typeof EntityReadError>
+  DatabaseError
 > =>
-  ResultAsync.fromPromise(
+  fromDB(
     ctx.db
       .select({
         id: categories.id,
@@ -22,5 +22,4 @@ export const getUserCategories = (
       .from(userCategories)
       .innerJoin(categories, eq(userCategories.categoryId, categories.id))
       .where(eq(userCategories.userId, userId)),
-    (error) => new EntityReadError("UserCategories", String(error)),
   );
