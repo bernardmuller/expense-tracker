@@ -6,11 +6,11 @@ import type { paths } from '../schema'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 
 export type BudgetDetailSuccess =
-  paths['/budgets/{id}/expenses']['get']['responses']['200']['content']['application/json']
+  paths['/budgets/{id}/with-relatives']['get']['responses']['200']['content']['application/json']
 
 type BudgetDetailError =
-  | paths['/budgets/{id}/expenses']['get']['responses']['404']['content']['application/json']
-  | paths['/budgets/{id}/expenses']['get']['responses']['403']['content']['application/json']
+  | paths['/budgets/{id}/with-relatives']['get']['responses']['404']['content']['application/json']
+  | paths['/budgets/{id}/with-relatives']['get']['responses']['403']['content']['application/json']
 
 export async function fetchBudgetById(
   budgetId: string,
@@ -25,7 +25,7 @@ export async function fetchBudgetById(
   const result = await withAccessToken(
     (ctx) => {
       return toResult(
-        client.GET('/budgets/{id}/expenses', {
+        client.GET('/budgets/{id}/with-relatives', {
           params: {
             path: { id: budgetId },
           },

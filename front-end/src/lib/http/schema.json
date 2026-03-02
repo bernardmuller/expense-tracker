@@ -2289,18 +2289,47 @@
                     "currentAmount": {
                       "type": "string"
                     },
+                    "sa_iv": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "sa_tag": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "ca_iv": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "ca_tag": {
+                      "type": "string",
+                      "nullable": true
+                    },
                     "isActive": {
                       "type": "boolean"
                     },
                     "createdAt": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "date"
                     },
                     "updatedAt": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "date"
                     },
                     "deletedAt": {
                       "type": "string",
-                      "nullable": true
+                      "nullable": true,
+                      "format": "date"
+                    },
+                    "startDate": {
+                      "type": "string",
+                      "nullable": true,
+                      "format": "date"
+                    },
+                    "endDate": {
+                      "type": "string",
+                      "nullable": true,
+                      "format": "date"
                     },
                     "expenses": {
                       "type": "array",
@@ -2323,14 +2352,17 @@
                             "type": "string"
                           },
                           "createdAt": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date"
                           },
                           "updatedAt": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date"
                           },
                           "deletedAt": {
                             "type": "string",
-                            "nullable": true
+                            "nullable": true,
+                            "format": "date"
                           },
                           "category": {
                             "type": "object",
@@ -2387,14 +2419,17 @@
                             "type": "string"
                           },
                           "createdAt": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date"
                           },
                           "updatedAt": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date"
                           },
                           "deletedAt": {
                             "type": "string",
-                            "nullable": true
+                            "nullable": true,
+                            "format": "date"
                           },
                           "category": {
                             "type": "object",
@@ -2474,10 +2509,16 @@
                     "name",
                     "startAmount",
                     "currentAmount",
+                    "sa_iv",
+                    "sa_tag",
+                    "ca_iv",
+                    "ca_tag",
                     "isActive",
                     "createdAt",
                     "updatedAt",
                     "deletedAt",
+                    "startDate",
+                    "endDate",
                     "expenses",
                     "categoryBudgets",
                     "categoryBreakdown"
@@ -2894,6 +2935,382 @@
           },
           "404": {
             "description": "Active budget not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/budgets/{id}/with-relatives": {
+      "get": {
+        "tags": [
+          "Budgets"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Budget with previous and next budget IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "budget": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "startAmount": {
+                          "type": "string"
+                        },
+                        "currentAmount": {
+                          "type": "string"
+                        },
+                        "sa_iv": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "sa_tag": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "ca_iv": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "ca_tag": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "isActive": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "nullable": true,
+                          "format": "date"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "nullable": true,
+                          "format": "date"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "nullable": true,
+                          "format": "date"
+                        },
+                        "expenses": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "budgetId": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "amount": {
+                                "type": "string"
+                              },
+                              "categoryId": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "nullable": true,
+                                "format": "date"
+                              },
+                              "category": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "key": {
+                                    "type": "string"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "key",
+                                  "label",
+                                  "icon"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "budgetId",
+                              "description",
+                              "amount",
+                              "categoryId",
+                              "createdAt",
+                              "updatedAt",
+                              "deletedAt",
+                              "category"
+                            ]
+                          }
+                        },
+                        "categoryBudgets": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "budgetId": {
+                                "type": "string"
+                              },
+                              "categoryId": {
+                                "type": "string"
+                              },
+                              "allocatedAmount": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "nullable": true,
+                                "format": "date"
+                              },
+                              "category": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "key": {
+                                    "type": "string"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "key",
+                                  "label",
+                                  "icon"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "budgetId",
+                              "categoryId",
+                              "allocatedAmount",
+                              "createdAt",
+                              "updatedAt",
+                              "deletedAt",
+                              "category"
+                            ]
+                          }
+                        },
+                        "categoryBreakdown": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "key": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              },
+                              "spent": {
+                                "type": "string"
+                              },
+                              "allocated": {
+                                "type": "string",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "key",
+                              "label",
+                              "icon",
+                              "spent",
+                              "allocated"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "userId",
+                        "name",
+                        "startAmount",
+                        "currentAmount",
+                        "sa_iv",
+                        "sa_tag",
+                        "ca_iv",
+                        "ca_tag",
+                        "isActive",
+                        "createdAt",
+                        "updatedAt",
+                        "deletedAt",
+                        "startDate",
+                        "endDate",
+                        "expenses",
+                        "categoryBudgets",
+                        "categoryBreakdown"
+                      ]
+                    },
+                    "previous": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "next": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "budget",
+                    "previous",
+                    "next"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Budget not found",
             "content": {
               "application/json": {
                 "schema": {

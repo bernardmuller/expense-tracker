@@ -1330,18 +1330,32 @@ export interface paths {
                             name: string;
                             startAmount: string;
                             currentAmount: string;
+                            sa_iv: string | null;
+                            sa_tag: string | null;
+                            ca_iv: string | null;
+                            ca_tag: string | null;
                             isActive: boolean;
+                            /** Format: date */
                             createdAt: string;
+                            /** Format: date */
                             updatedAt: string;
+                            /** Format: date */
                             deletedAt: string | null;
+                            /** Format: date */
+                            startDate: string | null;
+                            /** Format: date */
+                            endDate: string | null;
                             expenses: {
                                 id: string;
                                 budgetId: string;
                                 description: string;
                                 amount: string;
                                 categoryId: string;
+                                /** Format: date */
                                 createdAt: string;
+                                /** Format: date */
                                 updatedAt: string;
+                                /** Format: date */
                                 deletedAt: string | null;
                                 category: {
                                     id: string;
@@ -1355,8 +1369,11 @@ export interface paths {
                                 budgetId: string;
                                 categoryId: string;
                                 allocatedAmount: string;
+                                /** Format: date */
                                 createdAt: string;
+                                /** Format: date */
                                 updatedAt: string;
+                                /** Format: date */
                                 deletedAt: string | null;
                                 category: {
                                     id: string;
@@ -1582,6 +1599,152 @@ export interface paths {
                     };
                 };
                 /** @description Active budget not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/budgets/{id}/with-relatives": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Budget with previous and next budget IDs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            budget: {
+                                id: string;
+                                userId: string;
+                                name: string;
+                                startAmount: string;
+                                currentAmount: string;
+                                sa_iv: string | null;
+                                sa_tag: string | null;
+                                ca_iv: string | null;
+                                ca_tag: string | null;
+                                isActive: boolean;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                                /** Format: date */
+                                deletedAt: string | null;
+                                /** Format: date */
+                                startDate: string | null;
+                                /** Format: date */
+                                endDate: string | null;
+                                expenses: {
+                                    id: string;
+                                    budgetId: string;
+                                    description: string;
+                                    amount: string;
+                                    categoryId: string;
+                                    /** Format: date */
+                                    createdAt: string;
+                                    /** Format: date */
+                                    updatedAt: string;
+                                    /** Format: date */
+                                    deletedAt: string | null;
+                                    category: {
+                                        id: string;
+                                        key: string;
+                                        label: string;
+                                        icon: string;
+                                    };
+                                }[];
+                                categoryBudgets: {
+                                    id: string;
+                                    budgetId: string;
+                                    categoryId: string;
+                                    allocatedAmount: string;
+                                    /** Format: date */
+                                    createdAt: string;
+                                    /** Format: date */
+                                    updatedAt: string;
+                                    /** Format: date */
+                                    deletedAt: string | null;
+                                    category: {
+                                        id: string;
+                                        key: string;
+                                        label: string;
+                                        icon: string;
+                                    };
+                                }[];
+                                categoryBreakdown: {
+                                    id: string;
+                                    key: string;
+                                    label: string;
+                                    icon: string;
+                                    spent: string;
+                                    allocated: string | null;
+                                }[];
+                            };
+                            previous: string | null;
+                            next: string | null;
+                        };
+                    };
+                };
+                /** @description Access denied */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Budget not found */
                 404: {
                     headers: {
                         [name: string]: unknown;

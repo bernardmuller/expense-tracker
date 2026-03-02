@@ -8,13 +8,12 @@ import {
   Link,
   useRouter,
 } from '@tanstack/react-router'
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 import { BudgetDetailSkeleton } from './budgets.skeleton'
 import PlannedBudgetBreakdownItem from '@/components/budget-breakdowns/PlannedBudgetBreakdownItem'
 import OverBudgetBreakdownItem from '@/components/budget-breakdowns/OverBudgetBreakdownItem'
 import UnplannedBudgetBreakdownItem from '@/components/budget-breakdowns/UnplannedBudgetBreakdownItem'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { CurrentBudgetWithoutAction } from '@/components/current-budget/CurrentBudget'
 import { Button } from '@/components/ui/button'
 import { usePrivacy } from '@/lib/hooks/usePrivacy'
@@ -24,6 +23,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { NavigationLink } from '@/components/navigation-link/NavigationLink'
 import { Plus, ReceiptText } from 'lucide-react'
 import { Layout } from '@/components/layouts/Layout'
+import { BudgetNavigation } from '@/components/budget-navigation'
 
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
@@ -50,12 +50,12 @@ function BudgetDetail() {
   const { data: budget } = useSuspenseQuery(getBudgetByIdQueryOptions(id))
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
 
-  const currentAmount = Math.floor(parseFloat(budget.currentAmount))
-  const startAmount = Math.floor(parseFloat(budget.startAmount))
+  const currentAmount = Math.floor(parseFloat(budget.budget.currentAmount))
+  const startAmount = Math.floor(parseFloat(budget.budget.startAmount))
   const spentAmount = startAmount - currentAmount
   const spentPercentage = (spentAmount / startAmount) * 100
 
-  const categories = budget.categoryBreakdown
+  const categories = budget.budget.categoryBreakdown
 
   const handleCategoryClick = (categoryLabel: string) => {
     navigate({
@@ -72,7 +72,7 @@ function BudgetDetail() {
           <AppHeader.Back onBack={() => navigate({ to: '/dashboard' })} />
         </AppHeader.Left>
         <AppHeader.Center>
-          <AppHeader.Title>Budget</AppHeader.Title>
+          <div />
         </AppHeader.Center>
         <AppHeader.Right>
           <ThemeToggle />
@@ -88,8 +88,13 @@ function BudgetDetail() {
         </AppHeader.Right>
       </AppHeader.Root>
       <Layout>
+        <BudgetNavigation.Root>
+          <BudgetNavigation.Left></BudgetNavigation.Left>
+          <BudgetNavigation.Center></BudgetNavigation.Center>
+          <BudgetNavigation.Right></BudgetNavigation.Right>
+        </BudgetNavigation.Root>
         <CurrentBudgetWithoutAction
-          budgetName={budget.name}
+          budgetName={budget.budget.name}
           currentAmount={getPrivacyDisplayValue(
             formatCurrency(currentAmount, 'za'),
             isPrivacyEnabled,
@@ -108,7 +113,7 @@ function BudgetDetail() {
         <Card className="p-0">
           <NavigationLink
             icon={<ReceiptText className="h-5 w-5 text-white" />}
-            title={`${budget.expenses.length} Expenses`}
+            title={`${budget.budget.expenses.length} Expenses`}
             subtitle={`Across ${categories.length} categories`}
             linkProvider={({ children }) => (
               <Link to="/budgets/$id/expenses" params={{ id }}>
