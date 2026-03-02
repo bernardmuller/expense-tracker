@@ -1,14 +1,14 @@
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createFileRoute,
   useNavigate,
   Link,
   useRouter,
 } from '@tanstack/react-router'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { BudgetDetailSkeleton } from './budgets.skeleton'
 import PlannedBudgetBreakdownItem from '@/components/budget-breakdowns/PlannedBudgetBreakdownItem'
 import OverBudgetBreakdownItem from '@/components/budget-breakdowns/OverBudgetBreakdownItem'
@@ -23,7 +23,6 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { NavigationLink } from '@/components/navigation-link/NavigationLink'
 import { Plus, ReceiptText } from 'lucide-react'
 import { Layout } from '@/components/layouts/Layout'
-import { BudgetNavigation } from '@/components/budget-navigation'
 
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
@@ -47,6 +46,7 @@ function BudgetDetail() {
   const { id } = Route.useParams()
   const router = useRouter()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data: budget } = useSuspenseQuery(getBudgetByIdQueryOptions(id))
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
 
@@ -57,12 +57,33 @@ function BudgetDetail() {
 
   const categories = budget.budget.categoryBreakdown
 
+  useEffect(() => {
+    if (budget.previous) {
+      queryClient.prefetchQuery(getBudgetByIdQueryOptions(budget.previous))
+    }
+    if (budget.next) {
+      queryClient.prefetchQuery(getBudgetByIdQueryOptions(budget.next))
+    }
+  }, [budget.previous, budget.next, queryClient])
+
   const handleCategoryClick = (categoryLabel: string) => {
     navigate({
       to: '/budgets/$id/expenses',
       params: { id },
       search: { category: categoryLabel },
     })
+  }
+
+  const handlePreviousBudget = () => {
+    if (budget.previous) {
+      navigate({ to: '/budgets/$id', params: { id: budget.previous } })
+    }
+  }
+
+  const handleNextBudget = () => {
+    if (budget.next) {
+      navigate({ to: '/budgets/$id', params: { id: budget.next } })
+    }
   }
 
   return (
@@ -88,11 +109,13 @@ function BudgetDetail() {
         </AppHeader.Right>
       </AppHeader.Root>
       <Layout>
-        <BudgetNavigation.Root>
-          <BudgetNavigation.Left></BudgetNavigation.Left>
-          <BudgetNavigation.Center></BudgetNavigation.Center>
-          <BudgetNavigation.Right></BudgetNavigation.Right>
-        </BudgetNavigation.Root>
+        <AppHeader.NavigationControls
+          title={budget.budget.name}
+          onPrevious={handlePreviousBudget}
+          onNext={handleNextBudget}
+          hasPrevious={!!budget.previous}
+          hasNext={!!budget.next}
+        />
         <CurrentBudgetWithoutAction
           budgetName={budget.budget.name}
           currentAmount={getPrivacyDisplayValue(

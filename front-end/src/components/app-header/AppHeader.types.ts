@@ -52,3 +52,12 @@ export type TitleProps = {
   children: ReactNode
   className?: string
 }
+
+export type NavigationControlsProps = {
+  title: string
+  onPrevious?: () => void
+  onNext?: () => void
+  hasPrevious: boolean
+  hasNext: boolean
+  className?: string
+}

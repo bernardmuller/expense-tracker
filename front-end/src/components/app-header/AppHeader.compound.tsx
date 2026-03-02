@@ -10,8 +10,10 @@ import type {
   CenterProps,
   RightProps,
   TitleProps,
+  NavigationControlsProps,
 } from './AppHeader.types'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export function Root({ children, className }: RootProps) {
   return (
@@ -110,5 +112,42 @@ export function Title({ children, className }: TitleProps) {
     >
       {children}
     </h1>
+  )
+}
+
+export function NavigationControls({
+  title,
+  onPrevious,
+  onNext,
+  hasPrevious,
+  hasNext,
+  className,
+}: NavigationControlsProps) {
+  return (
+    <div className={cn('flex items-center justify-center gap-2', className)}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onPrevious}
+        disabled={!hasPrevious}
+        className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+      >
+        <ChevronLeft className="h-5 w-5" />
+        <span className="sr-only">Previous budget</span>
+      </Button>
+      <h1 className="font-grotesk text-foreground text-base font-semibold">
+        {title}
+      </h1>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onNext}
+        disabled={!hasNext}
+        className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+      >
+        <ChevronRight className="h-5 w-5" />
+        <span className="sr-only">Next budget</span>
+      </Button>
+    </div>
   )
 }
