@@ -69,23 +69,6 @@ export const WithActiveBar: Story = {
   }),
 }
 
-export const InteractiveActiveState: Story = {
-  render: () => {
-    const [activeIndex, setActiveIndex] = useState<number | undefined>(
-      undefined,
-    )
-
-    return (
-      <CategoryChart
-        {...generateCategoryChartProps()}
-        activeIndex={activeIndex}
-        onBarClick={(index) => setActiveIndex(index)}
-        onBlur={() => setActiveIndex(undefined)}
-      />
-    )
-  },
-}
-
 export const EmptyData: Story = {
   args: generateCategoryChartProps({
     data: [],

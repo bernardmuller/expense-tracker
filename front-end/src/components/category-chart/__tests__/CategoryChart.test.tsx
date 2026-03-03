@@ -90,7 +90,6 @@ describe('CategoryChart', () => {
       )
       expect(responsiveContainer).toBeInTheDocument()
     })
-
   })
 
   describe('Type Safety', () => {
@@ -140,6 +139,7 @@ describe('CategoryChart', () => {
       const { container } = render(<CategoryChart {...props} />)
       const card = container.querySelector('.card')
       if (card) {
+        // @ts-ignore: we can click
         card.click()
         expect(handleBlur).toHaveBeenCalled()
       }

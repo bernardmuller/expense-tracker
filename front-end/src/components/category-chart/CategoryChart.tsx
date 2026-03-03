@@ -51,7 +51,7 @@ function ChartLegend({ items }: ChartLegendProps) {
               style={{ backgroundColor: item.color }}
             >
               <div
-                className="absolute -top-[2px] left-1/2 h-1.5 w-1.5
+                className="absolute -top-0.5 left-1/2 h-1.5 w-1.5
                   -translate-x-1/2 rounded-full"
                 style={{ backgroundColor: item.color }}
               />
