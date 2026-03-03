@@ -8,44 +8,11 @@ import {
   CartesianGrid,
 } from 'recharts'
 import type { LabelProps } from 'recharts'
-import { format } from 'date-fns'
 import { Card, CardContent, CardHeader } from '../ui/card'
 import { useState } from 'react'
+import type { CategoryChartProps } from './CategoryChart.types'
 
 const PRIMARY_COLOR = '#3fa681'
-
-const data = [
-  {
-    month: format(new Date('2026-03-01'), 'MMM'),
-    spent: '478',
-    budget: '200',
-  },
-  {
-    month: format(new Date('2026-02-01'), 'MMM'),
-    spent: '129',
-    budget: '300',
-  },
-  {
-    month: format(new Date('2026-01-01'), 'MMM'),
-    spent: '0',
-    budget: '200',
-  },
-  {
-    month: format(new Date('2025-12-01'), 'MMM'),
-    spent: '527',
-    budget: '400',
-  },
-  {
-    month: format(new Date('2025-11-01'), 'MMM'),
-    spent: '300',
-    budget: '600',
-  },
-  {
-    month: format(new Date('2025-10-01'), 'MMM'),
-    spent: '789',
-    budget: '500',
-  },
-].reverse()
 
 const renderCustomizedLabel = (props: LabelProps) => {
   const { x, y, width, value } = props
@@ -69,15 +36,17 @@ const renderCustomizedLabel = (props: LabelProps) => {
   )
 }
 
-export default function CategoryChart() {
+export default function CategoryChart({
+  data,
+  categoryName,
+  description = 'Monthly spent vs Allocated Budget',
+}: CategoryChartProps) {
   const [hovered, setHovered] = useState<number | null>(null)
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-lg leading-4">CategoryName</h2>
-        <p className="text-muted-foreground text-xs">
-          Monthly spent vs Allocated Budget
-        </p>
+        <h2 className="text-lg leading-4">{categoryName}</h2>
+        <p className="text-muted-foreground text-xs">{description}</p>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={200}>

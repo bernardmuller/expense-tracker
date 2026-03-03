@@ -1,6 +1,11 @@
-// import { generateOverBudgetBreakdownItemProps } from '../__mocks__/budgetBreakDownItemProps.mock'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import CategoryChart from '../CategoryChart'
+import {
+  generateCategoryChartProps,
+  generateUnderBudgetCategoryChartProps,
+  generateOverBudgetCategoryChartProps,
+  generateMixedBudgetCategoryChartProps,
+} from '../__mocks__/categoryChartProps.mock'
 
 const meta = {
   title: 'Category Chart',
@@ -10,6 +15,33 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-// const overBudgetBreakdownItemProps = generateOverBudgetBreakdownItemProps()
+export const Default: Story = {
+  args: generateCategoryChartProps(),
+}
 
-export const Default: Story = {}
+export const UnderBudget: Story = {
+  args: generateUnderBudgetCategoryChartProps(),
+}
+
+export const OverBudget: Story = {
+  args: generateOverBudgetCategoryChartProps(),
+}
+
+export const Mixed: Story = {
+  args: generateMixedBudgetCategoryChartProps(),
+}
+
+export const CustomCategory: Story = {
+  args: generateCategoryChartProps({
+    categoryName: 'Dining Out',
+    description: 'Restaurant and takeout expenses',
+  }),
+}
+
+export const EmptyData: Story = {
+  args: generateCategoryChartProps({
+    data: [],
+    categoryName: 'New Category',
+    description: 'No data available yet',
+  }),
+}
