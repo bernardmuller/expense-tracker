@@ -35,18 +35,21 @@ export const categoryChartPropsUnderBudget: CategoryChartProps = {
   data: underBudgetData,
   categoryName: 'Groceries',
   description: 'Monthly spent vs Allocated Budget',
+  currency: 'R',
 }
 
 export const categoryChartPropsOverBudget: CategoryChartProps = {
   data: overBudgetData,
   categoryName: 'Entertainment',
   description: 'Monthly spent vs Allocated Budget',
+  currency: 'R',
 }
 
 export const categoryChartPropsMixed: CategoryChartProps = {
   data: mixedBudgetData,
   categoryName: 'Transportation',
   description: 'Monthly spent vs Allocated Budget',
+  currency: 'R',
 }
 
 export const categoryChartPropsDefault: CategoryChartProps =

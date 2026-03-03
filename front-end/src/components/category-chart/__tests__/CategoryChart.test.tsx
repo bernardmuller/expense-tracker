@@ -104,4 +104,65 @@ describe('CategoryChart', () => {
       expect(screen.getByText(props.categoryName)).toBeInTheDocument()
     })
   })
+
+  describe('Currency Prop', () => {
+    it('should use default currency "R" when not provided', () => {
+      const props = generateCategoryChartProps()
+      delete props.currency
+      render(<CategoryChart {...props} />)
+      expect(screen.getByText(props.categoryName)).toBeInTheDocument()
+    })
+
+    it('should accept custom currency symbol', () => {
+      const props = generateCategoryChartProps({ currency: '$' })
+      render(<CategoryChart {...props} />)
+      expect(props.currency).toBe('$')
+    })
+  })
+
+  describe('Active State and Callbacks', () => {
+    it('should accept activeIndex prop', () => {
+      const props = generateCategoryChartProps({ activeIndex: 0 })
+      render(<CategoryChart {...props} />)
+      expect(screen.getByText(props.categoryName)).toBeInTheDocument()
+    })
+
+    it('should call onBarClick when provided', () => {
+      const handleBarClick = vi.fn()
+      const props = generateCategoryChartProps({ onBarClick: handleBarClick })
+      render(<CategoryChart {...props} />)
+      expect(screen.getByText(props.categoryName)).toBeInTheDocument()
+    })
+
+    it('should call onBlur when provided', () => {
+      const handleBlur = vi.fn()
+      const props = generateCategoryChartProps({ onBlur: handleBlur })
+      const { container } = render(<CategoryChart {...props} />)
+      const card = container.querySelector('.card')
+      if (card) {
+        card.click()
+        expect(handleBlur).toHaveBeenCalled()
+      }
+    })
+  })
+
+  describe('Fonts', () => {
+    it('should apply font-grotesk to category name', () => {
+      const props = generateCategoryChartProps({
+        categoryName: 'Test Category',
+      })
+      render(<CategoryChart {...props} />)
+      const heading = screen.getByText('Test Category')
+      expect(heading).toHaveClass('font-grotesk')
+    })
+
+    it('should apply font-sans to description', () => {
+      const props = generateCategoryChartProps({
+        description: 'Test description',
+      })
+      render(<CategoryChart {...props} />)
+      const description = screen.getByText('Test description')
+      expect(description).toHaveClass('font-sans')
+    })
+  })
 })

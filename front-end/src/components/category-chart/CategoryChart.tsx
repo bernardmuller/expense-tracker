@@ -9,12 +9,64 @@ import {
 } from 'recharts'
 import type { LabelProps } from 'recharts'
 import { Card, CardContent, CardHeader } from '../ui/card'
-import { useState } from 'react'
 import type { CategoryChartProps } from './CategoryChart.types'
 
-const PRIMARY_COLOR = '#3fa681'
+const CHART_COLORS = {
+  underBudget: '#3fa681',
+  underBudgetGradientStart: '#5ee8b0',
+  underBudgetGradientEnd: '#2cb87d',
+  overBudget: '#ff6b6b',
+  overBudgetGradientStart: '#ff6b6b',
+  overBudgetGradientEnd: '#c73b3b',
+  budgetLine: '#f5c842',
+  gridStroke: '#444',
+  axisText: '#555',
+  labelText: '#fff',
+  legendText: '#666',
+} as const
 
-const renderCustomizedLabel = (props: LabelProps) => {
+type LegendItem = {
+  color: string
+  label: string
+  shape: 'bar' | 'line'
+}
+
+type ChartLegendProps = {
+  items: Array<LegendItem>
+}
+
+function ChartLegend({ items }: ChartLegendProps) {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {items.map((item) => (
+        <div key={item.label} className="flex items-center gap-2">
+          {item.shape === 'bar' ? (
+            <div
+              className="h-3 w-3 rounded opacity-85"
+              style={{ backgroundColor: item.color }}
+            />
+          ) : (
+            <div
+              className="relative h-0.5 w-[18px] rounded"
+              style={{ backgroundColor: item.color }}
+            >
+              <div
+                className="absolute -top-[2px] left-1/2 h-1.5 w-1.5
+                  -translate-x-1/2 rounded-full"
+                style={{ backgroundColor: item.color }}
+              />
+            </div>
+          )}
+          <span className="font-sans text-[11px] tracking-wider text-[#666]">
+            {item.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const createLabelRenderer = (currency: string) => (props: LabelProps) => {
   const { x, y, width, value } = props
 
   if (x == null || y == null || width == null) {
@@ -26,12 +78,12 @@ const renderCustomizedLabel = (props: LabelProps) => {
     <text
       x={Number(x) + Number(width) / 2}
       y={Number(y) - radius}
-      fill="#fff"
+      fill={CHART_COLORS.labelText}
       textAnchor="middle"
       dominantBaseline="middle"
-      className="text-xs"
+      className="font-sans text-xs"
     >
-      R {String(value)}
+      {currency} {String(value)}
     </text>
   )
 }
@@ -40,34 +92,60 @@ export default function CategoryChart({
   data,
   categoryName,
   description = 'Monthly spent vs Allocated Budget',
+  currency = 'R',
+  activeIndex,
+  onBarClick,
+  onBlur,
 }: CategoryChartProps) {
-  const [hovered, setHovered] = useState<number | null>(null)
+  const legendItems: Array<LegendItem> = [
+    { color: CHART_COLORS.underBudget, label: 'Under Budget', shape: 'bar' },
+    { color: CHART_COLORS.overBudget, label: 'Over Budget', shape: 'bar' },
+    { color: CHART_COLORS.budgetLine, label: 'Budget Line', shape: 'line' },
+  ]
+
   return (
-    <Card>
+    <Card onClick={onBlur}>
       <CardHeader>
-        <h2 className="text-lg leading-4">{categoryName}</h2>
-        <p className="text-muted-foreground text-xs">{description}</p>
+        <h2 className="font-grotesk text-lg leading-4 font-semibold">
+          {categoryName}
+        </h2>
+        <p className="text-muted-foreground font-sans text-xs">{description}</p>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={200}>
           <ComposedChart
             data={data}
             margin={{ top: 20, right: 0, bottom: 10, left: 0 }}
-            onMouseLeave={() => setHovered(null)}
           >
             <defs>
               <linearGradient id="underGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#5ee8b0" stopOpacity={0.9} />
-                <stop offset="100%" stopColor="#2cb87d" stopOpacity={0.7} />
+                <stop
+                  offset="0%"
+                  stopColor={CHART_COLORS.underBudgetGradientStart}
+                  stopOpacity={0.9}
+                />
+                <stop
+                  offset="100%"
+                  stopColor={CHART_COLORS.underBudgetGradientEnd}
+                  stopOpacity={0.7}
+                />
               </linearGradient>
               <linearGradient id="overGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ff6b6b" stopOpacity={0.9} />
-                <stop offset="100%" stopColor="#c73b3b" stopOpacity={0.7} />
+                <stop
+                  offset="0%"
+                  stopColor={CHART_COLORS.overBudgetGradientStart}
+                  stopOpacity={0.9}
+                />
+                <stop
+                  offset="100%"
+                  stopColor={CHART_COLORS.overBudgetGradientEnd}
+                  stopOpacity={0.7}
+                />
               </linearGradient>
             </defs>
             <CartesianGrid
               vertical={false}
-              stroke="#444"
+              stroke={CHART_COLORS.gridStroke}
               strokeDasharray="3 3"
             />
             <XAxis
@@ -75,9 +153,9 @@ export default function CategoryChart({
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: '#555',
+                fill: CHART_COLORS.axisText,
                 fontSize: 11,
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "'DM Sans', sans-serif",
                 letterSpacing: '0.05em',
               }}
               dy={10}
@@ -86,13 +164,16 @@ export default function CategoryChart({
               dataKey="spent"
               radius={[5, 5, 0, 0]}
               maxBarSize={44}
-              onMouseEnter={(_, idx) => setHovered(idx)}
               minPointSize={5}
+              onClick={(_, index) => {
+                onBarClick?.(index)
+              }}
               shape={(props) => {
                 const { x, y, width, height, index } = props
                 const entry = data[index]
                 const over = entry.spent > entry.budget
-                const opacity = hovered === null || hovered === index ? 1 : 0.45
+                const opacity =
+                  activeIndex === undefined || activeIndex === index ? 1 : 0.45
                 const radius = 5
                 return (
                   <rect
@@ -104,76 +185,32 @@ export default function CategoryChart({
                     ry={radius}
                     fill={over ? 'url(#overGrad)' : 'url(#underGrad)'}
                     opacity={opacity}
+                    style={{ cursor: onBarClick ? 'pointer' : 'default' }}
                   />
                 )
               }}
             >
-              <LabelList dataKey="spent" content={renderCustomizedLabel} />
+              <LabelList
+                dataKey="spent"
+                content={createLabelRenderer(currency)}
+              />
             </Bar>
             <Line
               type="monotone"
               dataKey="budget"
-              stroke="#f5c842"
+              stroke={CHART_COLORS.budgetLine}
               strokeWidth={2}
-              dot={{ r: 3, fill: '#f5c842', strokeWidth: 0 }}
-              activeDot={{ r: 5, fill: '#f5c842', strokeWidth: 0 }}
+              dot={{ r: 3, fill: CHART_COLORS.budgetLine, strokeWidth: 0 }}
+              activeDot={{
+                r: 5,
+                fill: CHART_COLORS.budgetLine,
+                strokeWidth: 0,
+              }}
               strokeDasharray="0"
             />
           </ComposedChart>
         </ResponsiveContainer>
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { color: PRIMARY_COLOR, label: 'Under Budget', shape: 'bar' },
-            { color: '#ff6b6b', label: 'Over Budget', shape: 'bar' },
-            { color: '#f5c842', label: 'Budget Line', shape: 'line' },
-          ].map((l) => (
-            <div key={l.label} className="flex items-center gap-2">
-              {l.shape === 'bar' ? (
-                <div
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '3px',
-                    background: l.color,
-                    opacity: 0.85,
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: '18px',
-                    height: '2px',
-                    background: l.color,
-                    borderRadius: '2px',
-                    position: 'relative',
-                  }}
-                >
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '-3px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      background: l.color,
-                    }}
-                  />
-                </div>
-              )}
-              <span
-                style={{
-                  color: '#666',
-                  fontSize: '11px',
-                  letterSpacing: '0.08em',
-                }}
-              >
-                {l.label}
-              </span>
-            </div>
-          ))}
-        </div>
+        <ChartLegend items={legendItems} />
       </CardContent>
     </Card>
   )
