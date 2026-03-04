@@ -233,7 +233,10 @@ function Dashboard() {
                         expenseId: expense.id,
                       })
                     }}
-                    createdAt={format(expense.createdAt, 'dd MMMM yyyy')}
+                    createdAt={format(
+                      new Date(expense.createdAt),
+                      'dd MMMM yyyy',
+                    )}
                   />
                 </Swiper>
               ))}
@@ -255,7 +258,10 @@ function Dashboard() {
                       expenseId: expense.id,
                     })
                   }}
-                  createdAt={format(expense.createdAt, 'dd MMMM yyyy')}
+                  createdAt={format(
+                    new Date(expense.createdAt),
+                    'dd MMMM yyyy',
+                  )}
                 />
               ))}
             </div>

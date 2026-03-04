@@ -98,6 +98,8 @@ export function useCreateTransaction(budgetId: string) {
         description: newTransaction.description,
         amount: newTransaction.amount.toString(),
         category: category,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         deletedAt: null,
         budgetId: budgetId,
         categoryId: newTransaction.categoryId,
@@ -129,22 +131,27 @@ export function useCreateTransaction(budgetId: string) {
         (old: BudgetDetailSuccess | undefined) => {
           if (!old) return old
 
-          const currentAmount = parseFloat(old.currentAmount)
+          const currentAmount = parseFloat(old.budget.currentAmount)
           const newAmount = currentAmount - newTransaction.amount
 
-          const updatedExpenses = [optimisticTransaction, ...old.expenses]
+          const updatedExpenses = [
+            optimisticTransaction,
+            ...old.budget.expenses,
+          ]
 
-          const updatedCategoryBreakdown = old.categoryBreakdown.map((cat) => {
-            if (cat.id === newTransaction.categoryId) {
-              const currentSpent = parseFloat(cat.spent)
-              const newSpent = currentSpent + newTransaction.amount
-              return {
-                ...cat,
-                spent: newSpent.toString(),
+          const updatedCategoryBreakdown = old.budget.categoryBreakdown.map(
+            (cat) => {
+              if (cat.id === newTransaction.categoryId) {
+                const currentSpent = parseFloat(cat.spent)
+                const newSpent = currentSpent + newTransaction.amount
+                return {
+                  ...cat,
+                  spent: newSpent.toString(),
+                }
               }
-            }
-            return cat
-          })
+              return cat
+            },
+          )
 
           return {
             ...old,

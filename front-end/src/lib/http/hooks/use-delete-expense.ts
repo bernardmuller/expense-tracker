@@ -7,6 +7,7 @@ import { withAccessToken } from '../with-token'
 import type { Result } from 'neverthrow'
 import type { paths } from '../schema'
 import type { ActiveBudgetSuccess } from '../queries/budget'
+import type { BudgetExpensesSuccess } from '../queries/budgets/getBudgetExpenses'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 
 type DeleteExpenseParams = {
@@ -21,6 +22,13 @@ type DeleteExpenseSuccess =
 type DeleteExpenseError =
   | paths['/users/{userId}/budgets/{budgetId}/expenses/{expenseId}']['delete']['responses']['404']['content']['application/json']
   | paths['/users/{userId}/budgets/{budgetId}/expenses/{expenseId}']['delete']['responses']['500']['content']['application/json']
+
+type MutationContext = {
+  previousActiveBudget: ActiveBudgetSuccess | undefined
+  previousExpenses: BudgetExpensesSuccess | undefined
+  activeQueryKey: readonly string[]
+  expensesQueryKey: readonly string[]
+}
 
 export function useDeleteExpense() {
   const queryClient = useQueryClient()
@@ -68,7 +76,7 @@ export function useDeleteExpense() {
         (error) => err(error),
       )
     },
-    onMutate: async (params) => {
+    onMutate: async (params): Promise<MutationContext | undefined> => {
       const userIdResult = getUserIdFromAccessToken()
       if (userIdResult.isErr()) return
 
@@ -79,8 +87,8 @@ export function useDeleteExpense() {
       await queryClient.cancelQueries({ queryKey: activeQueryKey })
       await queryClient.cancelQueries({ queryKey: expensesQueryKey })
 
-      const previousActiveBudget = queryClient.getQueryData(activeQueryKey)
-      const previousExpenses = queryClient.getQueryData(expensesQueryKey)
+      const previousActiveBudget = queryClient.getQueryData<ActiveBudgetSuccess>(activeQueryKey)
+      const previousExpenses = queryClient.getQueryData<BudgetExpensesSuccess>(expensesQueryKey)
 
       queryClient.setQueryData(
         activeQueryKey,
@@ -106,7 +114,7 @@ export function useDeleteExpense() {
 
       queryClient.setQueryData(
         expensesQueryKey,
-        (old: typeof previousExpenses) => {
+        (old: BudgetExpensesSuccess | undefined) => {
           if (!old) return old
 
           const deletedExpense = old.expenses.find(
@@ -114,13 +122,16 @@ export function useDeleteExpense() {
           )
           if (!deletedExpense) return old
 
-          const currentAmount = parseFloat(old.currentAmount)
+          const currentAmount = parseFloat(old.budget.currentAmount)
           const expenseAmount = parseFloat(deletedExpense.amount)
           const newAmount = currentAmount + expenseAmount
 
           return {
             ...old,
-            currentAmount: newAmount.toString(),
+            budget: {
+              ...old.budget,
+              currentAmount: newAmount.toString(),
+            },
             expenses: old.expenses.filter((e) => e.id !== params.expenseId),
           }
         },
@@ -133,7 +144,7 @@ export function useDeleteExpense() {
         expensesQueryKey,
       }
     },
-    onError: (_err, _params, context) => {
+    onError: (_err, _params, context: MutationContext | undefined) => {
       if (context?.previousActiveBudget) {
         queryClient.setQueryData(
           context.activeQueryKey,
