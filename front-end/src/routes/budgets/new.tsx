@@ -180,7 +180,7 @@ function NewBudgetPage() {
   const suggestedStartAmount = currentAmount + previousStartAmount
 
   const initialCategories = categories
-    ? budgetDetail.categoryBudgets
+    ? budgetDetail.budget.categoryBudgets
         .map((cb) => {
           const category = categories.categories.find(
             (c) => c.id === cb.categoryId,
