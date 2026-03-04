@@ -1,6 +1,6 @@
 import { errAsync } from "neverthrow";
 import type { AppContext } from "@/lib/db/context";
-import * as UserRepo from "../repositories";
+import * as UserRepo from "../repositories/index";
 import * as UserDomain from "../actions";
 import type { CreateUserParams, User } from "../types/index";
 import { AppResult } from "@/lib/result";

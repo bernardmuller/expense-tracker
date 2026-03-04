@@ -9,6 +9,8 @@ import { generateAccessToken, generateRefreshToken } from "@/lib/utils/jwt";
 import * as VerificationServices from "@/features/verifications/services";
 import { AppResult } from "@/lib/result";
 import { AuthenticationError } from "@/lib/errors/domain";
+import * as UserQueries from "@/features/users/queries/index";
+import * as UserDomain from "@/features/users/actions";
 
 export const registerVerify = (
   params: RegisterVerifyParams & { token: string },
@@ -33,9 +35,7 @@ export const registerVerify = (
       try {
         userData = JSON.parse(verification.identifier);
       } catch {
-        return errAsync(
-          new AuthenticationError("Invalid verification data"),
-        );
+        return errAsync(new AuthenticationError("Invalid verification data"));
       }
 
       return compareOTP(params.otp, verification.value).map((isMatch) => ({
@@ -47,10 +47,12 @@ export const registerVerify = (
     })
     .andThen(({ isMatch, email, name, verificationId }) =>
       isMatch
-        ? UserServices.createUser({ name, email }, ctx).map((user) => ({
-            user,
-            verificationId,
-          }))
+        ? UserDomain.createUser({ email, name })
+            .asyncAndThen((user) => UserQueries.create(user, ctx))
+            .map((user) => ({
+              user,
+              verificationId,
+            }))
         : errAsync(new AuthenticationError("Invalid OTP")),
     )
     .andThen(({ user, verificationId }) =>
@@ -64,14 +66,13 @@ export const registerVerify = (
         (accessToken) =>
           generateRefreshToken(user.id, user.email, user.name).andThen(
             (refreshToken) =>
-              VerificationServices.deleteVerification(
-                verificationId,
-                ctx,
-              ).map(() => ({
-                user,
-                accessToken,
-                refreshToken,
-              })),
+              VerificationServices.deleteVerification(verificationId, ctx).map(
+                () => ({
+                  user,
+                  accessToken,
+                  refreshToken,
+                }),
+              ),
           ),
       ),
     )
