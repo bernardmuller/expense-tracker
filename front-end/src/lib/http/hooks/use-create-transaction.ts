@@ -98,8 +98,6 @@ export function useCreateTransaction(budgetId: string) {
         description: newTransaction.description,
         amount: newTransaction.amount.toString(),
         category: category,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
         deletedAt: null,
         budgetId: budgetId,
         categoryId: newTransaction.categoryId,
