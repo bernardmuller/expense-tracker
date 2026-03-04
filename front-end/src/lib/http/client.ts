@@ -54,9 +54,9 @@ export const refreshTokens = (): Promise<{
     )
 
 client.use({
-  async onRequest({ request }) {
+  onRequest({ request }) {
     const token = getAccessToken()
-    if (token && !request.headers.get('authorization')) {
+    if (!request.headers.get('authorization')) {
       request.headers.set('authorization', `Bearer ${token}`)
     }
     return request
