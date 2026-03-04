@@ -10,6 +10,7 @@ import {
 import type { LabelProps } from 'recharts'
 import { Card, CardContent, CardHeader } from '../ui/card'
 import type { CategoryChartProps } from './CategoryChart.types'
+import { useState } from 'react'
 
 const CHART_COLORS = {
   underBudget: '#3fa681',
@@ -97,6 +98,8 @@ export default function CategoryChart({
   onBarClick,
   onBlur,
 }: CategoryChartProps) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
   const legendItems: Array<LegendItem> = [
     { color: CHART_COLORS.underBudget, label: 'Under Budget', shape: 'bar' },
     { color: CHART_COLORS.overBudget, label: 'Over Budget', shape: 'bar' },
@@ -165,15 +168,24 @@ export default function CategoryChart({
               radius={[5, 5, 0, 0]}
               maxBarSize={44}
               minPointSize={5}
+              onMouseEnter={(_, index) => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
               onClick={(_, index) => {
                 onBarClick?.(index)
               }}
               shape={(props) => {
-                const { x, y, width, height, index } = props
-                const entry = data[index]
-                const over = entry.spent > entry.budget
+                const { x, y, width, height, index, payload } = props
+                const over = Number(payload.spent) > Number(payload.budget)
+
                 const opacity =
-                  activeIndex === undefined || activeIndex === index ? 1 : 0.45
+                  hoveredIndex !== null
+                    ? hoveredIndex === index
+                      ? 1
+                      : 0.45
+                    : activeIndex === undefined || activeIndex === index
+                      ? 1
+                      : 0.45
+
                 const radius = 5
                 return (
                   <rect

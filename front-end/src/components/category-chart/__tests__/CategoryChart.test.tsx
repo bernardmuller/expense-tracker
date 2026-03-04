@@ -165,4 +165,22 @@ describe('CategoryChart', () => {
       expect(description).toHaveClass('font-sans')
     })
   })
+
+  describe('Hover Behavior', () => {
+    it('should render with hover handlers', () => {
+      const props = generateCategoryChartProps()
+      render(<CategoryChart {...props} />)
+      // Component renders without errors even with hover handlers
+      expect(screen.getByText(props.categoryName)).toBeInTheDocument()
+    })
+
+    it('should work with both hover and active state', () => {
+      const props = generateCategoryChartProps({
+        activeIndex: 1,
+      })
+      render(<CategoryChart {...props} />)
+      // Component handles both hover (internal) and active (prop) state
+      expect(screen.getByText(props.categoryName)).toBeInTheDocument()
+    })
+  })
 })

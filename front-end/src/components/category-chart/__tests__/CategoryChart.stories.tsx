@@ -7,6 +7,7 @@ import {
   generateOverBudgetCategoryChartProps,
   generateMixedBudgetCategoryChartProps,
 } from '../__mocks__/categoryChartProps.mock'
+import { format } from 'date-fns'
 
 const meta = {
   title: 'Category Chart',
@@ -67,6 +68,75 @@ export const WithActiveBar: Story = {
   args: generateCategoryChartProps({
     activeIndex: 2,
   }),
+}
+
+export const SparseData: Story = {
+  args: generateCategoryChartProps({
+    data: [
+      {
+        month: format(new Date('2025-10-01'), 'MMM'),
+        spent: undefined,
+        budget: undefined,
+      },
+      {
+        month: format(new Date('2025-11-01'), 'MMM'),
+        spent: undefined,
+        budget: undefined,
+      },
+      {
+        month: format(new Date('2025-12-01'), 'MMM'),
+        spent: undefined,
+        budget: undefined,
+      },
+      // { month: format(new Date('2026-01-01'), 'MMM'), spent: 67, budget: 175 },
+      // { month: format(new Date('2026-02-01'), 'MMM'), spent: 199, budget: 300 },
+      // { month: format(new Date('2026-03-01'), 'MMM'), spent: 478, budget: 350 },
+      { month: format(new Date('2026-01-01'), 'MMM'), spent: 67, budget: 175 },
+      { month: format(new Date('2026-02-01'), 'MMM'), spent: 199, budget: 300 },
+      { month: format(new Date('2026-03-01'), 'MMM'), spent: 478, budget: 350 },
+    ],
+    categoryName: 'New Category',
+  }),
+}
+
+export const InteractiveHoverAndActive: Story = {
+  // @ts-ignore: it works
+  args: {},
+  render: () => {
+    const [activeIndex, setActiveIndex] = useState<number | undefined>(
+      undefined,
+    )
+
+    return (
+      <div className="space-y-4">
+        <div className="rounded border p-4">
+          <p className="mb-2 font-sans text-sm text-gray-600">
+            <strong>Try this:</strong>
+          </p>
+          <ul
+            className="list-inside list-disc space-y-1 font-sans text-xs
+              text-gray-500"
+          >
+            <li>Hover over any bar to preview (temporary highlight)</li>
+            <li>Click a bar to set it as active (persists)</li>
+            <li>Hover other bars while one is active - hover takes priority</li>
+            <li>Click outside to clear active state</li>
+          </ul>
+          {activeIndex !== undefined && (
+            <p className="mt-2 font-sans text-xs font-semibold text-blue-600">
+              Active bar index: {activeIndex}
+            </p>
+          )}
+        </div>
+        <CategoryChart
+          {...generateCategoryChartProps()}
+          activeIndex={activeIndex}
+          onBarClick={(index) => setActiveIndex(index)}
+          onBlur={() => setActiveIndex(undefined)}
+        />
+      </div>
+    )
+  },
 }
 
 export const EmptyData: Story = {

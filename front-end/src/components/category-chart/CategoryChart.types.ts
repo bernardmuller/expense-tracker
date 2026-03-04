@@ -1,11 +1,11 @@
 export type MonthlyChartData = {
   month: string
-  spent: number
-  budget: number
+  spent?: number
+  budget?: number
 }
 
 export type CategoryChartProps = {
-  data: MonthlyChartData[]
+  data: Array<MonthlyChartData>
   categoryName: string
   description?: string
   currency?: string
