@@ -23,7 +23,6 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { NavigationLink } from '@/components/navigation-link/NavigationLink'
 import { Plus, ReceiptText } from 'lucide-react'
 import { Layout } from '@/components/layouts/Layout'
-import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
@@ -67,11 +66,10 @@ function BudgetDetail() {
     }
   }, [budget.previous, budget.next, queryClient])
 
-  const handleCategoryClick = (categoryLabel: string) => {
+  const handleCategoryClick = (categoryId: string) => {
     navigate({
-      to: '/budgets/$id/expenses',
-      params: { id },
-      search: { category: categoryLabel },
+      to: '/categories/$id',
+      params: { id: categoryId },
     })
   }
 
@@ -179,7 +177,7 @@ function BudgetDetail() {
                             name={category.label}
                             icon={category.icon}
                             spentAmount={formatCurrency(spent, 'za')}
-                            onClick={() => handleCategoryClick(category.label)}
+                            onClick={() => handleCategoryClick(category.id)}
                           />
                         )
                       }
@@ -190,7 +188,7 @@ function BudgetDetail() {
                             icon={category.icon}
                             plannedAmount={formatCurrency(allocated, 'za')}
                             spentAmount={formatCurrency(spent, 'za')}
-                            onClick={() => handleCategoryClick(category.label)}
+                            onClick={() => handleCategoryClick(category.id)}
                           />
                         )
                       }
@@ -204,7 +202,7 @@ function BudgetDetail() {
                           percentage={percentage}
                           plannedAmount={formatCurrency(allocated!, 'za')}
                           spentAmount={formatCurrency(spent, 'za')}
-                          onClick={() => handleCategoryClick(category.label)}
+                          onClick={() => handleCategoryClick(category.id)}
                         />
                       )
                     })}

@@ -1,11 +1,19 @@
 {
   "openapi": "3.0.0",
-  "info": { "version": "1.0.0", "title": "Budget API" },
-  "components": { "schemas": {}, "parameters": {} },
+  "info": {
+    "version": "1.0.0",
+    "title": "Budget API"
+  },
+  "components": {
+    "schemas": {},
+    "parameters": {}
+  },
   "paths": {
     "/": {
       "get": {
-        "tags": ["Index"],
+        "tags": [
+          "Index"
+        ],
         "responses": {
           "200": {
             "description": "Budget API Index",
@@ -13,9 +21,17 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "message": { "type": "string" } },
-                  "required": ["message"],
-                  "example": { "message": "Budget API" }
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "example": {
+                    "message": "Budget API"
+                  }
                 }
               }
             }
@@ -25,7 +41,9 @@
     },
     "/auth/register/request": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "description": "Request registration with email and name",
           "required": true,
@@ -34,10 +52,17 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "email": { "type": "string" }
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
                 },
-                "required": ["name", "email"]
+                "required": [
+                  "name",
+                  "email"
+                ]
               }
             }
           }
@@ -49,8 +74,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "token": { "type": "string" } },
-                  "required": ["token"]
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "token"
+                  ]
                 }
               }
             }
@@ -62,11 +93,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -78,11 +119,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -92,8 +143,14 @@
     },
     "/auth/register/verify": {
       "post": {
-        "tags": ["Auth"],
-        "security": [{ "Bearer": [] }],
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -114,8 +171,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": { "otp": { "type": "string" } },
-                "required": ["otp"]
+                "properties": {
+                  "otp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "otp"
+                ]
               }
             }
           }
@@ -131,14 +194,34 @@
                     "user": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string", "format": "uuid" },
-                        "name": { "type": "string" },
-                        "email": { "type": "string" },
-                        "emailVerified": { "type": "boolean" },
-                        "image": { "type": "string", "nullable": true },
-                        "onboarded": { "type": "boolean" },
-                        "createdAt": { "type": "string", "format": "date" },
-                        "updatedAt": { "type": "string", "format": "date" }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "emailVerified": {
+                          "type": "boolean"
+                        },
+                        "image": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "onboarded": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date"
+                        }
                       },
                       "required": [
                         "id",
@@ -151,10 +234,18 @@
                         "updatedAt"
                       ]
                     },
-                    "accessToken": { "type": "string" },
-                    "refreshToken": { "type": "string" }
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["user", "accessToken", "refreshToken"]
+                  "required": [
+                    "user",
+                    "accessToken",
+                    "refreshToken"
+                  ]
                 }
               }
             }
@@ -166,11 +257,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -182,11 +283,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -198,11 +309,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -212,7 +333,9 @@
     },
     "/auth/login/request": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "description": "Request magic link login with email",
           "required": true,
@@ -220,8 +343,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": { "email": { "type": "string" } },
-                "required": ["email"]
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -233,8 +362,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "token": { "type": "string" } },
-                  "required": ["token"]
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "token"
+                  ]
                 }
               }
             }
@@ -246,11 +381,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -262,11 +407,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -276,8 +431,14 @@
     },
     "/auth/login/verify": {
       "post": {
-        "tags": ["Auth"],
-        "security": [{ "Bearer": [] }],
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -298,8 +459,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": { "otp": { "type": "string" } },
-                "required": ["otp"]
+                "properties": {
+                  "otp": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "otp"
+                ]
               }
             }
           }
@@ -312,10 +479,17 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "accessToken": { "type": "string" },
-                    "refreshToken": { "type": "string" }
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["accessToken", "refreshToken"]
+                  "required": [
+                    "accessToken",
+                    "refreshToken"
+                  ]
                 }
               }
             }
@@ -327,11 +501,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -343,11 +527,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -359,11 +553,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -373,8 +577,14 @@
     },
     "/auth/refresh": {
       "post": {
-        "tags": ["Auth"],
-        "security": [{ "Bearer": [] }],
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -396,10 +606,17 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "accessToken": { "type": "string" },
-                    "refreshToken": { "type": "string" }
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "refreshToken": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["accessToken", "refreshToken"]
+                  "required": [
+                    "accessToken",
+                    "refreshToken"
+                  ]
                 }
               }
             }
@@ -411,11 +628,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -427,11 +654,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -443,11 +680,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -457,7 +704,9 @@
     },
     "/users": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "Returns a list of users",
@@ -468,14 +717,34 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "id": { "type": "string", "format": "uuid" },
-                      "name": { "type": "string" },
-                      "email": { "type": "string" },
-                      "emailVerified": { "type": "boolean" },
-                      "image": { "type": "string", "nullable": true },
-                      "onboarded": { "type": "boolean" },
-                      "createdAt": { "type": "string", "format": "date" },
-                      "updatedAt": { "type": "string", "format": "date" }
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "emailVerified": {
+                        "type": "boolean"
+                      },
+                      "image": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "onboarded": {
+                        "type": "boolean"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date"
+                      }
                     },
                     "required": [
                       "id",
@@ -499,11 +768,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -511,7 +790,9 @@
         }
       },
       "post": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "description": "User creation data",
           "content": {
@@ -519,10 +800,17 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "email": { "type": "string" }
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
                 },
-                "required": ["name", "email"]
+                "required": [
+                  "name",
+                  "email"
+                ]
               }
             }
           }
@@ -535,14 +823,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -565,11 +873,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -581,11 +899,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -595,10 +923,15 @@
     },
     "/users/{id}": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -612,14 +945,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -642,11 +995,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -658,11 +1021,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -670,10 +1043,15 @@
         }
       },
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -686,14 +1064,34 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "id": { "type": "string", "format": "uuid" },
-                  "name": { "type": "string" },
-                  "email": { "type": "string" },
-                  "emailVerified": { "type": "boolean" },
-                  "image": { "type": "string", "nullable": true },
-                  "onboarded": { "type": "boolean" },
-                  "createdAt": { "type": "string", "format": "date" },
-                  "updatedAt": { "type": "string", "format": "date" }
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "emailVerified": {
+                    "type": "boolean"
+                  },
+                  "image": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "onboarded": {
+                    "type": "boolean"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date"
+                  }
                 }
               }
             }
@@ -707,14 +1105,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -737,11 +1155,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -753,11 +1181,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -767,10 +1205,15 @@
     },
     "/users/{id}/onboard": {
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -784,14 +1227,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -814,11 +1277,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -830,11 +1303,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -842,10 +1325,15 @@
         }
       },
       "post": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -858,7 +1346,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "minLength": 1, "maxLength": 50 },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50
+                  },
                   "startAmount": {
                     "type": "number",
                     "minimum": 0,
@@ -876,25 +1368,46 @@
                   },
                   "budgetFrequency": {
                     "type": "string",
-                    "enum": ["weekly", "bi-weekly", "monthly", "custom"]
+                    "enum": [
+                      "weekly",
+                      "bi-weekly",
+                      "monthly",
+                      "custom"
+                    ]
                   },
-                  "budgetStartDay": { "type": "number" },
-                  "customDuration": { "type": "number" },
+                  "budgetStartDay": {
+                    "type": "number"
+                  },
+                  "customDuration": {
+                    "type": "number"
+                  },
                   "categories": {
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string", "format": "uuid" },
-                        "icon": { "type": "string" },
-                        "label": { "type": "string" },
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "icon": {
+                          "type": "string"
+                        },
+                        "label": {
+                          "type": "string"
+                        },
                         "amount": {
                           "type": "number",
                           "minimum": 0,
                           "exclusiveMinimum": true
                         }
                       },
-                      "required": ["id", "icon", "label", "amount"]
+                      "required": [
+                        "id",
+                        "icon",
+                        "label",
+                        "amount"
+                      ]
                     },
                     "minItems": 1
                   }
@@ -920,14 +1433,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -950,11 +1483,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -966,11 +1509,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -980,10 +1533,15 @@
     },
     "/users/{id}/budgets": {
       "post": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -996,34 +1554,58 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "minLength": 1, "maxLength": 50 },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50
+                  },
                   "startAmount": {
                     "type": "number",
                     "minimum": 0,
                     "exclusiveMinimum": true
                   },
-                  "startDate": { "type": "string" },
-                  "endDate": { "type": "string" },
+                  "startDate": {
+                    "type": "string"
+                  },
+                  "endDate": {
+                    "type": "string"
+                  },
                   "categories": {
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string", "format": "uuid" },
-                        "icon": { "type": "string" },
-                        "label": { "type": "string" },
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "icon": {
+                          "type": "string"
+                        },
+                        "label": {
+                          "type": "string"
+                        },
                         "amount": {
                           "type": "number",
                           "minimum": 0,
                           "exclusiveMinimum": true
                         }
                       },
-                      "required": ["id", "icon", "label", "amount"]
+                      "required": [
+                        "id",
+                        "icon",
+                        "label",
+                        "amount"
+                      ]
                     },
                     "minItems": 1
                   }
                 },
-                "required": ["name", "startAmount", "categories"]
+                "required": [
+                  "name",
+                  "startAmount",
+                  "categories"
+                ]
               }
             }
           }
@@ -1036,15 +1618,36 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "userId": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "startAmount": { "type": "string" },
-                    "currentAmount": { "type": "string" },
-                    "isActive": { "type": "boolean" },
-                    "createdAt": { "type": "string" },
-                    "updatedAt": { "type": "string" },
-                    "deletedAt": { "type": "string", "nullable": true }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "startAmount": {
+                      "type": "string"
+                    },
+                    "currentAmount": {
+                      "type": "string"
+                    },
+                    "isActive": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "deletedAt": {
+                      "type": "string",
+                      "nullable": true
+                    }
                   },
                   "required": [
                     "id",
@@ -1068,11 +1671,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1084,11 +1697,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1098,10 +1721,15 @@
     },
     "/users/{id}/verify": {
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1115,14 +1743,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "email": { "type": "string" },
-                    "emailVerified": { "type": "boolean" },
-                    "image": { "type": "string", "nullable": true },
-                    "onboarded": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" }
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "emailVerified": {
+                      "type": "boolean"
+                    },
+                    "image": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "onboarded": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    }
                   },
                   "required": [
                     "id",
@@ -1145,11 +1793,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1161,11 +1819,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1175,10 +1843,15 @@
     },
     "/users/{id}/setup-status": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1191,8 +1864,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "isFullySetup": { "type": "boolean" } },
-                  "required": ["isFullySetup"]
+                  "properties": {
+                    "isFullySetup": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "isFullySetup"
+                  ]
                 }
               }
             }
@@ -1204,11 +1883,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1220,11 +1909,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1234,10 +1933,15 @@
     },
     "/users/{id}/preferences": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1251,15 +1955,30 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "budgetStartDate": { "type": "number", "nullable": true },
+                    "budgetStartDate": {
+                      "type": "number",
+                      "nullable": true
+                    },
                     "frequency": {
                       "type": "string",
                       "nullable": true,
-                      "enum": ["weekly", "bi-weekly", "monthly", "custom"]
+                      "enum": [
+                        "weekly",
+                        "bi-weekly",
+                        "monthly",
+                        "custom"
+                      ]
                     },
-                    "customDuration": { "type": "number", "nullable": true }
+                    "customDuration": {
+                      "type": "number",
+                      "nullable": true
+                    }
                   },
-                  "required": ["budgetStartDate", "frequency", "customDuration"]
+                  "required": [
+                    "budgetStartDate",
+                    "frequency",
+                    "customDuration"
+                  ]
                 }
               }
             }
@@ -1271,11 +1990,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1287,11 +2016,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1299,10 +2038,15 @@
         }
       },
       "patch": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1315,12 +2059,21 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "budgetStartDate": { "type": "number" },
+                  "budgetStartDate": {
+                    "type": "number"
+                  },
                   "frequency": {
                     "type": "string",
-                    "enum": ["weekly", "bi-weekly", "monthly", "custom"]
+                    "enum": [
+                      "weekly",
+                      "bi-weekly",
+                      "monthly",
+                      "custom"
+                    ]
                   },
-                  "customDuration": { "type": "number" }
+                  "customDuration": {
+                    "type": "number"
+                  }
                 }
               }
             }
@@ -1334,15 +2087,30 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "budgetStartDate": { "type": "number", "nullable": true },
+                    "budgetStartDate": {
+                      "type": "number",
+                      "nullable": true
+                    },
                     "frequency": {
                       "type": "string",
                       "nullable": true,
-                      "enum": ["weekly", "bi-weekly", "monthly", "custom"]
+                      "enum": [
+                        "weekly",
+                        "bi-weekly",
+                        "monthly",
+                        "custom"
+                      ]
                     },
-                    "customDuration": { "type": "number", "nullable": true }
+                    "customDuration": {
+                      "type": "number",
+                      "nullable": true
+                    }
                   },
-                  "required": ["budgetStartDate", "frequency", "customDuration"]
+                  "required": [
+                    "budgetStartDate",
+                    "frequency",
+                    "customDuration"
+                  ]
                 }
               }
             }
@@ -1354,11 +2122,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1370,11 +2148,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1384,10 +2172,15 @@
     },
     "/users/{id}/categories": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1403,12 +2196,26 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "id": { "type": "string", "format": "uuid" },
-                      "key": { "type": "string" },
-                      "label": { "type": "string" },
-                      "icon": { "type": "string" }
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "key": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      }
                     },
-                    "required": ["id", "key", "label", "icon"]
+                    "required": [
+                      "id",
+                      "key",
+                      "label",
+                      "icon"
+                    ]
                   }
                 }
               }
@@ -1421,11 +2228,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1435,10 +2252,15 @@
     },
     "/budgets/{id}/expenses": {
       "get": {
-        "tags": ["Budgets"],
+        "tags": [
+          "Budgets"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1452,18 +2274,48 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string" },
-                    "userId": { "type": "string" },
-                    "name": { "type": "string" },
-                    "startAmount": { "type": "string" },
-                    "currentAmount": { "type": "string" },
-                    "sa_iv": { "type": "string", "nullable": true },
-                    "sa_tag": { "type": "string", "nullable": true },
-                    "ca_iv": { "type": "string", "nullable": true },
-                    "ca_tag": { "type": "string", "nullable": true },
-                    "isActive": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" },
+                    "id": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "startAmount": {
+                      "type": "string"
+                    },
+                    "currentAmount": {
+                      "type": "string"
+                    },
+                    "sa_iv": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "sa_tag": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "ca_iv": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "ca_tag": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "isActive": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
                     "deletedAt": {
                       "type": "string",
                       "nullable": true,
@@ -1484,13 +2336,29 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string" },
-                          "budgetId": { "type": "string" },
-                          "description": { "type": "string" },
-                          "amount": { "type": "string" },
-                          "categoryId": { "type": "string" },
-                          "createdAt": { "type": "string", "format": "date" },
-                          "updatedAt": { "type": "string", "format": "date" },
+                          "id": {
+                            "type": "string"
+                          },
+                          "budgetId": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "string"
+                          },
+                          "categoryId": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
                           "deletedAt": {
                             "type": "string",
                             "nullable": true,
@@ -1499,12 +2367,25 @@
                           "category": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string" },
-                              "key": { "type": "string" },
-                              "label": { "type": "string" },
-                              "icon": { "type": "string" }
+                              "id": {
+                                "type": "string"
+                              },
+                              "key": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              }
                             },
-                            "required": ["id", "key", "label", "icon"]
+                            "required": [
+                              "id",
+                              "key",
+                              "label",
+                              "icon"
+                            ]
                           }
                         },
                         "required": [
@@ -1525,12 +2406,26 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string" },
-                          "budgetId": { "type": "string" },
-                          "categoryId": { "type": "string" },
-                          "allocatedAmount": { "type": "string" },
-                          "createdAt": { "type": "string", "format": "date" },
-                          "updatedAt": { "type": "string", "format": "date" },
+                          "id": {
+                            "type": "string"
+                          },
+                          "budgetId": {
+                            "type": "string"
+                          },
+                          "categoryId": {
+                            "type": "string"
+                          },
+                          "allocatedAmount": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
                           "deletedAt": {
                             "type": "string",
                             "nullable": true,
@@ -1539,12 +2434,25 @@
                           "category": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string" },
-                              "key": { "type": "string" },
-                              "label": { "type": "string" },
-                              "icon": { "type": "string" }
+                              "id": {
+                                "type": "string"
+                              },
+                              "key": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              }
                             },
-                            "required": ["id", "key", "label", "icon"]
+                            "required": [
+                              "id",
+                              "key",
+                              "label",
+                              "icon"
+                            ]
                           }
                         },
                         "required": [
@@ -1564,12 +2472,25 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string" },
-                          "key": { "type": "string" },
-                          "label": { "type": "string" },
-                          "icon": { "type": "string" },
-                          "spent": { "type": "string" },
-                          "allocated": { "type": "string", "nullable": true }
+                          "id": {
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "spent": {
+                            "type": "string"
+                          },
+                          "allocated": {
+                            "type": "string",
+                            "nullable": true
+                          }
                         },
                         "required": [
                           "id",
@@ -1613,11 +2534,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1629,11 +2560,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1645,11 +2586,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1659,7 +2610,9 @@
     },
     "/budgets": {
       "get": {
-        "tags": ["Budgets"],
+        "tags": [
+          "Budgets"
+        ],
         "responses": {
           "200": {
             "description": "Active budget with expenses",
@@ -1673,16 +2626,43 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string", "format": "uuid" },
-                          "userId": { "type": "string", "format": "uuid" },
-                          "name": { "type": "string", "maxLength": 255 },
-                          "startAmount": { "type": "string" },
-                          "currentAmount": { "type": "string" },
-                          "sa_iv": { "type": "string", "nullable": true },
-                          "sa_tag": { "type": "string", "nullable": true },
-                          "ca_iv": { "type": "string", "nullable": true },
-                          "ca_tag": { "type": "string", "nullable": true },
-                          "isActive": { "type": "boolean" },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string",
+                            "maxLength": 255
+                          },
+                          "startAmount": {
+                            "type": "string"
+                          },
+                          "currentAmount": {
+                            "type": "string"
+                          },
+                          "sa_iv": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "sa_tag": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "ca_iv": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "ca_tag": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "isActive": {
+                            "type": "boolean"
+                          },
                           "startDate": {
                             "type": "string",
                             "nullable": true,
@@ -1693,8 +2673,14 @@
                             "nullable": true,
                             "format": "date"
                           },
-                          "createdAt": { "type": "string", "format": "date" },
-                          "updatedAt": { "type": "string", "format": "date" },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
                           "deletedAt": {
                             "type": "string",
                             "nullable": true,
@@ -1720,9 +2706,14 @@
                         ]
                       }
                     },
-                    "count": { "type": "number" }
+                    "count": {
+                      "type": "number"
+                    }
                   },
-                  "required": ["budgets", "count"]
+                  "required": [
+                    "budgets",
+                    "count"
+                  ]
                 }
               }
             }
@@ -1734,11 +2725,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1750,11 +2751,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1764,10 +2775,15 @@
     },
     "/users/{id}/budgets/active": {
       "get": {
-        "tags": ["Budgets"],
+        "tags": [
+          "Budgets"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1781,14 +2797,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "userId": { "type": "string", "format": "uuid" },
-                    "name": { "type": "string" },
-                    "startAmount": { "type": "string" },
-                    "currentAmount": { "type": "string" },
-                    "isActive": { "type": "boolean" },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "startAmount": {
+                      "type": "string"
+                    },
+                    "currentAmount": {
+                      "type": "string"
+                    },
+                    "isActive": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
                     "deletedAt": {
                       "type": "string",
                       "nullable": true,
@@ -1809,13 +2845,32 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string", "format": "uuid" },
-                          "budgetId": { "type": "string", "format": "uuid" },
-                          "description": { "type": "string" },
-                          "amount": { "type": "string" },
-                          "categoryId": { "type": "string", "format": "uuid" },
-                          "createdAt": { "type": "string", "format": "date" },
-                          "updatedAt": { "type": "string", "format": "date" },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "budgetId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "string"
+                          },
+                          "categoryId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
                           "deletedAt": {
                             "type": "string",
                             "nullable": true,
@@ -1824,12 +2879,26 @@
                           "category": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string", "format": "uuid" },
-                              "key": { "type": "string" },
-                              "label": { "type": "string" },
-                              "icon": { "type": "string" }
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "key": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              }
                             },
-                            "required": ["id", "key", "label", "icon"]
+                            "required": [
+                              "id",
+                              "key",
+                              "label",
+                              "icon"
+                            ]
                           }
                         },
                         "required": [
@@ -1871,11 +2940,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1887,11 +2966,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -1901,10 +2990,15 @@
     },
     "/budgets/{id}/with-relatives": {
       "get": {
-        "tags": ["Budgets"],
+        "tags": [
+          "Budgets"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -1921,18 +3015,48 @@
                     "budget": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string" },
-                        "userId": { "type": "string" },
-                        "name": { "type": "string" },
-                        "startAmount": { "type": "string" },
-                        "currentAmount": { "type": "string" },
-                        "sa_iv": { "type": "string", "nullable": true },
-                        "sa_tag": { "type": "string", "nullable": true },
-                        "ca_iv": { "type": "string", "nullable": true },
-                        "ca_tag": { "type": "string", "nullable": true },
-                        "isActive": { "type": "boolean" },
-                        "createdAt": { "type": "string", "format": "date" },
-                        "updatedAt": { "type": "string", "format": "date" },
+                        "id": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "startAmount": {
+                          "type": "string"
+                        },
+                        "currentAmount": {
+                          "type": "string"
+                        },
+                        "sa_iv": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "sa_tag": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "ca_iv": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "ca_tag": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "isActive": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date"
+                        },
                         "deletedAt": {
                           "type": "string",
                           "nullable": true,
@@ -1953,11 +3077,21 @@
                           "items": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string" },
-                              "budgetId": { "type": "string" },
-                              "description": { "type": "string" },
-                              "amount": { "type": "string" },
-                              "categoryId": { "type": "string" },
+                              "id": {
+                                "type": "string"
+                              },
+                              "budgetId": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "amount": {
+                                "type": "string"
+                              },
+                              "categoryId": {
+                                "type": "string"
+                              },
                               "createdAt": {
                                 "type": "string",
                                 "format": "date"
@@ -1974,12 +3108,25 @@
                               "category": {
                                 "type": "object",
                                 "properties": {
-                                  "id": { "type": "string" },
-                                  "key": { "type": "string" },
-                                  "label": { "type": "string" },
-                                  "icon": { "type": "string" }
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "key": {
+                                    "type": "string"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
                                 },
-                                "required": ["id", "key", "label", "icon"]
+                                "required": [
+                                  "id",
+                                  "key",
+                                  "label",
+                                  "icon"
+                                ]
                               }
                             },
                             "required": [
@@ -2000,10 +3147,18 @@
                           "items": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string" },
-                              "budgetId": { "type": "string" },
-                              "categoryId": { "type": "string" },
-                              "allocatedAmount": { "type": "string" },
+                              "id": {
+                                "type": "string"
+                              },
+                              "budgetId": {
+                                "type": "string"
+                              },
+                              "categoryId": {
+                                "type": "string"
+                              },
+                              "allocatedAmount": {
+                                "type": "string"
+                              },
                               "createdAt": {
                                 "type": "string",
                                 "format": "date"
@@ -2020,12 +3175,25 @@
                               "category": {
                                 "type": "object",
                                 "properties": {
-                                  "id": { "type": "string" },
-                                  "key": { "type": "string" },
-                                  "label": { "type": "string" },
-                                  "icon": { "type": "string" }
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "key": {
+                                    "type": "string"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "icon": {
+                                    "type": "string"
+                                  }
                                 },
-                                "required": ["id", "key", "label", "icon"]
+                                "required": [
+                                  "id",
+                                  "key",
+                                  "label",
+                                  "icon"
+                                ]
                               }
                             },
                             "required": [
@@ -2045,11 +3213,21 @@
                           "items": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string" },
-                              "key": { "type": "string" },
-                              "label": { "type": "string" },
-                              "icon": { "type": "string" },
-                              "spent": { "type": "string" },
+                              "id": {
+                                "type": "string"
+                              },
+                              "key": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              },
+                              "spent": {
+                                "type": "string"
+                              },
                               "allocated": {
                                 "type": "string",
                                 "nullable": true
@@ -2087,10 +3265,20 @@
                         "categoryBreakdown"
                       ]
                     },
-                    "previous": { "type": "string", "nullable": true },
-                    "next": { "type": "string", "nullable": true }
+                    "previous": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "next": {
+                      "type": "string",
+                      "nullable": true
+                    }
                   },
-                  "required": ["budget", "previous", "next"]
+                  "required": [
+                    "budget",
+                    "previous",
+                    "next"
+                  ]
                 }
               }
             }
@@ -2102,11 +3290,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2118,11 +3316,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2134,11 +3342,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2148,7 +3366,9 @@
     },
     "/categories": {
       "get": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "responses": {
           "200": {
             "description": "List of categories",
@@ -2162,17 +3382,39 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string", "format": "uuid" },
-                          "key": { "type": "string", "maxLength": 50 },
-                          "label": { "type": "string", "maxLength": 100 },
-                          "icon": { "type": "string", "maxLength": 10 }
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "key": {
+                            "type": "string",
+                            "maxLength": 50
+                          },
+                          "label": {
+                            "type": "string",
+                            "maxLength": 100
+                          },
+                          "icon": {
+                            "type": "string",
+                            "maxLength": 10
+                          }
                         },
-                        "required": ["id", "key", "label", "icon"]
+                        "required": [
+                          "id",
+                          "key",
+                          "label",
+                          "icon"
+                        ]
                       }
                     },
-                    "count": { "type": "number" }
+                    "count": {
+                      "type": "number"
+                    }
                   },
-                  "required": ["categories", "count"]
+                  "required": [
+                    "categories",
+                    "count"
+                  ]
                 }
               }
             }
@@ -2184,11 +3426,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2198,10 +3450,15 @@
     },
     "/categories/{categoryId}/expenses/timeseries": {
       "get": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "categoryId",
             "in": "path"
@@ -2216,6 +3473,21 @@
             "required": false,
             "name": "months",
             "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "month",
+                "budget"
+              ],
+              "default": "month",
+              "description": "Aggregation level: 'month' groups across all budgets by month, 'budget' groups by individual budgets"
+            },
+            "required": false,
+            "description": "Aggregation level: 'month' groups across all budgets by month, 'budget' groups by individual budgets",
+            "name": "granularity",
+            "in": "query"
           }
         ],
         "responses": {
@@ -2226,8 +3498,17 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "categoryId": { "type": "string", "format": "uuid" },
-                    "granularity": { "type": "string", "enum": ["month"] },
+                    "categoryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "granularity": {
+                      "type": "string",
+                      "enum": [
+                        "month",
+                        "budget"
+                      ]
+                    },
                     "timeseries": {
                       "type": "array",
                       "items": {
@@ -2235,22 +3516,42 @@
                         "properties": {
                           "period": {
                             "type": "string",
-                            "description": "ISO date representing the start of the month"
+                            "description": "ISO date representing the start of the month (only present when granularity is 'month')"
                           },
                           "expenseCount": {
                             "type": "integer",
-                            "description": "Number of expenses in this period"
+                            "description": "Number of expenses"
                           },
                           "totalAmount": {
                             "type": "number",
-                            "description": "Total expense amount for this period"
+                            "description": "Total expense amount"
+                          },
+                          "budgetId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Budget ID (only present when granularity is 'budget')"
+                          },
+                          "budgetName": {
+                            "type": "string",
+                            "description": "Budget name (only present when granularity is 'budget')"
+                          },
+                          "budgetAmount": {
+                            "type": "number",
+                            "description": "Allocated budget amount for this category (only present when granularity is 'budget')"
                           }
                         },
-                        "required": ["period", "expenseCount", "totalAmount"]
+                        "required": [
+                          "expenseCount",
+                          "totalAmount"
+                        ]
                       }
                     }
                   },
-                  "required": ["categoryId", "granularity", "timeseries"]
+                  "required": [
+                    "categoryId",
+                    "granularity",
+                    "timeseries"
+                  ]
                 }
               }
             }
@@ -2262,11 +3563,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2278,11 +3589,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2294,11 +3615,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2310,11 +3641,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2324,10 +3665,15 @@
     },
     "/categories/{categoryId}/expenses": {
       "get": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "categoryId",
             "in": "path"
@@ -2357,7 +3703,10 @@
           {
             "schema": {
               "type": "string",
-              "enum": ["createdAt", "-createdAt"],
+              "enum": [
+                "createdAt",
+                "-createdAt"
+              ],
               "default": "-createdAt"
             },
             "required": false,
@@ -2378,14 +3727,33 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string" },
-                          "budgetId": { "type": "string" },
-                          "description": { "type": "string" },
-                          "amount": { "type": "string" },
-                          "note": { "type": "string", "nullable": true },
-                          "categoryId": { "type": "string" },
-                          "createdAt": { "type": "string", "format": "date" },
-                          "updatedAt": { "type": "string", "format": "date" },
+                          "id": {
+                            "type": "string"
+                          },
+                          "budgetId": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "string"
+                          },
+                          "note": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "categoryId": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
                           "deletedAt": {
                             "type": "string",
                             "nullable": true,
@@ -2394,12 +3762,25 @@
                           "category": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string" },
-                              "key": { "type": "string" },
-                              "label": { "type": "string" },
-                              "icon": { "type": "string" }
+                              "id": {
+                                "type": "string"
+                              },
+                              "key": {
+                                "type": "string"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              }
                             },
-                            "required": ["id", "key", "label", "icon"]
+                            "required": [
+                              "id",
+                              "key",
+                              "label",
+                              "icon"
+                            ]
                           }
                         },
                         "required": [
@@ -2416,9 +3797,14 @@
                         ]
                       }
                     },
-                    "count": { "type": "number" }
+                    "count": {
+                      "type": "number"
+                    }
                   },
-                  "required": ["expenses", "count"]
+                  "required": [
+                    "expenses",
+                    "count"
+                  ]
                 }
               }
             }
@@ -2430,11 +3816,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2446,11 +3842,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2462,11 +3868,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2478,11 +3894,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2492,10 +3918,15 @@
     },
     "/budgets/{id}/transactions": {
       "post": {
-        "tags": ["Transactions"],
+        "tags": [
+          "Transactions"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "id",
             "in": "path"
@@ -2518,11 +3949,23 @@
                     "minimum": 0,
                     "exclusiveMinimum": true
                   },
-                  "categoryId": { "type": "string", "format": "uuid" },
-                  "note": { "type": "string", "maxLength": 255 },
-                  "createdAt": { "type": "string" }
+                  "categoryId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "createdAt": {
+                    "type": "string"
+                  }
                 },
-                "required": ["description", "amount", "categoryId"]
+                "required": [
+                  "description",
+                  "amount",
+                  "categoryId"
+                ]
               }
             }
           }
@@ -2535,18 +3978,38 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "budgetId": { "type": "string", "format": "uuid" },
-                    "description": { "type": "string", "maxLength": 255 },
-                    "amount": { "type": "string" },
-                    "categoryId": { "type": "string", "format": "uuid" },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "budgetId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "amount": {
+                      "type": "string"
+                    },
+                    "categoryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
                     "note": {
                       "type": "string",
                       "nullable": true,
                       "maxLength": 255
                     },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
                     "deletedAt": {
                       "type": "string",
                       "nullable": true,
@@ -2575,11 +4038,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2591,11 +4064,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2607,11 +4090,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2621,7 +4114,9 @@
     },
     "/transactions": {
       "get": {
-        "tags": ["Transactions"],
+        "tags": [
+          "Transactions"
+        ],
         "responses": {
           "200": {
             "description": "List of transactions",
@@ -2635,18 +4130,38 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string", "format": "uuid" },
-                          "budgetId": { "type": "string", "format": "uuid" },
-                          "description": { "type": "string", "maxLength": 255 },
-                          "amount": { "type": "string" },
-                          "categoryId": { "type": "string", "format": "uuid" },
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "budgetId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "description": {
+                            "type": "string",
+                            "maxLength": 255
+                          },
+                          "amount": {
+                            "type": "string"
+                          },
+                          "categoryId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
                           "note": {
                             "type": "string",
                             "nullable": true,
                             "maxLength": 255
                           },
-                          "createdAt": { "type": "string", "format": "date" },
-                          "updatedAt": { "type": "string", "format": "date" },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date"
+                          },
                           "deletedAt": {
                             "type": "string",
                             "nullable": true,
@@ -2666,9 +4181,14 @@
                         ]
                       }
                     },
-                    "count": { "type": "number" }
+                    "count": {
+                      "type": "number"
+                    }
                   },
-                  "required": ["transactions", "count"]
+                  "required": [
+                    "transactions",
+                    "count"
+                  ]
                 }
               }
             }
@@ -2680,11 +4200,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2694,22 +4224,33 @@
     },
     "/users/{userId}/budgets/{budgetId}/expenses/{expenseId}": {
       "delete": {
-        "tags": ["Transactions"],
+        "tags": [
+          "Transactions"
+        ],
         "parameters": [
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "userId",
             "in": "path"
           },
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "budgetId",
             "in": "path"
           },
           {
-            "schema": { "type": "string", "format": "uuid" },
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
             "required": true,
             "name": "expenseId",
             "in": "path"
@@ -2723,18 +4264,38 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": { "type": "string", "format": "uuid" },
-                    "budgetId": { "type": "string", "format": "uuid" },
-                    "description": { "type": "string", "maxLength": 255 },
-                    "amount": { "type": "string" },
-                    "categoryId": { "type": "string", "format": "uuid" },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "budgetId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "amount": {
+                      "type": "string"
+                    },
+                    "categoryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
                     "note": {
                       "type": "string",
                       "nullable": true,
                       "maxLength": 255
                     },
-                    "createdAt": { "type": "string", "format": "date" },
-                    "updatedAt": { "type": "string", "format": "date" },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date"
+                    },
                     "deletedAt": {
                       "type": "string",
                       "nullable": true,
@@ -2762,8 +4323,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "error": { "type": "string" } },
-                  "required": ["error"]
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2775,11 +4342,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }
@@ -2791,11 +4368,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" },
-                    "message": { "type": "string" },
-                    "code": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["error", "message", "code"]
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
                 }
               }
             }

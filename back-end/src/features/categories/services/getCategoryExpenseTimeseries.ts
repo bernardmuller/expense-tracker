@@ -7,19 +7,18 @@ export const getCategoryExpenseTimeseries = (
   userId: string,
   categoryId: string,
   months: number,
+  granularity: "month" | "budget",
   ctx: AppContext,
 ): AppResult<TimeseriesResponse> => {
-  return CategoryRepo.verifyCategoryOwnership(userId, categoryId, ctx).andThen(
-    () =>
-      CategoryRepo.getCategoryExpenseTimeseries(
-        userId,
-        categoryId,
-        months,
-        ctx,
-      ).map((timeseries) => ({
-        categoryId,
-        granularity: "month" as const,
-        timeseries,
-      })),
-  );
+  return CategoryRepo.getCategoryExpenseTimeseries(
+    userId,
+    categoryId,
+    months,
+    granularity,
+    ctx,
+  ).map((timeseries) => ({
+    categoryId,
+    granularity,
+    timeseries,
+  }));
 };

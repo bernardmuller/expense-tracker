@@ -1837,6 +1837,236 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/categories/{categoryId}/expenses/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    months?: number;
+                    /** @description Aggregation level: 'month' groups across all budgets by month, 'budget' groups by individual budgets */
+                    granularity?: "month" | "budget";
+                };
+                header?: never;
+                path: {
+                    categoryId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Monthly expense totals for the category */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            categoryId: string;
+                            /** @enum {string} */
+                            granularity: "month" | "budget";
+                            timeseries: {
+                                /** @description ISO date representing the start of the month (only present when granularity is 'month') */
+                                period?: string;
+                                /** @description Number of expenses */
+                                expenseCount: number;
+                                /** @description Total expense amount */
+                                totalAmount: number;
+                                /**
+                                 * Format: uuid
+                                 * @description Budget ID (only present when granularity is 'budget')
+                                 */
+                                budgetId?: string;
+                                /** @description Budget name (only present when granularity is 'budget') */
+                                budgetName?: string;
+                                /** @description Allocated budget amount for this category (only present when granularity is 'budget') */
+                                budgetAmount?: number;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Invalid categoryId or months parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Missing or invalid authentication */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Category not found or does not belong to user */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/categories/{categoryId}/expenses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    offset?: number | null;
+                    sort?: "createdAt" | "-createdAt";
+                };
+                header?: never;
+                path: {
+                    categoryId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of expenses for the category */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            expenses: {
+                                id: string;
+                                budgetId: string;
+                                description: string;
+                                amount: string;
+                                note: string | null;
+                                categoryId: string;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                                /** Format: date */
+                                deletedAt: string | null;
+                                category: {
+                                    id: string;
+                                    key: string;
+                                    label: string;
+                                    icon: string;
+                                };
+                            }[];
+                            count: number;
+                        };
+                    };
+                };
+                /** @description Invalid categoryId format or query parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Missing or invalid authentication */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Category not found or does not belong to user */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/budgets/{id}/transactions": {
         parameters: {
             query?: never;

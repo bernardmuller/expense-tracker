@@ -84,7 +84,7 @@ const createLabelRenderer = (currency: string) => (props: LabelProps) => {
       dominantBaseline="middle"
       className="font-sans text-xs"
     >
-      {currency} {String(value)}
+      {currency} {String(Math.floor(Number(value)))}
     </text>
   )
 }

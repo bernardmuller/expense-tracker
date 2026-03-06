@@ -6,15 +6,20 @@ import { getCategoryExpenseTimeseries } from "../services";
 export const getCategoryExpenseTimeseriesHandler = async (c: Context) => {
   const categoryId = c.req.param("categoryId");
   const monthsQuery = c.req.query("months");
+  const granularityQuery = c.req.query("granularity");
   const user = c.get("user");
   const ctx = createContext();
 
   const monthsParam = monthsQuery ? parseInt(monthsQuery, 10) : 6;
+  const granularityParam = (granularityQuery === "budget"
+    ? "budget"
+    : "month") as "month" | "budget";
 
   const result = await getCategoryExpenseTimeseries(
     user.userId,
     categoryId,
     monthsParam,
+    granularityParam,
     ctx,
   );
 

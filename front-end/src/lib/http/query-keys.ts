@@ -23,6 +23,10 @@ export const queryKeys = {
   },
   categories: {
     all: ['categories'] as const,
+    timeseries: (categoryId: string, months?: number) =>
+      ['categories', categoryId, 'timeseries', months] as const,
+    expenses: (categoryId: string, options?: Record<string, unknown>) =>
+      ['categories', categoryId, 'expenses', options] as const,
   },
   budgets: {
     all: ['budgets'] as const,
