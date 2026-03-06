@@ -1,7 +1,9 @@
 import { requireAuth } from '@/lib/auth/route-guard'
 import {
   getCategoryExpensesTimeseriesQueryOptions,
-  transformTimeseriesData,
+  getCategoryExpensesBudgetTimeseriesQueryOptions,
+  transformMonthTimeseriesData,
+  transformBudgetTimeseriesData,
 } from '@/lib/http/queries/categories/getCategoryExpensesTimeseries'
 import { getCategoryExpensesQueryOptions } from '@/lib/http/queries/categories/getCategoryExpenses'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
@@ -17,11 +19,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
 import { format } from 'date-fns'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/categories/$id')({
   beforeLoad: () => requireAuth(),
   loader: async ({ context, params }) => {
     await Promise.all([
+      // Budget mode (default)
+      context.queryClient.ensureQueryData(
+        getCategoryExpensesBudgetTimeseriesQueryOptions(params.id, 6),
+      ),
+      // Month mode (prefetch)
       context.queryClient.ensureQueryData(
         getCategoryExpensesTimeseriesQueryOptions(params.id, 6),
       ),
@@ -45,8 +53,12 @@ function CategoryDetail() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
   const [filterValue, setFilterValue] = useState('')
+  const [viewMode, setViewMode] = useState<'budget' | 'month'>('budget')
 
-  const { data: timeseriesData } = useSuspenseQuery(
+  const { data: budgetTimeseriesData } = useSuspenseQuery(
+    getCategoryExpensesBudgetTimeseriesQueryOptions(id, 6),
+  )
+  const { data: monthTimeseriesData } = useSuspenseQuery(
     getCategoryExpensesTimeseriesQueryOptions(id, 6),
   )
   const { data: expensesData } = useSuspenseQuery(
@@ -57,7 +69,13 @@ function CategoryDetail() {
   const categoryName = category?.label || 'Category'
   const categoryIcon = category?.icon || '📊'
 
-  const chartData = transformTimeseriesData(timeseriesData)
+  const chartData = viewMode === 'budget'
+    ? transformBudgetTimeseriesData(budgetTimeseriesData)
+    : transformMonthTimeseriesData(monthTimeseriesData)
+
+  const chartDescription = viewMode === 'budget'
+    ? 'Total Spent vs Allocated Budget per Period'
+    : 'Monthly Spending Across All Budgets'
 
   const filteredExpenses = expensesData.expenses.filter((expense) => {
     if (!filterValue.trim()) return true
@@ -84,11 +102,20 @@ function CategoryDetail() {
         </AppHeader.Right>
       </AppHeader.Root>
       <Layout>
-        <CategoryChart
-          data={chartData.reverse()}
-          categoryName={`${categoryIcon} ${categoryName}`}
-          currency="R"
-        />
+        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'budget' | 'month')}>
+          <TabsList className="w-full">
+            <TabsTrigger value="budget" className="flex-1">By Budget</TabsTrigger>
+            <TabsTrigger value="month" className="flex-1">By Month</TabsTrigger>
+          </TabsList>
+          <TabsContent value={viewMode}>
+            <CategoryChart
+              data={chartData.reverse()}
+              categoryName={`${categoryIcon} ${categoryName}`}
+              description={chartDescription}
+              currency="R"
+            />
+          </TabsContent>
+        </Tabs>
 
         <Card>
           <CardHeader>
