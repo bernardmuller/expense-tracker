@@ -68,18 +68,20 @@ export function Stats({ children }: { children: React.ReactNode }) {
 
 export function Planned({ amount }: { amount: string }) {
   return (
-    <div className="text-muted-foreground flex gap-1">
+    <div className="text-muted-foreground flex items-end gap-1">
       <span>Planned:</span>
-      <span>{amount}</span>
+      <span className="-mb-1 text-lg">{amount}</span>
     </div>
   )
 }
 
 export function Spent({ amount }: { amount: string }) {
   return (
-    <div className="text-muted-foreground font-sm flex gap-1">
+    <div className="text-muted-foreground flex items-end gap-1 text-sm">
       <span>Spent:</span>
-      <span className="text-primary font-grotesk">{amount}</span>
+      <span className="text-primary font-grotesk -mb-1 text-lg tracking-wider">
+        {amount}
+      </span>
     </div>
   )
 }

@@ -13,10 +13,19 @@ import { Input } from '@/components/ui/input'
 import { z } from 'zod'
 import { Swiper } from '@/components/swiper'
 import { Trash2 } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useDeleteExpense } from '@/lib/http/hooks/use-delete-expense'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { Layout } from '@/components/layouts/Layout'
 import { format } from 'date-fns'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 
 const expensesSearchSchema = z.object({
   category: z.string().optional(),
@@ -45,19 +54,39 @@ function BudgetExpenses() {
   const searchParams = Route.useSearch()
   const { data: budget } = useSuspenseQuery(getBudgetExpensesQueryOptions(id))
   const [filterValue, setFilterValue] = useState(searchParams.category ?? '')
+  const [sortOption, setSortOption] = useState<string>('default')
   const deleteExpenseMutation = useDeleteExpense()
 
   const userIdResult = getUserIdFromAccessToken()
   const userId = userIdResult.isOk() ? userIdResult.value : ''
 
-  const filteredExpenses = budget.expenses.filter((expense) => {
-    if (!filterValue.trim()) return true
-    const searchTerm = filterValue.toLowerCase()
-    return (
-      expense.category.label.toLowerCase().includes(searchTerm) ||
-      expense.description.toLowerCase().includes(searchTerm)
-    )
-  })
+  const filteredExpenses = budget.expenses
+    .filter((expense) => {
+      if (!filterValue.trim()) return true
+      const searchTerm = filterValue.toLowerCase()
+      return (
+        expense.category.label.toLowerCase().includes(searchTerm) ||
+        expense.description.toLowerCase().includes(searchTerm)
+      )
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case 'amount-asc':
+          return parseFloat(a.amount) - parseFloat(b.amount)
+        case 'amount-desc':
+          return parseFloat(b.amount) - parseFloat(a.amount)
+        case 'description-asc':
+          return a.description.localeCompare(b.description)
+        case 'description-desc':
+          return b.description.localeCompare(a.description)
+        case 'default':
+        default:
+          // Preserve original order (by createdAt)
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+      }
+    })
 
   const handleFilterChange = (value: string) => {
     setFilterValue(value)
@@ -92,13 +121,42 @@ function BudgetExpenses() {
       </AppHeader.Root>
       <Layout>
         <AllExpenses budgetName={budget.name}>
-          <Input
-            type="text"
-            placeholder="Search Expense"
-            value={filterValue}
-            onChange={(e) => handleFilterChange(e.target.value)}
-            className="w-full"
-          />
+          <div>
+            <Label className="pb-2">Search</Label>
+            <Input
+              type="text"
+              placeholder="Expense name.."
+              value={filterValue}
+              onChange={(e) => handleFilterChange(e.target.value)}
+              className="w-full"
+            />
+          </div>
+          <Select value={sortOption} onValueChange={setSortOption}>
+            <Label className="py-2">Sort by</Label>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Sort by..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">
+                Date <span className="text-muted-foreground">(default)</span>
+              </SelectItem>
+              <SelectItem value="amount-asc">
+                Amount{' '}
+                <span className="text-muted-foreground">Low to High</span>
+              </SelectItem>
+              <SelectItem value="amount-desc">
+                Amount{' '}
+                <span className="text-muted-foreground">High to Low</span>
+              </SelectItem>
+              <SelectItem value="description-asc">
+                Description
+                <span className="text-muted-foreground">A-Z</span>
+              </SelectItem>
+              <SelectItem value="description-desc">
+                Description <span className="text-muted-foreground">Z-A</span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
           {filteredExpenses.length === 0 && (
             <div className="text-muted-foreground p-8 text-center text-sm">
               {budget.expenses.length === 0

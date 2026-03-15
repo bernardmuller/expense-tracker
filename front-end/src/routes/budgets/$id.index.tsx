@@ -8,7 +8,7 @@ import {
   Link,
   useRouter,
 } from '@tanstack/react-router'
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { BudgetDetailSkeleton } from './budgets.skeleton'
 import PlannedBudgetBreakdownItem from '@/components/budget-breakdowns/PlannedBudgetBreakdownItem'
 import OverBudgetBreakdownItem from '@/components/budget-breakdowns/OverBudgetBreakdownItem'
@@ -23,6 +23,14 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { NavigationLink } from '@/components/navigation-link/NavigationLink'
 import { Plus, ReceiptText } from 'lucide-react'
 import { Layout } from '@/components/layouts/Layout'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
@@ -49,6 +57,7 @@ function BudgetDetail() {
   const queryClient = useQueryClient()
   const { data: budget } = useSuspenseQuery(getBudgetByIdQueryOptions(id))
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
+  const [sortOption, setSortOption] = useState<string>('name-asc')
 
   const currentAmount = Math.floor(parseFloat(budget.budget.currentAmount))
   const startAmount = Math.floor(parseFloat(budget.budget.startAmount))
@@ -152,6 +161,36 @@ function BudgetDetail() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4">
+              <Select value={sortOption} onValueChange={setSortOption}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sort by..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name-asc">
+                    Name
+                    <span className="text-muted-foreground">A-Z</span>
+                  </SelectItem>
+                  <SelectItem value="name-desc">
+                    Name <span className="text-muted-foreground">Z-A</span>
+                  </SelectItem>
+                  <SelectItem value="planned-asc">
+                    Planned{' '}
+                    <span className="text-muted-foreground">Low to High</span>
+                  </SelectItem>
+                  <SelectItem value="planned-desc">
+                    Planned
+                    <span className="text-muted-foreground">High to Low</span>
+                  </SelectItem>
+                  <SelectItem value="spent-asc">
+                    Spent
+                    <span className="text-muted-foreground">Low to High</span>
+                  </SelectItem>
+                  <SelectItem value="spent-desc">
+                    Spent
+                    <span className="text-muted-foreground">High to Low</span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
               {categories.length === 0 && (
                 <div className="text-muted-foreground p-8 text-center text-sm">
                   No category breakdowns available
@@ -160,7 +199,38 @@ function BudgetDetail() {
               {categories.length > 0 && (
                 <div className="grid gap-4">
                   {categories
-                    .sort((a, b) => a.label.localeCompare(b.label))
+                    .sort((a, b) => {
+                      switch (sortOption) {
+                        case 'name-asc':
+                          return a.label.localeCompare(b.label)
+                        case 'name-desc':
+                          return b.label.localeCompare(a.label)
+                        case 'planned-asc': {
+                          const aVal = a.allocated
+                            ? parseFloat(a.allocated)
+                            : -Infinity
+                          const bVal = b.allocated
+                            ? parseFloat(b.allocated)
+                            : -Infinity
+                          return aVal - bVal
+                        }
+                        case 'planned-desc': {
+                          const aVal = a.allocated
+                            ? parseFloat(a.allocated)
+                            : -Infinity
+                          const bVal = b.allocated
+                            ? parseFloat(b.allocated)
+                            : -Infinity
+                          return bVal - aVal
+                        }
+                        case 'spent-asc':
+                          return parseFloat(a.spent) - parseFloat(b.spent)
+                        case 'spent-desc':
+                          return parseFloat(b.spent) - parseFloat(a.spent)
+                        default:
+                          return a.label.localeCompare(b.label)
+                      }
+                    })
                     .map((category) => {
                       const spent = parseFloat(category.spent)
                       const allocated = category.allocated
@@ -200,7 +270,10 @@ function BudgetDetail() {
                           name={category.label}
                           icon={category.icon}
                           percentage={percentage}
-                          plannedAmount={formatCurrency(allocated!, 'za')}
+                          plannedAmount={formatCurrency(
+                            Math.floor(allocated!),
+                            'za',
+                          )}
                           spentAmount={formatCurrency(spent, 'za')}
                           onClick={() => handleCategoryClick(category.id)}
                         />
