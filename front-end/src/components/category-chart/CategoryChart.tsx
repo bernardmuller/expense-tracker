@@ -170,8 +170,8 @@ export default function CategoryChart({
               minPointSize={5}
               onMouseEnter={(_, index) => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              onClick={(_, index) => {
-                onBarClick?.(index)
+              onClick={(data, index) => {
+                onBarClick?.(data, index)
               }}
               shape={(props) => {
                 const { x, y, width, height, index, payload } = props

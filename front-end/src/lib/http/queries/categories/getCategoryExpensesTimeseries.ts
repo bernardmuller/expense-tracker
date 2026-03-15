@@ -61,6 +61,7 @@ export function transformMonthTimeseriesData(
     month: item.period ? format(new Date(item.period), 'MMM yyyy') : '',
     spent: item.totalAmount,
     budget: undefined,
+    period: item.period,
   }))
 }
 
@@ -74,6 +75,7 @@ export function transformBudgetTimeseriesData(
     month: item.budgetName || '',
     spent: item.totalAmount,
     budget: item.budgetAmount,
+    budgetId: item.budgetId,
   }))
 }
 

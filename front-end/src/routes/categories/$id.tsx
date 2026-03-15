@@ -8,28 +8,27 @@ import {
 import { getCategoryExpensesQueryOptions } from '@/lib/http/queries/categories/getCategoryExpenses'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Suspense, useState } from 'react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { Suspense, useState, useEffect } from 'react'
 import { CategoryDetailSkeleton } from './categories.skeleton'
 import { AppHeader } from '@/components/app-header'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Layout } from '@/components/layouts/Layout'
 import CategoryChart from '@/components/category-chart/CategoryChart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import RecentExpense from '@/components/recent-expenses/RecentExpense'
-import { format } from 'date-fns'
+import { format, isSameMonth } from 'date-fns'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { X } from 'lucide-react'
+import type { MonthlyChartData } from '@/components/category-chart/CategoryChart.types'
 
 export const Route = createFileRoute('/categories/$id')({
   beforeLoad: () => requireAuth(),
   loader: async ({ context, params }) => {
     await Promise.all([
-      // Budget mode (default)
       context.queryClient.ensureQueryData(
         getCategoryExpensesBudgetTimeseriesQueryOptions(params.id, 6),
       ),
-      // Month mode (prefetch)
       context.queryClient.ensureQueryData(
         getCategoryExpensesTimeseriesQueryOptions(params.id, 6),
       ),
@@ -51,9 +50,13 @@ function CategoryDetailPage() {
 
 function CategoryDetail() {
   const { id } = Route.useParams()
-  const navigate = useNavigate()
-  const [filterValue, setFilterValue] = useState('')
+  const router = useRouter()
   const [viewMode, setViewMode] = useState<'budget' | 'month'>('budget')
+  const [activeFilter, setActiveFilter] = useState<{
+    type: 'budget' | 'month'
+    id: string
+    label: string
+  } | null>(null)
 
   const { data: budgetTimeseriesData } = useSuspenseQuery(
     getCategoryExpensesBudgetTimeseriesQueryOptions(id, 6),
@@ -69,18 +72,46 @@ function CategoryDetail() {
   const categoryName = category?.label || 'Category'
   const categoryIcon = category?.icon || '📊'
 
-  const chartData = viewMode === 'budget'
-    ? transformBudgetTimeseriesData(budgetTimeseriesData)
-    : transformMonthTimeseriesData(monthTimeseriesData)
+  const chartData =
+    viewMode === 'budget'
+      ? transformBudgetTimeseriesData(budgetTimeseriesData)
+      : transformMonthTimeseriesData(monthTimeseriesData)
 
-  const chartDescription = viewMode === 'budget'
-    ? 'Total Spent vs Allocated Budget per Period'
-    : 'Monthly Spending Across All Budgets'
+  const chartDescription =
+    viewMode === 'budget'
+      ? 'Total Spent vs Allocated Budget per Period'
+      : 'Monthly Spending Across All Budgets'
+
+  useEffect(() => {
+    setActiveFilter(null)
+  }, [viewMode])
+
+  const handleBarClick = (data: MonthlyChartData) => {
+    if (viewMode === 'budget' && data.budgetId) {
+      setActiveFilter({
+        type: 'budget',
+        id: data.budgetId,
+        label: data.month,
+      })
+    } else if (viewMode === 'month' && data.period) {
+      setActiveFilter({
+        type: 'month',
+        id: data.period,
+        label: data.month,
+      })
+    }
+  }
 
   const filteredExpenses = expensesData.expenses.filter((expense) => {
-    if (!filterValue.trim()) return true
-    const searchTerm = filterValue.toLowerCase()
-    return expense.description.toLowerCase().includes(searchTerm)
+    if (!activeFilter) return true
+
+    if (activeFilter.type === 'budget') {
+      return expense.budgetId === activeFilter.id
+    } else {
+      return isSameMonth(new Date(expense.createdAt), new Date(activeFilter.id))
+    }
+
+    return true
   })
 
   const totalAmount = filteredExpenses.reduce(
@@ -92,7 +123,7 @@ function CategoryDetail() {
     <>
       <AppHeader.Root>
         <AppHeader.Left>
-          <AppHeader.Back onBack={() => navigate({ to: '/dashboard' })} />
+          <AppHeader.Back onBack={() => router.history.back()} />
         </AppHeader.Left>
         <AppHeader.Center>
           <AppHeader.Title>Category</AppHeader.Title>
@@ -102,42 +133,61 @@ function CategoryDetail() {
         </AppHeader.Right>
       </AppHeader.Root>
       <Layout>
-        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'budget' | 'month')}>
+        <Tabs
+          value={viewMode}
+          onValueChange={(value) => setViewMode(value as 'budget' | 'month')}
+        >
           <TabsList className="w-full">
-            <TabsTrigger value="budget" className="flex-1">By Budget</TabsTrigger>
-            <TabsTrigger value="month" className="flex-1">By Month</TabsTrigger>
+            <TabsTrigger value="budget">By Budget</TabsTrigger>
+            <TabsTrigger value="month">By Month</TabsTrigger>
           </TabsList>
           <TabsContent value={viewMode}>
             <CategoryChart
-              data={chartData.reverse()}
+              data={
+                viewMode === 'budget' ? [...chartData] : chartData.reverse()
+              }
               categoryName={`${categoryIcon} ${categoryName}`}
               description={chartDescription}
               currency="R"
+              onBarClick={handleBarClick}
             />
           </TabsContent>
         </Tabs>
 
         <Card>
           <CardHeader>
-            <CardTitle>
-              {expensesData.count} Expense
-              {expensesData.count !== 1 ? 's' : ''}
-            </CardTitle>
+            <CardTitle>Category Expenses</CardTitle>
           </CardHeader>
           <CardContent>
-            <Input
-              type="text"
-              placeholder="Search expenses..."
-              value={filterValue}
-              onChange={(e) => setFilterValue(e.target.value)}
-              className="mb-4 w-full"
-            />
+            {activeFilter && (
+              <div
+                className="bg-muted mb-4 flex items-center justify-between
+                  rounded-md p-3"
+              >
+                <span className="text-sm">
+                  Showing expenses for:{' '}
+                  <strong className="font-semibold">
+                    {activeFilter.label}
+                  </strong>
+                </span>
+                <button
+                  onClick={() => setActiveFilter(null)}
+                  aria-label="Clear filter"
+                  className="text-muted-foreground hover:text-foreground
+                    transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
 
             {filteredExpenses.length === 0 && (
               <div className="text-muted-foreground p-8 text-center text-sm">
                 {expensesData.expenses.length === 0
                   ? 'No expenses found for this category'
-                  : 'No expenses match your search'}
+                  : activeFilter
+                    ? `No expenses found for ${activeFilter.label}`
+                    : 'No expenses found'}
               </div>
             )}
 

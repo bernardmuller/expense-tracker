@@ -4,6 +4,7 @@ import { DatabaseError } from "@/lib/errors/domain";
 import { expenses, budgets, categoryBudgets } from "@/lib/db/schema";
 import { eq, and, gte, isNull } from "drizzle-orm";
 import type { TimeseriesDataPoint } from "../types";
+import { CREATED } from "stoker/http-status-codes";
 
 export const getCategoryExpenseTimeseries = (
   userId: string,
@@ -29,7 +30,6 @@ const getCategoryExpenseTimeseriesByMonth = (
   months: number,
   ctx: AppContext,
 ): AppResult<TimeseriesDataPoint[], DatabaseError> => {
-  // Calculate the earliest date (first day of the month N months ago)
   const currentDate = new Date();
   const earliestDate = new Date(currentDate);
   earliestDate.setMonth(currentDate.getMonth() - (months - 1));
@@ -54,7 +54,6 @@ const getCategoryExpenseTimeseriesByMonth = (
         ),
       ),
   ).map((expensesList) => {
-    // Helper function to format date as YYYY-MM-DD
     const formatMonthKey = (date: Date): string => {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -62,7 +61,6 @@ const getCategoryExpenseTimeseriesByMonth = (
       return `${year}-${month}-${day}`;
     };
 
-    // Generate array of month start dates
     const monthsArray: Date[] = [];
     for (let i = months - 1; i >= 0; i--) {
       const monthDate = new Date(currentDate);
@@ -72,11 +70,7 @@ const getCategoryExpenseTimeseriesByMonth = (
       monthsArray.push(monthDate);
     }
 
-    // Group expenses by month
-    const expensesByMonth = new Map<
-      string,
-      { count: number; total: number }
-    >();
+    const expensesByMonth = new Map<string, { count: number; total: number }>();
 
     for (const expense of expensesList) {
       const expenseDate = new Date(expense.createdAt);
@@ -94,7 +88,6 @@ const getCategoryExpenseTimeseriesByMonth = (
       });
     }
 
-    // Merge with generated months to ensure all months are present (even with no expenses)
     return monthsArray
       .map((monthDate) => {
         const monthKey = formatMonthKey(monthDate);
@@ -106,7 +99,7 @@ const getCategoryExpenseTimeseriesByMonth = (
           totalAmount: data.total,
         };
       })
-      .reverse(); // Reverse to get DESC order (most recent first)
+      .reverse();
   });
 };
 
@@ -116,14 +109,12 @@ const getCategoryExpenseTimeseriesByBudget = (
   months: number,
   ctx: AppContext,
 ): AppResult<TimeseriesDataPoint[], DatabaseError> => {
-  // Calculate the earliest date (first day of the month N months ago)
   const currentDate = new Date();
   const earliestDate = new Date(currentDate);
   earliestDate.setMonth(currentDate.getMonth() - (months - 1));
   earliestDate.setDate(1);
   earliestDate.setHours(0, 0, 0, 0);
 
-  // Query expenses with budget and categoryBudget info
   return fromDB(
     ctx.db
       .select({
@@ -132,6 +123,7 @@ const getCategoryExpenseTimeseriesByBudget = (
         budgetId: budgets.id,
         budgetName: budgets.name,
         allocatedAmount: categoryBudgets.allocatedAmount,
+        createdAt: expenses.createdAt,
       })
       .from(expenses)
       .innerJoin(budgets, eq(expenses.budgetId, budgets.id))
@@ -151,7 +143,6 @@ const getCategoryExpenseTimeseriesByBudget = (
         ),
       ),
   ).map((expensesList) => {
-    // Group expenses by budget (aggregate across all months)
     const budgetAggregates = new Map<
       string,
       {
@@ -160,6 +151,7 @@ const getCategoryExpenseTimeseriesByBudget = (
         count: number;
         total: number;
         allocatedAmount: string | null;
+        createdAt: Date;
       }
     >();
 
@@ -176,12 +168,13 @@ const getCategoryExpenseTimeseriesByBudget = (
           count: 1,
           total: parseFloat(String(expense.amount)),
           allocatedAmount: expense.allocatedAmount,
+          createdAt: expense.createdAt,
         });
       }
     }
 
-    // Convert to array and sort by budgetName
     return Array.from(budgetAggregates.values())
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       .map((budget) => ({
         expenseCount: budget.count,
         totalAmount: budget.total,
@@ -190,7 +183,6 @@ const getCategoryExpenseTimeseriesByBudget = (
         budgetAmount: budget.allocatedAmount
           ? parseFloat(String(budget.allocatedAmount))
           : undefined,
-      }))
-      .sort((a, b) => a.budgetName.localeCompare(b.budgetName));
+      }));
   });
 };

@@ -2,6 +2,8 @@ export type MonthlyChartData = {
   month: string
   spent?: number
   budget?: number
+  budgetId?: string
+  period?: string
 }
 
 export type CategoryChartProps = {
@@ -10,6 +12,6 @@ export type CategoryChartProps = {
   description?: string
   currency?: string
   activeIndex?: number
-  onBarClick?: (index: number) => void
+  onBarClick?: (data: MonthlyChartData, index: number) => void
   onBlur?: () => void
 }
