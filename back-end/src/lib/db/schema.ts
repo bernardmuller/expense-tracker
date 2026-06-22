@@ -1,15 +1,17 @@
 import {
   boolean,
   decimal,
+  index,
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
   integer,
   unique,
   uuid,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 
 export const users = pgTable("users", {
@@ -194,10 +196,85 @@ export const expenses = pgTable("expenses", {
   deletedAt: timestamp("deleted_at"),
 });
 
+// Recurring expense templates (user-level definitions)
+export const recurringExpenseTemplates = pgTable(
+  "recurring_expense_templates",
+  {
+    id: uuid("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    description: varchar("description", { length: 255 }).notNull(),
+    amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+    categoryId: uuid("category_id").references(() => categories.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (table) => ({
+    userIdIdx: index("recurring_expense_templates_user_id_idx").on(
+      table.userId,
+    ),
+    userIdDeletedAtIdx: index(
+      "recurring_expense_templates_user_id_deleted_at_idx",
+    ).on(table.userId, table.deletedAt),
+    userIdDescriptionActiveUq: uniqueIndex(
+      "recurring_expense_templates_user_id_description_active_uq",
+    )
+      .on(table.userId, table.description)
+      .where(sql`${table.deletedAt} IS NULL`),
+  }),
+);
+
+// Budget-specific recurring expense instances (snapshots from templates)
+export const budgetRecurringExpenses = pgTable(
+  "budget_recurring_expenses",
+  {
+    id: uuid("id").primaryKey(),
+    budgetId: uuid("budget_id")
+      .notNull()
+      .references(() => budgets.id, { onDelete: "cascade" }),
+    description: varchar("description", { length: 255 }).notNull(),
+    amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+    categoryId: uuid("category_id").references(() => categories.id, {
+      onDelete: "set null",
+    }),
+    isPaid: boolean("is_paid").default(false).notNull(),
+    expenseId: uuid("expense_id").references(() => expenses.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (table) => ({
+    budgetIdIdx: index("budget_recurring_expenses_budget_id_idx").on(
+      table.budgetId,
+    ),
+    budgetIdDeletedAtIdx: index(
+      "budget_recurring_expenses_budget_id_deleted_at_idx",
+    ).on(table.budgetId, table.deletedAt),
+    expenseIdIdx: index("budget_recurring_expenses_expense_id_idx").on(
+      table.expenseId,
+    ),
+  }),
+);
+
 // Relations
 export const userRelations = relations(users, ({ many }) => ({
   budgets: many(budgets),
   userCategories: many(userCategories),
+  recurringExpenseTemplates: many(recurringExpenseTemplates),
 }));
 
 export const budgetRelations = relations(budgets, ({ one, many }) => ({
@@ -207,6 +284,7 @@ export const budgetRelations = relations(budgets, ({ one, many }) => ({
   }),
   expenses: many(expenses),
   categoryBudgets: many(categoryBudgets),
+  budgetRecurringExpenses: many(budgetRecurringExpenses),
 }));
 
 export const expenseRelations = relations(expenses, ({ one }) => ({
@@ -224,7 +302,41 @@ export const categoryRelations = relations(categories, ({ many }) => ({
   userCategories: many(userCategories),
   categoryBudgets: many(categoryBudgets),
   expenses: many(expenses),
+  recurringExpenseTemplates: many(recurringExpenseTemplates),
+  budgetRecurringExpenses: many(budgetRecurringExpenses),
 }));
+
+export const recurringExpenseTemplateRelations = relations(
+  recurringExpenseTemplates,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [recurringExpenseTemplates.userId],
+      references: [users.id],
+    }),
+    category: one(categories, {
+      fields: [recurringExpenseTemplates.categoryId],
+      references: [categories.id],
+    }),
+  }),
+);
+
+export const budgetRecurringExpenseRelations = relations(
+  budgetRecurringExpenses,
+  ({ one }) => ({
+    budget: one(budgets, {
+      fields: [budgetRecurringExpenses.budgetId],
+      references: [budgets.id],
+    }),
+    category: one(categories, {
+      fields: [budgetRecurringExpenses.categoryId],
+      references: [categories.id],
+    }),
+    expense: one(expenses, {
+      fields: [budgetRecurringExpenses.expenseId],
+      references: [expenses.id],
+    }),
+  }),
+);
 
 export const userCategoryRelations = relations(userCategories, ({ one }) => ({
   user: one(users, {
@@ -267,3 +379,7 @@ export type UserPreferences = typeof userPreferences.$inferSelect;
 export type NewUserPreferences = typeof userPreferences.$inferInsert;
 export type Verification = typeof verifications.$inferSelect;
 export type NewVerifications = typeof verifications.$inferInsert;
+export type RecurringExpenseTemplate = typeof recurringExpenseTemplates.$inferSelect;
+export type NewRecurringExpenseTemplate = typeof recurringExpenseTemplates.$inferInsert;
+export type BudgetRecurringExpense = typeof budgetRecurringExpenses.$inferSelect;
+export type NewBudgetRecurringExpense = typeof budgetRecurringExpenses.$inferInsert;

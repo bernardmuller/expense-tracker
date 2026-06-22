@@ -1,20 +1,23 @@
 import { ResultAsync, Result } from "neverthrow";
+import { AppError } from "./errors/base";
 import type { DomainError } from "./errors/domain";
 import { DatabaseError, EncryptionError } from "./errors/domain";
 
-export type AppResult<T, E extends DomainError = DomainError> = ResultAsync<
+export type AppResult<
   T,
-  E
->;
-export type AppResultSync<T, E extends DomainError = DomainError> = Result<
+  E extends AppError | DomainError = DomainError,
+> = ResultAsync<T, E>;
+export type AppResultSync<
   T,
-  E
->;
+  E extends AppError | DomainError = DomainError,
+> = Result<T, E>;
 
 export const success = <T>(value: T): AppResult<T, never> =>
   ResultAsync.fromSafePromise(Promise.resolve(value));
 
-export const failure = <E extends DomainError>(error: E): AppResult<never, E> =>
+export const failure = <E extends AppError | DomainError>(
+  error: E,
+): AppResult<never, E> =>
   ResultAsync.fromPromise(Promise.reject(error), () => error);
 
 export const fromDB = <T>(promise: Promise<T>): AppResult<T, DatabaseError> =>

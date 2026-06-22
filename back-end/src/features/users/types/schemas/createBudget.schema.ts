@@ -7,4 +7,5 @@ export const createBudgetSchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   categories: z.array(onboardingCategorySchema).min(1),
+  recurringExpenseTemplateIds: z.array(z.string().uuid()).optional(),
 });
