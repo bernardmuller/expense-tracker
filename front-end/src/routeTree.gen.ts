@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
+import { Route as ProfileRecurringExpensesRouteImport } from './routes/profile.recurring-expenses'
 import { Route as ProfilePreferencesRouteImport } from './routes/profile.preferences'
 import { Route as CategoriesIdRouteImport } from './routes/categories/$id'
 import { Route as BudgetsNewRouteImport } from './routes/budgets/new'
@@ -58,6 +59,12 @@ const ProfileIndexRoute = ProfileIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProfileRoute,
 } as any)
+const ProfileRecurringExpensesRoute =
+  ProfileRecurringExpensesRouteImport.update({
+    id: '/recurring-expenses',
+    path: '/recurring-expenses',
+    getParentRoute: () => ProfileRoute,
+  } as any)
 const ProfilePreferencesRoute = ProfilePreferencesRouteImport.update({
   id: '/preferences',
   path: '/preferences',
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
+  '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
   '/profile/': typeof ProfileIndexRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id/': typeof BudgetsIdIndexRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
+  '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
   '/profile': typeof ProfileIndexRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id': typeof BudgetsIdIndexRoute
@@ -129,6 +138,7 @@ export interface FileRoutesById {
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
+  '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
   '/profile/': typeof ProfileIndexRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id/': typeof BudgetsIdIndexRoute
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/budgets/new'
     | '/categories/$id'
     | '/profile/preferences'
+    | '/profile/recurring-expenses'
     | '/profile/'
     | '/budgets/$id/expenses'
     | '/budgets/$id/'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/budgets/new'
     | '/categories/$id'
     | '/profile/preferences'
+    | '/profile/recurring-expenses'
     | '/profile'
     | '/budgets/$id/expenses'
     | '/budgets/$id'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
     | '/budgets/new'
     | '/categories/$id'
     | '/profile/preferences'
+    | '/profile/recurring-expenses'
     | '/profile/'
     | '/budgets/$id/expenses'
     | '/budgets/$id/'
@@ -242,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof ProfileRoute
     }
+    '/profile/recurring-expenses': {
+      id: '/profile/recurring-expenses'
+      path: '/recurring-expenses'
+      fullPath: '/profile/recurring-expenses'
+      preLoaderRoute: typeof ProfileRecurringExpensesRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/profile/preferences': {
       id: '/profile/preferences'
       path: '/preferences'
@@ -289,11 +309,13 @@ declare module '@tanstack/react-router' {
 
 interface ProfileRouteChildren {
   ProfilePreferencesRoute: typeof ProfilePreferencesRoute
+  ProfileRecurringExpensesRoute: typeof ProfileRecurringExpensesRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 const ProfileRouteChildren: ProfileRouteChildren = {
   ProfilePreferencesRoute: ProfilePreferencesRoute,
+  ProfileRecurringExpensesRoute: ProfileRecurringExpensesRoute,
   ProfileIndexRoute: ProfileIndexRoute,
 }
 

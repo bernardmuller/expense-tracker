@@ -81,6 +81,19 @@ function ProfilePage() {
             </div>
             <div className="flex items-center justify-between">
               <div>
+                <p className="text-foreground font-medium">
+                  Recurring Expenses
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  Manage subscriptions and recurring bills
+                </p>
+              </div>
+              <Button variant="outline" asChild>
+                <Link to="/profile/recurring-expenses">Manage</Link>
+              </Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
                 <p className="text-foreground font-medium">Clear Cache</p>
                 <p className="text-muted-foreground text-sm">
                   Remove all cached data

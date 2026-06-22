@@ -41,4 +41,18 @@ export const queryKeys = {
     create: () => ['transactions', 'create'] as const,
     delete: () => ['transactions', 'delete'] as const,
   },
+  recurringExpenses: {
+    all: ['recurring-expenses'] as const,
+    byUser: (userId: string) =>
+      ['recurring-expenses', 'user', userId] as const,
+    byBudget: (budgetId: string) =>
+      ['recurring-expenses', 'budget', budgetId] as const,
+    create: () => ['recurring-expenses', 'create'] as const,
+    update: () => ['recurring-expenses', 'update'] as const,
+    delete: () => ['recurring-expenses', 'delete'] as const,
+    instance: {
+      update: () => ['recurring-expenses', 'instance', 'update'] as const,
+      delete: () => ['recurring-expenses', 'instance', 'delete'] as const,
+    },
+  },
 } as const
