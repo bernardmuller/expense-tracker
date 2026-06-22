@@ -64,17 +64,14 @@ export const loginRequest = (
 				token
 			})
 		})
-		.map(({ token, otp }) => {
+		.map(({ token, otp }): { token: string; otp?: string } => {
 			if (process.env.NODE_ENV === "development") {
-				return ok({
+				return {
 					token,
-					otp
-				})
-			} else {
-				return ok({
-					token
-				})
+					otp: String(otp).padStart(6, "0"),
+				};
 			}
+			return { token };
 		})
 		.mapErr((error) => {
 			logger.error(
