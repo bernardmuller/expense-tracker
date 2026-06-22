@@ -11,7 +11,7 @@ export const loginRequestHandler = async (c: Context) => {
   const result = await loginRequest(body, ctx);
 
   return result.match(
-    (token) => c.json({ token }, 200),
+    (token) => c.json({ token: token.value.token, otp: token.value.otp }, 200),
     (error) => mapErrorToResponse(error, c),
   );
 };

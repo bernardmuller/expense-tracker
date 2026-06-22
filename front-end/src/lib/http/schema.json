@@ -77,10 +77,14 @@
                   "properties": {
                     "token": {
                       "type": "string"
+                    },
+                    "otp": {
+                      "type": "string"
                     }
                   },
                   "required": [
-                    "token"
+                    "token",
+                    "otp"
                   ]
                 }
               }
@@ -365,10 +369,14 @@
                   "properties": {
                     "token": {
                       "type": "string"
+                    },
+                    "otp": {
+                      "type": "string"
                     }
                   },
                   "required": [
-                    "token"
+                    "token",
+                    "otp"
                   ]
                 }
               }

@@ -18,7 +18,10 @@ export const failure = <E extends DomainError>(error: E): AppResult<never, E> =>
   ResultAsync.fromPromise(Promise.reject(error), () => error);
 
 export const fromDB = <T>(promise: Promise<T>): AppResult<T, DatabaseError> =>
-  ResultAsync.fromPromise(promise, (err) => new DatabaseError(String(err)));
+  ResultAsync.fromPromise(promise, (err) => {
+    console.error('Raw DB error:', err);
+    return new DatabaseError(String(err));
+  });
 
 export const fromEncryption = <T>(
   promise: Promise<T>,

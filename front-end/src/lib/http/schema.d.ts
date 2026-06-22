@@ -75,6 +75,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             token: string;
+                            otp: string;
                         };
                     };
                 };
@@ -245,6 +246,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             token: string;
+                            otp: string;
                         };
                     };
                 };
