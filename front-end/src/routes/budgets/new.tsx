@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import z from 'zod'
 import { Check, LoaderCircleIcon, RefreshCw } from 'lucide-react'
 import {
@@ -355,20 +355,91 @@ function NewBudgetPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTemplateIdsKey, recurringTemplatesData.templates])
 
+  // Per-category previous floor + first-run flag let us decrement the
+  // allocation when a recurring template is unticked, while still preserving
+  // any user-typed amount that exceeded the floor.
+  const prevFloorByCategoryRef = useRef<Record<string, number>>({})
+  const floorFirstSyncRef = useRef(true)
   useEffect(() => {
     const current = form.state.values.categories
     let changed = false
     const next = current.map((cat) => {
       const floor = recurringByCategoryId[cat.id] ?? 0
-      if (cat.amount < floor) {
+      if (floorFirstSyncRef.current) {
+        if (cat.amount < floor) {
+          changed = true
+          return { ...cat, amount: floor }
+        }
+        return cat
+      }
+      const previousFloor = prevFloorByCategoryRef.current[cat.id] ?? 0
+      const extra = Math.max(0, cat.amount - previousFloor)
+      const target = floor + extra
+      if (cat.amount !== target) {
         changed = true
-        return { ...cat, amount: floor }
+        return { ...cat, amount: target }
       }
       return cat
     })
     if (changed) form.setFieldValue('categories', next)
+    floorFirstSyncRef.current = false
+    const newPrev: Record<string, number> = {}
+    current.forEach((cat) => {
+      newPrev[cat.id] = recurringByCategoryId[cat.id] ?? 0
+    })
+    prevFloorByCategoryRef.current = newPrev
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recurringByCategoryId, selectedCategoryIdsKey])
+
+  // Auto-sync recurring template selection with category selection. When a
+  // category becomes selected, all of its templates are added (default-checked
+  // per spec). When a category is deselected, its templates are removed. User
+  // unchecks within still-selected categories are preserved.
+  const prevSelectedCategoryIds = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    const currentCategoryIds = new Set(
+      form.state.values.categories.map((c) => c.id),
+    )
+    const added: string[] = []
+    const removed: string[] = []
+    currentCategoryIds.forEach((id) => {
+      if (!prevSelectedCategoryIds.current.has(id)) added.push(id)
+    })
+    prevSelectedCategoryIds.current.forEach((id) => {
+      if (!currentCategoryIds.has(id)) removed.push(id)
+    })
+
+    if (added.length === 0 && removed.length === 0) {
+      prevSelectedCategoryIds.current = currentCategoryIds
+      return
+    }
+
+    const addedSet = new Set(added)
+    const removedSet = new Set(removed)
+    const templatesToAdd = recurringTemplatesData.templates
+      .filter((t) => t.categoryId && addedSet.has(t.categoryId))
+      .map((t) => t.id)
+    const templatesToRemoveSet = new Set(
+      recurringTemplatesData.templates
+        .filter((t) => t.categoryId && removedSet.has(t.categoryId))
+        .map((t) => t.id),
+    )
+
+    const currentIds = form.state.values.recurringExpenseTemplateIds
+    const next = Array.from(
+      new Set([
+        ...currentIds.filter((id) => !templatesToRemoveSet.has(id)),
+        ...templatesToAdd,
+      ]),
+    )
+    const changed =
+      next.length !== currentIds.length ||
+      next.some((id, i) => id !== currentIds[i])
+    if (changed) form.setFieldValue('recurringExpenseTemplateIds', next)
+
+    prevSelectedCategoryIds.current = currentCategoryIds
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategoryIdsKey, recurringTemplatesData.templates])
 
   if (currentStep === 0) {
     return (
@@ -582,29 +653,34 @@ function NewBudgetPage() {
                   ) : (
                     <form.AppField
                       name="categories"
-                      children={(field) => (
-                        <div className="flex flex-col">
-                          {categories.categories.map((category, index) => {
-                            const isChecked = field.state.value.some(
-                              (cat) => cat.id === category.id,
-                            )
-                            return (
-                              <Fragment key={category.id}>
-                                <SelectableCategoryItem
-                                  {...category}
-                                  checked={isChecked}
-                                  onCheckedChange={() =>
-                                    toggleCategory(category)
-                                  }
-                                />
-                                {index < categories.categories.length - 1 && (
-                                  <Separator className="my-3" />
-                                )}
-                              </Fragment>
-                            )
-                          })}
-                        </div>
-                      )}
+                      children={(field) => {
+                        const sortedCategories = [
+                          ...categories.categories,
+                        ].sort((a, b) => a.label.localeCompare(b.label))
+                        return (
+                          <div className="flex flex-col">
+                            {sortedCategories.map((category, index) => {
+                              const isChecked = field.state.value.some(
+                                (cat) => cat.id === category.id,
+                              )
+                              return (
+                                <Fragment key={category.id}>
+                                  <SelectableCategoryItem
+                                    {...category}
+                                    checked={isChecked}
+                                    onCheckedChange={() =>
+                                      toggleCategory(category)
+                                    }
+                                  />
+                                  {index < sortedCategories.length - 1 && (
+                                    <Separator className="my-3" />
+                                  )}
+                                </Fragment>
+                              )
+                            })}
+                          </div>
+                        )
+                      }}
                     />
                   )}
                 </div>
@@ -722,69 +798,83 @@ function NewBudgetPage() {
                           />
                         </div>
                         <div className="flex flex-col">
-                          {form.state.values.categories.map(
-                            (category, index) => {
-                              const recurringTotal =
-                                recurringByCategoryId[category.id] ?? 0
-                              return (
-                                <Fragment key={category.id}>
-                                  <AllocatableCategoryItem
-                                    id={category.id}
-                                    icon={category.icon}
-                                    label={category.label}
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <span
-                                        className="inline-flex size-4 shrink-0
-                                          items-center justify-center"
-                                      >
-                                        {recurringTotal > 0 && (
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <span
-                                                className="text-muted-foreground
-                                                  inline-flex"
-                                                aria-label="Allocation derived from recurring expenses"
-                                              >
-                                                <RefreshCw className="size-4" />
-                                              </span>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              Includes{' '}
-                                              {formatCurrency(
-                                                recurringTotal,
-                                                'za',
-                                              )}{' '}
-                                              in recurring expenses
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        )}
-                                      </span>
-                                      <div
-                                        className="flex w-28 items-center gap-1"
-                                      >
-                                        <span className="text-md text-gray-400">
-                                          R
-                                        </span>
-                                        <form.AppField
-                                          name={`categories[${index}].amount`}
-                                          children={(field) => (
-                                            <field.NumberField
-                                              placeholder="0"
-                                              min={recurringTotal}
-                                            />
+                          {form.state.values.categories
+                            .map((category, originalIndex) => ({
+                              category,
+                              originalIndex,
+                            }))
+                            .sort((a, b) =>
+                              a.category.label.localeCompare(b.category.label),
+                            )
+                            .map(
+                              (
+                                { category, originalIndex },
+                                sortedIndex,
+                                arr,
+                              ) => {
+                                const recurringTotal =
+                                  recurringByCategoryId[category.id] ?? 0
+                                return (
+                                  <Fragment key={category.id}>
+                                    <AllocatableCategoryItem
+                                      id={category.id}
+                                      icon={category.icon}
+                                      label={category.label}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <span
+                                          className="inline-flex size-4
+                                            shrink-0 items-center
+                                            justify-center"
+                                        >
+                                          {recurringTotal > 0 && (
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <span
+                                                  className="text-muted-foreground
+                                                    inline-flex"
+                                                  aria-label="Allocation derived from recurring expenses"
+                                                >
+                                                  <RefreshCw className="size-4" />
+                                                </span>
+                                              </TooltipTrigger>
+                                              <TooltipContent>
+                                                Includes{' '}
+                                                {formatCurrency(
+                                                  recurringTotal,
+                                                  'za',
+                                                )}{' '}
+                                                in recurring expenses
+                                              </TooltipContent>
+                                            </Tooltip>
                                           )}
-                                        />
+                                        </span>
+                                        <div
+                                          className="flex w-28 items-center
+                                            gap-1"
+                                        >
+                                          <span className="text-md text-gray-400">
+                                            R
+                                          </span>
+                                          <form.AppField
+                                            name={`categories[${originalIndex}].amount`}
+                                            children={(field) => (
+                                              <field.NumberField
+                                                placeholder="0"
+                                                min={recurringTotal}
+                                              />
+                                            )}
+                                          />
+                                        </div>
                                       </div>
-                                    </div>
-                                  </AllocatableCategoryItem>
-                                  {index <
-                                    form.state.values.categories.length -
-                                      1 && <Separator className="my-3" />}
-                                </Fragment>
-                              )
-                            },
-                          )}
+                                    </AllocatableCategoryItem>
+                                    {sortedIndex < arr.length - 1 && (
+                                      <Separator className="my-3" />
+                                    )}
+                                  </Fragment>
+                                )
+                              },
+                            )}
                         </div>
                       </CardContent>
                     </Card>

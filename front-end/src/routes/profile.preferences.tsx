@@ -1,12 +1,13 @@
+import { AppHeader } from '@/components/app-header'
 import { Layout } from '@/components/layouts/Layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FieldGroup } from '@/components/ui/field'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAppForm } from '@/hooks/form'
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getBudgetCycleDescription } from '@/lib/utils/budget-dates'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ArrowLeftIcon } from 'lucide-react'
 import z from 'zod'
 
 import { getUserPreferencesQueryOptions } from '@/lib/http/queries/users/getUserPreferences'
@@ -93,19 +94,20 @@ function BudgetPreferencesPage() {
 
   console.log(getInitialValues(), preferences)
   return (
-    <Layout>
-      <div className="mb-6 flex items-center">
-        <Button
-          variant="outline"
-          onClick={() => router.history.back()}
-          className="mr-4 aspect-square h-12 rounded-full"
-        >
-          <ArrowLeftIcon />
-        </Button>
-        <h1 className="text-2xl font-bold">Budget Preferences</h1>
-      </div>
-
-      <FieldGroup>
+    <>
+      <AppHeader.Root>
+        <AppHeader.Left>
+          <AppHeader.Back onBack={() => router.history.back()} />
+        </AppHeader.Left>
+        <AppHeader.Center>
+          <AppHeader.Title>Budget Preferences</AppHeader.Title>
+        </AppHeader.Center>
+        <AppHeader.Right>
+          <ThemeToggle />
+        </AppHeader.Right>
+      </AppHeader.Root>
+      <Layout>
+        <FieldGroup>
         <Card className="w-full">
           <CardHeader>
             <CardTitle>Budget Cycle</CardTitle>
@@ -188,9 +190,10 @@ function BudgetPreferencesPage() {
                 Save Changes
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </FieldGroup>
-    </Layout>
+            </CardContent>
+          </Card>
+        </FieldGroup>
+      </Layout>
+    </>
   )
 }

@@ -1,5 +1,8 @@
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
+import { getBudgetRecurringExpensesQueryOptions } from '@/lib/http/queries/recurring-expenses/getBudgetRecurringExpenses'
+import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
+import RecurringExpensesCard from '@/components/recurring-expenses-card/RecurringExpensesCard'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -35,9 +38,15 @@ import { Label } from '@/components/ui/label'
 export const Route = createFileRoute('/budgets/$id/')({
   beforeLoad: () => requireAuth(),
   loader: async ({ context, params }) => {
-    await context.queryClient.ensureQueryData(
-      getBudgetByIdQueryOptions(params.id),
-    )
+    await Promise.all([
+      context.queryClient.ensureQueryData(
+        getBudgetByIdQueryOptions(params.id),
+      ),
+      context.queryClient.ensureQueryData(
+        getBudgetRecurringExpensesQueryOptions(params.id),
+      ),
+      context.queryClient.ensureQueryData(getCategoriesQueryOptions()),
+    ])
   },
   component: BudgetDetailPage,
 })
@@ -141,6 +150,7 @@ function BudgetDetail() {
           spentPercentage={spentPercentage}
           onClick={togglePrivacy}
         />
+        <RecurringExpensesCard budgetId={id} />
         <Card className="p-0">
           <NavigationLink
             icon={<ReceiptText className="h-5 w-5 text-white" />}

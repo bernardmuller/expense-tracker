@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { ArrowLeftIcon } from 'lucide-react'
 
+import { AppHeader } from '@/components/app-header'
 import { Layout } from '@/components/layouts/Layout'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import RecurringExpenseTemplateList from '@/components/recurring-expense-template-list/RecurringExpenseTemplateList'
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
@@ -32,27 +32,29 @@ function RecurringExpensesProfilePage() {
   const userIdResult = getUserIdFromAccessToken()
 
   return (
-    <Layout>
-      <div className="mb-6 flex items-center">
-        <Button
-          variant="outline"
-          onClick={() => router.history.back()}
-          className="mr-4 aspect-square h-12 rounded-full"
-        >
-          <ArrowLeftIcon />
-        </Button>
-        <h1 className="text-2xl font-bold">Recurring Expenses</h1>
-      </div>
-
-      {userIdResult.isOk() ? (
-        <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-          <RecurringExpenseTemplateList userId={userIdResult.value} />
-        </Suspense>
-      ) : (
-        <p className="text-muted-foreground text-sm">
-          Unable to load your recurring expenses.
-        </p>
-      )}
-    </Layout>
+    <>
+      <AppHeader.Root>
+        <AppHeader.Left>
+          <AppHeader.Back onBack={() => router.history.back()} />
+        </AppHeader.Left>
+        <AppHeader.Center>
+          <AppHeader.Title>Recurring Expenses</AppHeader.Title>
+        </AppHeader.Center>
+        <AppHeader.Right>
+          <ThemeToggle />
+        </AppHeader.Right>
+      </AppHeader.Root>
+      <Layout>
+        {userIdResult.isOk() ? (
+          <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+            <RecurringExpenseTemplateList userId={userIdResult.value} />
+          </Suspense>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            Unable to load your recurring expenses.
+          </p>
+        )}
+      </Layout>
+    </>
   )
 }
