@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Result } from 'neverthrow'
-import { ok, err, errAsync } from 'neverthrow'
+import { ok, err } from 'neverthrow'
 import { toast } from 'sonner'
 import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'

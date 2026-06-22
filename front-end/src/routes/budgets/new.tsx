@@ -1,9 +1,19 @@
 import { toast } from 'sonner'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import z from 'zod'
-import { Check, LoaderCircleIcon } from 'lucide-react'
+import { Check, LoaderCircleIcon, RefreshCw } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
+import { useStore } from '@tanstack/react-form'
 import type { Category } from '@/lib/http/hooks/use-categories'
 import AllocatableCategoryItem from '@/components/category-item/AllocatableCategoryItem'
 import SelectableCategoryItem from '@/components/category-item/SelectableCategoryItem'
@@ -32,10 +42,13 @@ import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { getUserCategoriesQueryOptions } from '@/lib/http/queries/users/getUserCatgories'
 import { getUserPreferencesQueryOptions } from '@/lib/http/queries/users/getUserPreferences'
+import { getUserRecurringExpensesQueryOptions } from '@/lib/http/queries/recurring-expenses/getUserRecurringExpenses'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { requireAuth } from '@/lib/auth/route-guard'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import BudgetInfoBlock from '@/components/budget-info/BudgetInfoBlock'
 import CloseBudget from '@/components/close-budget/CloseBudget'
+import RecurringExpenseSelectionStep from '@/components/recurring-expense-selection-step/RecurringExpenseSelectionStep'
 import {
   calculateNextBudgetStart,
   calculateBudgetEnd,
@@ -64,6 +77,7 @@ const newBudgetFormSchema = z
     endDate: z.date().optional(),
     startAmount: z.number().positive('You must provide a budget amount'),
     categories: z.array(userCategorySchema),
+    recurringExpenseTemplateIds: z.array(z.string().uuid()),
   })
   .refine((data) => data.startAmount > 0, {
     message: 'You must provide a budget amount',
@@ -82,14 +96,23 @@ export const Route = createFileRoute('/budgets/new')({
     const activeBudget = await context.queryClient.ensureQueryData(
       getActiveBudgetQueryOptions(),
     )
-    await Promise.all([
+    const userIdResult = getUserIdFromAccessToken()
+    const prefetches: Array<Promise<unknown>> = [
       context.queryClient.ensureQueryData(getCategoriesQueryOptions()),
       context.queryClient.ensureQueryData(
         getBudgetByIdQueryOptions(activeBudget.id),
       ),
       context.queryClient.ensureQueryData(getUserCategoriesQueryOptions()),
       context.queryClient.ensureQueryData(getUserPreferencesQueryOptions()),
-    ])
+    ]
+    if (userIdResult.isOk()) {
+      prefetches.push(
+        context.queryClient.ensureQueryData(
+          getUserRecurringExpensesQueryOptions(userIdResult.value),
+        ),
+      )
+    }
+    await Promise.all(prefetches)
   },
   component: NewBudgetPage,
 })
@@ -146,7 +169,7 @@ const getStepWithError = (
     fieldMeta['categories'].errors.length > 0 &&
     formValues.categories.length > 0
   ) {
-    return 4
+    return 5
   }
 
   return null
@@ -158,6 +181,9 @@ function NewBudgetPage() {
   const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(0)
 
+  const userIdResult = getUserIdFromAccessToken()
+  const authedUserId = userIdResult.isOk() ? userIdResult.value : null
+
   const { data: currentBudget } = useSuspenseQuery(
     getActiveBudgetQueryOptions(),
   )
@@ -167,6 +193,11 @@ function NewBudgetPage() {
   const { data: preferences } = useSuspenseQuery(
     getUserPreferencesQueryOptions(),
   )
+  const recurringQuery = useQuery({
+    ...getUserRecurringExpensesQueryOptions(authedUserId ?? ''),
+    enabled: !!authedUserId,
+  })
+  const recurringTemplatesData = recurringQuery.data ?? { templates: [] }
   const {
     data: categories,
     isLoading: categoriesLoading,
@@ -207,6 +238,7 @@ function NewBudgetPage() {
       categories: initialCategories,
       startDate: undefined,
       endDate: undefined,
+      recurringExpenseTemplateIds: [],
     } as NewBudgetFormValues,
     validators: {
       onSubmit: newBudgetFormSchema,
@@ -240,6 +272,7 @@ function NewBudgetPage() {
         name: value.name,
         startAmount: value.startAmount,
         categories: transformedCategories,
+        recurringExpenseTemplateIds: value.recurringExpenseTemplateIds,
       }
 
       createBudgetMutation.mutate(newBudgetData, {
@@ -271,6 +304,9 @@ function NewBudgetPage() {
             toast.error('Please select your spending categories')
             break
           case 4:
+            toast.error('Please review your recurring expenses')
+            break
+          case 5:
             toast.error('Please allocate amounts to all categories')
             break
         }
@@ -294,6 +330,45 @@ function NewBudgetPage() {
       ])
     }
   }
+
+  const selectedTemplateIdsKey = useStore(form.store, (s) =>
+    s.values.recurringExpenseTemplateIds.slice().sort().join(','),
+  )
+  const selectedCategoryIdsKey = useStore(form.store, (s) =>
+    s.values.categories
+      .map((c) => c.id)
+      .slice()
+      .sort()
+      .join(','),
+  )
+
+  const recurringByCategoryId = useMemo(() => {
+    const map: Record<string, number> = {}
+    const selectedSet = new Set(
+      form.state.values.recurringExpenseTemplateIds,
+    )
+    for (const t of recurringTemplatesData.templates) {
+      if (!selectedSet.has(t.id) || !t.categoryId) continue
+      map[t.categoryId] = (map[t.categoryId] ?? 0) + parseFloat(t.amount)
+    }
+    return map
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTemplateIdsKey, recurringTemplatesData.templates])
+
+  useEffect(() => {
+    const current = form.state.values.categories
+    let changed = false
+    const next = current.map((cat) => {
+      const floor = recurringByCategoryId[cat.id] ?? 0
+      if (cat.amount < floor) {
+        changed = true
+        return { ...cat, amount: floor }
+      }
+      return cat
+    })
+    if (changed) form.setFieldValue('categories', next)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recurringByCategoryId, selectedCategoryIdsKey])
 
   if (currentStep === 0) {
     return (
@@ -538,6 +613,60 @@ function NewBudgetPage() {
           </StepperContent>
           <StepperContent
             value={4}
+            className="flex flex-1 items-center justify-center"
+          >
+            <Card className="w-full">
+              <CardHeader>
+                <StepHeader
+                  title="Select Recurring Expenses"
+                  description={newBudgetSteps[currentStep - 1].description}
+                />
+              </CardHeader>
+              <CardContent>
+                {authedUserId ? (
+                  <form.Subscribe
+                    selector={(state) => ({
+                      cats: state.values.categories,
+                      ids: state.values.recurringExpenseTemplateIds,
+                    })}
+                    children={({ cats, ids }) => (
+                      <RecurringExpenseSelectionStep
+                        userId={authedUserId}
+                        selectedCategories={cats}
+                        selectedTemplateIds={ids}
+                        onTemplateToggle={(templateId, checked) => {
+                          const current =
+                            form.state.values.recurringExpenseTemplateIds
+                          form.setFieldValue(
+                            'recurringExpenseTemplateIds',
+                            checked
+                              ? Array.from(new Set([...current, templateId]))
+                              : current.filter((id) => id !== templateId),
+                          )
+                        }}
+                        onAddCategory={(category) => {
+                          const exists = form.state.values.categories.some(
+                            (c) => c.id === category.id,
+                          )
+                          if (exists) return
+                          form.setFieldValue('categories', [
+                            ...form.state.values.categories,
+                            { ...category, amount: 0 },
+                          ])
+                        }}
+                      />
+                    )}
+                  />
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    Unable to load your recurring expenses.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </StepperContent>
+          <StepperContent
+            value={5}
             className="flex flex-1 flex-col items-center justify-center
               space-y-4"
           >
@@ -594,33 +723,67 @@ function NewBudgetPage() {
                         </div>
                         <div className="flex flex-col">
                           {form.state.values.categories.map(
-                            (category, index) => (
-                              <Fragment key={category.id}>
-                                <AllocatableCategoryItem
-                                  id={category.id}
-                                  icon={category.icon}
-                                  label={category.label}
-                                >
-                                  <form.AppField
-                                    name={`categories[${index}].amount`}
-                                    children={(field) => (
+                            (category, index) => {
+                              const recurringTotal =
+                                recurringByCategoryId[category.id] ?? 0
+                              return (
+                                <Fragment key={category.id}>
+                                  <AllocatableCategoryItem
+                                    id={category.id}
+                                    icon={category.icon}
+                                    label={category.label}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <span
+                                        className="inline-flex size-4 shrink-0
+                                          items-center justify-center"
+                                      >
+                                        {recurringTotal > 0 && (
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <span
+                                                className="text-muted-foreground
+                                                  inline-flex"
+                                                aria-label="Allocation derived from recurring expenses"
+                                              >
+                                                <RefreshCw className="size-4" />
+                                              </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              Includes{' '}
+                                              {formatCurrency(
+                                                recurringTotal,
+                                                'za',
+                                              )}{' '}
+                                              in recurring expenses
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        )}
+                                      </span>
                                       <div
                                         className="flex w-28 items-center gap-1"
                                       >
                                         <span className="text-md text-gray-400">
                                           R
                                         </span>
-                                        <field.NumberField placeholder="0" />
+                                        <form.AppField
+                                          name={`categories[${index}].amount`}
+                                          children={(field) => (
+                                            <field.NumberField
+                                              placeholder="0"
+                                              min={recurringTotal}
+                                            />
+                                          )}
+                                        />
                                       </div>
-                                    )}
-                                  />
-                                </AllocatableCategoryItem>
-                                {index <
-                                  form.state.values.categories.length - 1 && (
-                                  <Separator className="my-3" />
-                                )}
-                              </Fragment>
-                            ),
+                                    </div>
+                                  </AllocatableCategoryItem>
+                                  {index <
+                                    form.state.values.categories.length -
+                                      1 && <Separator className="my-3" />}
+                                </Fragment>
+                              )
+                            },
                           )}
                         </div>
                       </CardContent>

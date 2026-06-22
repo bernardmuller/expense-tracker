@@ -6,9 +6,11 @@ import { Field, FieldError, FieldLabel } from '../ui/field'
 export default function NumberField({
   label,
   placeholder,
+  min,
 }: {
   label?: string
   placeholder: string
+  min?: number
 }) {
   const field = useFieldContext<number>()
   const isInvalid = useStore(field.store, (state) => !state.meta.isValid)
@@ -21,6 +23,7 @@ export default function NumberField({
         id={field.name}
         name={field.name}
         value={field.state.value}
+        min={min}
         onFocus={(e) => {
           if (field.state.value === 0) {
             e.target.select()
@@ -28,7 +31,9 @@ export default function NumberField({
         }}
         onBlur={() => {
           if (isNaN(field.state.value)) {
-            field.handleChange(0)
+            field.handleChange(min ?? 0)
+          } else if (min !== undefined && field.state.value < min) {
+            field.handleChange(min)
           }
           field.handleBlur()
         }}

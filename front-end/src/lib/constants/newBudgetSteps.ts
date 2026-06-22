@@ -15,6 +15,10 @@ export const newBudgetSteps: Array<{
     description: 'Select the spending categories that fit your lifestyle',
   },
   {
+    title: 'Recurring',
+    description: 'Choose which recurring expenses apply to this budget period',
+  },
+  {
     title: 'Allocate',
     description: 'Distribute your budget across the spending categories',
   },
