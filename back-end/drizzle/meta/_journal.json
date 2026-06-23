@@ -50,6 +50,13 @@
       "when": 1782122231632,
       "tag": "0007_brown_stark_industries",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1782217573673,
+      "tag": "0008_absurd_eternity",
+      "breakpoints": true
     }
   ]
 }
