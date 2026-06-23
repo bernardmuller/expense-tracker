@@ -8,6 +8,7 @@ import { categoryRouter as categories } from "./features/categories";
 import { transactionRouter as transactions } from "./features/transactions";
 import { budgetRouter as budgets } from "./features/budgets";
 import { recurringExpensesRouter as recurringExpenses } from "./features/recurring-expenses";
+import { verificationRouter as verifications } from "./features/verifications";
 import { cors } from "hono/cors";
 import env from "./env";
 import { authMiddleware } from "@/lib/http/middleware/auth";
@@ -25,6 +26,7 @@ const routes = [
   health,
   budgets,
   recurringExpenses,
+  verifications,
 ] as const;
 
 app.use(
@@ -62,6 +64,7 @@ app.route("/", budgets);
 app.route("/", categories);
 app.route("/", transactions);
 app.route("/", recurringExpenses);
+app.route("/", verifications);
 
 export type AppType = typeof app;
 
