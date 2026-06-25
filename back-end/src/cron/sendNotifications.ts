@@ -1,18 +1,23 @@
-import { db as defaultDb } from "@/lib/db";
-import { chats } from "@/lib/db/schema";
+import { db } from "@/lib/db";
+import { chats, notifications } from "@/lib/db/schema";
 import env from "@/env";
 import TelegramBot from "node-telegram-bot-api";
-import { exit } from "node:process";
+import { eq, isNull } from "drizzle-orm";
 
 const bot = new TelegramBot(env.TELEGRAM_BOT_TOKEN);
 
-async function send() {
-  const chat = await defaultDb.select().from(chats);
-  const chatId = chat[0]?.chatId;
-  if (chatId) {
-    await bot.sendMessage(chatId, "This is a message from a cron job! :D");
+async function sendNotifications() {
+  const ns = await db
+    .select()
+    .from(notifications)
+    .leftJoin(chats, eq(chats.userId, notifications.userId))
+    .where(isNull(notifications.sentAt));
+  for (const n of ns) {
+    const chatId = n.chats?.chatId;
+    if (n.notifications.channel === "telegram" && chatId) {
+      bot.sendMessage(chatId, n.notifications.message);
+    }
   }
-  exit();
 }
 
-send();
+setInterval(sendNotifications, 1000 * 20);
