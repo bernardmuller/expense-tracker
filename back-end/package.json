@@ -14,7 +14,8 @@
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:dump": "tsx src/scripts/dump-db.ts",
     "db:restore": "tsx src/scripts/restore-db.ts",
-    "bot": "tsx src/lib/telegram/index.ts"
+    "bot": "tsx src/lib/telegram/index.ts",
+    "cron:notifications:send": "tsx src/cron/sendNotifications.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.5",
