@@ -306,6 +306,7 @@ export const notifications = pgTable("notifications", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull().default("none"),
   message: text("message").notNull(),
   channel: varchar("channel", { length: 20 }).notNull(),
   sentAt: timestamp("sent_at"),

@@ -16,6 +16,12 @@ async function sendNotifications() {
     const chatId = n.chats?.chatId;
     if (n.notifications.channel === "telegram" && chatId) {
       bot.sendMessage(chatId, n.notifications.message);
+      await db
+        .update(notifications)
+        .set({
+          sentAt: new Date(),
+        })
+        .where(eq(notifications.id, n.notifications.id));
     }
   }
 }
