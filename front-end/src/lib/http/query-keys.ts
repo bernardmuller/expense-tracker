@@ -64,4 +64,9 @@ export const queryKeys = {
     byValue: (value: string) => ['verifications', 'value', value] as const,
     create: () => ['verifications', 'create'] as const,
   },
+  notificationPreferences: {
+    all: ['notification-preferences'] as const,
+    list: () => ['notification-preferences', 'list'] as const,
+    update: () => ['notification-preferences', 'update'] as const,
+  },
 } as const
