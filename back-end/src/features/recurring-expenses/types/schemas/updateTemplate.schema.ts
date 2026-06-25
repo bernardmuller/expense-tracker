@@ -9,6 +9,7 @@ export const updateTemplateSchema = z
       .optional(),
     amount: z.number().positive("Amount must be greater than 0").optional(),
     categoryId: z.string().uuid("Invalid category ID").optional(),
+    scheduledAt: z.string().optional(),
   })
   .refine((v) => Object.keys(v).length > 0, {
     message: "At least one field must be provided",

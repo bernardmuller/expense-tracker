@@ -1,0 +1,1 @@
+ALTER TABLE "notification_preferences" ALTER COLUMN "scheduled_at" SET DATA TYPE date USING NULL;

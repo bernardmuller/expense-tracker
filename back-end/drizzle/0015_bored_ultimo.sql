@@ -1,0 +1,1 @@
+ALTER TABLE "notification_preferences" ADD COLUMN "entity_id" uuid;

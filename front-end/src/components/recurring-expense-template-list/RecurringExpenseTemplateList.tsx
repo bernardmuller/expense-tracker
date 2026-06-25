@@ -79,11 +79,8 @@ export default function RecurringExpenseTemplateList({ userId }: Props) {
 
   const handleSubmit = (values: RecurringExpenseTemplateFormValues) => {
     if (mode.kind === 'create') {
-      createMutation.mutate(values, {
-        onSuccess: (result) => {
-          if (result.isOk()) setMode({ kind: 'closed' })
-        },
-      })
+      createMutation.mutate(values)
+      setMode({ kind: 'closed' })
     } else if (mode.kind === 'edit') {
       updateMutation.mutate(
         { templateId: mode.template.id, body: values },
@@ -201,10 +198,11 @@ export default function RecurringExpenseTemplateList({ userId }: Props) {
               defaultValues={
                 mode.kind === 'edit'
                   ? {
-                      description: mode.template.description,
-                      amount: parseFloat(mode.template.amount),
-                      categoryId: mode.template.categoryId ?? '',
-                    }
+                    description: mode.template.description,
+                    amount: parseFloat(mode.template.amount),
+                    categoryId: mode.template.categoryId ?? '',
+                    scheduledAt: mode.template.scheduledAt,
+                  }
                   : undefined
               }
               onSubmit={handleSubmit}

@@ -1,0 +1,1 @@
+ALTER TABLE "recurring_expense_templates" ALTER COLUMN "scheduled_at" SET DATA TYPE varchar;

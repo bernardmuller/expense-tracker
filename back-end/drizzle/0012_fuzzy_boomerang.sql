@@ -1,0 +1,1 @@
+ALTER TABLE "recurring_expense_templates" ADD COLUMN "scheduled_at" timestamp NOT NULL;

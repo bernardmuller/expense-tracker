@@ -1,4 +1,5 @@
 export * from "../queries/findAll";
+export * from "../queries/findAllWithEntity";
 export * from "../queries/findById";
 export * from "../queries/create";
 export * from "../queries/update";

@@ -2369,6 +2369,7 @@ export interface paths {
                                 amount: string;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                scheduledAt: string;
                                 /** Format: date */
                                 createdAt: string;
                                 /** Format: date */
@@ -2425,6 +2426,7 @@ export interface paths {
                         amount: number;
                         /** Format: uuid */
                         categoryId: string;
+                        scheduledAt: string;
                     };
                 };
             };
@@ -2444,6 +2446,7 @@ export interface paths {
                             amount: string;
                             /** Format: uuid */
                             categoryId: string | null;
+                            scheduledAt: string;
                             /** Format: date */
                             createdAt: string;
                             /** Format: date */
@@ -2588,6 +2591,7 @@ export interface paths {
                         amount?: number;
                         /** Format: uuid */
                         categoryId?: string;
+                        scheduledAt?: string;
                     };
                 };
             };
@@ -2607,6 +2611,7 @@ export interface paths {
                             amount: string;
                             /** Format: uuid */
                             categoryId: string | null;
+                            scheduledAt: string;
                             /** Format: date */
                             createdAt: string;
                             /** Format: date */
@@ -3732,9 +3737,12 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 userId: string;
+                                /** Format: uuid */
+                                entityId: string | null;
                                 type: string;
                                 enabled: boolean;
                                 channel: string;
+                                /** Format: date */
                                 scheduledAt: string | null;
                                 /** Format: date */
                                 createdAt: string;
@@ -3788,6 +3796,9 @@ export interface paths {
                         type: string;
                         channel: string;
                         enabled: boolean;
+                        /** Format: uuid */
+                        entityId: string | null;
+                        /** Format: date */
                         scheduledAt: string | null;
                     };
                 };
@@ -3805,9 +3816,12 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 userId: string;
+                                /** Format: uuid */
+                                entityId: string | null;
                                 type: string;
                                 enabled: boolean;
                                 channel: string;
+                                /** Format: date */
                                 scheduledAt: string | null;
                                 /** Format: date */
                                 createdAt: string;
@@ -3851,6 +3865,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/notification-preferences/with-entity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    type?: string;
+                    channel?: string;
+                    enabled?: boolean | null;
+                    limit?: number;
+                    offset?: number | null;
+                    sort?: "createdAt";
+                    order?: "asc" | "desc";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of notification preferences for the authenticated user, joined with the related entity (currently only recurring-expense-reminder templates). */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            notificationPreferences: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                userId: string;
+                                /** Format: uuid */
+                                entityId: string | null;
+                                type: string;
+                                enabled: boolean;
+                                channel: string;
+                                /** Format: date */
+                                scheduledAt: string | null;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                                template: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    description: string;
+                                    amount: string;
+                                    scheduledAt: string;
+                                    /** Format: uuid */
+                                    categoryId: string | null;
+                                } | null;
+                            }[];
+                            count: number;
+                        };
+                    };
+                };
+                /** @description Invalid query parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/notification-preferences/{id}": {
         parameters: {
             query?: never;
@@ -3881,9 +3992,12 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 userId: string;
+                                /** Format: uuid */
+                                entityId: string | null;
                                 type: string;
                                 enabled: boolean;
                                 channel: string;
+                                /** Format: date */
                                 scheduledAt: string | null;
                                 /** Format: date */
                                 createdAt: string;
@@ -3946,9 +4060,12 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 userId: string;
+                                /** Format: uuid */
+                                entityId: string | null;
                                 type: string;
                                 enabled: boolean;
                                 channel: string;
+                                /** Format: date */
                                 scheduledAt: string | null;
                                 /** Format: date */
                                 createdAt: string;
@@ -4004,6 +4121,7 @@ export interface paths {
                         type?: string;
                         channel?: string;
                         enabled?: boolean;
+                        /** Format: date */
                         scheduledAt?: string | null;
                     };
                 };
@@ -4021,9 +4139,12 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 userId: string;
+                                /** Format: uuid */
+                                entityId: string | null;
                                 type: string;
                                 enabled: boolean;
                                 channel: string;
+                                /** Format: date */
                                 scheduledAt: string | null;
                                 /** Format: date */
                                 createdAt: string;

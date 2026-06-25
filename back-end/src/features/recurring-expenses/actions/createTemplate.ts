@@ -13,6 +13,7 @@ export const createTemplate = (
     description: params.description,
     amount: params.amount.toString(),
     categoryId: params.categoryId,
+    scheduledAt: params.scheduledAt,
     createdAt: now,
     updatedAt: now,
     deletedAt: null,

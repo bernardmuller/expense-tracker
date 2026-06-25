@@ -9,7 +9,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { requireAuth } from '@/lib/auth/route-guard'
-import { getNotificationPreferencesQueryOptions } from '@/lib/http/queries/notification-preferences/getNotificationPreferences'
+import {
+  getNotificationPreferencesQueryOptions,
+  type NotificationPreferenceWithEntity,
+} from '@/lib/http/queries/notification-preferences/getNotificationPreferences'
 import { useUpdateNotificationPreference } from '@/lib/http/hooks/use-update-notification-preference'
 
 const NOTIFICATION_LABELS: Record<
@@ -21,6 +24,16 @@ const NOTIFICATION_LABELS: Record<
     description: 'Daily reminder to log your expenses.',
   },
 }
+
+const formatAmount = (amount: string) =>
+  new Intl.NumberFormat('en-ZA', {
+    style: 'currency',
+    currency: 'ZAR',
+    maximumFractionDigits: 2,
+  }).format(parseFloat(amount))
+
+const fallbackLabel = (pref: NotificationPreferenceWithEntity) =>
+  NOTIFICATION_LABELS[pref.type] ?? { title: pref.type, description: '' }
 
 export const Route = createFileRoute('/profile/notifications')({
   beforeLoad: () => requireAuth(),
@@ -49,69 +62,113 @@ function NotificationsProfilePage() {
         </AppHeader.Right>
       </AppHeader.Root>
       <Layout>
-        <Card>
-          <CardHeader>
-            <CardTitle>Notifications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Suspense fallback={<Skeleton className="h-24 w-full" />}>
-              <NotificationPreferencesList />
-            </Suspense>
-          </CardContent>
-        </Card>
+        <Suspense fallback={<Skeleton className="h-24 w-full" />}>
+          <NotificationLists />
+        </Suspense>
       </Layout>
     </>
   )
 }
 
-function NotificationPreferencesList() {
+function NotificationLists() {
   const { data: preferences } = useSuspenseQuery(
     getNotificationPreferencesQueryOptions(),
   )
   const updateMutation = useUpdateNotificationPreference()
 
-  if (preferences.length === 0) {
-    return (
-      <p className="text-muted-foreground text-sm">
-        No notification preferences yet.
-      </p>
-    )
-  }
+  const general = preferences.filter(
+    (p) => p.type !== 'recurring-expense-reminder',
+  )
+  const recurring = preferences.filter(
+    (p) => p.type === 'recurring-expense-reminder',
+  )
+
+  const onToggle = (id: string, checked: boolean) =>
+    updateMutation.mutate({ id, body: { enabled: checked } })
 
   return (
     <div className="space-y-4">
-      {preferences.map((pref) => {
-        const label = NOTIFICATION_LABELS[pref.type] ?? {
-          title: pref.type,
-          description: '',
-        }
-
-        return (
-          <div
-            key={pref.id}
-            className="flex items-center justify-between gap-4"
-          >
-            <div>
-              <p className="text-foreground font-medium">{label.title}</p>
-              {label.description ? (
-                <p className="text-muted-foreground text-sm">
-                  {label.description}
-                </p>
-              ) : null}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {general.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No notification preferences yet.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {general.map((pref) => (
+                <PreferenceRow
+                  key={pref.id}
+                  pref={pref}
+                  label={fallbackLabel(pref)}
+                  isPending={updateMutation.isPending}
+                  onToggle={onToggle}
+                />
+              ))}
             </div>
-            <Switch
-              checked={pref.enabled}
-              disabled={updateMutation.isPending}
-              onCheckedChange={(checked) =>
-                updateMutation.mutate({
-                  id: pref.id,
-                  body: { enabled: checked },
-                })
-              }
-            />
-          </div>
-        )
-      })}
+          )}
+        </CardContent>
+      </Card>
+
+      {recurring.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Recurring Expense Reminders</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recurring.map((pref) => {
+                const label = pref.template
+                  ? {
+                      title: pref.template.description,
+                      description: formatAmount(pref.template.amount),
+                    }
+                  : fallbackLabel(pref)
+                return (
+                  <PreferenceRow
+                    key={pref.id}
+                    pref={pref}
+                    label={label}
+                    isPending={updateMutation.isPending}
+                    onToggle={onToggle}
+                  />
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+    </div>
+  )
+}
+
+function PreferenceRow({
+  pref,
+  label,
+  isPending,
+  onToggle,
+}: {
+  pref: NotificationPreferenceWithEntity
+  label: { title: string; description: string }
+  isPending: boolean
+  onToggle: (id: string, checked: boolean) => void
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div>
+        <p className="text-foreground font-medium">{label.title}</p>
+        {label.description ? (
+          <p className="text-muted-foreground text-sm">{label.description}</p>
+        ) : null}
+      </div>
+      <Switch
+        checked={pref.enabled}
+        disabled={isPending}
+        onCheckedChange={(checked) => onToggle(pref.id, checked)}
+      />
     </div>
   )
 }

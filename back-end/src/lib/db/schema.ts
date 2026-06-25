@@ -1,5 +1,6 @@
 import {
   boolean,
+  date,
   decimal,
   index,
   pgTable,
@@ -10,7 +11,6 @@ import {
   integer,
   unique,
   uuid,
-  time,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -210,6 +210,9 @@ export const recurringExpenseTemplates = pgTable(
     categoryId: uuid("category_id").references(() => categories.id, {
       onDelete: "set null",
     }),
+    scheduledAt: varchar("scheduled_at")
+      .$defaultFn(() => "1")
+      .notNull(),
     createdAt: timestamp("created_at")
       .$defaultFn(() => new Date())
       .notNull(),
@@ -287,12 +290,13 @@ export const notificationPreferences = pgTable("notification_preferences", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  entityId: uuid("entity_id"),
   type: varchar("type", { length: 100 }).notNull(),
   enabled: boolean("enabled")
     .$defaultFn(() => true)
     .notNull(),
   channel: varchar("channel", { length: 20 }).notNull(),
-  scheduledAt: time("scheduled_at"),
+  scheduledAt: date("scheduled_at", { mode: "date" }),
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),

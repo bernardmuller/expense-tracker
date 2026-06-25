@@ -16,6 +16,7 @@ export const updateTemplate = (
   if (params.description !== undefined) updates.description = params.description;
   if (params.amount !== undefined) updates.amount = params.amount.toString();
   if (params.categoryId !== undefined) updates.categoryId = params.categoryId;
+  if (params.scheduledAt !== undefined) updates.scheduledAt = params.scheduledAt;
 
   return fromDB(
     ctx.db

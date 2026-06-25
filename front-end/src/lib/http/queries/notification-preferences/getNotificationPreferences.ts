@@ -5,9 +5,9 @@ import { withAccessToken } from '../../with-token'
 import type { paths } from '../../schema'
 
 type NotificationPreferencesSuccess =
-  paths['/notification-preferences']['get']['responses']['200']['content']['application/json']
+  paths['/notification-preferences/with-entity']['get']['responses']['200']['content']['application/json']
 
-export type NotificationPreference =
+export type NotificationPreferenceWithEntity =
   NotificationPreferencesSuccess['notificationPreferences'][number]
 
 type NotificationPreferencesError = {
@@ -17,12 +17,12 @@ type NotificationPreferencesError = {
 }
 
 export async function fetchNotificationPreferences(): Promise<
-  NotificationPreference[]
+  NotificationPreferenceWithEntity[]
 > {
   const result = await withAccessToken(
     (ctx) => {
       return toResult(
-        client.GET('/notification-preferences', {
+        client.GET('/notification-preferences/with-entity', {
           headers: {
             authorization: `Bearer ${ctx.token}`,
           },

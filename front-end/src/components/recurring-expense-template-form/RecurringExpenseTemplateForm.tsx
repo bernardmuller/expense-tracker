@@ -1,7 +1,16 @@
 import z from 'zod'
-import { FieldGroup } from '@/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useAppForm } from '@/hooks/form'
 import type { FilterItems } from '@/components/filter/Filter.types'
+
+const SCHEDULED_DAYS = Array.from({ length: 31 }, (_, i) => String(i + 1))
 
 const templateFormSchema = z.object({
   description: z
@@ -11,6 +20,9 @@ const templateFormSchema = z.object({
   amount: z.number().positive('Amount must be greater than 0'),
   categoryId: z.string().refine((val) => val !== '', {
     message: 'You must specify a category',
+  }),
+  scheduledAt: z.string().refine((val) => /^(?:[1-9]|[12]\d|3[01])$/.test(val), {
+    message: 'Select a day between 1 and 31',
   }),
 })
 
@@ -36,6 +48,7 @@ export default function RecurringExpenseTemplateForm({
       description: defaultValues?.description ?? '',
       amount: defaultValues?.amount ?? 0,
       categoryId: defaultValues?.categoryId ?? '',
+      scheduledAt: defaultValues?.scheduledAt ?? '1',
     },
     validators: { onSubmit: templateFormSchema },
     onSubmit: ({ value }) => onSubmit(value),
@@ -71,6 +84,37 @@ export default function RecurringExpenseTemplateForm({
               placeHolder="Select Category"
             />
           )}
+        />
+        <form.AppField
+          name="scheduledAt"
+          children={(field) => {
+            const isInvalid = !field.state.meta.isValid
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Scheduled Day</FieldLabel>
+                <Select
+                  value={field.state.value}
+                  onValueChange={field.handleChange}
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    className="w-full"
+                    aria-invalid={isInvalid}
+                  >
+                    <SelectValue placeholder="Select day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SCHEDULED_DAYS.map((day) => (
+                      <SelectItem key={day} value={day}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            )
+          }}
         />
       </FieldGroup>
     </form>

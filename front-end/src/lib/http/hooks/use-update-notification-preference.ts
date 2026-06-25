@@ -6,7 +6,7 @@ import { client, toResult } from '../client'
 import { queryKeys } from '../query-keys'
 import type { paths } from '../schema'
 import { withAccessToken } from '../with-token'
-import type { NotificationPreference } from '../queries/notification-preferences/getNotificationPreferences'
+import type { NotificationPreferenceWithEntity } from '../queries/notification-preferences/getNotificationPreferences'
 
 type UpdateNotificationPreferenceBody =
   paths['/notification-preferences/{id}']['patch']['requestBody']['content']['application/json']
@@ -26,7 +26,7 @@ type UpdateNotificationPreferenceInput = {
 }
 
 type MutationContext = {
-  previous: NotificationPreference[] | undefined
+  previous: NotificationPreferenceWithEntity[] | undefined
   queryKey: readonly unknown[]
 }
 
@@ -80,8 +80,8 @@ export function useUpdateNotificationPreference() {
       const queryKey = queryKeys.notificationPreferences.list()
       await queryClient.cancelQueries({ queryKey })
       const previous =
-        queryClient.getQueryData<NotificationPreference[]>(queryKey)
-      queryClient.setQueryData<NotificationPreference[]>(queryKey, (old) =>
+        queryClient.getQueryData<NotificationPreferenceWithEntity[]>(queryKey)
+      queryClient.setQueryData<NotificationPreferenceWithEntity[]>(queryKey, (old) =>
         old?.map((p) => (p.id === id ? { ...p, ...body } : p)),
       )
       return { previous, queryKey }

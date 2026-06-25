@@ -4,6 +4,7 @@ import { ok, err, ResultAsync } from 'neverthrow'
 import { toast } from 'sonner'
 import { client } from '../client'
 import { queryKeys } from '../query-keys'
+import type { UserRecurringExpensesSuccess } from '../queries/recurring-expenses/getUserRecurringExpenses'
 import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { withAccessToken } from '../with-token'
 
@@ -12,6 +13,13 @@ type DeleteRecurringExpenseError = {
   message: string
   code: string
 }
+
+type MutationContext =
+  | {
+      queryKey: readonly unknown[]
+      previous: UserRecurringExpensesSuccess | undefined
+    }
+  | undefined
 
 export function useDeleteRecurringExpense() {
   const queryClient = useQueryClient()
@@ -38,14 +46,6 @@ export function useDeleteRecurringExpense() {
           ).andThen(({ response, error: respError }) => {
             if (response.ok) {
               toast.success('Recurring expense deleted')
-              const userIdResult = getUserIdFromAccessToken()
-              if (userIdResult.isOk()) {
-                queryClient.invalidateQueries({
-                  queryKey: queryKeys.recurringExpenses.byUser(
-                    userIdResult.value,
-                  ),
-                })
-              }
               return ok({ id: input.templateId })
             }
             const errObj: DeleteRecurringExpenseError = respError
@@ -55,9 +55,7 @@ export function useDeleteRecurringExpense() {
                   message: response.statusText,
                   code: String(response.status),
                 }
-            toast.error(
-              errObj.message || 'Failed to delete recurring expense',
-            )
+            toast.error(errObj.message || 'Failed to delete recurring expense')
             return err(errObj)
           }),
         (): DeleteRecurringExpenseError => ({
@@ -69,5 +67,38 @@ export function useDeleteRecurringExpense() {
         (data) => ok(data),
         (error) => err(error),
       ),
+
+    onMutate: async ({ templateId }): Promise<MutationContext> => {
+      const userIdResult = getUserIdFromAccessToken()
+      if (userIdResult.isErr()) return undefined
+      const queryKey = queryKeys.recurringExpenses.byUser(userIdResult.value)
+
+      await queryClient.cancelQueries({ queryKey })
+      const previous =
+        queryClient.getQueryData<UserRecurringExpensesSuccess>(queryKey)
+
+      queryClient.setQueryData<UserRecurringExpensesSuccess>(queryKey, (old) =>
+        old
+          ? {
+              ...old,
+              templates: old.templates.filter((t) => t.id !== templateId),
+            }
+          : old,
+      )
+
+      return { queryKey, previous }
+    },
+
+    onError: (_e, _vars, context) => {
+      if (context?.previous)
+        queryClient.setQueryData(context.queryKey, context.previous)
+    },
+
+    onSettled: (_data, _e, _vars, context) => {
+      if (context) queryClient.invalidateQueries({ queryKey: context.queryKey })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.notificationPreferences.all,
+      })
+    },
   })
 }
