@@ -55,4 +55,13 @@ export const queryKeys = {
       delete: () => ['recurring-expenses', 'instance', 'delete'] as const,
     },
   },
+  chats: {
+    all: ['chats'] as const,
+    byUser: (userId: string) => ['chats', 'user', userId] as const,
+  },
+  verifications: {
+    all: ['verifications'] as const,
+    byValue: (value: string) => ['verifications', 'value', value] as const,
+    create: () => ['verifications', 'create'] as const,
+  },
 } as const

@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileRecurringExpensesRouteImport } from './routes/profile.recurring-expenses'
 import { Route as ProfilePreferencesRouteImport } from './routes/profile.preferences'
+import { Route as ProfilePennyBotRouteImport } from './routes/profile.penny-bot'
 import { Route as CategoriesIdRouteImport } from './routes/categories/$id'
 import { Route as BudgetsNewRouteImport } from './routes/budgets/new'
 import { Route as BudgetsIdRouteImport } from './routes/budgets/$id'
@@ -70,6 +71,11 @@ const ProfilePreferencesRoute = ProfilePreferencesRouteImport.update({
   path: '/preferences',
   getParentRoute: () => ProfileRoute,
 } as any)
+const ProfilePennyBotRoute = ProfilePennyBotRouteImport.update({
+  id: '/penny-bot',
+  path: '/penny-bot',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const CategoriesIdRoute = CategoriesIdRouteImport.update({
   id: '/categories/$id',
   path: '/categories/$id',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/budgets/$id': typeof BudgetsIdRouteWithChildren
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
+  '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
   '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
   '/profile/': typeof ProfileIndexRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
+  '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
   '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
   '/profile': typeof ProfileIndexRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/budgets/$id': typeof BudgetsIdRouteWithChildren
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
+  '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
   '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
   '/profile/': typeof ProfileIndexRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/budgets/$id'
     | '/budgets/new'
     | '/categories/$id'
+    | '/profile/penny-bot'
     | '/profile/preferences'
     | '/profile/recurring-expenses'
     | '/profile/'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/budgets/new'
     | '/categories/$id'
+    | '/profile/penny-bot'
     | '/profile/preferences'
     | '/profile/recurring-expenses'
     | '/profile'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/budgets/$id'
     | '/budgets/new'
     | '/categories/$id'
+    | '/profile/penny-bot'
     | '/profile/preferences'
     | '/profile/recurring-expenses'
     | '/profile/'
@@ -269,6 +281,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfilePreferencesRouteImport
       parentRoute: typeof ProfileRoute
     }
+    '/profile/penny-bot': {
+      id: '/profile/penny-bot'
+      path: '/penny-bot'
+      fullPath: '/profile/penny-bot'
+      preLoaderRoute: typeof ProfilePennyBotRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/categories/$id': {
       id: '/categories/$id'
       path: '/categories/$id'
@@ -308,12 +327,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface ProfileRouteChildren {
+  ProfilePennyBotRoute: typeof ProfilePennyBotRoute
   ProfilePreferencesRoute: typeof ProfilePreferencesRoute
   ProfileRecurringExpensesRoute: typeof ProfileRecurringExpensesRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfilePennyBotRoute: ProfilePennyBotRoute,
   ProfilePreferencesRoute: ProfilePreferencesRoute,
   ProfileRecurringExpensesRoute: ProfileRecurringExpensesRoute,
   ProfileIndexRoute: ProfileIndexRoute,

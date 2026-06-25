@@ -1,14 +1,29 @@
 import type { Context } from "hono";
 import { createContext } from "@/lib/db/context";
 import { mapErrorToResponse } from "@/lib/http/errorMapper";
+import { parseSearchQuery } from "@/lib/utils/parseSearchQuery";
 import { getVerifications } from "../services";
+import type { Verification } from "../types";
 
 export const getVerificationsHandler = async (c: Context) => {
-  const ctx = createContext();
-  const result = await getVerifications(ctx);
-
-  return result.match(
-    (verifications) => c.json({ verifications, count: verifications.length }, 200),
-    (error) => mapErrorToResponse(error, c),
-  );
+  return parseSearchQuery<
+    Verification,
+    {
+      identifier: string;
+      value: string;
+    }
+  >({
+    rawQuery: c.req.query(),
+    allowedSortKeys: ["createdAt"],
+    filterKeys: ["identifier", "value"],
+  })
+    .asyncAndThen((search) => {
+      const ctx = createContext();
+      return getVerifications(search, ctx);
+    })
+    .match(
+      (verifications) =>
+        c.json({ verifications, count: verifications.length }, 200),
+      (error) => mapErrorToResponse(error, c),
+    );
 };

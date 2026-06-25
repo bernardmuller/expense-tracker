@@ -10,6 +10,7 @@ import {
 	integer,
 	unique,
 	uuid,
+	time,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -282,11 +283,60 @@ export const chats = pgTable("chats", {
 });
 
 
+export const notificationPreferences = pgTable("notification_preferences", {
+	id: uuid("id").primaryKey(),
+	userId: uuid("user_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	type: varchar("type", { length: 100 }).notNull(),
+	enabled: boolean("enabled").$defaultFn(() => true).notNull(),
+	channel: varchar("channel", { length: 20 }).notNull(),
+	scheduledAt: time("scheduled_at"),
+	createdAt: timestamp("created_at")
+		.$defaultFn(() => new Date())
+		.notNull(),
+	updatedAt: timestamp("updated_at")
+		.$defaultFn(() => new Date())
+		.notNull(),
+});
+
+export const notifications = pgTable("notifications", {
+	id: uuid("id").primaryKey(),
+	userId: uuid("user_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+	message: text("message").notNull(),
+	channel: varchar("channel", { length: 20 }).notNull(),
+	sentAt: timestamp("sent_at").notNull(),
+	createdAt: timestamp("created_at")
+		.$defaultFn(() => new Date())
+		.notNull(),
+});
+
 // Relations
 export const userRelations = relations(users, ({ many }) => ({
 	budgets: many(budgets),
 	userCategories: many(userCategories),
 	recurringExpenseTemplates: many(recurringExpenseTemplates),
+	notificationPreferences: many(notificationPreferences),
+	notifications: many(notifications),
+}));
+
+export const notificationPreferencesRelations = relations(
+	notificationPreferences,
+	({ one }) => ({
+		user: one(users, {
+			fields: [notificationPreferences.userId],
+			references: [users.id],
+		}),
+	}),
+);
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+	user: one(users, {
+		fields: [notifications.userId],
+		references: [users.id],
+	}),
 }));
 
 export const budgetRelations = relations(budgets, ({ one, many }) => ({
@@ -396,3 +446,7 @@ export type NewRecurringExpenseTemplate = typeof recurringExpenseTemplates.$infe
 export type BudgetRecurringExpense = typeof budgetRecurringExpenses.$inferSelect;
 export type NewBudgetRecurringExpense = typeof budgetRecurringExpenses.$inferInsert;
 export type Chats = typeof chats.$inferInsert;
+export type NotificationPreference = typeof notificationPreferences.$inferSelect;
+export type NewNotificationPreference = typeof notificationPreferences.$inferInsert;
+export type Notification = typeof notifications.$inferSelect;
+export type NewNotification = typeof notifications.$inferInsert;

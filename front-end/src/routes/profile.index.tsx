@@ -94,6 +94,17 @@ function ProfilePage() {
             </div>
             <div className="flex items-center justify-between">
               <div>
+                <p className="text-foreground font-medium">Penny Bot</p>
+                <p className="text-muted-foreground text-sm">
+                  Connect your Telegram account
+                </p>
+              </div>
+              <Button variant="outline" asChild>
+                <Link to="/profile/penny-bot">Configure</Link>
+              </Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
                 <p className="text-foreground font-medium">Clear Cache</p>
                 <p className="text-muted-foreground text-sm">
                   Remove all cached data

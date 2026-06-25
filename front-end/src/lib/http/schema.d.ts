@@ -75,7 +75,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             token: string;
-                            otp: string;
+                            otp?: string;
                         };
                     };
                 };
@@ -246,7 +246,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             token: string;
-                            otp: string;
+                            otp?: string;
                         };
                     };
                 };
@@ -2921,6 +2921,740 @@ export interface paths {
                 };
                 /** @description Instance state conflict (already paid / not paid) */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/verifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    identifier?: string;
+                    value?: string;
+                    limit?: number;
+                    offset?: number | null;
+                    sort?: "createdAt";
+                    order?: "asc" | "desc";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of verifications */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            verifications: {
+                                /** Format: uuid */
+                                id: string;
+                                identifier: string;
+                                value: string;
+                                /** Format: date */
+                                expiresAt: string;
+                                /** Format: date */
+                                createdAt: string | null;
+                                /** Format: date */
+                                updatedAt: string | null;
+                            }[];
+                            count: number;
+                        };
+                    };
+                };
+                /** @description Invalid query parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Verification to create */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        value: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created verification */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            verification: {
+                                /** Format: uuid */
+                                id: string;
+                                identifier: string;
+                                value: string;
+                                /** Format: date */
+                                expiresAt: string;
+                                /** Format: date */
+                                createdAt: string | null;
+                                /** Format: date */
+                                updatedAt: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/verifications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Verification */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            verification: {
+                                /** Format: uuid */
+                                id: string;
+                                identifier: string;
+                                value: string;
+                                /** Format: date */
+                                expiresAt: string;
+                                /** Format: date */
+                                createdAt: string | null;
+                                /** Format: date */
+                                updatedAt: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Verification not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted verification */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            verification: {
+                                /** Format: uuid */
+                                id: string;
+                                identifier: string;
+                                value: string;
+                                /** Format: date */
+                                expiresAt: string;
+                                /** Format: date */
+                                createdAt: string | null;
+                                /** Format: date */
+                                updatedAt: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Verification not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fields to update */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        identifier?: string;
+                        value?: string;
+                        /** Format: date */
+                        expiresAt?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated verification */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            verification: {
+                                /** Format: uuid */
+                                id: string;
+                                identifier: string;
+                                value: string;
+                                /** Format: date */
+                                expiresAt: string;
+                                /** Format: date */
+                                createdAt: string | null;
+                                /** Format: date */
+                                updatedAt: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Verification not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/chats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    userId?: string;
+                    chatId?: string;
+                    type?: string;
+                    limit?: number;
+                    offset?: number | null;
+                    sort?: "createdAt";
+                    order?: "asc" | "desc";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of chats */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            chats: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                userId: string;
+                                chatId: string | null;
+                                type: string | null;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                            }[];
+                            count: number;
+                        };
+                    };
+                };
+                /** @description Invalid query parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Chat to create */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        userId: string;
+                        chatId: string | null;
+                        type: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created chat */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            chat: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                userId: string;
+                                chatId: string | null;
+                                type: string | null;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/chats/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Chat */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            chat: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                userId: string;
+                                chatId: string | null;
+                                type: string | null;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Chat not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted chat */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            chat: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                userId: string;
+                                chatId: string | null;
+                                type: string | null;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Chat not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                            message: string;
+                            code: string;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Fields to update */
+            requestBody: {
+                content: {
+                    "application/json": {
+                        chatId?: string | null;
+                        type?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated chat */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            chat: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                userId: string;
+                                chatId: string | null;
+                                type: string | null;
+                                /** Format: date */
+                                createdAt: string;
+                                /** Format: date */
+                                updatedAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Chat not found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
