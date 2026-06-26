@@ -32,6 +32,27 @@ const formatAmount = (amount: string) =>
     maximumFractionDigits: 2,
   }).format(parseFloat(amount))
 
+const formatDayOfMonth = (day: number) => {
+  const mod100 = day % 100
+  if (mod100 >= 11 && mod100 <= 13) return `${day}th`
+  switch (day % 10) {
+    case 1:
+      return `${day}st`
+    case 2:
+      return `${day}nd`
+    case 3:
+      return `${day}rd`
+    default:
+      return `${day}th`
+  }
+}
+
+const formatDueDescription = (amount: string, scheduledAt: string) => {
+  const day = parseInt(scheduledAt, 10)
+  if (Number.isNaN(day)) return formatAmount(amount)
+  return `${formatAmount(amount)} · Due on the ${formatDayOfMonth(day)}`
+}
+
 const fallbackLabel = (pref: NotificationPreferenceWithEntity) =>
   NOTIFICATION_LABELS[pref.type] ?? { title: pref.type, description: '' }
 
@@ -124,7 +145,10 @@ function NotificationLists() {
                 const label = pref.template
                   ? {
                       title: pref.template.description,
-                      description: formatAmount(pref.template.amount),
+                      description: formatDueDescription(
+                        pref.template.amount,
+                        pref.template.scheduledAt,
+                      ),
                     }
                   : fallbackLabel(pref)
                 return (
