@@ -131,6 +131,8 @@ export const createNewBudget = (
                   categoryId: template.categoryId,
                   isPaid: false as const,
                   expenseId: null,
+                  templateId: template.id,
+                  scheduledAt: template.scheduledAt,
                   createdAt: now,
                   updatedAt: now,
                 }));

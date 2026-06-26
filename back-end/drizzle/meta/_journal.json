@@ -106,6 +106,20 @@
       "when": 1782390198839,
       "tag": "0015_bored_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1782487997120,
+      "tag": "0016_wise_the_fury",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1782489170821,
+      "tag": "0017_woozy_talon",
+      "breakpoints": true
     }
   ]
 }

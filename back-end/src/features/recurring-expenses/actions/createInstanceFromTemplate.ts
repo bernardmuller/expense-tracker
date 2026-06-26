@@ -24,6 +24,8 @@ export const createInstanceFromTemplate = (
     categoryId: template.categoryId,
     isPaid: false,
     expenseId: null,
+    templateId: template.id,
+    scheduledAt: template.scheduledAt,
     createdAt: now,
     updatedAt: now,
     deletedAt: null,

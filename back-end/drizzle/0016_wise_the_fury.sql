@@ -1,0 +1,2 @@
+ALTER TABLE "expenses" ADD COLUMN "template_id" uuid;--> statement-breakpoint
+ALTER TABLE "expenses" ADD CONSTRAINT "expenses_template_id_recurring_expense_templates_id_fk" FOREIGN KEY ("template_id") REFERENCES "public"."recurring_expense_templates"("id") ON DELETE set null ON UPDATE no action;

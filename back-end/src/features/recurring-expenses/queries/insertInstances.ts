@@ -24,6 +24,8 @@ export const insertInstances = (
           categoryId: instance.categoryId,
           isPaid: instance.isPaid,
           expenseId: instance.expenseId,
+          templateId: instance.templateId,
+          scheduledAt: instance.scheduledAt,
           createdAt: instance.createdAt,
           updatedAt: instance.updatedAt,
           deletedAt: instance.deletedAt,

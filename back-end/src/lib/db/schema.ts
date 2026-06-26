@@ -13,7 +13,6 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
-import { createInsertSchema } from "drizzle-zod";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey(),
@@ -187,6 +186,10 @@ export const expenses = pgTable("expenses", {
   categoryId: uuid("category_id")
     .notNull()
     .references(() => categories.id, { onDelete: "cascade" }),
+  templateId: uuid("template_id").references(
+    () => recurringExpenseTemplates.id,
+    { onDelete: "set null" },
+  ),
   note: varchar("note", { length: 255 }),
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
@@ -253,6 +256,11 @@ export const budgetRecurringExpenses = pgTable(
     expenseId: uuid("expense_id").references(() => expenses.id, {
       onDelete: "set null",
     }),
+    templateId: uuid("template_id").references(
+      () => recurringExpenseTemplates.id,
+      { onDelete: "set null" },
+    ),
+    scheduledAt: varchar("scheduled_at"),
     createdAt: timestamp("created_at")
       .$defaultFn(() => new Date())
       .notNull(),
@@ -270,6 +278,9 @@ export const budgetRecurringExpenses = pgTable(
     ).on(table.budgetId, table.deletedAt),
     expenseIdIdx: index("budget_recurring_expenses_expense_id_idx").on(
       table.expenseId,
+    ),
+    templateIdIdx: index("budget_recurring_expenses_template_id_idx").on(
+      table.templateId,
     ),
   }),
 );
