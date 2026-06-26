@@ -21,7 +21,11 @@ const NOTIFICATION_LABELS: Record<
 > = {
   'activity-reminder': {
     title: 'Activity Reminder',
-    description: 'Daily reminder to log your expenses.',
+    description: 'Daily reminder to log your expenses',
+  },
+  'budget-end-reminder': {
+    title: 'Budget End Reminder',
+    description: 'Reminder to prep for upcoming budget end',
   },
 }
 
@@ -111,7 +115,7 @@ function NotificationLists() {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Notifications</CardTitle>
+          <CardTitle>General Reminders</CardTitle>
         </CardHeader>
         <CardContent>
           {general.length === 0 ? (
@@ -144,12 +148,12 @@ function NotificationLists() {
               {recurring.map((pref) => {
                 const label = pref.template
                   ? {
-                      title: pref.template.description,
-                      description: formatDueDescription(
-                        pref.template.amount,
-                        pref.template.scheduledAt,
-                      ),
-                    }
+                    title: pref.template.description,
+                    description: formatDueDescription(
+                      pref.template.amount,
+                      pref.template.scheduledAt,
+                    ),
+                  }
                   : fallbackLabel(pref)
                 return (
                   <PreferenceRow

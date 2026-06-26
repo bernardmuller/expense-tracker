@@ -9,7 +9,6 @@ import { requireAuth } from '@/lib/auth/route-guard'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter, Link } from '@tanstack/react-router'
-import { ArrowLeftIcon, LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 
 export const Route = createFileRoute('/profile/')({
@@ -29,7 +28,7 @@ function ProfilePage() {
   const handleClearCategoriesCache = () => {
     queryClient.removeQueries({ queryKey: ['categories'] })
     queryClient.removeQueries({ queryKey: ['budgets'] })
-    toast.success('Cache cleared successfully')
+    toast.success('Categories and budgets refreshed')
   }
 
   return (
@@ -38,7 +37,9 @@ function ProfilePage() {
         <AppHeader.Left>
           <AppHeader.Back onBack={() => router.history.back()} />
         </AppHeader.Left>
-        <div />
+        <AppHeader.Center>
+          <AppHeader.Title>Profile</AppHeader.Title>
+        </AppHeader.Center>
         <AppHeader.Right>
           <ThemeToggle />
         </AppHeader.Right>
@@ -47,16 +48,20 @@ function ProfilePage() {
       <Layout>
         <Card>
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
+            <CardTitle>Account</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <p className="text-muted-foreground text-sm">Name</p>
-              <p className="text-foreground font-medium">{user.name}</p>
+              <p className="text-foreground font-medium break-words">
+                {user.name}
+              </p>
             </div>
             <div>
               <p className="text-muted-foreground text-sm">Email</p>
-              <p className="text-foreground font-medium">{user.email}</p>
+              <p className="text-foreground font-medium break-all">
+                {user.email}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -65,64 +70,67 @@ function ProfilePage() {
             <CardTitle>Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <p className="text-foreground font-medium">
                   Budget Preferences
                 </p>
                 <p className="text-muted-foreground text-sm">
-                  Update frequency and start day
+                  Frequency and start date
                 </p>
               </div>
               <Button variant="outline" asChild>
-                <Link to="/profile/preferences">Update</Link>
+                <Link to="/profile/preferences">Manage</Link>
               </Button>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <p className="text-foreground font-medium">
                   Recurring Expenses
                 </p>
                 <p className="text-muted-foreground text-sm">
-                  Manage subscriptions and recurring bills
+                  Subscriptions and recurring bills
                 </p>
               </div>
               <Button variant="outline" asChild>
                 <Link to="/profile/recurring-expenses">Manage</Link>
               </Button>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <p className="text-foreground font-medium">Penny Bot</p>
                 <p className="text-muted-foreground text-sm">
-                  Connect your Telegram account
+                  Log expenses via Telegram
                 </p>
               </div>
               <Button variant="outline" asChild>
-                <Link to="/profile/penny-bot">Configure</Link>
+                <Link to="/profile/penny-bot">Manage</Link>
               </Button>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <p className="text-foreground font-medium">Notifications</p>
                 <p className="text-muted-foreground text-sm">
-                  Manage notification preferences
+                  Reminders and alerts
                 </p>
               </div>
               <Button variant="outline" asChild>
                 <Link to="/profile/notifications">Manage</Link>
               </Button>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-foreground font-medium">Clear Cache</p>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-foreground font-medium">Refresh data</p>
                 <p className="text-muted-foreground text-sm">
-                  Remove all cached data
+                  Reload categories and budgets from the server
                 </p>
               </div>
-              <Button variant="outline" onClick={handleClearCategoriesCache}>
-                Clear
+              <Button
+                variant="outline"
+                onClick={handleClearCategoriesCache}
+                aria-label="Refresh categories and budgets"
+              >
+                Refresh
               </Button>
             </div>
             <Separator />
