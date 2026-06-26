@@ -17,6 +17,7 @@ export const insertTemplate = (
         description: template.description,
         amount: template.amount,
         categoryId: template.categoryId,
+        scheduledAt: template.scheduledAt,
         createdAt: template.createdAt,
         updatedAt: template.updatedAt,
         deletedAt: template.deletedAt,
