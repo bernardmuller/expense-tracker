@@ -43,7 +43,7 @@ interface Props {
   onSubmit: (values: MarkPaidSubmitValues) => void
 }
 
-export default function MarkRecurringExpensePaidDialog({
+export default function RecurringExpensesCardMarkPaidDialog({
   open,
   onOpenChange,
   categories,

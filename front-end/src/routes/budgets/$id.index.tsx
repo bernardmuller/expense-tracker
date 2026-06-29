@@ -1,9 +1,17 @@
 import { requireAuth } from '@/lib/auth/route-guard'
 import { getBudgetByIdQueryOptions } from '@/lib/http/queries/budget-detail'
 import { getBudgetRecurringExpensesQueryOptions } from '@/lib/http/queries/recurring-expenses/getBudgetRecurringExpenses'
+import type { BudgetRecurringExpense } from '@/lib/http/queries/recurring-expenses/getBudgetRecurringExpenses'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import RecurringExpensesCard from '@/components/recurring-expenses-card/RecurringExpensesCard'
+import RecurringExpensesCardItem from '@/components/recurring-expenses-card/RecurringExpensesCardItem'
+import RecurringExpensesCardMarkPaidDialog from '@/components/recurring-expenses-card/RecurringExpensesCardMarkPaidDialog'
+import RecurringExpensesCardUnmarkConfirm from '@/components/recurring-expenses-card/RecurringExpensesCardUnmarkConfirm'
+import RecurringExpensesCardDeleteConfirm from '@/components/recurring-expenses-card/RecurringExpensesCardDeleteConfirm'
+import { useUpdateRecurringExpenseStatus } from '@/lib/http/hooks/use-update-recurring-expense-status'
+import { useDeleteRecurringExpenseInstance } from '@/lib/http/hooks/use-delete-recurring-expense-instance'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
+import { formatDayOfMonth } from '@/lib/utils/formatting/formatDayOfMonth'
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createFileRoute,
@@ -11,7 +19,7 @@ import {
   Link,
   useRouter,
 } from '@tanstack/react-router'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { BudgetDetailSkeleton } from './budgets.skeleton'
 import PlannedBudgetBreakdownItem from '@/components/budget-breakdowns/PlannedBudgetBreakdownItem'
 import OverBudgetBreakdownItem from '@/components/budget-breakdowns/OverBudgetBreakdownItem'
@@ -59,14 +67,49 @@ function BudgetDetailPage() {
   )
 }
 
+const RECURRING_UNPAID_DEBOUNCE_MS = 200
+
 function BudgetDetail() {
   const { id } = Route.useParams()
   const router = useRouter()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { data: budget } = useSuspenseQuery(getBudgetByIdQueryOptions(id))
+  const { data: recurringResponse } = useSuspenseQuery(
+    getBudgetRecurringExpensesQueryOptions(id),
+  )
+  const { data: categoriesResponse } = useSuspenseQuery(
+    getCategoriesQueryOptions(),
+  )
+  const updateRecurringStatusMutation = useUpdateRecurringExpenseStatus()
+  const deleteRecurringMutation = useDeleteRecurringExpenseInstance()
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
   const [sortOption, setSortOption] = useState<string>('name-asc')
+
+  const recurringInstances = recurringResponse.recurringExpenses
+  const categoriesById = useMemo(
+    () =>
+      new Map(categoriesResponse.categories.map((c) => [c.id, c])),
+    [categoriesResponse.categories],
+  )
+  const recurringCategoryOptions = useMemo(
+    () =>
+      categoriesResponse.categories.map((c) => ({
+        value: c.id,
+        label: `${c.icon} ${c.label}`,
+      })),
+    [categoriesResponse.categories],
+  )
+
+  const [markPaidTarget, setMarkPaidTarget] =
+    useState<BudgetRecurringExpense | null>(null)
+  const [pendingDelete, setPendingDelete] =
+    useState<BudgetRecurringExpense | null>(null)
+  const [pendingUnpaid, setPendingUnpaid] =
+    useState<BudgetRecurringExpense | null>(null)
+  const unpaidTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map(),
+  )
 
   const currentAmount = Math.floor(parseFloat(budget.budget.currentAmount))
   const startAmount = Math.floor(parseFloat(budget.budget.startAmount))
@@ -101,6 +144,67 @@ function BudgetDetail() {
     if (budget.next) {
       navigate({ to: '/budgets/$id', params: { id: budget.next } })
     }
+  }
+
+  const handleRecurringToggle = (
+    instance: BudgetRecurringExpense,
+    nextChecked: boolean,
+  ) => {
+    if (nextChecked && !instance.isPaid) {
+      setMarkPaidTarget(instance)
+      return
+    }
+    if (!nextChecked && instance.isPaid) {
+      setPendingUnpaid(instance)
+    }
+  }
+
+  const handleConfirmUnpaid = () => {
+    if (!pendingUnpaid) return
+    const instance = pendingUnpaid
+    setPendingUnpaid(null)
+    const existing = unpaidTimers.current.get(instance.id)
+    if (existing) clearTimeout(existing)
+    const timer = setTimeout(() => {
+      unpaidTimers.current.delete(instance.id)
+      updateRecurringStatusMutation.mutate({
+        budgetId: id,
+        instanceId: instance.id,
+        body: { isPaid: false },
+      })
+    }, RECURRING_UNPAID_DEBOUNCE_MS)
+    unpaidTimers.current.set(instance.id, timer)
+  }
+
+  const handleMarkPaidSubmit = (
+    instance: BudgetRecurringExpense,
+    values: {
+      description: string
+      amount: number
+      categoryId: string
+      createdAt?: string
+      note?: string
+    },
+  ) => {
+    updateRecurringStatusMutation.mutate(
+      {
+        budgetId: id,
+        instanceId: instance.id,
+        body: { isPaid: true, expenseData: values },
+      },
+      {
+        onSuccess: (result) => {
+          if (result.isOk()) setMarkPaidTarget(null)
+        },
+      },
+    )
+  }
+
+  const handleConfirmDelete = () => {
+    if (!pendingDelete) return
+    const instance = pendingDelete
+    setPendingDelete(null)
+    deleteRecurringMutation.mutate({ budgetId: id, instanceId: instance.id })
   }
 
   return (
@@ -150,7 +254,44 @@ function BudgetDetail() {
           spentPercentage={spentPercentage}
           onClick={togglePrivacy}
         />
-        <RecurringExpensesCard budgetId={id} />
+        {recurringInstances.length > 0 && (
+          <RecurringExpensesCard>
+            {recurringInstances.map((instance) => {
+              const category = instance.categoryId
+                ? categoriesById.get(instance.categoryId)
+                : undefined
+              const scheduledDay = instance.scheduledAt
+                ? parseInt(instance.scheduledAt, 10)
+                : null
+              const dueLabel =
+                scheduledDay !== null && !Number.isNaN(scheduledDay)
+                  ? formatDayOfMonth(scheduledDay)
+                  : undefined
+              return (
+                <RecurringExpensesCardItem
+                  key={instance.id}
+                  description={instance.description}
+                  amount={formatCurrency(parseFloat(instance.amount), 'za')}
+                  categoryLabel={
+                    category
+                      ? `${category.icon} ${category.label}`
+                      : '(deleted category)'
+                  }
+                  dueLabel={dueLabel}
+                  isPaid={instance.isPaid}
+                  onToggle={(checked) =>
+                    handleRecurringToggle(instance, checked)
+                  }
+                  onDelete={
+                    instance.isPaid
+                      ? undefined
+                      : () => setPendingDelete(instance)
+                  }
+                />
+              )
+            })}
+          </RecurringExpensesCard>
+        )}
         <Card className="p-0">
           <NavigationLink
             icon={<ReceiptText className="h-5 w-5 text-white" />}
@@ -295,6 +436,43 @@ function BudgetDetail() {
           </CardContent>
         </Card>
       </Layout>
+
+      {markPaidTarget && (
+        <RecurringExpensesCardMarkPaidDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setMarkPaidTarget(null)
+          }}
+          categories={recurringCategoryOptions}
+          isSubmitting={updateRecurringStatusMutation.isPending}
+          defaultValues={{
+            description: markPaidTarget.description,
+            amount: parseFloat(markPaidTarget.amount),
+            categoryId: markPaidTarget.categoryId ?? '',
+          }}
+          onSubmit={(values) =>
+            handleMarkPaidSubmit(markPaidTarget, values)
+          }
+        />
+      )}
+
+      <RecurringExpensesCardUnmarkConfirm
+        open={pendingUnpaid !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingUnpaid(null)
+        }}
+        description={pendingUnpaid?.description ?? ''}
+        onConfirm={handleConfirmUnpaid}
+      />
+
+      <RecurringExpensesCardDeleteConfirm
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null)
+        }}
+        description={pendingDelete?.description ?? ''}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   )
 }
