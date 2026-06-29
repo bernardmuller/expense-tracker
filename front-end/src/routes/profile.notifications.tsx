@@ -14,6 +14,7 @@ import {
   type NotificationPreferenceWithEntity,
 } from '@/lib/http/queries/notification-preferences/getNotificationPreferences'
 import { useUpdateNotificationPreference } from '@/lib/http/hooks/use-update-notification-preference'
+import { formatDayOfMonth } from '@/lib/utils/formatting/formatDayOfMonth'
 
 const NOTIFICATION_LABELS: Record<
   string,
@@ -35,21 +36,6 @@ const formatAmount = (amount: string) =>
     currency: 'ZAR',
     maximumFractionDigits: 2,
   }).format(parseFloat(amount))
-
-const formatDayOfMonth = (day: number) => {
-  const mod100 = day % 100
-  if (mod100 >= 11 && mod100 <= 13) return `${day}th`
-  switch (day % 10) {
-    case 1:
-      return `${day}st`
-    case 2:
-      return `${day}nd`
-    case 3:
-      return `${day}rd`
-    default:
-      return `${day}th`
-  }
-}
 
 const formatDueDescription = (amount: string, scheduledAt: string) => {
   const day = parseInt(scheduledAt, 10)

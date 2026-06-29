@@ -25,6 +25,7 @@ import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import { useUpdateRecurringExpenseStatus } from '@/lib/http/hooks/use-update-recurring-expense-status'
 import { useDeleteRecurringExpenseInstance } from '@/lib/http/hooks/use-delete-recurring-expense-instance'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
+import { formatDayOfMonth } from '@/lib/utils/formatting/formatDayOfMonth'
 import MarkRecurringExpensePaidDialog from '@/components/mark-recurring-expense-paid-dialog/MarkRecurringExpensePaidDialog'
 
 const DEBOUNCE_MS = 200
@@ -147,6 +148,13 @@ export default function RecurringExpensesCard({ budgetId }: Props) {
                 const category = instance.categoryId
                   ? categoriesById.get(instance.categoryId)
                   : undefined
+                const scheduledDay = instance.scheduledAt
+                  ? parseInt(instance.scheduledAt, 10)
+                  : null
+                const dueSuffix =
+                  scheduledDay !== null && !Number.isNaN(scheduledDay)
+                    ? ` · Due on the ${formatDayOfMonth(scheduledDay)}`
+                    : ''
                 return (
                   <li
                     key={instance.id}
@@ -181,6 +189,7 @@ export default function RecurringExpensesCard({ budgetId }: Props) {
                           {category
                             ? ` · ${category.icon} ${category.label}`
                             : ' · (deleted category)'}
+                          {dueSuffix}
                         </span>
                       </label>
                     </div>

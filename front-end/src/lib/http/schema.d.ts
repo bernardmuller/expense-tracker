@@ -2117,6 +2117,8 @@ export interface paths {
                             amount: string;
                             /** Format: uuid */
                             categoryId: string;
+                            /** Format: uuid */
+                            templateId: string | null;
                             note: string | null;
                             /** Format: date */
                             createdAt: string;
@@ -2206,6 +2208,8 @@ export interface paths {
                                 amount: string;
                                 /** Format: uuid */
                                 categoryId: string;
+                                /** Format: uuid */
+                                templateId: string | null;
                                 note: string | null;
                                 /** Format: date */
                                 createdAt: string;
@@ -2279,6 +2283,8 @@ export interface paths {
                             amount: string;
                             /** Format: uuid */
                             categoryId: string;
+                            /** Format: uuid */
+                            templateId: string | null;
                             note: string | null;
                             /** Format: date */
                             createdAt: string;
@@ -2701,6 +2707,9 @@ export interface paths {
                                 isPaid: boolean;
                                 /** Format: uuid */
                                 expenseId: string | null;
+                                /** Format: uuid */
+                                templateId: string | null;
+                                scheduledAt: string | null;
                                 /** Format: date */
                                 createdAt: string;
                                 /** Format: date */
@@ -2881,6 +2890,8 @@ export interface paths {
                             amount: string;
                             /** Format: uuid */
                             categoryId: string;
+                            /** Format: uuid */
+                            templateId: string | null;
                             note: string | null;
                             /** Format: date */
                             createdAt: string;

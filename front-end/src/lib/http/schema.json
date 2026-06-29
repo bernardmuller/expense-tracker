@@ -4010,6 +4010,11 @@
                       "type": "string",
                       "format": "uuid"
                     },
+                    "templateId": {
+                      "type": "string",
+                      "nullable": true,
+                      "format": "uuid"
+                    },
                     "note": {
                       "type": "string",
                       "nullable": true,
@@ -4035,6 +4040,7 @@
                     "description",
                     "amount",
                     "categoryId",
+                    "templateId",
                     "note",
                     "createdAt",
                     "updatedAt",
@@ -4162,6 +4168,11 @@
                             "type": "string",
                             "format": "uuid"
                           },
+                          "templateId": {
+                            "type": "string",
+                            "nullable": true,
+                            "format": "uuid"
+                          },
                           "note": {
                             "type": "string",
                             "nullable": true,
@@ -4187,6 +4198,7 @@
                           "description",
                           "amount",
                           "categoryId",
+                          "templateId",
                           "note",
                           "createdAt",
                           "updatedAt",
@@ -4296,6 +4308,11 @@
                       "type": "string",
                       "format": "uuid"
                     },
+                    "templateId": {
+                      "type": "string",
+                      "nullable": true,
+                      "format": "uuid"
+                    },
                     "note": {
                       "type": "string",
                       "nullable": true,
@@ -4321,6 +4338,7 @@
                     "description",
                     "amount",
                     "categoryId",
+                    "templateId",
                     "note",
                     "createdAt",
                     "updatedAt",
@@ -5098,6 +5116,15 @@
                             "nullable": true,
                             "format": "uuid"
                           },
+                          "templateId": {
+                            "type": "string",
+                            "nullable": true,
+                            "format": "uuid"
+                          },
+                          "scheduledAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
                           "createdAt": {
                             "type": "string",
                             "format": "date"
@@ -5186,6 +5213,8 @@
                           "categoryId",
                           "isPaid",
                           "expenseId",
+                          "templateId",
+                          "scheduledAt",
                           "createdAt",
                           "updatedAt",
                           "deletedAt",
@@ -5380,6 +5409,11 @@
                       "type": "string",
                       "format": "uuid"
                     },
+                    "templateId": {
+                      "type": "string",
+                      "nullable": true,
+                      "format": "uuid"
+                    },
                     "note": {
                       "type": "string",
                       "nullable": true,
@@ -5405,6 +5439,7 @@
                     "description",
                     "amount",
                     "categoryId",
+                    "templateId",
                     "note",
                     "createdAt",
                     "updatedAt",
