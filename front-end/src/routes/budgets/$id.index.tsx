@@ -5,6 +5,7 @@ import type { BudgetRecurringExpense } from '@/lib/http/queries/recurring-expens
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
 import RecurringExpensesCard from '@/components/recurring-expenses-card/RecurringExpensesCard'
 import RecurringExpensesCardItem from '@/components/recurring-expenses-card/RecurringExpensesCardItem'
+import RecurringExpensesCardDueTodayItem from '@/components/recurring-expenses-card/RecurringExpensesCardDueTodayItem'
 import RecurringExpensesCardMarkPaidDialog from '@/components/recurring-expenses-card/RecurringExpensesCardMarkPaidDialog'
 import RecurringExpensesCardUnmarkConfirm from '@/components/recurring-expenses-card/RecurringExpensesCardUnmarkConfirm'
 import RecurringExpensesCardDeleteConfirm from '@/components/recurring-expenses-card/RecurringExpensesCardDeleteConfirm'
@@ -68,6 +69,7 @@ function BudgetDetailPage() {
 }
 
 const RECURRING_UNPAID_DEBOUNCE_MS = 200
+const RECURRING_CYCLE_LENGTH = 31
 
 function BudgetDetail() {
   const { id } = Route.useParams()
@@ -87,6 +89,27 @@ function BudgetDetail() {
   const [sortOption, setSortOption] = useState<string>('name-asc')
 
   const recurringInstances = recurringResponse.recurringExpenses
+  const todayDay = new Date().getDate()
+  const sortedRecurringInstances = useMemo(() => {
+    const daysUntilDue = (raw: string | null) => {
+      if (!raw) return Number.POSITIVE_INFINITY
+      const day = parseInt(raw, 10)
+      if (Number.isNaN(day)) return Number.POSITIVE_INFINITY
+      const diff = day - todayDay
+      return diff >= 0 ? diff : diff + RECURRING_CYCLE_LENGTH
+    }
+    return [...recurringInstances].sort(
+      (a, b) => daysUntilDue(a.scheduledAt) - daysUntilDue(b.scheduledAt),
+    )
+  }, [recurringInstances, todayDay])
+  const dueTodayCount = sortedRecurringInstances.filter(
+    (i) =>
+      !i.isPaid &&
+      i.scheduledAt !== null &&
+      parseInt(i.scheduledAt, 10) === todayDay,
+  ).length
+  const paidCount = sortedRecurringInstances.filter((i) => i.isPaid).length
+  const unpaidCount = sortedRecurringInstances.length - paidCount
   const categoriesById = useMemo(
     () =>
       new Map(categoriesResponse.categories.map((c) => [c.id, c])),
@@ -254,39 +277,54 @@ function BudgetDetail() {
           spentPercentage={spentPercentage}
           onClick={togglePrivacy}
         />
-        {recurringInstances.length > 0 && (
-          <RecurringExpensesCard>
-            {recurringInstances.map((instance) => {
+        {sortedRecurringInstances.length > 0 && (
+          <RecurringExpensesCard
+            paidCount={paidCount}
+            unpaidCount={unpaidCount}
+            dueTodayCount={dueTodayCount}
+          >
+            {sortedRecurringInstances.map((instance) => {
               const category = instance.categoryId
                 ? categoriesById.get(instance.categoryId)
                 : undefined
               const scheduledDay = instance.scheduledAt
                 ? parseInt(instance.scheduledAt, 10)
                 : null
+              const isDueToday =
+                scheduledDay !== null &&
+                !Number.isNaN(scheduledDay) &&
+                scheduledDay === todayDay
               const dueLabel =
                 scheduledDay !== null && !Number.isNaN(scheduledDay)
                   ? formatDayOfMonth(scheduledDay)
                   : undefined
+              const categoryLabel = category
+                ? `${category.icon} ${category.label}`
+                : '(deleted category)'
+              const commonProps = {
+                description: instance.description,
+                amount: formatCurrency(parseFloat(instance.amount), 'za'),
+                categoryLabel,
+                isPaid: instance.isPaid,
+                onToggle: (checked: boolean) =>
+                  handleRecurringToggle(instance, checked),
+                onDelete: instance.isPaid
+                  ? undefined
+                  : () => setPendingDelete(instance),
+              }
+              if (isDueToday && !instance.isPaid) {
+                return (
+                  <RecurringExpensesCardDueTodayItem
+                    key={instance.id}
+                    {...commonProps}
+                  />
+                )
+              }
               return (
                 <RecurringExpensesCardItem
                   key={instance.id}
-                  description={instance.description}
-                  amount={formatCurrency(parseFloat(instance.amount), 'za')}
-                  categoryLabel={
-                    category
-                      ? `${category.icon} ${category.label}`
-                      : '(deleted category)'
-                  }
+                  {...commonProps}
                   dueLabel={dueLabel}
-                  isPaid={instance.isPaid}
-                  onToggle={(checked) =>
-                    handleRecurringToggle(instance, checked)
-                  }
-                  onDelete={
-                    instance.isPaid
-                      ? undefined
-                      : () => setPendingDelete(instance)
-                  }
                 />
               )
             })}

@@ -2,22 +2,21 @@ import { useId } from 'react'
 import { CheckCircle2, Trash2 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 interface Props {
   description: string
   amount: string
   categoryLabel: string
-  dueLabel?: string
   isPaid: boolean
   onToggle: (checked: boolean) => void
   onDelete?: () => void
 }
 
-export default function RecurringExpensesCardItem({
+export default function RecurringExpensesCardDueTodayItem({
   description,
   amount,
   categoryLabel,
-  dueLabel,
   isPaid,
   onToggle,
   onDelete,
@@ -25,7 +24,10 @@ export default function RecurringExpensesCardItem({
   const checkboxId = useId()
 
   return (
-    <li className="flex items-center justify-between gap-2 py-3">
+    <li
+      className="bg-primary/5 border-primary -mx-3 my-1 flex items-center
+        justify-between gap-2 rounded-md border-l-2 px-3 py-3"
+    >
       <div className="flex flex-1 items-start gap-3">
         <Checkbox
           id={checkboxId}
@@ -39,14 +41,14 @@ export default function RecurringExpensesCardItem({
             }`}
         >
           <span
-            className={`font-medium ${isPaid ? 'text-foreground line-through' : 'text-foreground'
+            className={`flex items-center gap-2 font-medium ${isPaid ? 'text-foreground line-through' : 'text-foreground'
               }`}
           >
             {description}
+            <Badge variant="default">Due today</Badge>
           </span>
           <span className="text-muted-foreground text-sm">
             {amount} · {categoryLabel}
-            {dueLabel ? ` · ${dueLabel}` : ''}
           </span>
         </label>
       </div>
