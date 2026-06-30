@@ -167,6 +167,9 @@ export function useDeleteExpense() {
         queryClient.invalidateQueries({
           queryKey: queryKeys.budgets.expenses(params.budgetId),
         })
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.recurringExpenses.byBudget(params.budgetId),
+        })
       }
     },
   })

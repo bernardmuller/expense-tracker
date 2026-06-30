@@ -1,7 +1,6 @@
 import { useId } from 'react'
-import { CheckCircle2, Trash2 } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Button } from '@/components/ui/button'
 
 interface Props {
   description: string
@@ -10,7 +9,6 @@ interface Props {
   dueLabel?: string
   isPaid: boolean
   onToggle: (checked: boolean) => void
-  onDelete?: () => void
 }
 
 export default function RecurringExpensesCardItem({
@@ -20,19 +18,12 @@ export default function RecurringExpensesCardItem({
   dueLabel,
   isPaid,
   onToggle,
-  onDelete,
 }: Props) {
   const checkboxId = useId()
 
   return (
     <li className="flex items-center justify-between gap-2 py-3">
-      <div className="flex flex-1 items-start gap-3">
-        <Checkbox
-          id={checkboxId}
-          className="mt-0.5 size-6"
-          checked={isPaid}
-          onCheckedChange={(value) => onToggle(value === true)}
-        />
+      <div className="flex flex-1 items-center gap-3">
         <label
           htmlFor={checkboxId}
           className={`flex flex-1 cursor-pointer flex-col ${isPaid ? 'opacity-60' : ''
@@ -59,16 +50,12 @@ export default function RecurringExpensesCardItem({
             <CheckCircle2 className="size-4" /> PAID
           </span>
         ) : (
-          onDelete && (
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={`Remove ${description}`}
-              onClick={onDelete}
-            >
-              <Trash2 className="size-4" />
-            </Button>
-          )
+          <Checkbox
+            id={checkboxId}
+            className="size-6"
+            checked={isPaid}
+            onCheckedChange={(value) => onToggle(value === true)}
+          />
         )}
       </div>
     </li>

@@ -9,5 +9,6 @@ export * from "./findInstancesByBudgetId";
 export * from "./insertInstances";
 export * from "./markInstancePaidAtomic";
 export * from "./markInstanceUnpaidAtomic";
+export * from "./clearInstancesByExpenseId";
 export * from "./softDeleteInstance";
 export * from "./softDeleteExpense";

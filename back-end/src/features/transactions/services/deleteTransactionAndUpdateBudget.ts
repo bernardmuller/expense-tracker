@@ -3,6 +3,7 @@ import type { AppContext } from "@/lib/db/context";
 import * as TransactionRepo from "../queries/index";
 import * as BudgetDomain from "../../budgets/domain/budget-processing.domain";
 import * as BudgetRepo from "../../budgets/queries/index";
+import * as RecurringExpensesRepo from "../../recurring-expenses/queries";
 import type { Transaction } from "../types";
 import { AppResult } from "@/lib/result";
 import { DatabaseError } from "@/lib/errors/domain";
@@ -18,6 +19,15 @@ export const deleteTransactionAndUpdateBudget = (
       ResultAsync.fromPromise(
         ctx.db.transaction(async (tx) => {
           const transactionContext = { ...ctx, db: tx };
+
+          const clearedRecurringResult =
+            await RecurringExpensesRepo.clearInstancesByExpenseId(
+              expenseId,
+              transactionContext,
+            );
+          if (clearedRecurringResult.isErr()) {
+            throw clearedRecurringResult.error;
+          }
 
           const deletedExpenseResult = await TransactionRepo.hardDeleteExpense(
             expenseId,
