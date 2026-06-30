@@ -26,4 +26,4 @@ async function sendNotifications() {
   }
 }
 
-setInterval(sendNotifications, 1000 * 20);
+sendNotifications();

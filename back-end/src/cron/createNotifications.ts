@@ -197,4 +197,4 @@ async function createNotifications() {
   }
 }
 
-setInterval(createNotifications, 1000 * 20);
+createNotifications();
