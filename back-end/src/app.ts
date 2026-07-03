@@ -11,6 +11,7 @@ import { recurringExpensesRouter as recurringExpenses } from "./features/recurri
 import { verificationRouter as verifications } from "./features/verifications";
 import { chatRouter as chats } from "./features/chats";
 import { notificationPreferencesRouter as notificationPreferences } from "./features/notification-preferences";
+import { streakRouter as streaks } from "./features/streaks";
 import { cors } from "hono/cors";
 import env from "./env";
 import { authMiddleware } from "@/lib/http/middleware/auth";
@@ -31,6 +32,7 @@ const routes = [
   verifications,
   chats,
   notificationPreferences,
+  streaks,
 ] as const;
 
 app.use(
@@ -71,6 +73,7 @@ app.route("/", recurringExpenses);
 app.route("/", verifications);
 app.route("/", chats);
 app.route("/", notificationPreferences);
+app.route("/", streaks);
 
 export type AppType = typeof app;
 

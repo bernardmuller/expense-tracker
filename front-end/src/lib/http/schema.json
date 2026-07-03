@@ -8249,6 +8249,187 @@
           }
         }
       }
+    },
+    "/streaks": {
+      "get": {
+        "tags": [
+          "Streaks"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "maximum": 1000
+            },
+            "required": false,
+            "name": "days",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User streak data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "days": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "string"
+                          },
+                          "count": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "date",
+                          "count"
+                        ]
+                      }
+                    },
+                    "currentStreak": {
+                      "type": "number"
+                    },
+                    "longestStreak": {
+                      "type": "number"
+                    },
+                    "totalActiveDays": {
+                      "type": "number"
+                    },
+                    "checkedInToday": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "days",
+                    "currentStreak",
+                    "longestStreak",
+                    "totalActiveDays",
+                    "checkedInToday"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/streaks/check-in": {
+      "post": {
+        "tags": [
+          "Streaks"
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated streak after recording today's activity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "days": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "string"
+                          },
+                          "count": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "date",
+                          "count"
+                        ]
+                      }
+                    },
+                    "currentStreak": {
+                      "type": "number"
+                    },
+                    "longestStreak": {
+                      "type": "number"
+                    },
+                    "totalActiveDays": {
+                      "type": "number"
+                    },
+                    "checkedInToday": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "days",
+                    "currentStreak",
+                    "longestStreak",
+                    "totalActiveDays",
+                    "checkedInToday"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error",
+                    "message",
+                    "code"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

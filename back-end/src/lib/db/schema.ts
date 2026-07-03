@@ -330,6 +330,32 @@ export const notifications = pgTable("notifications", {
     .notNull(),
 });
 
+// Daily app-activity used to build engagement streaks
+export const userActivity = pgTable(
+  "user_activity",
+  {
+    id: uuid("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    date: date("date", { mode: "string" }).notNull(),
+    count: integer("count").default(1).notNull(),
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  (table) => ({
+    userIdDateUq: uniqueIndex("user_activity_user_id_date_uq").on(
+      table.userId,
+      table.date,
+    ),
+    userIdIdx: index("user_activity_user_id_idx").on(table.userId),
+  }),
+);
+
 // Relations
 export const userRelations = relations(users, ({ many }) => ({
   budgets: many(budgets),
@@ -337,6 +363,14 @@ export const userRelations = relations(users, ({ many }) => ({
   recurringExpenseTemplates: many(recurringExpenseTemplates),
   notificationPreferences: many(notificationPreferences),
   notifications: many(notifications),
+  userActivity: many(userActivity),
+}));
+
+export const userActivityRelations = relations(userActivity, ({ one }) => ({
+  user: one(users, {
+    fields: [userActivity.userId],
+    references: [users.id],
+  }),
 }));
 
 export const notificationPreferencesRelations = relations(
@@ -473,3 +507,5 @@ export type NewNotificationPreference =
   typeof notificationPreferences.$inferInsert;
 export type Notification = typeof notifications.$inferSelect;
 export type NewNotification = typeof notifications.$inferInsert;
+export type UserActivity = typeof userActivity.$inferSelect;
+export type NewUserActivity = typeof userActivity.$inferInsert;

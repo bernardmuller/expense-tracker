@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
+import { Route as ProfileStreakRouteImport } from './routes/profile.streak'
 import { Route as ProfileRecurringExpensesRouteImport } from './routes/profile.recurring-expenses'
 import { Route as ProfilePreferencesRouteImport } from './routes/profile.preferences'
 import { Route as ProfilePennyBotRouteImport } from './routes/profile.penny-bot'
@@ -59,6 +60,11 @@ const IndexRoute = IndexRouteImport.update({
 const ProfileIndexRoute = ProfileIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileStreakRoute = ProfileStreakRouteImport.update({
+  id: '/streak',
+  path: '/streak',
   getParentRoute: () => ProfileRoute,
 } as any)
 const ProfileRecurringExpensesRoute =
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
   '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
+  '/profile/streak': typeof ProfileStreakRoute
   '/profile/': typeof ProfileIndexRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id/': typeof BudgetsIdIndexRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
   '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
+  '/profile/streak': typeof ProfileStreakRoute
   '/profile': typeof ProfileIndexRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id': typeof BudgetsIdIndexRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
   '/profile/recurring-expenses': typeof ProfileRecurringExpensesRoute
+  '/profile/streak': typeof ProfileStreakRoute
   '/profile/': typeof ProfileIndexRoute
   '/budgets/$id/expenses': typeof BudgetsIdExpensesRoute
   '/budgets/$id/': typeof BudgetsIdIndexRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/profile/penny-bot'
     | '/profile/preferences'
     | '/profile/recurring-expenses'
+    | '/profile/streak'
     | '/profile/'
     | '/budgets/$id/expenses'
     | '/budgets/$id/'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/profile/penny-bot'
     | '/profile/preferences'
     | '/profile/recurring-expenses'
+    | '/profile/streak'
     | '/profile'
     | '/budgets/$id/expenses'
     | '/budgets/$id'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/profile/penny-bot'
     | '/profile/preferences'
     | '/profile/recurring-expenses'
+    | '/profile/streak'
     | '/profile/'
     | '/budgets/$id/expenses'
     | '/budgets/$id/'
@@ -277,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/profile/'
       preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/streak': {
+      id: '/profile/streak'
+      path: '/streak'
+      fullPath: '/profile/streak'
+      preLoaderRoute: typeof ProfileStreakRouteImport
       parentRoute: typeof ProfileRoute
     }
     '/profile/recurring-expenses': {
@@ -350,6 +369,7 @@ interface ProfileRouteChildren {
   ProfilePennyBotRoute: typeof ProfilePennyBotRoute
   ProfilePreferencesRoute: typeof ProfilePreferencesRoute
   ProfileRecurringExpensesRoute: typeof ProfileRecurringExpensesRoute
+  ProfileStreakRoute: typeof ProfileStreakRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
@@ -358,6 +378,7 @@ const ProfileRouteChildren: ProfileRouteChildren = {
   ProfilePennyBotRoute: ProfilePennyBotRoute,
   ProfilePreferencesRoute: ProfilePreferencesRoute,
   ProfileRecurringExpensesRoute: ProfileRecurringExpensesRoute,
+  ProfileStreakRoute: ProfileStreakRoute,
   ProfileIndexRoute: ProfileIndexRoute,
 }
 

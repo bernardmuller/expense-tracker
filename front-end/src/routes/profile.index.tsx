@@ -98,6 +98,17 @@ function ProfilePage() {
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0 flex-1">
+                <p className="text-foreground font-medium">Streak</p>
+                <p className="text-muted-foreground text-sm">
+                  Your daily app activity
+                </p>
+              </div>
+              <Button variant="outline" asChild>
+                <Link to="/profile/streak">View</Link>
+              </Button>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <p className="text-foreground font-medium">Penny Bot</p>
                 <p className="text-muted-foreground text-sm">
                   Log expenses via Telegram

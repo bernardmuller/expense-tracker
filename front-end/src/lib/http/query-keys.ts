@@ -69,4 +69,9 @@ export const queryKeys = {
     list: () => ['notification-preferences', 'list'] as const,
     update: () => ['notification-preferences', 'update'] as const,
   },
+  streak: {
+    all: ['streak'] as const,
+    byUser: (userId: string) => ['streak', 'user', userId] as const,
+    checkIn: () => ['streak', 'check-in'] as const,
+  },
 } as const
