@@ -1,11 +1,19 @@
+import { Suspense } from 'react'
 import { AppHeader } from '@/components/app-header'
 import { Layout } from '@/components/layouts/Layout'
+import { StreakGraph } from '@/components/streak-graph'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useAuth } from '@/lib/auth/auth-provider'
+import { getUserIdFromAccessToken } from '@/lib/auth/decode-token'
 import { requireAuth } from '@/lib/auth/route-guard'
+import {
+  getUserStreakQueryOptions,
+  transformStreakToWeeks,
+} from '@/lib/http/queries/streak/getUserStreak'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouter, Link } from '@tanstack/react-router'
@@ -15,6 +23,12 @@ export const Route = createFileRoute('/profile/')({
   beforeLoad: () => requireAuth(),
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(getUserByIdQueryOptions())
+    const userIdResult = getUserIdFromAccessToken()
+    if (userIdResult.isOk()) {
+      context.queryClient.prefetchQuery(
+        getUserStreakQueryOptions(userIdResult.value),
+      )
+    }
   },
   component: ProfilePage,
 })
@@ -65,6 +79,9 @@ function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+        <Suspense fallback={<Skeleton className="h-56 w-full rounded-xl" />}>
+          <StreakSection />
+        </Suspense>
         <Card>
           <CardHeader>
             <CardTitle>Settings</CardTitle>
@@ -94,17 +111,6 @@ function ProfilePage() {
               </div>
               <Button variant="outline" asChild>
                 <Link to="/profile/recurring-expenses">Manage</Link>
-              </Button>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-foreground font-medium">Streak</p>
-                <p className="text-muted-foreground text-sm">
-                  Your daily app activity
-                </p>
-              </div>
-              <Button variant="outline" asChild>
-                <Link to="/profile/streak">View</Link>
               </Button>
             </div>
             <div className="flex items-center justify-between gap-4">
@@ -152,5 +158,36 @@ function ProfilePage() {
         </Card>
       </Layout>
     </>
+  )
+}
+
+function StreakSection() {
+  const userIdResult = getUserIdFromAccessToken()
+  if (userIdResult.isErr()) return null
+  return <StreakOverview userId={userIdResult.value} />
+}
+
+function StreakOverview({ userId }: { userId: string }) {
+  const { data } = useSuspenseQuery(getUserStreakQueryOptions(userId))
+  const weeks = transformStreakToWeeks(data)
+
+  return (
+    <StreakGraph.Root>
+      <StreakGraph.Header>
+        <StreakGraph.Title>Activity</StreakGraph.Title>
+        <StreakGraph.Subtitle>
+          Every day you open the app keeps your streak alive.
+        </StreakGraph.Subtitle>
+      </StreakGraph.Header>
+
+      <StreakGraph.Stats>
+        <StreakGraph.Stat label="Current streak" value={data.currentStreak} />
+        <StreakGraph.Stat label="Longest streak" value={data.longestStreak} />
+        <StreakGraph.Stat label="Active days" value={data.totalActiveDays} />
+      </StreakGraph.Stats>
+
+      <StreakGraph.Graph weeks={weeks} />
+      <StreakGraph.Legend className="justify-end" />
+    </StreakGraph.Root>
   )
 }

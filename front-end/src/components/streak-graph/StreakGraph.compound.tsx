@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react'
+import { Flame } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import type {
   RootProps,
@@ -8,6 +10,7 @@ import type {
   StatProps,
   GraphProps,
   LegendProps,
+  BadgeProps,
   StreakCell,
   StreakLevel,
 } from './StreakGraph.types'
@@ -102,18 +105,81 @@ function Cell({ cell }: { cell: StreakCell }) {
   )
 }
 
+// Cell = h-3 w-3 (12px) + gap-1 (4px) → 16px per week column.
+const COL_WIDTH = 16
+
 export function Graph({ weeks, className }: GraphProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) el.scrollLeft = el.scrollWidth
+  }, [weeks])
+
+  const monthLabels = weeks.reduce<Array<{ index: number; label: string }>>(
+    (acc, week, i) => {
+      const firstDay = new Date(week.days[0].date)
+      const month = firstDay.getMonth()
+      const prev =
+        i > 0 ? new Date(weeks[i - 1].days[0].date).getMonth() : null
+      if (month !== prev) {
+        acc.push({
+          index: i,
+          label: firstDay.toLocaleString('en-US', { month: 'short' }),
+        })
+      }
+      return acc
+    },
+    [],
+  )
+
   return (
-    <div className={cn('overflow-x-auto', className)}>
-      <div className="flex w-max gap-1">
-        {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="flex flex-col gap-1">
-            {week.days.map((cell) => (
-              <Cell key={cell.date} cell={cell} />
-            ))}
-          </div>
-        ))}
+    <div ref={scrollRef} className={cn('overflow-x-auto', className)}>
+      <div className="flex w-max flex-col gap-1">
+        <div
+          className="relative h-4"
+          style={{ width: weeks.length * COL_WIDTH }}
+        >
+          {monthLabels.map(({ index, label }) => (
+            <span
+              key={index}
+              className="text-muted-foreground absolute text-xs whitespace-nowrap"
+              style={{ left: index * COL_WIDTH }}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-1">
+          {weeks.map((week, weekIndex) => (
+            <div key={weekIndex} className="flex flex-col gap-1">
+              {week.days.map((cell) => (
+                <Cell key={cell.date} cell={cell} />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
+    </div>
+  )
+}
+
+export function Badge({ count, className }: BadgeProps) {
+  const active = count > 0
+  const label = `${count} day streak`
+  return (
+    <div
+      className={cn(
+        `bg-muted/40 flex items-center gap-1 rounded-full px-2 py-1 text-sm
+        font-semibold`,
+        active ? 'text-orange-500 dark:text-orange-400' : 'text-muted-foreground',
+        className,
+      )}
+      aria-label={label}
+      title={label}
+    >
+      <Flame className="h-4 w-4" aria-hidden="true" />
+      <span>{count}</span>
     </div>
   )
 }

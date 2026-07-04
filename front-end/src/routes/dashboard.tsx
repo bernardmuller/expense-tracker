@@ -10,7 +10,9 @@ import { requireAuth } from '@/lib/auth/route-guard'
 import { useCreateTransaction } from '@/lib/http/hooks/use-create-transaction'
 import { getActiveBudgetQueryOptions } from '@/lib/http/queries/budget'
 import { getCategoriesQueryOptions } from '@/lib/http/queries/categories'
+import { getUserStreakQueryOptions } from '@/lib/http/queries/streak/getUserStreak'
 import { getUserByIdQueryOptions } from '@/lib/http/queries/users/getUserById'
+import { StreakGraph } from '@/components/streak-graph'
 import { formatCurrency } from '@/lib/utils/formatting/formatCurrency'
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import {
@@ -42,6 +44,12 @@ export const Route = createFileRoute('/dashboard')({
     context.queryClient.prefetchQuery(getActiveBudgetQueryOptions())
     context.queryClient.prefetchQuery(getCategoriesQueryOptions())
     await context.queryClient.ensureQueryData(getUserByIdQueryOptions())
+    const userIdResult = getUserIdFromAccessToken()
+    if (userIdResult.isOk()) {
+      context.queryClient.prefetchQuery(
+        getUserStreakQueryOptions(userIdResult.value),
+      )
+    }
   },
   component: DashboardPage,
 })
@@ -71,6 +79,13 @@ function Dashboard() {
     getCategoriesQueryOptions(),
   )
   const { data: user } = useSuspenseQuery(getUserByIdQueryOptions())
+  const userIdResult = getUserIdFromAccessToken()
+  const streak = useQuery({
+    ...getUserStreakQueryOptions(
+      userIdResult.isOk() ? userIdResult.value : '',
+    ),
+    enabled: userIdResult.isOk(),
+  })
   const createTransactionMutation = useCreateTransaction(budget.id)
   const deleteExpenseMutation = useDeleteExpense()
   const { isPrivacyEnabled, togglePrivacy } = usePrivacy()
@@ -81,7 +96,6 @@ function Dashboard() {
   )
   const [showConfetti, setShowConfetti] = useState(false)
 
-  const userIdResult = getUserIdFromAccessToken()
   const userId = userIdResult.isOk() ? userIdResult.value : ''
   const currentAmount = Math.floor(parseFloat(budget.currentAmount))
   const startAmount = Math.floor(parseFloat(budget.startAmount))
@@ -107,6 +121,11 @@ function Dashboard() {
         </AppHeader.Left>
         <div />
         <AppHeader.Right>
+          {streak.data && (
+            <Link to="/profile" aria-label="View streak">
+              <StreakGraph.Badge count={streak.data.currentStreak} />
+            </Link>
+          )}
           <ThemeToggle />
           <Button
             variant="ghost"

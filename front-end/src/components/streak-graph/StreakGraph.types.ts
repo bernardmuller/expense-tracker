@@ -22,3 +22,4 @@ export type StatsProps = { children: ReactNode; className?: string }
 export type StatProps = { label: string; value: ReactNode; className?: string }
 export type GraphProps = { weeks: StreakWeek[]; className?: string }
 export type LegendProps = { className?: string }
+export type BadgeProps = { count: number; className?: string }
