@@ -7,7 +7,7 @@ export const STORAGE_KEYS = {
   STREAK: 'streakLastLogged',
 } as const
 
-export type StorageSchema = {
+type StorageSchema = {
   [STORAGE_KEYS.ACCESS_TOKEN]: string
   [STORAGE_KEYS.REFRESH_TOKEN]: string
   [STORAGE_KEYS.BUDGET_PRIVACY]: string // stored as 'true' | 'false'

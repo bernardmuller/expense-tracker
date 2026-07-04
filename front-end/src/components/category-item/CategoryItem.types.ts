@@ -9,7 +9,7 @@ export type SelectableCategoryItemProps = CategoryItemProps & {
   onCheckedChange: () => void
 }
 
-export type AllocatableCategoryItemProps = CategoryItemProps & {
+type AllocatableCategoryItemProps = CategoryItemProps & {
   amount: number
   onAmountChange: (amount: number) => void
 }

@@ -14,7 +14,7 @@ type UserPreferencesError = {
   code: string
 }
 
-export async function getUserPreferences(): Promise<UserPreferencesSuccess> {
+async function getUserPreferences(): Promise<UserPreferencesSuccess> {
   const userIdResult = getUserIdFromAccessToken()
 
   if (userIdResult.isErr()) {

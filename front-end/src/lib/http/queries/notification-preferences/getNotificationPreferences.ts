@@ -16,7 +16,7 @@ type NotificationPreferencesError = {
   code: string
 }
 
-export async function fetchNotificationPreferences(): Promise<
+async function fetchNotificationPreferences(): Promise<
   NotificationPreferenceWithEntity[]
 > {
   const result = await withAccessToken(

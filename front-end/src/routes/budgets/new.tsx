@@ -88,7 +88,7 @@ const newBudgetFormSchema = z
     path: ['categories'],
   })
 
-export type NewBudgetFormValues = z.infer<typeof newBudgetFormSchema>
+type NewBudgetFormValues = z.infer<typeof newBudgetFormSchema>
 
 export const Route = createFileRoute('/budgets/new')({
   beforeLoad: () => requireAuth(),

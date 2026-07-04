@@ -13,7 +13,7 @@ type CategoryExpensesTimeseriesError =
   | paths['/categories/{categoryId}/expenses/timeseries']['get']['responses']['404']['content']['application/json']
   | paths['/categories/{categoryId}/expenses/timeseries']['get']['responses']['401']['content']['application/json']
 
-export async function fetchCategoryExpensesTimeseries(
+async function fetchCategoryExpensesTimeseries(
   categoryId: string,
   months?: number,
   granularity?: 'month' | 'budget',
@@ -83,7 +83,7 @@ export function transformBudgetTimeseriesData(
  * Transform timeseries API response to CategoryChart format
  * @deprecated Use transformMonthTimeseriesData or transformBudgetTimeseriesData instead
  */
-export function transformTimeseriesData(
+function transformTimeseriesData(
   data: CategoryExpensesTimeseriesSuccess,
 ): MonthlyChartData[] {
   return transformMonthTimeseriesData(data)

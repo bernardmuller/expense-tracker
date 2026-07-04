@@ -16,7 +16,7 @@ type VerificationsError = {
   code: string
 }
 
-export async function fetchVerificationByValue(
+async function fetchVerificationByValue(
   value: string,
 ): Promise<Verification | null> {
   const result = await withAccessToken(
@@ -52,7 +52,7 @@ export function getVerificationByValueQueryOptions(value: string) {
   }
 }
 
-export function getCurrentUserVerificationQueryOptions() {
+function getCurrentUserVerificationQueryOptions() {
   const userIdResult = getUserIdFromAccessToken()
 
   if (userIdResult.isErr()) {

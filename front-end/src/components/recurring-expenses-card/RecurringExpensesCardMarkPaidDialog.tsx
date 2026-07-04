@@ -22,7 +22,7 @@ const markPaidSchema = z.object({
   note: z.string(),
 })
 
-export type MarkPaidSubmitValues = {
+type MarkPaidSubmitValues = {
   description: string
   amount: number
   categoryId: string

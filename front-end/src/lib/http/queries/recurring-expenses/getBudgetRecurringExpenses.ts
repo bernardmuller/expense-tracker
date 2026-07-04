@@ -16,7 +16,7 @@ type BudgetRecurringExpensesError = {
   code: string
 }
 
-export async function fetchBudgetRecurringExpenses(
+async function fetchBudgetRecurringExpenses(
   budgetId: string,
 ): Promise<BudgetRecurringExpensesSuccess> {
   const result = await withAccessToken(

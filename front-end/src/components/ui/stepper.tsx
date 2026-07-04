@@ -472,20 +472,20 @@ function StepperContent({
 }
 
 export {
-  useStepper,
-  useStepItem,
+  
+  
   Stepper,
   StepperItem,
   StepperTrigger,
   StepperIndicator,
   StepperSeparator,
   StepperTitle,
-  StepperDescription,
+  
   StepperPanel,
   StepperContent,
   StepperNav,
-  type StepperProps,
-  type StepperItemProps,
-  type StepperTriggerProps,
-  type StepperContentProps,
+  
+  
+  
+  
 }

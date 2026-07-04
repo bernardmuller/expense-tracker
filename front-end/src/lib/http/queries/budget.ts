@@ -11,7 +11,7 @@ export type ActiveBudgetSuccess =
 type ActiveBudgetError =
   paths['/users/{id}/budgets/active']['get']['responses']['404']['content']['application/json']
 
-export async function fetchActiveBudget(): Promise<ActiveBudgetSuccess> {
+async function fetchActiveBudget(): Promise<ActiveBudgetSuccess> {
   const userIdResult = getUserIdFromAccessToken()
 
   if (userIdResult.isErr()) {

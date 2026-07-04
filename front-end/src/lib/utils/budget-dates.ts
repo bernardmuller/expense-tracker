@@ -129,7 +129,7 @@ export function calculateBudgetEnd(
   }
 }
 
-export function getDaysRemainingInBudget(endDate: Date): number {
+function getDaysRemainingInBudget(endDate: Date): number {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 

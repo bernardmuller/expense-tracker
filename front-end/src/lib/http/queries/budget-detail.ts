@@ -12,7 +12,7 @@ type BudgetDetailError =
   | paths['/budgets/{id}/with-relatives']['get']['responses']['404']['content']['application/json']
   | paths['/budgets/{id}/with-relatives']['get']['responses']['403']['content']['application/json']
 
-export async function fetchBudgetById(
+async function fetchBudgetById(
   budgetId: string,
 ): Promise<BudgetDetailSuccess> {
   const userIdResult = getUserIdFromAccessToken()

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export interface SwipeActionConfig {
+interface SwipeActionConfig {
   /** Content to render in the action button (text, icon, etc.) */
   content: ReactNode
   /** Callback function when action button is clicked */

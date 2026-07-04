@@ -13,7 +13,7 @@ type CategoriesError = {
   code: string
 }
 
-export async function fetchCategories(): Promise<CategoriesSuccess> {
+async function fetchCategories(): Promise<CategoriesSuccess> {
   const result = await withAccessToken(
     (ctx) => {
       return toResult(

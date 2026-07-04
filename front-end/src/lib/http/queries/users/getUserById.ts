@@ -14,7 +14,7 @@ type UserError = {
   code: string
 }
 
-export async function getUserById(): Promise<UserSuccess> {
+async function getUserById(): Promise<UserSuccess> {
   const userIdResult = getUserIdFromAccessToken()
 
   if (userIdResult.isErr()) {

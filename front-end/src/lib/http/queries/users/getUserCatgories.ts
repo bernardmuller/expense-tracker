@@ -14,7 +14,7 @@ type UserCategoriesError = {
   code: string
 }
 
-export async function fetchUserCategories(): Promise<UserCategoriesSuccess> {
+async function fetchUserCategories(): Promise<UserCategoriesSuccess> {
   const userIdResult = getUserIdFromAccessToken()
 
   if (userIdResult.isErr()) {

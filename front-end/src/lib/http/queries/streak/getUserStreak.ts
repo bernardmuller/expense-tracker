@@ -12,7 +12,7 @@ import type {
 export type StreakSuccess =
   paths['/streaks']['get']['responses']['200']['content']['application/json']
 
-export type StreakDay = StreakSuccess['days'][number]
+type StreakDay = StreakSuccess['days'][number]
 
 type StreakError = {
   error: string
@@ -20,7 +20,7 @@ type StreakError = {
   code: string
 }
 
-export async function fetchUserStreak(days?: number): Promise<StreakSuccess> {
+async function fetchUserStreak(days?: number): Promise<StreakSuccess> {
   const result = await withAccessToken(
     (ctx) =>
       toResult(

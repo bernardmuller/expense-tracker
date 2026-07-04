@@ -7,7 +7,7 @@ export function getAccessToken() {
 	return accessToken ? ok(accessToken) : err('No access token')
 }
 
-export function setAccessToken(token: string): void {
+function setAccessToken(token: string): void {
 	dataStore.setItem(STORAGE_KEYS.ACCESS_TOKEN, token)
 }
 
@@ -16,7 +16,7 @@ export const getRefreshToken = () => {
 	return refreshToken ? ok(refreshToken) : err('No refresh token')
 }
 
-export function setRefreshToken(token: string): void {
+function setRefreshToken(token: string): void {
 	dataStore.setItem(STORAGE_KEYS.REFRESH_TOKEN, token)
 }
 

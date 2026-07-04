@@ -17,7 +17,7 @@ type UserRecurringExpensesError = {
   code: string
 }
 
-export async function fetchUserRecurringExpenses(): Promise<UserRecurringExpensesSuccess> {
+async function fetchUserRecurringExpenses(): Promise<UserRecurringExpensesSuccess> {
   const userIdResult = getUserIdFromAccessToken()
 
   if (userIdResult.isErr()) {

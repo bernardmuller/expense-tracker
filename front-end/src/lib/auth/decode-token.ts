@@ -36,7 +36,7 @@ function decodeJwt(token: string): Result<TokenPayload, string> {
   return splitToken(token).andThen(parsePayload).andThen(validatePayload)
 }
 
-export const getCurrentUser = (): Result<
+const getCurrentUser = (): Result<
   { userId: string; email: string; name: string },
   string
 > =>

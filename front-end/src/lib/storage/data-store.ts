@@ -32,6 +32,6 @@ export const removeItem = (key: StorageKey): void => {
   localStorage.setItem(STORE_KEY, JSON.stringify(storage))
 }
 
-export const clearAll = (): void => {
+const clearAll = (): void => {
   localStorage.removeItem(STORE_KEY)
 }

@@ -24,7 +24,7 @@ let refreshPromise: Promise<{
   refreshToken: string
 } | null> | null = null
 
-export const refreshTokens = (): Promise<{
+const refreshTokens = (): Promise<{
   accessToken: string
   refreshToken: string
 } | null> =>
@@ -79,8 +79,8 @@ client.use({
   },
 })
 
-export type ApiResponse<T> = T extends { data: infer D } ? D : never
-export type ApiError<T> = T extends { error: infer E } ? E : never
+type ApiResponse<T> = T extends { data: infer D } ? D : never
+type ApiError<T> = T extends { error: infer E } ? E : never
 
 export function toResult<T, E>(
   promise: Promise<{ data?: T; error?: E; response: Response }>,

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils/cn'
 import { Input } from './input'
 import type { FilterItems } from '@/components/filter/Filter.types'
 
-export interface SearchableSelectOption {
+interface SearchableSelectOption {
   label: string
   value: string
 }

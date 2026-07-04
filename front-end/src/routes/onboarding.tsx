@@ -97,7 +97,7 @@ const onboardingFormSchema = z
     },
   )
 
-export type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
+type OnboardingFormValues = z.infer<typeof onboardingFormSchema>
 
 export const Route = createFileRoute('/onboarding')({
   loader: async ({ context }) => {

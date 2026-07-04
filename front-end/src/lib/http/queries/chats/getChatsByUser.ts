@@ -16,7 +16,7 @@ type ChatsError = {
   code: string
 }
 
-export async function fetchChatsByUser(userId: string): Promise<Chat | null> {
+async function fetchChatsByUser(userId: string): Promise<Chat | null> {
   const result = await withAccessToken(
     (ctx) => {
       return toResult(
@@ -50,7 +50,7 @@ export function getChatsByUserQueryOptions(userId: string) {
   }
 }
 
-export function getCurrentUserChatsQueryOptions() {
+function getCurrentUserChatsQueryOptions() {
   const userIdResult = getUserIdFromAccessToken()
 
   if (userIdResult.isErr()) {

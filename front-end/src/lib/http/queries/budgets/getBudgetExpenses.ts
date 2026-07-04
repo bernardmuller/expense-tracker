@@ -11,7 +11,7 @@ type BudgetExpensesError =
   | paths['/budgets/{id}/expenses']['get']['responses']['404']['content']['application/json']
   | paths['/budgets/{id}/expenses']['get']['responses']['403']['content']['application/json']
 
-export async function fetchBudgetExpenses(
+async function fetchBudgetExpenses(
   budgetId: string,
 ): Promise<BudgetExpensesSuccess> {
   const result = await withAccessToken(

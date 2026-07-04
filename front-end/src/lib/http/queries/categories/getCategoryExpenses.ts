@@ -17,7 +17,7 @@ export interface CategoryExpensesOptions {
   sort?: 'createdAt' | '-createdAt'
 }
 
-export async function fetchCategoryExpenses(
+async function fetchCategoryExpenses(
   categoryId: string,
   options?: CategoryExpensesOptions,
 ): Promise<CategoryExpensesSuccess> {
