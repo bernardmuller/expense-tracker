@@ -15,10 +15,6 @@ type CheckInError = {
   code: string
 }
 
-/**
- * Records an app-open for the current user ("check-in") and refreshes the
- * cached streak. Firing this once per app load is what builds the streak.
- */
 export function useCheckIn() {
   const queryClient = useQueryClient()
 
