@@ -2,9 +2,6 @@ import { useEffect, useRef } from 'react'
 import { Flame } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import type {
-  RootProps,
-  HeaderProps,
-  TitleProps,
   SubtitleProps,
   StatsProps,
   StatProps,
@@ -17,47 +14,12 @@ import type {
 
 const LEVELS: StreakLevel[] = [0, 1, 2, 3, 4]
 
-// Theme-aware green scale (mirrors CategoryChart's under-budget greens). Level 0
-// is a neutral empty cell that reads in both light and dark themes.
 const LEVEL_CLASS: Record<StreakLevel, string> = {
   0: 'bg-muted',
   1: 'bg-emerald-200 dark:bg-emerald-900',
   2: 'bg-emerald-300 dark:bg-emerald-700',
   3: 'bg-emerald-400 dark:bg-emerald-600',
   4: 'bg-emerald-500 dark:bg-emerald-400',
-}
-
-export function Root({ children, className }: RootProps) {
-  return (
-    <section
-      className={cn(
-        `bg-card text-card-foreground flex flex-col gap-4 rounded-xl border
-        p-4`,
-        className,
-      )}
-    >
-      {children}
-    </section>
-  )
-}
-
-export function Header({ children, className }: HeaderProps) {
-  return (
-    <div className={cn('flex flex-col gap-0.5', className)}>{children}</div>
-  )
-}
-
-export function Title({ children, className }: TitleProps) {
-  return (
-    <h2
-      className={cn(
-        'font-grotesk text-foreground text-base font-semibold',
-        className,
-      )}
-    >
-      {children}
-    </h2>
-  )
 }
 
 export function Subtitle({ children, className }: SubtitleProps) {
@@ -134,7 +96,7 @@ export function Graph({ weeks, className }: GraphProps) {
   )
 
   return (
-    <div ref={scrollRef} className={cn('overflow-x-auto', className)}>
+    <div ref={scrollRef} className={cn('overflow-x-auto my-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]', className)}>
       <div className="flex w-max flex-col gap-1">
         <div
           className="relative h-4"
@@ -150,7 +112,7 @@ export function Graph({ weeks, className }: GraphProps) {
             </span>
           ))}
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 ">
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className="flex flex-col gap-1">
               {week.days.map((cell) => (

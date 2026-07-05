@@ -172,22 +172,23 @@ function StreakOverview({ userId }: { userId: string }) {
   const weeks = transformStreakToWeeks(data)
 
   return (
-    <StreakGraph.Root>
-      <StreakGraph.Header>
-        <StreakGraph.Title>Activity</StreakGraph.Title>
+    <Card>
+      <CardHeader>
+        <CardTitle>Activity</CardTitle>
         <StreakGraph.Subtitle>
           Every day you open the app keeps your streak alive.
         </StreakGraph.Subtitle>
-      </StreakGraph.Header>
+      </CardHeader>
+      <CardContent>
+        <StreakGraph.Stats>
+          <StreakGraph.Stat label="Current streak" value={data.currentStreak} />
+          <StreakGraph.Stat label="Longest streak" value={data.longestStreak} />
+          <StreakGraph.Stat label="Active days" value={data.totalActiveDays} />
+        </StreakGraph.Stats>
 
-      <StreakGraph.Stats>
-        <StreakGraph.Stat label="Current streak" value={data.currentStreak} />
-        <StreakGraph.Stat label="Longest streak" value={data.longestStreak} />
-        <StreakGraph.Stat label="Active days" value={data.totalActiveDays} />
-      </StreakGraph.Stats>
-
-      <StreakGraph.Graph weeks={weeks} />
-      <StreakGraph.Legend className="justify-end" />
-    </StreakGraph.Root>
+        <StreakGraph.Graph weeks={weeks} />
+        <StreakGraph.Legend className="justify-end" />
+      </CardContent>
+    </Card>
   )
 }
