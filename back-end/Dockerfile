@@ -1,5 +1,7 @@
 FROM node:22-alpine AS base
 
+RUN apt-get update && apt-get install -y curl
+
 FROM base AS builder
 RUN apk add --no-cache gcompat
 WORKDIR /app
