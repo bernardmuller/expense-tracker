@@ -1,7 +1,5 @@
 FROM node:22-alpine AS base
 
-RUN apt-get update && apt-get install -y curl
-
 FROM base AS builder
 RUN apk add --no-cache gcompat
 WORKDIR /app
@@ -23,6 +21,7 @@ COPY src ./src
 RUN pnpm prune --prod
 
 FROM base AS runner
+RUN apk add --no-cache curl
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs
