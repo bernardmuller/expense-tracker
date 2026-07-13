@@ -15,9 +15,7 @@
     "db:seed:notification-preferences": "tsx src/lib/db/seed-notification-preferences.ts",
     "db:dump": "tsx src/scripts/dump-db.ts",
     "db:restore": "tsx src/scripts/restore-db.ts",
-    "bot": "tsx src/lib/telegram/index.ts",
-    "cron:notifications:send": "tsx src/cron/sendNotifications.ts",
-    "cron:notifications:create": "tsx src/cron/createNotifications.ts"
+    "bot": "tsx src/lib/telegram/index.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.5",

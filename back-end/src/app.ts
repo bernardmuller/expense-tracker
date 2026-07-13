@@ -12,9 +12,11 @@ import { verificationRouter as verifications } from "./features/verifications";
 import { chatRouter as chats } from "./features/chats";
 import { notificationPreferencesRouter as notificationPreferences } from "./features/notification-preferences";
 import { streakRouter as streaks } from "./features/streaks";
+import { cronRouter as cron } from "./features/cron";
 import { cors } from "hono/cors";
 import env from "./env";
 import { authMiddleware } from "@/lib/http/middleware/auth";
+import { cronAuth } from "@/lib/http/middleware/cronAuth";
 
 const app = createApi();
 
@@ -33,6 +35,7 @@ const routes = [
   chats,
   notificationPreferences,
   streaks,
+  cron,
 ] as const;
 
 app.use(
@@ -65,13 +68,16 @@ app.use("*", async (c, next) => {
     path === "/scalar" ||
     path === "/doc" ||
     path.startsWith("/auth") ||
-    path.startsWith("/health")
+    path.startsWith("/health") ||
+    path.startsWith("/cron")
   ) {
     return next();
   }
 
   return authMiddleware(c, next);
 });
+
+app.use("/cron/*", cronAuth);
 
 app.route("/", index);
 app.route("/auth", auth);
@@ -84,6 +90,7 @@ app.route("/", verifications);
 app.route("/", chats);
 app.route("/", notificationPreferences);
 app.route("/", streaks);
+app.route("/", cron);
 
 export type AppType = typeof app;
 

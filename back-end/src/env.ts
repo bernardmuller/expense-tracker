@@ -28,7 +28,8 @@ const EnvSchema = z.object({
 	RESEND_KEY: z.string(),
 	MAIL_ADDRESS: z.string(),
 	ENCRYPTION_KEY: z.string(),
-	TELEGRAM_BOT_TOKEN: z.string()
+	TELEGRAM_BOT_TOKEN: z.string(),
+	CRON_SECRET: z.string()
 });
 
 export type env = z.infer<typeof EnvSchema>;

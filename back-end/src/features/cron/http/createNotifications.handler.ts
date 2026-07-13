@@ -1,3 +1,4 @@
+import type { Context } from "hono";
 import { db } from "@/lib/db";
 import {
   budgetRecurringExpenses,
@@ -25,7 +26,7 @@ const ACTIVITY_REMINDER_TIME_HOURS = 20;
 const BUDGET_END_REMINDER_TIME_HOURS = 9;
 const RECURRING_EXPENSE_REMINDER_TIME_HOURS = 20;
 
-async function createNotifications() {
+export async function createNotificationsHandler(c: Context) {
   try {
     const user_notification_preferences = await db
       .select()
@@ -192,9 +193,10 @@ async function createNotifications() {
         }
       }
     }
+
+    return c.json({ message: "Notifications created successfully" }, 200);
   } catch (err) {
     console.error("createNotifications tick failed:", err);
+    return c.json({ error: "Internal server error", message: "Failed to create notifications", code: "INTERNAL_SERVER_ERROR" }, 500);
   }
 }
-
-createNotifications();
