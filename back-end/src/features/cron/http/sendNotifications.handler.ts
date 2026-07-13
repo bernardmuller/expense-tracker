@@ -1,11 +1,8 @@
 import type { Context } from "hono";
 import { db } from "@/lib/db";
 import { chats, notifications } from "@/lib/db/schema";
-import env from "@/env";
-import TelegramBot from "node-telegram-bot-api";
+import { bot } from "@/lib/telegram";
 import { eq, isNull } from "drizzle-orm";
-
-const bot = new TelegramBot(env.TELEGRAM_BOT_TOKEN);
 
 export async function sendNotificationsHandler(c: Context) {
   try {
@@ -18,7 +15,7 @@ export async function sendNotificationsHandler(c: Context) {
     for (const n of ns) {
       const chatId = n.chats?.chatId;
       if (n.notifications.channel === "telegram" && chatId) {
-        bot.sendMessage(chatId, n.notifications.message);
+        await bot.sendMessage(chatId, n.notifications.message);
         await db
           .update(notifications)
           .set({
@@ -31,6 +28,13 @@ export async function sendNotificationsHandler(c: Context) {
     return c.json({ message: "Notifications sent successfully" }, 200);
   } catch (err) {
     console.error("sendNotifications tick failed:", err);
-    return c.json({ error: "Internal server error", message: "Failed to send notifications", code: "INTERNAL_SERVER_ERROR" }, 500);
+    return c.json(
+      {
+        error: "Internal server error",
+        message: "Failed to send notifications",
+        code: "INTERNAL_SERVER_ERROR",
+      },
+      500,
+    );
   }
 }
