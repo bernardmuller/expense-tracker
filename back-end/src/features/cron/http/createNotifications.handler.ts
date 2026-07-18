@@ -22,9 +22,9 @@ import {
   setHours,
 } from "date-fns";
 
-const ACTIVITY_REMINDER_TIME_HOURS = 20;
-const BUDGET_END_REMINDER_TIME_HOURS = 9;
-const RECURRING_EXPENSE_REMINDER_TIME_HOURS = 20;
+const ACTIVITY_REMINDER_TIME_HOURS = 18;
+const BUDGET_END_REMINDER_TIME_HOURS = 7;
+const RECURRING_EXPENSE_REMINDER_TIME_HOURS = 18;
 
 export async function createNotificationsHandler(c: Context) {
   try {
@@ -197,6 +197,13 @@ export async function createNotificationsHandler(c: Context) {
     return c.json({ message: "Notifications created successfully" }, 200);
   } catch (err) {
     console.error("createNotifications tick failed:", err);
-    return c.json({ error: "Internal server error", message: "Failed to create notifications", code: "INTERNAL_SERVER_ERROR" }, 500);
+    return c.json(
+      {
+        error: "Internal server error",
+        message: "Failed to create notifications",
+        code: "INTERNAL_SERVER_ERROR",
+      },
+      500,
+    );
   }
 }
