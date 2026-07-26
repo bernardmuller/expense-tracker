@@ -65,3 +65,7 @@ bot.onText(
     }
   },
 );
+
+bot.onText("Hello", (msg) => {
+  console.log(msg.text);
+});
