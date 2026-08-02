@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+<head>
+  <script src="/static/htmx.min.js"></script>
+</head>
+<body>
+  <div id="item-list">
+    {{ template "items.templ" .Items }}
+  </div>
+
+  <button hx-get="/load-more" hx-target="#item-list" hx-swap="beforeend">
+    Load More
+  </button>
+</body>
+</html>
