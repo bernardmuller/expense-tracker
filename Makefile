@@ -1,7 +1,5 @@
 include .env
 
-
-
 db_migrate_up:
 	@echo "Migrating up..."
 	@cd ./store/postgres/schema &&	goose postgres ${POSTGRES_URI} up
@@ -26,15 +24,15 @@ get-install-tailwindcss: ## Installs the tailwindcss cli
 
 .PHONY: tailwind-watch
 tailwind-watch: ## compile tailwindcss and watch for changes
-	./tailwindcss -i ./static/css/custom.css -o ./static/css/style.css --watch
+	./tailwindcss -i ./static/css/globals.css -o ./static/css/style.css --watch
 
 .PHONY: tailwind-build
 tailwind-build: ## one-time compile tailwindcss styles
-	./tailwindcss -i ./static/css/custom.css -o ./static/css/style.css
+	./tailwindcss -i ./static/css/globals.css -o ./static/css/style.css
 
 .PHONY: build
 build: ## compile tailwindcss and templ files and build the project
-	./tailwindcss -i ./static/css/custom.css -o ./static/css/style.css
+	./tailwindcss -i ./static/css/globals.css -o ./static/css/style.css
 	templ generate
 	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go
 

@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"expenny.co.za/store/postgres"
+	"expenny.co.za/internal/store/postgres"
 	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
