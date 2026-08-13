@@ -40,7 +40,6 @@ func NewMessageHandler(db *postgres.Queries) *MessageHandler {
 
 func (h MessageHandler) onMessage(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.Message.Text == "/users" {
-
 		users, err := h.DB.GetAllUsers(ctx)
 		if err != nil {
 			log.Fatalf("failed to fetch users: %v", err)
