@@ -50,15 +50,15 @@ export function UnplannedBadge() {
 }
 
 export function ProgressBar({ percentage }: { percentage: number }) {
-  return <Progress value={percentage} className="h-1" />
+  return <Progress variant="default" value={percentage} className="h-1" />
 }
 
 export function DisabledProgressBar() {
-  return <Progress className="bg-primary/10 h-1" />
+  return <Progress variant="disabled" className="h-1" />
 }
 
 export function OverBudgetProgressBar() {
-  return <Progress className="h-1 bg-red-500/50" />
+  return <Progress variant="destructive" className="h-1" />
 }
 
 export function Stats({ children }: { children: React.ReactNode }) {
