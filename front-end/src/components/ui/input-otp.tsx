@@ -49,15 +49,17 @@ function InputOTPSlot({
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
-        `data-[active=true]:border-ring data-[active=true]:ring-ring/50
+        `data-[active=true]:border-ring data-[active=true]:ring-ring/40
         data-[active=true]:aria-invalid:ring-destructive/20
         dark:data-[active=true]:aria-invalid:ring-destructive/40
         aria-invalid:border-destructive
-        data-[active=true]:aria-invalid:border-destructive dark:bg-input/30
-        border-input relative flex h-9 w-9 items-center justify-center border-y
-        border-r text-sm shadow-xs transition-all outline-none
-        first:rounded-l-md first:border-l last:rounded-r-md
-        data-[active=true]:z-10 data-[active=true]:ring-[3px]`,
+        data-[active=true]:aria-invalid:border-destructive dark:bg-input/40
+        relative flex h-10 w-10 items-center justify-center
+        border-y border-r text-sm transition-all outline-none
+        first:rounded-l-2xl first:border-l last:rounded-r-2xl
+        data-[active=true]:z-10 data-[active=true]:ring-[3px]
+        [box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-border)_45%,black),inset_0_-1px_0_color-mix(in_srgb,var(--color-border)_30%,transparent)]
+        data-[active=true]:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-ring)_25%,transparent),inset_0_0_0_1px_var(--color-ring)]`,
         className,
       )}
       {...props}

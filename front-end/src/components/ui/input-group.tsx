@@ -15,10 +15,12 @@ function InputGroup({ className, ...props }: React.ComponentProps<'div'>) {
       data-slot="input-group"
       role="group"
       className={cn(
-        `group/input-group border-input dark:bg-input/30 relative flex w-full
-        items-center rounded-md border shadow-xs transition-[color,box-shadow]
-        outline-none`,
-        'h-9 min-w-0 has-[>textarea]:h-auto',
+        `group/input-group border-input dark:bg-input/40 relative flex w-full
+        items-center rounded-2xl border transition-[color,box-shadow] outline-none
+        [box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-border)_45%,black),inset_0_-1px_0_color-mix(in_srgb,var(--color-border)_30%,transparent)]
+        focus-visible:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-ring)_25%,transparent),inset_0_0_0_1px_var(--color-ring)]
+        has-[[data-slot][aria-invalid=true]]:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-destructive)_25%,transparent),inset_0_0_0_1px_var(--color-destructive)]`,
+        'h-11 min-w-0 has-[>textarea]:h-auto',
 
         // Variants based on alignment.
         'has-[>[data-align=inline-start]]:[&>input]:pl-2',
@@ -32,13 +34,15 @@ function InputGroup({ className, ...props }: React.ComponentProps<'div'>) {
 
         // Focus state.
         `has-[[data-slot=input-group-control]:focus-visible]:border-ring
-        has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50
-        has-[[data-slot=input-group-control]:focus-visible]:ring-[3px]`,
+        has-[[data-slot=input-group-control]:focus-visible]:ring-ring/40
+        has-[[data-slot=input-group-control]:focus-visible]:ring-[3px]
+        has-[[data-slot=input-group-control]:focus-visible]:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-ring)_25%,transparent),inset_0_0_0_1px_var(--color-ring)]`,
 
         // Error state.
         `has-[[data-slot][aria-invalid=true]]:ring-destructive/20
         has-[[data-slot][aria-invalid=true]]:border-destructive
-        dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40`,
+        dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40
+        has-[[data-slot][aria-invalid=true]]:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-destructive)_25%,transparent),inset_0_0_0_1px_var(--color-destructive)]`,
 
         className,
       )}
@@ -149,7 +153,8 @@ function InputGroupInput({
       data-slot="input-group-control"
       className={cn(
         `flex-1 rounded-none border-0 bg-transparent shadow-none
-        focus-visible:ring-0 dark:bg-transparent`,
+        [box-shadow:none] focus-visible:ring-0 focus-visible:[box-shadow:none]
+        dark:bg-transparent`,
         className,
       )}
       {...props}
@@ -166,7 +171,8 @@ function InputGroupTextarea({
       data-slot="input-group-control"
       className={cn(
         `flex-1 resize-none rounded-none border-0 bg-transparent py-3
-        shadow-none focus-visible:ring-0 dark:bg-transparent`,
+        shadow-none [box-shadow:none] focus-visible:ring-0
+        focus-visible:[box-shadow:none] dark:bg-transparent`,
         className,
       )}
       {...props}

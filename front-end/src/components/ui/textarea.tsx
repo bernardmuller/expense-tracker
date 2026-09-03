@@ -8,13 +8,16 @@ function Textarea({ className, ...props }: React.ComponentProps<'textarea'>) {
       data-slot="textarea"
       className={cn(
         `border-input placeholder:text-muted-foreground
-        focus-visible:border-ring focus-visible:ring-ring/50
+        focus-visible:border-ring focus-visible:ring-ring/40
         aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40
-        aria-invalid:border-destructive dark:bg-input/30 flex
-        field-sizing-content min-h-16 w-full rounded-md border bg-transparent
-        px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none
+        aria-invalid:border-destructive dark:bg-input/40 flex
+        field-sizing-content min-h-16 w-full rounded-2xl border bg-transparent
+        px-4 py-2 text-base transition-[color,box-shadow] outline-none
         focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50
-        md:text-sm`,
+        [box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-border)_45%,black),inset_0_-1px_0_color-mix(in_srgb,var(--color-border)_30%,transparent)]
+        focus-visible:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-ring)_25%,transparent),inset_0_0_0_1px_var(--color-ring)]
+        aria-invalid:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-destructive)_25%,transparent),inset_0_0_0_1px_var(--color-destructive)]
+        md:text-sm motion-reduce:transition-none`,
         className,
       )}
       {...props}
