@@ -11,7 +11,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground font-grotesk font-semibold rounded-2xl [box-shadow:0_5px_0_color-mix(in_srgb,var(--color-primary)_72%,black)] hover:bg-primary/90 hover:-translate-y-0.5 hover:[box-shadow:0_7px_0_color-mix(in_srgb,var(--color-primary)_72%,black)] active:translate-y-1 active:[box-shadow:0_2px_0_color-mix(in_srgb,var(--color-primary)_72%,black)] disabled:translate-y-0 disabled:[box-shadow:none]',
+          'bg-primary text-primary-foreground font-grotesk font-semibold rounded-2xl [box-shadow:inset_0_2px_0_color-mix(in_srgb,white_45%,transparent),0_5px_0_color-mix(in_srgb,var(--color-primary)_72%,black)] hover:bg-primary/90 hover:-translate-y-0.5 hover:[box-shadow:inset_0_2px_0_color-mix(in_srgb,white_45%,transparent),0_7px_0_color-mix(in_srgb,var(--color-primary)_72%,black)] active:translate-y-1 active:[box-shadow:inset_0_1px_0_color-mix(in_srgb,white_45%,transparent),0_2px_0_color-mix(in_srgb,var(--color-primary)_72%,black)] disabled:translate-y-0 disabled:[box-shadow:none]',
         destructive:
           'bg-destructive text-white font-grotesk font-semibold rounded-2xl [box-shadow:0_5px_0_color-mix(in_srgb,var(--color-destructive)_65%,black)] hover:bg-destructive/90 hover:-translate-y-0.5 hover:[box-shadow:0_7px_0_color-mix(in_srgb,var(--color-destructive)_65%,black)] active:translate-y-1 active:[box-shadow:0_2px_0_color-mix(in_srgb,var(--color-destructive)_65%,black)] disabled:translate-y-0 disabled:[box-shadow:none] focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/80',
         outline:
