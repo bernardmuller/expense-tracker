@@ -36,7 +36,8 @@ export function Stat({ label, value, className }: StatProps) {
   return (
     <div
       className={cn(
-        'bg-muted/40 flex flex-1 flex-col items-center rounded-lg px-3 py-2',
+        'bg-muted flex flex-1 flex-col items-center rounded-2xl px-3 py-2',
+        '[box-shadow:var(--input-groove),inset_0_1px_0_rgba(255,255,255,0.25)]',
         className,
       )}
     >
@@ -132,8 +133,9 @@ export function Badge({ count, className }: BadgeProps) {
   return (
     <div
       className={cn(
-        `bg-muted/40 flex items-center gap-1 rounded-full px-2 py-1 text-sm
-        font-semibold`,
+        `bg-muted flex items-center gap-1 rounded-full px-2.5 py-1 text-sm
+        font-semibold hover:-translate-y-px
+        [box-shadow:0_3px_0_var(--border),inset_0_1px_0_rgba(255,255,255,0.25)]`,
         active ? 'text-orange-500 dark:text-orange-400' : 'text-muted-foreground',
         className,
       )}

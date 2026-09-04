@@ -46,9 +46,9 @@ describe('CategoryChart', () => {
     it('should display all legend items', () => {
       const props = generateCategoryChartProps()
       render(<CategoryChart {...props} />)
-      expect(screen.getByText('Under Budget')).toBeInTheDocument()
-      expect(screen.getByText('Over Budget')).toBeInTheDocument()
-      expect(screen.getByText('Budget Line')).toBeInTheDocument()
+      expect(screen.getByText('Under')).toBeInTheDocument()
+      expect(screen.getByText('Over')).toBeInTheDocument()
+      expect(screen.getByText('Budget')).toBeInTheDocument()
     })
   })
 
