@@ -12,8 +12,10 @@ export function Root({ children, className, active = false }: RootProps) {
     return (
       <div
         className={cn(
-          `animate-budget-end bg-destructive flex items-center gap-1.5
-          rounded-full px-3 py-1.5 hover:cursor-pointer`,
+          `animate-budget-press text-destructive-foreground bg-destructive flex
+          items-center gap-1.5 rounded-full px-3 py-1.5
+          [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_35%,transparent),0_3px_0_color-mix(in_srgb,var(--color-destructive)_70%,black)]
+          hover:cursor-pointer motion-reduce:animate-none`,
           className,
         )}
       >
@@ -26,7 +28,9 @@ export function Root({ children, className, active = false }: RootProps) {
     <div
       className={cn(
         `border-border bg-muted flex items-center gap-2 rounded-full border
-        px-2.5 py-1.5`,
+        px-2.5 py-1.5
+        [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_38%,transparent),0_3px_0_color-mix(in_srgb,var(--color-muted)_78%,black)]
+        hover:-translate-y-px transition-transform motion-reduce:transition-none`,
         className,
       )}
     >

@@ -58,7 +58,7 @@ function InputOTPSlot({
         border-y border-r text-sm transition-all outline-none
         first:rounded-l-2xl first:border-l last:rounded-r-2xl
         data-[active=true]:z-10 data-[active=true]:ring-[3px]
-        [box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-border)_45%,black),inset_0_-1px_0_color-mix(in_srgb,var(--color-border)_30%,transparent)]
+        [box-shadow:var(--input-groove)]
         data-[active=true]:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-ring)_25%,transparent),inset_0_0_0_1px_var(--color-ring)]`,
         className,
       )}

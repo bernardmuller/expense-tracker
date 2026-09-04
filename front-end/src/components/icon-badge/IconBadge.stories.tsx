@@ -16,10 +16,9 @@ const IconBadgeDefault = () => {
 const IconBadgeActive = () => {
   return (
     <IconBadge.Root active={true}>
-      <IconBadge.Icon>
-        <Calendar className="text-primary h-3.5 w-3.5" />
-      </IconBadge.Icon>
-      <span className="text-primary text-xs font-medium">12 days left</span>
+      <span className="text-destructive-foreground text-xs font-medium">
+        Budget End
+      </span>
     </IconBadge.Root>
   )
 }

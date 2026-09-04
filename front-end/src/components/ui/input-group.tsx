@@ -17,7 +17,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<'div'>) {
       className={cn(
         `group/input-group border-input dark:bg-input/40 relative flex w-full
         items-center rounded-2xl border transition-[color,box-shadow] outline-none
-        [box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-border)_45%,black),inset_0_-1px_0_color-mix(in_srgb,var(--color-border)_30%,transparent)]
+        [box-shadow:var(--input-groove)]
         focus-visible:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-ring)_25%,transparent),inset_0_0_0_1px_var(--color-ring)]
         has-[[data-slot][aria-invalid=true]]:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-destructive)_25%,transparent),inset_0_0_0_1px_var(--color-destructive)]`,
         'h-11 min-w-0 has-[>textarea]:h-auto',

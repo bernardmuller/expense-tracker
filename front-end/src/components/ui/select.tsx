@@ -48,7 +48,7 @@ function SelectTrigger({
         *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center
         *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none
         [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4
-        [box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-border)_45%,black),inset_0_-1px_0_color-mix(in_srgb,var(--color-border)_30%,transparent)]
+        [box-shadow:var(--input-groove)]
         focus-visible:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-ring)_25%,transparent),inset_0_0_0_1px_var(--color-ring)]
         aria-invalid:[box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-destructive)_25%,transparent),inset_0_0_0_1px_var(--color-destructive)]`,
         className,

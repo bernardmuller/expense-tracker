@@ -28,11 +28,11 @@ const progressIndicatorVariants = cva('h-full w-full flex-1 rounded-2xl', {
   variants: {
     variant: {
       default:
-        'bg-primary [box-shadow:inset_0_2px_0_color-mix(in_srgb,white_45%,transparent),0_2px_3px_color-mix(in_srgb,var(--color-primary)_50%,black)]',
+        'bg-primary [box-shadow:inset_0_2px_0_var(--progress-shine),0_2px_3px_color-mix(in_srgb,var(--color-primary)_50%,black)]',
       destructive:
-        'bg-destructive [box-shadow:inset_0_2px_0_color-mix(in_srgb,white_45%,transparent),0_2px_3px_color-mix(in_srgb,var(--color-destructive)_50%,black)]',
+        'bg-destructive [box-shadow:inset_0_2px_0_var(--progress-shine),0_2px_3px_color-mix(in_srgb,var(--color-destructive)_50%,black)]',
       disabled:
-        'bg-foreground/20 [box-shadow:inset_0_2px_0_color-mix(in_srgb,white_40%,transparent)]',
+        'bg-foreground/20 [box-shadow:inset_0_2px_0_var(--progress-shine-dim)]',
     },
   },
   defaultVariants: {

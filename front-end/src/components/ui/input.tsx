@@ -12,7 +12,7 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
         selection:bg-primary selection:text-primary-foreground
         border-border bg-input h-11 w-full min-w-0 rounded-2xl border px-4 py-1
         text-base transition-[color,box-shadow,transform] outline-none
-        [box-shadow:inset_0_2px_0_color-mix(in_srgb,var(--color-border)_45%,black),inset_0_-1px_0_color-mix(in_srgb,var(--color-border)_30%,transparent)]
+        [box-shadow:var(--input-groove)]
         dark:bg-input/40 file:inline-flex file:h-7 file:border-0
         file:bg-transparent file:text-sm file:font-medium
         disabled:pointer-events-none disabled:cursor-not-allowed
