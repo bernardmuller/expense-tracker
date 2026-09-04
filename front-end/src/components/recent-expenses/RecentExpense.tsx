@@ -25,9 +25,12 @@ export default function RecentExpense({
       <div className="flex items-center gap-3">
         <div
           className="bg-muted flex h-10 w-10 items-center justify-center
-            rounded-lg"
+            rounded-2xl
+            [box-shadow:var(--input-groove),inset_0_1px_0_rgba(255,255,255,0.25)]"
         >
-          <span className="text-lg">{emoji}</span>
+          <span className="text-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)]">
+            {emoji}
+          </span>
         </div>
         <div>
           <div className="flex items-center gap-1">
