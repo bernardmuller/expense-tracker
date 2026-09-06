@@ -10,8 +10,9 @@ export function Root({
 }) {
   return (
     <div
-      className="bg-muted/40 hover:bg-muted/60 flex cursor-pointer flex-col
-        gap-1 rounded-lg p-3"
+      className="bg-muted flex cursor-pointer flex-col gap-1 rounded-2xl p-3
+        hover:bg-muted/80
+        [box-shadow:var(--input-groove),inset_0_1px_0_rgba(255,255,255,0.25)]"
       onClick={onClick}
     >
       {children}
@@ -42,11 +43,29 @@ export function Header({
 }
 
 export function OverBudgetBadge() {
-  return <Badge variant="destructive">Over budget</Badge>
+  return (
+    <Badge
+      variant="destructive"
+      className="rounded-full px-2.5 py-1 font-semibold
+        [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_35%,transparent),0_3px_0_color-mix(in_srgb,var(--color-destructive)_70%,black)]
+        hover:-translate-y-px transition-transform motion-reduce:transition-none"
+    >
+      Over budget
+    </Badge>
+  )
 }
 
 export function UnplannedBadge() {
-  return <Badge variant="outline">Unplanned</Badge>
+  return (
+    <Badge
+      variant="outline"
+      className="bg-muted rounded-full px-2.5 py-1 font-semibold
+        [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_38%,transparent),0_3px_0_color-mix(in_srgb,var(--color-muted)_78%,black)]
+        hover:-translate-y-px border-border transition-transform motion-reduce:transition-none"
+    >
+      Unplanned
+    </Badge>
+  )
 }
 
 export function ProgressBar({ percentage }: { percentage: number }) {
