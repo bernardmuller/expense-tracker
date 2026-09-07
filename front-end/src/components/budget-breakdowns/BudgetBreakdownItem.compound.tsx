@@ -47,7 +47,7 @@ export function OverBudgetBadge() {
     <Badge
       variant="destructive"
       className="rounded-full px-2.5 py-1 font-semibold
-        [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_35%,transparent),0_3px_0_color-mix(in_srgb,var(--color-destructive)_70%,black)]
+        [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_35%,transparent),0_2px_0_color-mix(in_srgb,var(--color-destructive)_70%,black)]
         hover:-translate-y-px transition-transform motion-reduce:transition-none"
     >
       Over budget
@@ -60,7 +60,7 @@ export function UnplannedBadge() {
     <Badge
       variant="outline"
       className="bg-muted rounded-full px-2.5 py-1 font-semibold
-        [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_38%,transparent),0_3px_0_color-mix(in_srgb,var(--color-muted)_78%,black)]
+        [box-shadow:inset_0_1px_0_color-mix(in_srgb,white_38%,transparent),0_2px_0_color-mix(in_srgb,var(--color-muted)_78%,black)]
         hover:-translate-y-px border-border transition-transform motion-reduce:transition-none"
     >
       Unplanned
@@ -81,7 +81,7 @@ export function OverBudgetProgressBar() {
 }
 
 export function Stats({ children }: { children: React.ReactNode }) {
-  return <div className="space-y-2">{children}</div>
+  return <div className="mt-1 space-y-2">{children}</div>
 }
 
 export function Planned({ amount }: { amount: string }) {
