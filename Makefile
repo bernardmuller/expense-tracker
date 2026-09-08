@@ -2,11 +2,11 @@ include .env
 
 db_migrate_up:
 	@echo "Migrating up..."
-	@cd ./store/postgres/schema &&	goose postgres ${POSTGRES_URI} up
+	@cd ./internal/store/postgres/schema &&	goose postgres ${POSTGRES_URI} up
 
 db_migrate_down:
 	@echo "Migrating down..."
-	@cd ./store/postgres/schema &&	goose postgres ${POSTGRES_URI} down
+	@cd ./internal/store/postgres/schema &&	goose postgres ${POSTGRES_URI} down
 
 db_generate_queries:
 	@echo "Generating queries..."
@@ -31,20 +31,10 @@ tailwind-build: ## one-time compile tailwindcss styles
 	./tailwindcss -i ./static/css/globals.css -o ./static/css/style.css
 
 .PHONY: build
-build: ## compile tailwindcss and templ files and build the project
-	./tailwindcss -i ./static/css/globals.css -o ./static/css/style.css
-	templ generate
-	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go
+build: ## build the Go bot binary
+	go build -o ./tmp/bot ./cmd/bot/main.go
 
 .PHONY: watch
 watch: ## build and watch the project with air
-	go build -o ./tmp/server ./cmd/server/main.go && air
-
-.PHONY: templ-generate
-templ-generate:
-	templ generate
-
-.PHONY: templ-watch
-templ-watch:
-	templ generate --watch
+	go build -o ./tmp/bot ./cmd/bot/main.go && air
 

@@ -1,9 +1,9 @@
 [build]
   args_bin = []
-  bin = "./tmp/server"
-  cmd = "templ generate && go build -o tmp/server ./cmd/server"
+  bin = "./tmp/bot"
+  cmd = "go build -o tmp/bot ./cmd/bot"
   delay = 0
-  exclude_dir = ["assets", "tmp", "vendor", "testdata", "front-end", "apps", "back-end"]
+  exclude_dir = ["assets", "tmp", "vendor", "testdata", "web", "api", "landing"]
   exclude_file = []
   exclude_regex = ["_test.go", ".*_templ.go"]
   exclude_unchanged = false
