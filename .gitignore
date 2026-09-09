@@ -1,9 +1,8 @@
-# Local Netlify folder
 .netlify
 .claude
 tmp/
+.DS_Store
 
-# env files - never commit secrets
 .env
 .env.*
 !.env.example
