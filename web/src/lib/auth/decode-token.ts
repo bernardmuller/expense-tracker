@@ -32,7 +32,7 @@ const validatePayload = (
     : err('Invalid token payload: missing required fields')
 }
 
-function decodeJwt(token: string): Result<TokenPayload, string> {
+export function decodeJwt(token: string): Result<TokenPayload, string> {
   return splitToken(token).andThen(parsePayload).andThen(validatePayload)
 }
 

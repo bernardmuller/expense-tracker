@@ -137,6 +137,19 @@ function ProfilePage() {
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0 flex-1">
+                <p className="text-foreground font-medium">
+                  MCP Access Token
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  Token for MCP server integrations
+                </p>
+              </div>
+              <Button variant="outline" asChild>
+                <Link to="/profile/mcp-token">Manage</Link>
+              </Button>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
                 <p className="text-foreground font-medium">Refresh data</p>
                 <p className="text-muted-foreground text-sm">
                   Reload categories and budgets from the server

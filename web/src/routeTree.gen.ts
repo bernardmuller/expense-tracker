@@ -20,6 +20,7 @@ import { Route as ProfileRecurringExpensesRouteImport } from './routes/profile.r
 import { Route as ProfilePreferencesRouteImport } from './routes/profile.preferences'
 import { Route as ProfilePennyBotRouteImport } from './routes/profile.penny-bot'
 import { Route as ProfileNotificationsRouteImport } from './routes/profile.notifications'
+import { Route as ProfileMcpTokenRouteImport } from './routes/profile.mcp-token'
 import { Route as CategoriesIdRouteImport } from './routes/categories/$id'
 import { Route as BudgetsNewRouteImport } from './routes/budgets/new'
 import { Route as BudgetsIdRouteImport } from './routes/budgets/$id'
@@ -82,6 +83,11 @@ const ProfileNotificationsRoute = ProfileNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => ProfileRoute,
 } as any)
+const ProfileMcpTokenRoute = ProfileMcpTokenRouteImport.update({
+  id: '/mcp-token',
+  path: '/mcp-token',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const CategoriesIdRoute = CategoriesIdRouteImport.update({
   id: '/categories/$id',
   path: '/categories/$id',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/budgets/$id': typeof BudgetsIdRouteWithChildren
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
+  '/profile/mcp-token': typeof ProfileMcpTokenRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
+  '/profile/mcp-token': typeof ProfileMcpTokenRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/budgets/$id': typeof BudgetsIdRouteWithChildren
   '/budgets/new': typeof BudgetsNewRoute
   '/categories/$id': typeof CategoriesIdRoute
+  '/profile/mcp-token': typeof ProfileMcpTokenRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/penny-bot': typeof ProfilePennyBotRoute
   '/profile/preferences': typeof ProfilePreferencesRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/budgets/$id'
     | '/budgets/new'
     | '/categories/$id'
+    | '/profile/mcp-token'
     | '/profile/notifications'
     | '/profile/penny-bot'
     | '/profile/preferences'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/budgets/new'
     | '/categories/$id'
+    | '/profile/mcp-token'
     | '/profile/notifications'
     | '/profile/penny-bot'
     | '/profile/preferences'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/budgets/$id'
     | '/budgets/new'
     | '/categories/$id'
+    | '/profile/mcp-token'
     | '/profile/notifications'
     | '/profile/penny-bot'
     | '/profile/preferences'
@@ -307,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileNotificationsRouteImport
       parentRoute: typeof ProfileRoute
     }
+    '/profile/mcp-token': {
+      id: '/profile/mcp-token'
+      path: '/mcp-token'
+      fullPath: '/profile/mcp-token'
+      preLoaderRoute: typeof ProfileMcpTokenRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/categories/$id': {
       id: '/categories/$id'
       path: '/categories/$id'
@@ -346,6 +365,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface ProfileRouteChildren {
+  ProfileMcpTokenRoute: typeof ProfileMcpTokenRoute
   ProfileNotificationsRoute: typeof ProfileNotificationsRoute
   ProfilePennyBotRoute: typeof ProfilePennyBotRoute
   ProfilePreferencesRoute: typeof ProfilePreferencesRoute
@@ -354,6 +374,7 @@ interface ProfileRouteChildren {
 }
 
 const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileMcpTokenRoute: ProfileMcpTokenRoute,
   ProfileNotificationsRoute: ProfileNotificationsRoute,
   ProfilePennyBotRoute: ProfilePennyBotRoute,
   ProfilePreferencesRoute: ProfilePreferencesRoute,
