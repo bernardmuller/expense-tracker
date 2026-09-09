@@ -36,7 +36,7 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <ThemeProvider defaultTheme="dark">
+      <ThemeProvider defaultTheme="system">
         <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
           <AuthProvider>
             <RouterProvider router={router} />
