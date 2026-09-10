@@ -98,6 +98,7 @@ func main() {
 	httpServer := server.NewStreamableHTTPServer(s,
 		server.WithHTTPContextFunc(extractAuth),
 		server.WithEndpointPath("/mcp"),
+		server.WithDisableLocalhostProtection(true),
 	)
 
 	log.Println("Expenny MCP server listening on :8080/mcp")

@@ -38,3 +38,7 @@ build: ## build the Go bot binary
 watch: ## build and watch the project with air
 	go build -o ./tmp/bot ./cmd/bot/main.go && air
 
+build_mcp_binary:
+	@mkdir -p dist
+	@env GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -tags lambda.norpc -ldflags="-s -w" -o ./dist/bootstrap ./cmd/mcp/main.go
+

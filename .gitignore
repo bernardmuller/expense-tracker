@@ -2,6 +2,7 @@
 .claude
 tmp/
 .DS_Store
+dist/
 
 .env
 .env.*
